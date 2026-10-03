@@ -1,0 +1,396 @@
+<!-- C → GODOT HANDOFF -->
+  <div class="phase" id="godot-bridge" style="border-top:2px solid var(--blue)">
+    <div class="phase-header">
+      <div class="phase-n t-blue" style="font-size:30px">→</div>
+      <div class="phase-meta">
+        <div class="phase-tag t-blue">The Handoff</div>
+        <div class="phase-title">Why C First — and where Godot takes over</div>
+      </div>
+      <div class="phase-right">
+        <div class="phase-week t-blue">After Phase 6</div>
+        <div class="phase-chevron">▼</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-inner">
+
+        <!-- WHY C FIRST -->
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Read This First</span>&nbsp;&nbsp;You are not going to write your game in C
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="stack gap-14">
+
+              <div class="callout callout--blue callout--bar">
+                <div class="eyebrow eyebrow--lg t-blue mb-8">// The thing this document never said out loud</div>
+                <div class="prose prose--loose t-text">
+                  The games get built in <strong class="t-accent">Godot 4, in GDScript.</strong> That's settled — it's why GameMaker was ruled out (both games have to share one engine) and why Unity was ruled out (MIT licence, no runtime-fee surprises, and Godot's scene instancing already thinks the way the ARPG needs to). Not a line of C ships in either game.<br><br>
+                  So the honest question is why seven phases of C, and the honest answer is that <strong class="t-accent">C is the only language that refuses to hide anything from you.</strong>
+                </div>
+              </div>
+
+              <div class="callout callout--yellow">
+                <div class="eyebrow eyebrow--lg t-yellow mb-8">// Where this curriculum came from</div>
+                <div class="prose prose--loose t-text">
+                  The shape of this roadmap isn't Claude's idea. It came from <strong class="t-accent">an industry programmer's advice</strong> — learn low-level C, learn what a window and a message loop actually are, don't start inside an engine that does the thinking for you. That advice got combined with a structured phase plan, and the result is the seven phases you've been working through.<br><br>
+                  It's advice worth taking for one specific reason: the alternative is a person who can make things happen in an engine but has no idea what the engine is doing, and the moment something breaks below the surface, they're stuck waiting for someone else.
+                </div>
+              </div>
+
+              <div class="callout callout--accent">
+                <div class="eyebrow eyebrow--lg t-accent mb-8">// What the C actually buys you in GDScript</div>
+                <div class="prose stack gap-10 t-muted2">
+                  <div><strong class="t-text">You'll debug better.</strong> GDScript hides types, memory and references — until a bug drags them back into view. "Why did changing this enemy change all of them?" is a five-minute problem if you know what a reference is and a lost afternoon if you don't. You'll have watched <span class="cmd">p-&gt;health</span> mutate through a pointer in the debugger. That's the whole answer.</div>
+                  <div><strong class="t-text">You'll read engine docs and engine source.</strong> Godot itself is written in C++. When the documentation says a Resource is reference-counted, or that <span class="cmd">PackedByteArray</span> is contiguous, those sentences mean something concrete to you now. Most people using the engine skim past them.</div>
+                  <div><strong class="t-text">You'll be able to work with Person A.</strong> They take the complex systems; your job is to contribute real code and review theirs honestly. That requires knowing what the code <em>does</em>, not just that it runs — and the fastest way to learn that is a language that makes you say it explicitly.</div>
+                  <div><strong class="t-text">You'll write better prompts.</strong> Phase 7's whole premise. You cannot verify code you don't understand, and AI writes plausible, confident, subtly wrong GDScript exactly as readily as it writes C.</div>
+                </div>
+              </div>
+
+              <div class="callout callout--purple callout--bar">
+                <div class="eyebrow eyebrow--lg t-purple mb-8">// The one-sentence version</div>
+                <div class="prose prose--loose t-text italic">
+                  GDScript lets you skip learning what the machine does. C makes you learn it once, and then GDScript is just a faster way to say things you already understand.
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- TRANSFER TABLE -->
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-green">The Transfer Table</span>&nbsp;&nbsp;Every C concept, and what it becomes in Godot 4
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+
+            <div class="fs-11-5" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:6px 20px">
+              <div class="t-muted2 bb" style="padding:5px 0">What you learned in C</div>
+              <div class="t-muted2 bb" style="padding:5px 0">What you'll write in Godot 4</div>
+
+              <div class="t-text py-4"><span class="cmd">typedef struct { ... } Player;</span></div>
+              <div class="t-muted2 py-4">A script <em>is</em> a class. <span class="cmd">class_name Player extends Node2D</span>, fields become <span class="cmd">var</span>. Pure data with no behaviour becomes a <span class="cmd">Resource</span> — that's how item definitions and card data will be stored.</div>
+
+              <div class="t-text py-4"><span class="cmd">while (running) { ... }</span></div>
+              <div class="t-muted2 py-4">You don't write the loop. Godot owns it and calls <span class="cmd">_process(delta)</span> every frame, <span class="cmd">_physics_process(delta)</span> at a fixed rate for movement and collision.</div>
+
+              <div class="t-text py-4">Measuring frame time yourself</div>
+              <div class="t-muted2 py-4">The <span class="cmd">delta</span> parameter. Already measured, handed to you, in seconds. Every Phase 5 frame-timer headache, gone.</div>
+
+              <div class="t-text py-4"><span class="cmd">enum</span> + <span class="cmd">switch</span> + <span class="cmd">break</span></div>
+              <div class="t-muted2 py-4"><span class="cmd">enum</span> + <span class="cmd">match</span>. Same idea, no <span class="cmd">break</span> — <span class="cmd">match</span> never falls through, so the bug where you forget one can't happen.</div>
+
+              <div class="t-text py-4"><span class="cmd">Player* p</span>, <span class="cmd">&amp;hero</span>, <span class="cmd">*p</span>, <span class="cmd">p-&gt;health</span></div>
+              <div class="t-muted2 py-4"><strong class="t-accent">Everything is already a reference.</strong> There is no <span class="cmd">&amp;</span> and no <span class="cmd">*</span> in GDScript. You pass the object, the function changes the real thing, always. Always <span class="cmd">.</span>, never <span class="cmd">-&gt;</span>.</div>
+
+              <div class="t-text py-4"><span class="cmd">b = a;</span> copies the whole struct</div>
+              <div class="t-muted2 py-4"><span class="cmd">var b = a</span> gives you a <em>second name for the same object.</em> This is the reversal that catches C people. Want a copy? Ask for one: <span class="cmd">a.duplicate()</span>.</div>
+
+              <div class="t-text py-4"><span class="cmd">aabb_overlap(...)</span> written by hand</div>
+              <div class="t-muted2 py-4"><span class="cmd">Area2D</span> and <span class="cmd">CharacterBody2D</span> — the physics engine does it and emits <span class="cmd">body_entered</span>. You still know exactly what it's doing, which is why you'll trust it and know when it's lying.</div>
+
+              <div class="t-text py-4"><span class="cmd">Enemy enemies[10];</span> fixed size</div>
+              <div class="t-muted2 py-4"><span class="cmd">var enemies: Array[Enemy] = []</span> — grows on its own, <span class="cmd">append()</span> and <span class="cmd">erase()</span>. No sentinel slots, no shifting by hand. But you'll know why it costs something.</div>
+
+              <div class="t-text py-4"><span class="cmd">char name[32]</span>, <span class="cmd">'\0'</span>, <span class="cmd">strlen</span></div>
+              <div class="t-muted2 py-4"><span class="cmd">String</span> is a real type. <span class="cmd">name.length()</span>, <span class="cmd">==</span> compares contents. No terminator, no buffer size, no <span class="cmd">strcmp</span> return-value trap.</div>
+
+              <div class="t-text py-4"><span class="cmd">int</span> vs <span class="cmd">float</span>, casts, truncation</div>
+              <div class="t-muted2 py-4">Still real, still matters. Typing is optional in GDScript — <strong class="t-accent">use it anyway.</strong> <span class="cmd">var health: int = 100</span> catches the same class of bug your <span class="cmd">/W4 /WX</span> flags catch.</div>
+
+              <div class="t-text py-4"><span class="cmd">#include "player.h"</span>, .h/.c split</div>
+              <div class="t-muted2 py-4">No headers at all. <span class="cmd">preload("res://player.gd")</span>, or give the script a <span class="cmd">class_name</span> and it's visible everywhere.</div>
+
+              <div class="t-text py-4"><span class="cmd">build.bat</span>, <span class="cmd">cl /W4 /WX /Zi</span></div>
+              <div class="t-muted2 py-4">No compile step. Scenes (<span class="cmd">.tscn</span>) and export presets replace the build. Press F5 in the editor and it runs.</div>
+
+              <div class="t-text py-4"><span class="cmd">printf</span> debugging, the VS Code debugger</div>
+              <div class="t-muted2 py-4"><span class="cmd">print()</span> and Godot's own debugger — breakpoints, step, a live variable panel, and a remote scene tree that shows you every node while the game is running.</div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SIDE BY SIDE -->
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Same Logic, Two Languages</span>&nbsp;&nbsp;Three side-by-side comparisons
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="stack gap-18">
+
+              <div>
+                <div class="eyebrow eyebrow--lg t-blue mb-8">// 1. The Player — struct and functions become a class</div>
+                <div class="gap-2" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)">
+                  <div>
+                    <div class="panel fs-10 t-accent" style="padding:8px 12px">player.h + player.c — C</div>
+<pre class="fs-11-5 lh-17" style="border:1px solid var(--border);border-top:none"><span class="c-kw">typedef struct</span> {
+    <span class="c-type">float</span> <span class="c-var">x</span>;
+    <span class="c-type">float</span> <span class="c-var">y</span>;
+    <span class="c-type">int</span>   <span class="c-var">health</span>;
+    <span class="c-type">bool</span>  <span class="c-var">alive</span>;
+} <span class="c-type">Player</span>;
+
+<span class="c-type">void</span> <span class="c-fn">player_move</span>(<span class="c-type">Player</span>* <span class="c-var">p</span>,
+                 <span class="c-type">float</span> <span class="c-var">dx</span>, <span class="c-type">float</span> <span class="c-var">dy</span>) {
+    <span class="c-var">p</span>-&gt;<span class="c-var">x</span> += <span class="c-var">dx</span>;
+    <span class="c-var">p</span>-&gt;<span class="c-var">y</span> += <span class="c-var">dy</span>;
+}
+
+<span class="c-type">void</span> <span class="c-fn">player_take_damage</span>(<span class="c-type">Player</span>* <span class="c-var">p</span>,
+                        <span class="c-type">int</span> <span class="c-var">amount</span>) {
+    <span class="c-var">p</span>-&gt;<span class="c-var">health</span> -= <span class="c-var">amount</span>;
+    <span class="c-kw">if</span> (<span class="c-var">p</span>-&gt;<span class="c-var">health</span> &lt;= <span class="c-num">0</span>) {
+        <span class="c-var">p</span>-&gt;<span class="c-var">health</span> = <span class="c-num">0</span>;
+        <span class="c-var">p</span>-&gt;<span class="c-var">alive</span> = <span class="c-kw">false</span>;
+    }
+}
+
+<span class="c-cm">// caller has to hand over the address</span>
+<span class="c-fn">player_take_damage</span>(&amp;<span class="c-var">hero</span>, <span class="c-num">10</span>);</pre>
+                  </div>
+                  <div>
+                    <div class="panel fs-10 t-blue" style="padding:8px 12px">player.gd — GDScript (Godot 4)</div>
+<pre class="fs-11-5 lh-17" style="border:1px solid var(--border);border-top:none"><span class="c-kw">class_name</span> <span class="c-type">Player</span>
+<span class="c-kw">extends</span> <span class="c-type">CharacterBody2D</span>
+
+<span class="c-cm"># x and y already exist as .position</span>
+<span class="c-kw">var</span> <span class="c-var">health</span>: <span class="c-type">int</span> = <span class="c-num">100</span>
+<span class="c-kw">var</span> <span class="c-var">alive</span>: <span class="c-type">bool</span> = <span class="c-kw">true</span>
+
+<span class="c-kw">func</span> <span class="c-fn">move</span>(<span class="c-var">dx</span>: <span class="c-type">float</span>, <span class="c-var">dy</span>: <span class="c-type">float</span>) -&gt; <span class="c-type">void</span>:
+    <span class="c-var">position</span>.<span class="c-var">x</span> += <span class="c-var">dx</span>
+    <span class="c-var">position</span>.<span class="c-var">y</span> += <span class="c-var">dy</span>
+
+<span class="c-kw">func</span> <span class="c-fn">take_damage</span>(<span class="c-var">amount</span>: <span class="c-type">int</span>) -&gt; <span class="c-type">void</span>:
+    <span class="c-var">health</span> -= <span class="c-var">amount</span>
+    <span class="c-kw">if</span> <span class="c-var">health</span> &lt;= <span class="c-num">0</span>:
+        <span class="c-var">health</span> = <span class="c-num">0</span>
+        <span class="c-var">alive</span> = <span class="c-kw">false</span>
+
+<span class="c-cm"># no address, no pointer, no &amp;</span>
+<span class="c-cm"># hero IS a reference already</span>
+<span class="c-var">hero</span>.<span class="c-fn">take_damage</span>(<span class="c-num">10</span>)</pre>
+                  </div>
+                </div>
+                <div class="prose prose--sm t-muted2 mt-10">
+                  Notice what vanished: the <span class="cmd">Player*</span> parameter, the <span class="cmd">&amp;</span> at the call site, and every <span class="cmd">-&gt;</span>. The function no longer needs to be told which player — it <em>is</em> the player. <strong class="t-text">And it still mutates the real object</strong>, for exactly the reason <span class="cmd">Player*</span> did in C. Same mechanism, no syntax for it.
+                </div>
+              </div>
+
+              <div>
+                <div class="eyebrow eyebrow--lg t-blue mb-8">// 2. The state machine — switch becomes match</div>
+                <div class="gap-2" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)">
+                  <div>
+                    <div class="panel fs-10 t-accent" style="padding:8px 12px">game.c — C</div>
+<pre class="fs-11-5 lh-17" style="border:1px solid var(--border);border-top:none"><span class="c-kw">typedef enum</span> {
+    <span class="c-var">STATE_MENU</span>,
+    <span class="c-var">STATE_PLAYING</span>,
+    <span class="c-var">STATE_GAME_OVER</span>
+} <span class="c-type">GameState</span>;
+
+<span class="c-kw">switch</span> (<span class="c-var">g</span>-&gt;<span class="c-var">state</span>) {
+<span class="c-kw">case</span> <span class="c-var">STATE_MENU</span>:
+    <span class="c-kw">if</span> (<span class="c-var">key</span> != <span class="c-num">0</span>) {
+        <span class="c-var">g</span>-&gt;<span class="c-var">state</span> = <span class="c-var">STATE_PLAYING</span>;
+    }
+    <span class="c-kw">break</span>;
+
+<span class="c-kw">case</span> <span class="c-var">STATE_PLAYING</span>:
+    <span class="c-fn">update_player</span>(<span class="c-var">g</span>);
+    <span class="c-kw">if</span> (<span class="c-var">g</span>-&gt;<span class="c-var">player</span>.health &lt;= <span class="c-num">0</span>) {
+        <span class="c-var">g</span>-&gt;<span class="c-var">state</span> = <span class="c-var">STATE_GAME_OVER</span>;
+    }
+    <span class="c-kw">break</span>;
+
+<span class="c-kw">case</span> <span class="c-var">STATE_GAME_OVER</span>:
+    <span class="c-kw">if</span> (<span class="c-var">key</span> == <span class="c-str">'r'</span>) {
+        <span class="c-fn">game_reset</span>(<span class="c-var">g</span>);
+    }
+    <span class="c-kw">break</span>;
+}</pre>
+                  </div>
+                  <div>
+                    <div class="panel fs-10 t-blue" style="padding:8px 12px">game.gd — GDScript (Godot 4)</div>
+<pre class="fs-11-5 lh-17" style="border:1px solid var(--border);border-top:none"><span class="c-kw">enum</span> <span class="c-type">State</span> { <span class="c-var">MENU</span>, <span class="c-var">PLAYING</span>, <span class="c-var">GAME_OVER</span> }
+
+<span class="c-kw">var</span> <span class="c-var">state</span>: <span class="c-type">State</span> = <span class="c-type">State</span>.<span class="c-var">MENU</span>
+
+<span class="c-kw">func</span> <span class="c-fn">_process</span>(<span class="c-var">delta</span>: <span class="c-type">float</span>) -&gt; <span class="c-type">void</span>:
+    <span class="c-kw">match</span> <span class="c-var">state</span>:
+        <span class="c-type">State</span>.<span class="c-var">MENU</span>:
+            <span class="c-kw">if</span> <span class="c-type">Input</span>.<span class="c-fn">is_action_just_pressed</span>(<span class="c-str">"start"</span>):
+                <span class="c-var">state</span> = <span class="c-type">State</span>.<span class="c-var">PLAYING</span>
+
+        <span class="c-type">State</span>.<span class="c-var">PLAYING</span>:
+            <span class="c-fn">update_player</span>(<span class="c-var">delta</span>)
+            <span class="c-kw">if</span> <span class="c-var">player</span>.<span class="c-var">health</span> &lt;= <span class="c-num">0</span>:
+                <span class="c-var">state</span> = <span class="c-type">State</span>.<span class="c-var">GAME_OVER</span>
+
+        <span class="c-type">State</span>.<span class="c-var">GAME_OVER</span>:
+            <span class="c-kw">if</span> <span class="c-type">Input</span>.<span class="c-fn">is_action_just_pressed</span>(<span class="c-str">"restart"</span>):
+                <span class="c-fn">reset</span>()
+
+<span class="c-cm"># no break — match never falls through</span>
+<span class="c-cm"># indentation is the block, not braces</span></pre>
+                  </div>
+                </div>
+                <div class="prose prose--sm t-muted2 mt-10">
+                  This is the closest translation in the whole table. <strong class="t-text">The enum is the same idea, the branches are the same branches</strong> — you've just stopped writing <span class="cmd">break</span>, because <span class="cmd">match</span> can't fall through into the next case. One entire category of bug deleted by the language.
+                </div>
+              </div>
+
+              <div>
+                <div class="eyebrow eyebrow--lg t-blue mb-8">// 3. The game loop — you stop writing it</div>
+                <div class="gap-2" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)">
+                  <div>
+                    <div class="panel fs-10 t-accent" style="padding:8px 12px">main.c — C</div>
+<pre class="fs-11-5 lh-17" style="border:1px solid var(--border);border-top:none"><span class="c-type">float</span> <span class="c-var">speed</span> = <span class="c-num">200.0f</span>;   <span class="c-cm">// pixels/sec</span>
+
+<span class="c-kw">while</span> (<span class="c-var">running</span>) {
+    <span class="c-fn">handle_input</span>(&amp;<span class="c-var">game</span>);
+
+    <span class="c-cm">// you measured dt yourself</span>
+    <span class="c-kw">if</span> (<span class="c-var">right_held</span>) {
+        <span class="c-var">game</span>.player.x += <span class="c-var">speed</span> * <span class="c-var">dt</span>;
+    }
+
+    <span class="c-fn">render</span>(&amp;<span class="c-var">game</span>);
+    <span class="c-fn">Sleep</span>(<span class="c-num">16</span>);   <span class="c-cm">// and hoped</span>
+}</pre>
+                  </div>
+                  <div>
+                    <div class="panel fs-10 t-blue" style="padding:8px 12px">player.gd — GDScript (Godot 4)</div>
+<pre class="fs-11-5 lh-17" style="border:1px solid var(--border);border-top:none"><span class="c-kw">const</span> <span class="c-var">SPEED</span> := <span class="c-num">200.0</span>   <span class="c-cm"># pixels/sec</span>
+
+<span class="c-cm"># Godot owns the loop and calls this</span>
+<span class="c-cm"># every frame. delta is your dt,</span>
+<span class="c-cm"># already measured, in seconds.</span>
+<span class="c-kw">func</span> <span class="c-fn">_physics_process</span>(<span class="c-var">delta</span>: <span class="c-type">float</span>) -&gt; <span class="c-type">void</span>:
+    <span class="c-kw">var</span> <span class="c-var">dir</span> := <span class="c-type">Input</span>.<span class="c-fn">get_axis</span>(<span class="c-str">"move_left"</span>, <span class="c-str">"move_right"</span>)
+    <span class="c-var">velocity</span>.<span class="c-var">x</span> = <span class="c-var">dir</span> * <span class="c-var">SPEED</span>
+    <span class="c-fn">move_and_slide</span>()
+
+<span class="c-cm"># no while, no Sleep, no render call.</span>
+<span class="c-cm"># The scene tree draws itself.</span></pre>
+                  </div>
+                </div>
+                <div class="prose prose--sm t-muted2 mt-10">
+                  The loop didn't disappear — <strong class="t-text">Godot is running it and calling you</strong>, which is precisely the inversion Phase 5 taught you with Win32's message loop. You already know what <span class="cmd">delta</span> is for, why <span class="cmd">speed * delta</span> and not <span class="cmd">speed</span>, and why <span class="cmd">_physics_process</span> is the one to use for movement. Most people learn all three the hard way, from a bug.
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- WHAT DOESN'T TRANSFER -->
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-orange">Don't Over-Invest</span>&nbsp;&nbsp;What does NOT transfer, and how much to care
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+
+            <div class="callout callout--orange callout--bar mb-14">
+              <div class="eyebrow eyebrow--lg t-orange mb-8">// Learn the shape, skip the trivia</div>
+              <div class="prose prose--loose t-text">
+                Some of what's in this roadmap is a concept you'll use forever. Some of it is Windows-specific plumbing you will genuinely never type again. It's worth knowing which is which <em>before</em> you spend a weekend memorising the wrong one.
+              </div>
+            </div>
+
+            <div class="stuck-items">
+              <div class="stuck-item">
+                <div class="stuck-q">Win32 API specifics — WndProc, WM_PAINT, HWND, WPARAM, the message queue</div>
+                <div class="stuck-a">Understand the <strong class="t-text">inversion</strong> — that the system calls you rather than the other way round — because that's exactly how <span class="cmd">_process</span> and signals work in Godot. Then let the rest go. <span class="cmd">LRESULT</span>, <span class="cmd">WNDCLASS</span> and the registration boilerplate are 1993 trivia; even Win32 programmers copy that block rather than remember it. Phase 5 says 20% comprehension on a first read is the right outcome, and it means it.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">Manual memory — malloc, free, ownership, leaks, allocators</div>
+                <div class="stuck-a">Know what a heap allocation <em>is</em> and what a dangling pointer <em>is</em>, at concept level, because that vocabulary explains half of Godot's behaviour (<span class="cmd">queue_free()</span>, reference counting, why a freed node's reference goes invalid). Do not go further. GDScript reference-counts and frees for you, and weeks spent on custom allocators are weeks not spent on your game. If either project ever needs that level of control, it's Person A's problem and it'll be in C++.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">MSVC flags and build tooling — /W4, /WX, /Zi, /Fe:, vcvars32.bat, build.bat</div>
+                <div class="stuck-a">Pure MSVC trivia and worth exactly what it cost you. The <em>habit</em> transfers and matters enormously: warnings on, warnings as errors, fix them at the source. In GDScript that habit becomes typing your variables and keeping the editor's warning panel empty. The flags themselves you'll forget within a month of moving over, and that's fine.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">Header files, declaration vs definition, #pragma once</div>
+                <div class="stuck-a">Gone entirely. GDScript has no headers, no forward declarations and no include order. What survives is the instinct behind them — <strong class="t-text">design the interface before the implementation</strong>, which is Phase 3's actual lesson and Phase 7's whole method. Writing <span class="cmd">func take_damage(amount: int) -&gt; void:</span> before you write the body is the same discipline in a different language.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">C string handling — char arrays, '\0', strlen, strcmp, buffer sizes</div>
+                <div class="stuck-a">Godot's <span class="cmd">String</span> makes all of it unnecessary, and <span class="cmd">==</span> compares contents the way you always wanted it to. Keep one thing: the awareness that text is bytes in memory somewhere, which is why <span class="cmd">PackedByteArray</span>, encoding and save-file corruption make sense to you when they come up. Don't drill string.h any further than Phase 3.5 goes.</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- THE TRIGGER POINT -->
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-green">The Trigger Point</span>&nbsp;&nbsp;When to stop learning C and open Godot
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="stack gap-14">
+
+              <div class="callout callout--accent">
+                <div class="eyebrow eyebrow--lg t-accent mb-8">// The condition, stated exactly</div>
+                <div class="prose prose--loose t-text">
+                  <strong class="t-accent">When Phase 6's checkpoint is fully ticked, you're done with C.</strong> Not Phase 7 — that one is ongoing and always will be. Phase 6.<br><br>
+                  Three states transitioning correctly, a player moving on screen with collision detected, and a partner who can clone the repo and run it without asking you anything. That's the bar. The moment it's met, open Godot and don't look for one more C thing to learn first.
+                </div>
+                <div class="prose prose--sm t-muted2 mt-12">
+                  There is a real failure mode here and it has a name: staying in the comfortable part. C will always have another concept in it. The point was never to finish C — it was to stop being someone who can only use tools they don't understand, and Phase 6 is where that's achieved.
+                </div>
+              </div>
+
+              <div class="callout callout--blue callout--bar">
+                <div class="eyebrow eyebrow--lg t-blue mb-8">// The first weekend in Godot — the calibration exercise</div>
+                <div class="prose prose--loose t-text">
+                  Don't start the real game. Rebuild <strong class="t-accent">the Phase 4.5 ASCII runner</strong> as a Godot scene instead: a sprite, obstacles scrolling toward it, jump and duck, score, game over, restart. You already know exactly what it should do, so every minute goes into learning the engine rather than deciding the design.<br><br>
+                  It'll take a fraction of the time it took in C, and that gap <em>is</em> the lesson — you'll feel precisely how much the engine is doing for you, and you'll know what each of those things actually is.
+                </div>
+              </div>
+
+              <div class="callout callout--purple callout--bar">
+                <div class="eyebrow eyebrow--lg t-purple mb-10">// Then: the runner, then the ARPG. And why that order.</div>
+                <div class="prose prose--loose t-text mb-12">
+                  <strong class="t-accent">Game 1</strong> is a 2D infinite runner shooter with ARPG-style loot. <strong class="t-accent">Game 2</strong> is the real target — a deck-building dungeon crawler with ARPG progression, somewhere between Slay the Spire, Isaac and Path of Exile.<br><br>
+                  Game 1 is not a warm-up you throw away. Both games live in the same engine on purpose, and six systems were mapped to carry straight across:
+                </div>
+                <div class="fs-11-5" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px 20px">
+                  <div class="t-muted2 py-4 bb">Built for the runner</div>
+                  <div class="t-muted2 py-4 bb">Becomes, in the ARPG</div>
+                  <div class="t-text">Directional input handler abstraction</div><div class="t-muted2">2D sidescroll → top-down 8-directional</div>
+                  <div class="t-text">Loot tables with prefix/suffix affixes</div><div class="t-muted2">Full ARPG item generation</div>
+                  <div class="t-text">Stat modifier stack (flat, percent, additive)</div><div class="t-muted2">Character sheet and skill scaling</div>
+                  <div class="t-text">ECS-based enemy AI</div><div class="t-muted2">Dungeon monsters and bosses</div>
+                  <div class="t-text">Damage type flags (physical, fire, lightning)</div><div class="t-muted2">Elemental resistance system</div>
+                  <div class="t-text">Procedural chunk spawning</div><div class="t-muted2">Dungeon room generation</div>
+                </div>
+                <div class="prose prose--sm t-muted2 mt-12">
+                  Read that table with what you now know. A stat modifier stack is a struct with an array of modifiers and a function that folds them. Damage type flags are bit flags. Procedural chunk spawning is an array of objects being recycled — <strong class="t-text">which is the sentinel-slot pattern from the ASCII runner, at scale.</strong> None of this is unfamiliar any more.
+                </div>
+              </div>
+
+              <div class="callout callout--yellow">
+                <div class="eyebrow eyebrow--lg t-yellow mb-8">// What your job actually is once you're in the engine</div>
+                <div class="prose prose--loose t-text">
+                  Person A takes the complex systems. That was always the arrangement and it's the right one — they're a professional and the timeline is tight enough as it is. <strong class="t-accent">Your job is to take real, appropriately scoped work and to be able to read and question everything else.</strong><br><br>
+                  That's why the C mattered, and it's the only measure of whether this roadmap worked: not whether you can write a linked list, but whether you can look at Person A's item-generation code, follow it, and ask a question that turns out to be worth asking.
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>

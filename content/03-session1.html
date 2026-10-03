@@ -1,0 +1,198 @@
+<!-- SESSION 1 RECAP -->
+  <div class="phase open" id="session1" style="border-top:2px solid var(--yellow)">
+    <div class="phase-header">
+      <div class="phase-n t-yellow" style="font-size:20px">S1</div>
+      <div class="phase-meta">
+        <div class="phase-tag t-yellow">Session Notes — Pick up here tomorrow</div>
+        <div class="phase-title">What we explored in Session 1</div>
+      </div>
+      <div class="phase-right">
+        <div class="phase-week t-yellow">Day 1 Complete</div>
+        <div class="phase-chevron">▲</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-inner">
+
+        <!-- WHERE WE LEFT OFF -->
+        <div class="callout callout--yellow callout--bar" style="padding:20px 24px">
+          <div class="eyebrow eyebrow--md t-yellow mb-12">// State of the code when we stopped</div>
+          <div class="code-wrap">
+            <div class="code-label">
+              <span>hello_world.c — end of session 1</span>
+              <button class="copy-btn">Copy</button>
+            </div>
+<pre><span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
+
+<span class="c-cm">// A function Sam wrote to experiment with type conversion</span>
+<span class="c-type">int</span> <span class="c-fn">var</span>(<span class="c-type">float</span> <span class="c-var">x</span>) {
+    <span class="c-kw">return</span> <span class="c-var">x</span>;  <span class="c-cm">// WARNING: float → int conversion, decimal gets chopped</span>
+}
+
+<span class="c-type">int</span> <span class="c-fn">main</span>() {
+    <span class="c-fn">printf</span>(<span class="c-str">"Hello, Sam!\nHow old are you?\n"</span>);
+    <span class="c-fn">printf</span>(<span class="c-str">"I am %d years old\n"</span>, <span class="c-fn">var</span>(<span class="c-num">1.8f</span>));   <span class="c-cm">// prints 1, not 1.8</span>
+    <span class="c-fn">printf</span>(<span class="c-str">"Lets\r party up!\n"</span>);               <span class="c-cm">// \r caused the "Lets" to disappear</span>
+    <span class="c-fn">printf</span>(<span class="c-str">"\r"</span>);
+    <span class="c-fn">printf</span>(<span class="c-str">"\\"</span>);                               <span class="c-cm">// prints one backslash: \</span>
+    <span class="c-fn">printf</span>(<span class="c-str">"C:\\User\\4samt\\new%%directory"</span>);   <span class="c-cm">// prints path with % literal</span>
+
+    <span class="c-kw">return</span> <span class="c-num">0</span>;
+}</pre>
+          </div>
+          <div class="prose mt-12 t-muted2">
+            <strong class="t-accent">build.bat is working.</strong> Running <span class="cmd">build</span> in the terminal compiles and produces game.exe. The two remaining warnings (<span class="cmd">C4244</span>) are real and should be fixed before moving to Phase 2 — see below.
+          </div>
+        </div>
+
+        <!-- CONCEPTS DISCOVERED -->
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Concepts Discovered</span>&nbsp;&nbsp;Everything explored this session
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="stack gap-14">
+
+              <div class="callout callout--blue callout--bar">
+                <div class="eyebrow eyebrow--md t-blue mb-8">// Escape sequences — special characters inside strings</div>
+                <div class="prose t-text">
+                  A backslash inside a string tells the compiler "the next character is special." You discovered several this session:<br><br>
+                  <span class="cmd">\n</span> — new line (like pressing Enter). Must be inside the quotes.<br>
+                  <span class="cmd">\r</span> — carriage return. Moves the cursor back to the start of the current line WITHOUT moving down. This is why "Lets" disappeared — <span class="cmd">\r</span> moved the cursor back, then " party up!" overwrote it. Old terminal behavior from typewriter days.<br>
+                  <span class="cmd">\\</span> — prints a single literal backslash. You need two because one backslash starts an escape sequence. <span class="cmd">\\</span> says "escape sequence that means backslash."<br>
+                  <span class="cmd">%%</span> — prints a literal % sign inside printf. Single % starts a format specifier (%d, %f etc.) so you need two to print the symbol itself.<br>
+                  <span class="cmd">\t</span> — tab character (you'll see this one soon)<br><br>
+                  <strong class="t-accent">The rule:</strong> inside a printf string, backslash and % are special. To print them literally you double them: <span class="cmd">\\</span> and <span class="cmd">%%</span>.
+                </div>
+              </div>
+
+              <div class="callout callout--blue callout--bar">
+                <div class="eyebrow eyebrow--md t-blue mb-8">// Functions — you wrote your first one</div>
+                <div class="prose t-text">
+                  You wrote a function called <span class="cmd">var</span> that takes a float and returns an int. This is the basic anatomy of every function you'll ever write:<br><br>
+                  <span class="cmd">return_type  function_name ( parameter_type  parameter_name ) { ... }</span><br><br>
+                  <span class="cmd">int var(float x)</span> means: "a function named var that accepts a float called x and returns an int."<br><br>
+                  You called it with <span class="cmd">var(1.8f)</span> — the <span class="cmd">f</span> suffix tells the compiler "this is a float literal, not a double." Without the <span class="cmd">f</span>, <span class="cmd">1.8</span> is a double by default, which caused the C4305 truncation warning.
+                </div>
+              </div>
+
+              <div class="callout callout--orange callout--bar">
+                <div class="eyebrow eyebrow--md t-orange mb-8">// Type conversion — what actually happened with 1.8 → 1</div>
+                <div class="prose t-text">
+                  This is one of the most important things to understand in C.<br><br>
+                  Your function receives <span class="cmd">1.8</span> as a float and tries to return it as an <span class="cmd">int</span>. C allows this but <strong class="t-orange">truncates</strong> — it chops off everything after the decimal point. Not rounded. Just dropped.<br><br>
+                  <span class="cmd">1.8f → int = 1</span> (not 2)<br>
+                  <span class="cmd">7.9f → int = 7</span> (not 8)<br>
+                  <span class="cmd">-1.8f → int = -1</span> (towards zero, not down)<br><br>
+                  This is why the compiler warned you with <span class="cmd">C4244: possible loss of data</span>. It's not an error by default — C will do it — but the compiler knows you might not have intended it. <strong class="t-accent">The warning was correct. Always read warnings.</strong><br><br>
+                  You observed this directly: passing <span class="cmd">1.8f</span> printed <span class="cmd">I am 1 years old</span>, not 1.8.
+                </div>
+              </div>
+
+              <div class="callout callout--blue callout--bar">
+                <div class="eyebrow eyebrow--md t-blue mb-8">// Format specifiers — %d %f %s and when to use each</div>
+                <div class="prose t-text">
+                  Format specifiers are placeholders inside a printf string that get replaced by values:<br><br>
+                  <span class="cmd">%d</span> — integer (int). Prints a whole number.<br>
+                  <span class="cmd">%f</span> — float or double. Prints a decimal number (default 6 decimal places).<br>
+                  <span class="cmd">%.2f</span> — float with exactly 2 decimal places.<br>
+                  <span class="cmd">%s</span> — string. Prints a sequence of characters.<br>
+                  <span class="cmd">%c</span> — single character.<br><br>
+                  <strong class="t-accent">The type must match.</strong> Using <span class="cmd">%d</span> to print a float doesn't convert it — it reads the wrong bytes and prints garbage. The compiler warned about this too.
+                </div>
+              </div>
+
+              <div class="callout callout--blue callout--bar">
+                <div class="eyebrow eyebrow--md t-blue mb-8">// Comments — two styles</div>
+                <div class="prose t-text">
+                  You used both comment styles this session:<br><br>
+                  <span class="cmd">// single line comment</span> — everything after // on that line is ignored<br>
+                  <span class="cmd">/* multi line comment */</span> — everything between /* and */ is ignored, can span lines<br><br>
+                  The compiler ignores comments entirely. They exist only for humans. You discovered this when you commented out the //type variable name = value; lines — they stopped causing errors because the compiler never saw them.
+                </div>
+              </div>
+
+              <div class="callout callout--blue callout--bar">
+                <div class="eyebrow eyebrow--md t-blue mb-8">// build.bat — what you set up and why it matters</div>
+                <div class="prose t-text">
+                  You built and ran build.bat successfully. Key things learned:<br><br>
+                  <strong class="t-accent">Paste into the editor, not the terminal.</strong> Pasting into the terminal runs the lines as commands. Paste into the build.bat file tab in VS Code.<br><br>
+                  <strong class="t-accent">@echo off</strong> silences command echo. Without it the terminal prints each command before running it.<br><br>
+                  <strong class="t-accent">%ERRORLEVEL%</strong> is a Windows variable set by every program on exit. 0 = success. Anything else = failure. The if block catches failed compiles and prints BUILD FAILED so you don't accidentally run a stale .exe.<br><br>
+                  <strong class="t-accent">/W4 and /WX</strong> — turn on strict warnings and treat them as errors. You encountered this firsthand: /WX made the C4244 warning stop the build entirely. This is intentional. Add these flags once your code is clean — they keep it that way.
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- WARNINGS TO FIX -->
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-orange">Fix Before Next Session</span>&nbsp;&nbsp;2 remaining warnings
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="stack gap-12">
+
+              <div style="border-left:2px solid var(--orange);padding:12px 16px;background:var(--orange-dim)">
+                <div class="fs-11 t-orange fw-500 mb-6">C4244: 'return' — conversion from 'float' to 'int', possible loss of data</div>
+                <div class="prose prose--tight t-muted2">
+                  Your <span class="cmd">var()</span> function accepts a float and returns an int. The fix is to match the return type to what you're actually returning:<br><br>
+                  Change <span class="cmd">int var(float x)</span> to <span class="cmd">float var(float x)</span><br><br>
+                  Then update the printf to use <span class="cmd">%f</span> instead of <span class="cmd">%d</span> since you're now returning a float:<br>
+                  <span class="cmd">printf("I am %f years old\n", var(1.8f));</span><br><br>
+                  Or if you want to keep it as int (intentional truncation), cast explicitly to silence the warning:<br>
+                  <span class="cmd">return (int)x;</span> — this tells the compiler "yes, I know, I'm doing this on purpose."
+                </div>
+              </div>
+
+              <div style="border-left:2px solid var(--orange);padding:12px 16px;background:var(--orange-dim)">
+                <div class="fs-11 t-orange fw-500 mb-6">C4305: truncation from 'double' to 'float'</div>
+                <div class="prose prose--tight t-muted2">
+                  When you write <span class="cmd">1.8</span>, C treats it as a double (64-bit). Your function expects a float (32-bit). Fix: add the <span class="cmd">f</span> suffix to tell the compiler it's already a float:<br><br>
+                  <span class="cmd">var(1.8f)</span> instead of <span class="cmd">var(1.8)</span><br><br>
+                  You already had this — just make sure the f is there.
+                </div>
+              </div>
+
+            </div>
+
+            <div class="callout callout--accent mt-16">
+              <div class="eyebrow eyebrow--md t-accent mb-8">// Where to pick up tomorrow</div>
+              <div class="prose t-text">
+                <strong>1.</strong> Fix the two warnings above — get to a clean BUILD OK with no warnings<br>
+                <strong>2.</strong> Complete the 3 TODOs still in the file (lines 13–15 in the comments)<br>
+                <strong>3.</strong> Commit the clean version: <span class="cmd">git add . → git commit -m "feat: hello world clean, build.bat working" → git push</span><br>
+                <strong>4.</strong> Study data types — read the Data Types reference in Phase 2, then write the exercises<br>
+                <strong>5.</strong> Move into Phase 2 — frame loop and scanf
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- THINGS TO REMEMBER -->
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-green">Key Takeaways</span>&nbsp;&nbsp;From session 1
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="stack gap-8 fs-11">
+              <div class="row gap-10"><span class="t-accent shrink-0">▸</span><span class="t-text">Always save (Ctrl+S) before running <span class="cmd">build</span>. The compiler reads from disk.</span></div>
+              <div class="row gap-10"><span class="t-accent shrink-0">▸</span><span class="t-text">Paste code into the <strong>editor tab</strong>, not the terminal. Terminal = runs commands. Editor = writes files.</span></div>
+              <div class="row gap-10"><span class="t-accent shrink-0">▸</span><span class="t-text"><span class="cmd">\r</span> moves the cursor to the start of the line without going down — it overwrites what's already there. Different from <span class="cmd">\n</span>.</span></div>
+              <div class="row gap-10"><span class="t-accent shrink-0">▸</span><span class="t-text">Float to int conversion truncates — <span class="cmd">1.8</span> becomes <span class="cmd">1</span>, not <span class="cmd">2</span>. The decimal is dropped, not rounded.</span></div>
+              <div class="row gap-10"><span class="t-accent shrink-0">▸</span><span class="t-text">Compiler warnings are almost always correct. Read them. Fix them. Don't ignore them.</span></div>
+              <div class="row gap-10"><span class="t-accent shrink-0">▸</span><span class="t-text"><span class="cmd">f</span> suffix on a number means float literal. <span class="cmd">1.8f</span> is float. <span class="cmd">1.8</span> is double.</span></div>
+              <div class="row gap-10"><span class="t-accent shrink-0">▸</span><span class="t-text">The format specifier must match the type. <span class="cmd">%d</span> for int, <span class="cmd">%f</span> for float. Mismatching prints garbage.</span></div>
+              <div class="row gap-10"><span class="t-accent shrink-0">▸</span><span class="t-text">build.bat is working. Type <span class="cmd">build</span> to compile. Type <span class="cmd">game.exe</span> to run.</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>

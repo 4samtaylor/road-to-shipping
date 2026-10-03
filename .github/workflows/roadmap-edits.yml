@@ -1,0 +1,39 @@
+# Every pull request is checked. Edits published from the page by an
+# allowed author (repo owner, plus anyone in the AUTO_MERGE_USERS repo
+# variable) merge on their own once the check passes. Everyone else's
+# PR waits for a normal review.
+name: Roadmap edits
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/validate.py
+
+  auto-merge:
+    needs: validate
+    runs-on: ubuntu-latest
+    if: >-
+      contains(github.event.pull_request.labels.*.name, 'roadmap-edit') &&
+      (github.event.pull_request.user.login == github.repository_owner ||
+       contains(format(',{0},', vars.AUTO_MERGE_USERS), format(',{0},', github.event.pull_request.user.login)))
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PR: ${{ github.event.pull_request.number }}
+    steps:
+      - name: Merge
+        run: gh pr merge "$PR" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
+      # Merges made with GITHUB_TOKEN don't trigger other workflows,
+      # so start the deploy explicitly.
+      - name: Redeploy site
+        run: gh workflow run pages.yml --repo "$GITHUB_REPOSITORY" --ref main

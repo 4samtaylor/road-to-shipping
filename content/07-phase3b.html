@@ -1,0 +1,554 @@
+<!-- PHASE 3.5 -->
+  <div class="phase" id="phase3b">
+    <div class="phase-header">
+      <div class="phase-n">3.5</div>
+      <div class="phase-meta">
+        <div class="phase-tag">Structure</div>
+        <div class="phase-title">Arrays &amp; Strings</div>
+      </div>
+      <div class="phase-right">
+        <div class="phase-week">Week 4</div>
+        <div class="phase-chevron">▼</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-inner">
+
+        <!-- PLAIN ENGLISH -->
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Explain Like I'm New</span>&nbsp;&nbsp;Arrays and strings, in plain English
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="stack gap-14">
+
+              <div class="callout callout--blue callout--bar">
+                <div class="eyebrow eyebrow--lg t-blue mb-8">// An array is a row of numbered boxes</div>
+                <div class="prose prose--loose t-text">
+                  So far every variable has been one box holding one value. An array is a row of boxes, all the same type, sitting side by side in memory — and you reach into them by number.
+                </div>
+<pre class="code-panel mt-12"><span class="c-type">int</span> <span class="c-var">scores</span>[<span class="c-num">5</span>] = { <span class="c-num">40</span>, <span class="c-num">95</span>, <span class="c-num">12</span>, <span class="c-num">78</span>, <span class="c-num">63</span> };
+
+  index:    0     1     2     3     4
+          +----+-----+-----+-----+-----+
+  value:  | 40 |  95 |  12 |  78 |  63 |
+          +----+-----+-----+-----+-----+</pre>
+                <div class="prose stack gap-8 mt-12 t-muted2">
+                  <div><strong class="t-accent">The numbering starts at 0, not 1.</strong> Five boxes means indexes 0, 1, 2, 3, 4. The last index is always <em>size minus one</em>. This trips up every single beginner, forever, and it's why you'll write <span class="cmd">i &lt; count</span> and never <span class="cmd">i &lt;= count</span>.</div>
+                  <div><span class="cmd">scores[2]</span> reads the third box. <span class="cmd">scores[2] = 50;</span> writes to it. The number in the brackets can be a variable, which is the whole point — a <span class="cmd">for</span> loop can walk the entire row.</div>
+                </div>
+              </div>
+
+              <div class="callout callout--yellow">
+                <div class="eyebrow eyebrow--lg t-yellow mb-8">// Why your game cannot exist without this</div>
+                <div class="prose prose--loose t-text mb-10">
+                  In Phase 3 you built one Player. A game needs many of something, and "many" always means an array.
+                </div>
+                <div class="fs-11" style="display:grid;grid-template-columns:1fr auto;gap:6px 24px">
+                  <div class="t-muted2 py-4 bb">In the game</div><div class="t-muted2 py-4 bb">The array behind it</div>
+                  <div class="t-text">10 enemies on screen, each updated every frame</div><div><span class="cmd">Enemy enemies[10];</span></div>
+                  <div class="t-text">A bullet pool you reuse instead of allocating</div><div><span class="cmd">Bullet bullets[64];</span></div>
+                  <div class="t-text">Top 5 high scores</div><div><span class="cmd">int scores[5];</span></div>
+                  <div class="t-text">Which keys are held down this frame</div><div><span class="cmd">bool keys[256];</span></div>
+                  <div class="t-text">The player's name on the score screen</div><div><span class="cmd">char name[32];</span></div>
+                </div>
+                <div class="fs-11 t-muted mt-10">Every one of these gets walked with the same <span class="cmd">for</span> loop shape you learned in Phase 2. Learn the shape once, use it everywhere.</div>
+              </div>
+
+              <div class="callout callout--blue callout--bar">
+                <div class="eyebrow eyebrow--lg t-blue mb-8">// C has no string type — a string is a char array that ends in '\0'</div>
+                <div class="prose prose--loose t-text">
+                  Other languages hand you a String and manage it for you. C does not. In C, text is just an array of <span class="cmd">char</span> with one special rule: <strong class="t-accent">the text ends at the first <span class="cmd upright">'\0'</span> byte.</strong>
+                </div>
+<pre class="code-panel mt-12"><span class="c-type">char</span> <span class="c-var">name</span>[<span class="c-num">6</span>] = <span class="c-str">"Sam"</span>;
+
+  index:     0     1     2     3      4     5
+           +-----+-----+-----+------+-----+-----+
+  value:   | 'S' | 'a' | 'm' | '\0' |  ?  |  ?  |
+           +-----+-----+-----+------+-----+-----+
+                              ^^^^
+                     the terminator. printf stops here.</pre>
+                <div class="prose stack gap-8 mt-12 t-muted2">
+                  <div><span class="cmd">'\0'</span> is the null terminator. It's a real byte with the numeric value 0 — not the character '0', which is 48. You already met it in Phase 2: <span class="cmd">char input = '\0';</span> in your frame loop meant "nothing in here yet."</div>
+                  <div><span class="cmd">%s</span> does exactly one thing: start at the address it's given and print bytes until it hits a <span class="cmd">'\0'</span>. No terminator means no stop signal, and it keeps printing whatever memory comes next.</div>
+                  <div class="t-text"><strong class="t-accent">Buffer size includes the terminator.</strong> <span class="cmd">char name[32]</span> holds at most 31 typed characters plus the <span class="cmd">'\0'</span>. Always budget for that last byte.</div>
+                </div>
+              </div>
+
+              <div class="callout callout--orange callout--bar">
+                <div class="eyebrow eyebrow--lg t-orange mb-8">// The trap: C does not check the edges of your array</div>
+                <div class="prose prose--loose t-text">
+                  This is the part that catches everyone. <span class="cmd">int scores[5]</span> has no box number 5 — but if you write <span class="cmd">scores[5] = 99;</span> the compiler shrugs and does it, stamping over whatever variable happened to be sitting next in memory.
+                </div>
+<pre class="code-panel mt-12"><span class="c-type">int</span> <span class="c-var">scores</span>[<span class="c-num">5</span>];
+<span class="c-var">scores</span>[<span class="c-num">5</span>] = <span class="c-num">99</span>;   <span class="c-cm">// off by one. Compiles. Runs. Corrupts something else.</span>
+<span class="c-fn">printf</span>(<span class="c-str">"%d"</span>, <span class="c-var">scores</span>[<span class="c-num">7</span>]);  <span class="c-cm">// prints whatever bytes live there. "Garbage."</span></pre>
+                <div class="prose stack gap-8 mt-12 t-muted2">
+                  <div>There's no crash and no error message. The symptom shows up somewhere else entirely — a health value that changes on its own, a name that turns to mush. That's what people mean by "undefined behaviour."</div>
+                  <div><span class="cmd">/W4</span> catches some of it. When the index is a literal constant like <span class="cmd">scores[5]</span>, MSVC will usually warn (<span class="cmd">C6201</span> / <span class="cmd">C4789</span>) and <span class="cmd">/WX</span> turns that into a stopped build — which is exactly why you turned those flags on in session 1. <strong class="t-orange">But when the index is a variable it cannot know, and it will not warn.</strong> The bounds are your job.</div>
+                  <div class="t-text">The habit to build now: every loop over an array is <span class="cmd">for (i = 0; i &lt; count; i++)</span>. Every time. Don't improvise the condition.</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- SESSION PLAN -->
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-green">Session Plan</span>&nbsp;&nbsp;Phase 3.5 in three sittings — G, H, I
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+
+            <div class="callout callout--yellow callout--sm mb-14">
+              <div class="eyebrow eyebrow--md t-yellow mb-6">// Short phase, three short sittings</div>
+              <div class="prose prose--sm t-muted2">This one is small enough to finish in a single weekend if the sessions run clean. Session I is the only one with real difficulty in it — leave yourself the longer block for it.</div>
+            </div>
+
+            <div class="stack gap-12">
+
+              <div class="sess-card">
+                <div class="sess-head"><div class="sess-name">// Session G — arrays and the loop shape</div><div class="sess-time">~2 hrs</div></div>
+                <div class="sess-rows">
+                  <div class="sess-k">Warm-up 10 min</div>
+                  <div class="sess-v">1. Without looking, write the <span class="cmd">for</span> header that walks an array of <span class="cmd">count</span> ints.<br>2. What's the last valid index of <span class="cmd">int a[5]</span>?<br>3. Why is <span class="cmd">sizeof(a) / sizeof(a[0])</span> cast to <span class="cmd">int</span> before it goes in a <span class="cmd">%d</span>?</div>
+                  <div class="sess-k">Build</div>
+                  <div class="sess-v"><strong>arrays.c</strong> from the starter code — declare, print every element with its index, then the max loop. Write the min loop yourself without copying the max one.</div>
+                  <div class="sess-k">Break it</div>
+                  <div class="sess-v">Change <span class="cmd">i &lt; count</span> to <span class="cmd">i &lt;= count</span>, run it, and write down the extra number. Run it three more times. If the number moves, you've just watched undefined behaviour instead of reading about it.</div>
+                  <div class="sess-k">Commit</div>
+                  <div class="sess-v"><span class="cmd">git add arrays.c</span><br><span class="cmd">git commit -m "feat: array iteration, max and min loops"</span><br><span class="cmd">git push</span></div>
+                </div>
+              </div>
+
+              <div class="sess-card">
+                <div class="sess-head"><div class="sess-name">// Session H — char arrays are strings</div><div class="sess-time">~2 hrs</div></div>
+                <div class="sess-rows">
+                  <div class="sess-k">Warm-up 10 min</div>
+                  <div class="sess-v">1. What is <span class="cmd">'\0'</span>, and what number is it?<br>2. How many typed characters fit in <span class="cmd">char name[32]</span>?<br>3. What does <span class="cmd">strcmp</span> return when two strings match?</div>
+                  <div class="sess-k">Build</div>
+                  <div class="sess-v">Read a name with <span class="cmd">fgets</span>, strip the newline with <span class="cmd">strcspn</span>, print it with <span class="cmd">%s</span>, print its length with <span class="cmd">(int)strlen</span>, and print the raw <span class="cmd">strcmp</span> return value for a match and a mismatch.</div>
+                  <div class="sess-k">Break it</div>
+                  <div class="sess-v">Comment out the <span class="cmd">strcspn</span> line and print with <span class="cmd">"[%s]"</span> — watch where the closing bracket lands. Then set <span class="cmd">name[0] = '\0';</span> just before the printf and watch a 32-byte buffer print as nothing at all.</div>
+                  <div class="sess-k">Commit</div>
+                  <div class="sess-v"><span class="cmd">git add arrays.c</span><br><span class="cmd">git commit -m "feat: fgets input, strlen and strcmp"</span><br><span class="cmd">git push</span></div>
+                </div>
+              </div>
+
+              <div class="sess-card">
+                <div class="sess-head"><div class="sess-name">// Session I — the high-score table</div><div class="sess-time">~3 hrs</div></div>
+                <div class="sess-rows">
+                  <div class="sess-k">Warm-up 10 min</div>
+                  <div class="sess-v">1. Write the loop that finds the first index where <span class="cmd">new_score &gt; scores[i]</span>.<br>2. Which direction do you shift, and what falls off the end?<br>3. Why does copying forwards destroy the value you were about to move?</div>
+                  <div class="sess-k">Build</div>
+                  <div class="sess-v"><strong>high_score.c</strong> — 5 ints sorted highest first, insert a new score in the right slot, push the rest down, drop the last. Then add <span class="cmd">char names[5][32]</span> and keep the names in step with the scores.</div>
+                  <div class="sess-k">Break it</div>
+                  <div class="sess-v">Shift in the wrong direction on purpose and print the table. You'll see the new score smeared down every row below it. Do it once and you will never get the direction wrong again.</div>
+                  <div class="sess-k">Commit</div>
+                  <div class="sess-v"><span class="cmd">git add high_score.c</span><br><span class="cmd">git commit -m "feat: high score table with insert and shift"</span><br><span class="cmd">git push</span></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- TASKS -->
+        <div class="section-block">
+          <div class="section-block-header"><span class="badge badge-green">Tasks</span></div>
+          <div class="section-block-body">
+            <div class="tasks" id="tasks-3b">
+              <div class="task" data-id="p3b-declare-iterate">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Declare an int array and print every element with a for loop <span class="task-tag t-industry">Industry</span></div>
+                  <div class="task-note">Print the index alongside the value so you can see the 0-based numbering for yourself <span class="task-time">~30 min</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p3b-max-min">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Find the highest and lowest value in an array — write both loops yourself</div>
+                  <div class="task-note">Start by assuming element 0 wins, then loop from 1 and challenge it <span class="task-time">~45 min</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p3b-fgets-name">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Read a name into a char buffer with fgets, then strip the trailing newline <span class="task-tag t-crucial">Crucial</span></div>
+                  <div class="task-note">fgets over scanf("%s") — see the starter code for why. This one matters. <span class="task-time">~45 min</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p3b-string-functions">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Use strlen and strcmp from string.h — and prove to yourself what strcmp returns</div>
+                  <div class="task-note">Print the actual return value for a match and a mismatch. Don't take anyone's word for it. <span class="task-time">~45 min</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p3b-high-score-table">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Build: high-score table — 5 ints, insert a new score in the right place, push the rest down <span class="task-tag t-crucial">Crucial</span></div>
+                  <div class="task-note">The last score falls off the end. This is real array manipulation and it's in every game you've played. <span class="task-time">~2 hrs</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p3b-commit-github">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Commit arrays.c and the high-score build to GitHub <span class="task-tag t-git">Git</span></div>
+                  <div class="task-note">git add . → git commit -m "feat: arrays and strings exercises" → git push <span class="task-time">~10 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STARTER CODE -->
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Starter Code</span>&nbsp;&nbsp;arrays.c — every line explained
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body">
+            <div class="code-wrap">
+              <div class="code-label">
+                <span>arrays.c — add it to build.bat, then run <span class="cmd">build</span></span>
+                <button class="copy-btn">Copy</button>
+              </div>
+<pre><span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
+<span class="c-pp">#include</span> <span class="c-str">&lt;string.h&gt;</span>   <span class="c-cm">// strlen, strcmp and strcspn all live in this toolbox</span>
+
+<span class="c-pp">#define</span> NAME_LEN <span class="c-num">32</span>   <span class="c-cm">// how many chars the buffer holds, INCLUDING the '\0'</span>
+                     <span class="c-cm">// #define is a find-and-replace done before compiling.</span>
+
+<span class="c-type">int</span> <span class="c-fn">main</span>(<span class="c-type">void</span>) {
+    <span class="c-cm">// An array is a row of numbered boxes, all the same type.</span>
+    <span class="c-type">int</span>  <span class="c-var">scores</span>[<span class="c-num">5</span>] = { <span class="c-num">40</span>, <span class="c-num">95</span>, <span class="c-num">12</span>, <span class="c-num">78</span>, <span class="c-num">63</span> };
+    <span class="c-type">char</span> <span class="c-var">name</span>[NAME_LEN];   <span class="c-cm">// 32 char boxes. Right now they hold garbage.</span>
+    <span class="c-type">int</span>  <span class="c-var">count</span>;
+    <span class="c-type">int</span>  <span class="c-var">max</span>;
+    <span class="c-type">int</span>  <span class="c-var">i</span>;
+
+    <span class="c-cm">// sizeof(the whole array) / sizeof(one box) = how many boxes.</span>
+    <span class="c-cm">// sizeof hands back a size_t, so cast it — same move as (int)x in session 1.</span>
+    <span class="c-var">count</span> = (<span class="c-type">int</span>)(<span class="c-kw">sizeof</span>(<span class="c-var">scores</span>) / <span class="c-kw">sizeof</span>(<span class="c-var">scores</span>[<span class="c-num">0</span>]));
+
+    <span class="c-cm">// Boxes are numbered from 0, so the last one is count - 1.</span>
+    <span class="c-cm">// i &lt; count, never i &lt;= count. scores[5] does not exist.</span>
+    <span class="c-kw">for</span> (<span class="c-var">i</span> = <span class="c-num">0</span>; <span class="c-var">i</span> &lt; <span class="c-var">count</span>; <span class="c-var">i</span>++) {
+        <span class="c-fn">printf</span>(<span class="c-str">"scores[%d] = %d\n"</span>, <span class="c-var">i</span>, <span class="c-var">scores</span>[<span class="c-var">i</span>]);
+    }
+
+    <span class="c-cm">// Assume box 0 wins, then let every other box challenge it.</span>
+    <span class="c-var">max</span> = <span class="c-var">scores</span>[<span class="c-num">0</span>];
+    <span class="c-kw">for</span> (<span class="c-var">i</span> = <span class="c-num">1</span>; <span class="c-var">i</span> &lt; <span class="c-var">count</span>; <span class="c-var">i</span>++) {   <span class="c-cm">// starts at 1 — 0 is already the champion</span>
+        <span class="c-kw">if</span> (<span class="c-var">scores</span>[<span class="c-var">i</span>] &gt; <span class="c-var">max</span>) {
+            <span class="c-var">max</span> = <span class="c-var">scores</span>[<span class="c-var">i</span>];
+        }
+    }
+    <span class="c-fn">printf</span>(<span class="c-str">"Highest: %d\n"</span>, <span class="c-var">max</span>);
+
+    <span class="c-cm">// TODO 1: copy that loop and turn it into a min loop. Watch the &gt; vs &lt;.</span>
+
+    <span class="c-cm">// A C string is just a char array that ends with a '\0'.</span>
+    <span class="c-cm">// fgets reads at most NAME_LEN - 1 chars and writes the '\0' itself,</span>
+    <span class="c-cm">// so it can never run off the end of the buffer. scanf("%s") can.</span>
+    <span class="c-fn">printf</span>(<span class="c-str">"What's your name? "</span>);
+    <span class="c-kw">if</span> (<span class="c-fn">fgets</span>(<span class="c-var">name</span>, NAME_LEN, <span class="c-var">stdin</span>) != <span class="c-kw">NULL</span>) {
+        <span class="c-cm">// fgets keeps the Enter key as a '\n' on the end. Chop it off by</span>
+        <span class="c-cm">// writing a '\0' over it — strcspn finds where the '\n' is.</span>
+        <span class="c-var">name</span>[<span class="c-fn">strcspn</span>(<span class="c-var">name</span>, <span class="c-str">"\n"</span>)] = <span class="c-str">'\0'</span>;
+    } <span class="c-kw">else</span> {
+        <span class="c-var">name</span>[<span class="c-num">0</span>] = <span class="c-str">'\0'</span>;   <span class="c-cm">// read failed — make it an empty string, not garbage</span>
+    }
+
+    <span class="c-cm">// strlen counts characters up to the '\0'. It does NOT count the '\0'.</span>
+    <span class="c-cm">// It returns a size_t, so cast it to keep %d honest under /W4 /WX.</span>
+    <span class="c-fn">printf</span>(<span class="c-str">"Hi %s. That is %d characters.\n"</span>, <span class="c-var">name</span>, (<span class="c-type">int</span>)<span class="c-fn">strlen</span>(<span class="c-var">name</span>));
+
+    <span class="c-cm">// strcmp returns 0 when the two strings are EQUAL. Read that twice.</span>
+    <span class="c-kw">if</span> (<span class="c-fn">strcmp</span>(<span class="c-var">name</span>, <span class="c-str">"Sam"</span>) == <span class="c-num">0</span>) {
+        <span class="c-fn">printf</span>(<span class="c-str">"Good name.\n"</span>);
+    }
+
+    <span class="c-cm">// TODO 2: print the name one char at a time with a for loop and %c.</span>
+    <span class="c-cm">// TODO 3: printf("%d\n", name[0]); — why does that print a number?</span>
+    <span class="c-cm">// TODO 4: print strcmp(name, "Sam") directly with %d for a match and a</span>
+    <span class="c-cm">//         mismatch. Three different answers. Work out what they mean.</span>
+
+    <span class="c-kw">return</span> <span class="c-num">0</span>;
+}</pre>
+            </div>
+            <div class="code-island" style="border-top:1px solid var(--border);padding:14px 16px">
+              <div class="eyebrow eyebrow--md t-muted2 mb-10">// Why fgets and not scanf("%s")</div>
+              <div class="prose t-text">
+                <span class="cmd">scanf("%s", name)</span> has no idea how big your buffer is. Type 50 characters into a 32-byte buffer and it writes all 50 — straight past the end, over whatever was next. That's the classic buffer overflow, and MSVC dislikes it enough to reject <span class="cmd">scanf</span> outright with <span class="cmd">C4996</span> under your current flags.<br><br>
+                <span class="cmd">fgets(name, NAME_LEN, stdin)</span> is told the size up front and refuses to write past it. It also reads the whole line including spaces, where <span class="cmd">%s</span> stops dead at the first space — so "Sam Taylor" becomes "Sam". <strong class="t-accent">The only cost is the trailing newline, and one strcspn line removes it.</strong>
+              </div>
+            </div>
+            <div class="code-island" style="border-top:1px solid var(--border);padding:14px 16px">
+              <div class="eyebrow eyebrow--md t-muted2 mb-10">// The high-score build — the shape of it, not the answer</div>
+              <div class="prose t-text">
+                Five ints, sorted highest first. A new score arrives. Walk the array to find the first slot the new score beats. Everything from that slot down shifts one place toward the end — and the last one falls off. Then drop the new score into the hole.<br><br>
+                <strong class="t-accent">The trick is the direction you shift.</strong> If you copy forwards you'll overwrite the value you were about to move. Work out which way to walk before you write it. Get it wrong once on purpose so you can see what the output does.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STUCK -->
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-orange">Stuck?</span>&nbsp;&nbsp;Arrays and strings specifically
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="stuck-items">
+              <div class="stuck-item">
+                <div class="stuck-q">My array prints garbage numbers past the last element</div>
+                <div class="stuck-a">You went off the end. <span class="cmd">int scores[5]</span> has indexes 0 to 4 — reading <span class="cmd">scores[5]</span> or higher reads whatever bytes happen to sit after your array, which is usually another variable or leftover junk. C does not check this for you and there's no crash to tell you. Check your loop condition: it should be <span class="cmd">i &lt; count</span>, not <span class="cmd">i &lt;= count</span>. That single character is the bug about 90% of the time.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">What is '\0' actually — is it the same as the character '0'?</div>
+                <div class="stuck-a">No, and this catches people. <span class="cmd">'\0'</span> is a byte whose numeric value is zero. <span class="cmd">'0'</span> is the printable digit, whose value is 48. Try it: <span class="cmd">printf("%d %d\n", '\0', '0');</span> prints <span class="cmd">0 48</span>. It's the same escape-sequence rule you found in session 1 — the backslash means "the next character is special." You've already used it: <span class="cmd">char input = '\0';</span> in your Phase 2 frame loop meant "nothing here yet."</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">%s printed my name and then a screenful of junk characters</div>
+                <div class="stuck-a">Missing null terminator. <span class="cmd">%s</span> starts at the address you gave it and prints bytes until it finds a <span class="cmd">'\0'</span> — no terminator means no stop signal, so it keeps reading memory that isn't yours. Usually you filled the buffer character by character and forgot the last byte, or you used exactly as many boxes as characters with none left for the terminator. <span class="cmd">char name[3] = "Sam"</span> has nowhere to put it. You need <span class="cmd">char name[4]</span>.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">My strcmp check is backwards — it runs when the names DON'T match</div>
+                <div class="stuck-a">The classic. <span class="cmd">strcmp</span> returns <strong class="t-text">0 when the strings are equal</strong>, negative or positive when they differ — it's answering "how far apart are these," not "are these the same." So <span class="cmd">if (strcmp(a, b))</span> runs when they're DIFFERENT, because 0 is false in C and anything non-zero is true. Always write it out in full: <span class="cmd">if (strcmp(a, b) == 0)</span> for equal, <span class="cmd">!= 0</span> for different. Never rely on the bare call.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CLAUDE PROMPTS -->
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Claude Code Prompts</span>&nbsp;&nbsp;Phase 3.5
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+
+            <div class="callout callout--purple callout--bar mb-16">
+              <div class="eyebrow eyebrow--md t-purple mb-8">// Why you should be extra suspicious of AI string code</div>
+              <div class="prose t-muted2 italic">
+                C string handling is where decades of real security bugs live, and AI has read all of that code — the safe versions and the dangerous ones. It will happily hand you <span class="cmd upright">strcpy</span> and <span class="cmd upright">scanf("%s")</span> because they appear in a million tutorials, and both can write straight past the end of your buffer.<br><br>
+                <strong class="t-text">Your check at this phase is simple: for every line that writes into a buffer, ask "what stops this at 32 characters?"</strong> If you can't point at the thing that stops it, don't paste it in.
+              </div>
+            </div>
+
+            <div class="prompt-items">
+              <div class="prompt-item">
+                <div class="prompt-label">Scaffolding — get the shape of the high-score insert, not the answer</div>
+                <div class="prompt-text">I'm learning C. I have int scores[5] sorted highest first, and a new int score to insert in the right position with everything below it shifting down one and the lowest falling off. Give me ONLY the function skeleton with TODO comments marking each step — no loop bodies, no working logic. I want to write the shifting myself. Tell me nothing about which direction to shift.</div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Audit your own buffer handling before you trust it</div>
+                <div class="prompt-text">Review this C code I wrote. I'm a beginner and I'm compiling with MSVC cl /W4 /WX. For every line that reads into or writes into a char buffer, tell me exactly what stops it from going past the end of the buffer — and if nothing does, say so. Also check every array loop for off-by-one. Don't rewrite it, just point at the problems: [paste code]</div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Understand a string function before using it — concept only</div>
+                <div class="prompt-text">Don't write any code. In plain English, explain what strcmp returns and why it returns 0 for a match — the reasoning behind it, not just the fact. Then tell me what if (strcmp(a, b)) actually tests, and why beginners get it backwards. One short paragraph each.</div>
+              </div>
+            </div>
+
+            <div class="callout callout--accent mt-16">
+              <div class="eyebrow eyebrow--md t-accent mb-8">// The rule for this phase</div>
+              <div class="prose t-text">
+                Write the high-score insert yourself, off-by-one bugs and all. It's twenty lines and it will take longer than you expect. That's the point — shifting elements around inside an array is the exact skill you'll need in Phase 6 when a dead enemy has to be removed from the middle of <span class="cmd">enemies[10]</span> without leaving a hole.<br><br>
+                Ask AI after it works, not before.
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- PREDICT THE OUTPUT -->
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-yellow">Predict the Output</span>&nbsp;&nbsp;4 drills — and one you must not run
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+
+            <div class="callout callout--yellow callout--sm mb-14">
+              <div class="eyebrow eyebrow--md t-yellow mb-6">// Read the fourth one carefully</div>
+              <div class="prose prose--sm t-muted2">The first three run and have one right answer each. The fourth deliberately does not, and understanding why is the most useful thing on this page.</div>
+            </div>
+
+            <div class="quiz-items">
+
+              <div class="quiz-item drill-item">
+                <div class="quiz-q">1. <span class="cmd">sizeof</span> versus <span class="cmd">strlen</span> — they answer different questions</div>
+<pre><span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
+<span class="c-pp">#include</span> <span class="c-str">&lt;string.h&gt;</span>
+
+<span class="c-type">int</span> <span class="c-fn">main</span>(<span class="c-type">void</span>) {
+    <span class="c-type">char</span> <span class="c-var">name</span>[<span class="c-num">32</span>] = <span class="c-str">"Sam"</span>;
+
+    <span class="c-fn">printf</span>(<span class="c-str">"sizeof %d\n"</span>, (<span class="c-type">int</span>)<span class="c-kw">sizeof</span>(<span class="c-var">name</span>));
+    <span class="c-fn">printf</span>(<span class="c-str">"strlen %d\n"</span>, (<span class="c-type">int</span>)<span class="c-fn">strlen</span>(<span class="c-var">name</span>));
+    <span class="c-fn">printf</span>(<span class="c-str">"%d\n"</span>, (<span class="c-type">int</span>)<span class="c-kw">sizeof</span>(<span class="c-str">"Sam"</span>));
+    <span class="c-kw">return</span> <span class="c-num">0</span>;
+}</pre>
+                <div class="drill-run">Write your prediction down, then compile and run it.</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a"><pre class="p-12 fs-12 mb-10">sizeof 32
+strlen 3
+4</pre>
+                  <span class="cmd">sizeof</span> is a question about <strong class="t-text">the box</strong>, answered by the compiler before the program runs: how many bytes did you reserve. <span class="cmd">strlen</span> is a question about <strong class="t-text">the contents</strong>, answered at runtime by walking forward until it finds a <span class="cmd">'\0'</span>.<br><br>
+                  <span class="cmd">sizeof("Sam")</span> is 4, not 3, because a string literal carries its terminator with it.<br><br>
+                  One trap for later: <span class="cmd">sizeof</span> only knows the array size where the array was declared. Pass <span class="cmd">name</span> to a function and it decays to a pointer — <span class="cmd">sizeof</span> in there gives you the size of a pointer, not 32. That's why buffer sizes get passed as a separate argument, exactly like <span class="cmd">fgets(name, NAME_LEN, stdin)</span> does.</div>
+                </details>
+              </div>
+
+              <div class="quiz-item drill-item">
+                <div class="quiz-q">2. What <span class="cmd">strcmp</span> actually promises you</div>
+<pre><span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
+<span class="c-pp">#include</span> <span class="c-str">&lt;string.h&gt;</span>
+
+<span class="c-type">int</span> <span class="c-fn">main</span>(<span class="c-type">void</span>) {
+    <span class="c-type">int</span> <span class="c-var">same</span> = <span class="c-fn">strcmp</span>(<span class="c-str">"Sam"</span>, <span class="c-str">"Sam"</span>);
+    <span class="c-type">int</span> <span class="c-var">less</span> = <span class="c-fn">strcmp</span>(<span class="c-str">"Sam"</span>, <span class="c-str">"Sao"</span>);
+    <span class="c-type">int</span> <span class="c-var">more</span> = <span class="c-fn">strcmp</span>(<span class="c-str">"Sao"</span>, <span class="c-str">"Sam"</span>);
+
+    <span class="c-fn">printf</span>(<span class="c-str">"%d %d %d\n"</span>, <span class="c-var">same</span> == <span class="c-num">0</span>, <span class="c-var">less</span> &lt; <span class="c-num">0</span>, <span class="c-var">more</span> &gt; <span class="c-num">0</span>);
+    <span class="c-fn">printf</span>(<span class="c-str">"bare if runs? %d %d\n"</span>, <span class="c-var">same</span> != <span class="c-num">0</span>, <span class="c-var">less</span> != <span class="c-num">0</span>);
+    <span class="c-kw">return</span> <span class="c-num">0</span>;
+}</pre>
+                <div class="drill-run">Write your prediction down, then compile and run it.</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a"><pre class="p-12 fs-12 mb-10">1 1 1
+bare if runs? 0 1</pre>
+                  Notice this drill prints <em>comparisons</em>, never the raw return values. That's deliberate. The C standard only guarantees the <strong class="t-text">sign</strong>: zero for a match, negative if the first string sorts earlier, positive if later. The magnitude is up to the library — MSVC's runtime typically hands back -1, 0 or 1, while other C libraries hand back the difference between the mismatched bytes. <span class="cmd">if (strcmp(a,b) == -1)</span> is a bug waiting for a different machine.<br><br>
+                  Line two is the lesson that bites people: <span class="cmd">if (strcmp(a, b))</span> runs when the strings are <strong class="t-text">different</strong>, because a match returns 0 and 0 is false. Write <span class="cmd">== 0</span> or <span class="cmd">!= 0</span>, every time, forever.</div>
+                </details>
+              </div>
+
+              <div class="quiz-item drill-item">
+                <div class="quiz-q">3. Moving the stop sign</div>
+<pre><span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
+<span class="c-pp">#include</span> <span class="c-str">&lt;string.h&gt;</span>
+
+<span class="c-type">int</span> <span class="c-fn">main</span>(<span class="c-type">void</span>) {
+    <span class="c-type">char</span> <span class="c-var">name</span>[<span class="c-num">8</span>] = <span class="c-str">"Samuel"</span>;
+
+    <span class="c-fn">printf</span>(<span class="c-str">"[%s] len %d\n"</span>, <span class="c-var">name</span>, (<span class="c-type">int</span>)<span class="c-fn">strlen</span>(<span class="c-var">name</span>));
+    <span class="c-var">name</span>[<span class="c-num">3</span>] = <span class="c-str">'\0'</span>;
+    <span class="c-fn">printf</span>(<span class="c-str">"[%s] len %d\n"</span>, <span class="c-var">name</span>, (<span class="c-type">int</span>)<span class="c-fn">strlen</span>(<span class="c-var">name</span>));
+    <span class="c-fn">printf</span>(<span class="c-str">"%c%c\n"</span>, <span class="c-var">name</span>[<span class="c-num">4</span>], <span class="c-var">name</span>[<span class="c-num">5</span>]);
+    <span class="c-kw">return</span> <span class="c-num">0</span>;
+}</pre>
+                <div class="drill-run">Write your prediction down, then compile and run it.</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a"><pre class="p-12 fs-12 mb-10">[Samuel] len 6
+[Sam] len 3
+el</pre>
+                  Nothing was deleted. The <span class="cmd">u</span>, <span class="cmd">e</span> and <span class="cmd">l</span> are still sitting in the array exactly where they were — the last printf reads two of them straight out. All you did was move the stop sign, and both <span class="cmd">%s</span> and <span class="cmd">strlen</span> honour the first <span class="cmd">'\0'</span> they meet and never look past it.<br><br>
+                  This is precisely what <span class="cmd">name[strcspn(name, "\n")] = '\0';</span> does to the newline that <span class="cmd">fgets</span> leaves behind. It doesn't shorten the buffer. It writes a terminator over the <span class="cmd">'\n'</span>.</div>
+                </details>
+              </div>
+
+              <div class="quiz-item drill-item" style="border-left-color:var(--orange);background:var(--orange-wash)">
+                <div class="quiz-q t-orange">4. Do not run this one</div>
+<pre><span class="c-type">int</span> <span class="c-var">scores</span>[<span class="c-num">5</span>] = { <span class="c-num">40</span>, <span class="c-num">95</span>, <span class="c-num">12</span>, <span class="c-num">78</span>, <span class="c-num">63</span> };
+<span class="c-type">int</span> <span class="c-var">i</span>;
+
+<span class="c-kw">for</span> (<span class="c-var">i</span> = <span class="c-num">0</span>; <span class="c-var">i</span> &lt;= <span class="c-num">5</span>; <span class="c-var">i</span>++) {   <span class="c-cm">// &lt;= is the bug</span>
+    <span class="c-fn">printf</span>(<span class="c-str">"%d\n"</span>, <span class="c-var">scores</span>[<span class="c-var">i</span>]);
+}</pre>
+                <div class="drill-run t-orange">Write your prediction down — then read the answer instead of running it.</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">Five real numbers, then a sixth that isn't yours. <strong class="t-text">And there is no correct prediction for the sixth.</strong><br><br>
+                  <span class="cmd">scores[5]</span> is off the end of the array. C will happily read the four bytes that happen to sit there: another local variable, leftover stack junk, a zero, anything. The value can change between builds, between debug and release, and between two runs of the same exe. That's undefined behaviour, and its defining feature is that the language makes no promise at all.<br><br>
+                  Which is why this one isn't a run-it drill. Every other drill in this document has one answer you can check. This one teaches the opposite lesson: <strong class="t-orange">a number that comes from off the end of an array means nothing</strong>, and a bug that changes every time you run it is far worse than one that fails the same way twice.<br><br>
+                  MSVC will often flag a constant index like <span class="cmd">scores[5]</span>, and <span class="cmd">/WX</span> stops the build when it does — but it cannot flag <span class="cmd">scores[i]</span> when <span class="cmd">i</span> is a variable it can't predict. The bounds are your job. The loop is <span class="cmd">i &lt; count</span>. Always.</div>
+                </details>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- QUIZ -->
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Quiz Yourself</span>&nbsp;&nbsp;5 questions — answer out loud before revealing
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="quiz-items">
+
+              <div class="quiz-item">
+                <div class="quiz-q">1. <span class="cmd">int scores[5];</span> — what's the index of the last valid element, and what happens if you use <span class="cmd">scores[5]</span>?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">The last valid index is 4. <span class="cmd">scores[5]</span> is off the end — and C will do it anyway, reading or writing whatever sits next in memory. No crash, no error, just a corrupted value showing up somewhere unrelated later. That's why every array loop is <span class="cmd">i &lt; count</span> and never <span class="cmd">i &lt;= count</span>.</div>
+                </details>
+              </div>
+
+              <div class="quiz-item">
+                <div class="quiz-q">2. <span class="cmd">char name[32];</span> — how many characters of actual text can it hold?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">31. The last byte has to hold the <span class="cmd">'\0'</span> terminator or it isn't a string at all — it's just a pile of chars. This is why <span class="cmd">fgets(name, 32, stdin)</span> reads at most 31 characters and writes the terminator itself.</div>
+                </details>
+              </div>
+
+              <div class="quiz-item">
+                <div class="quiz-q">3. When does the body of <span class="cmd">if (strcmp(a, b)) { ... }</span> run?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">When the strings are <strong class="t-text">different</strong> — the opposite of what it looks like. strcmp returns 0 for a match, and 0 is false in C. So the bare call is a "not equal" test. Write <span class="cmd">== 0</span> or <span class="cmd">!= 0</span> every single time and this bug can never bite you.</div>
+                </details>
+              </div>
+
+              <div class="quiz-item">
+                <div class="quiz-q">4. You fill a char buffer one character at a time and forget the last step. What does <span class="cmd">printf("%s", buf)</span> do?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">Prints your characters and then keeps going. <span class="cmd">%s</span> walks forward from the address it was given until it finds a <span class="cmd">'\0'</span>, and you never wrote one — so it spills out whatever bytes come after the buffer as junk characters, until it happens to hit a zero byte somewhere in memory.</div>
+                </details>
+              </div>
+
+              <div class="quiz-item">
+                <div class="quiz-q">5. Why does <span class="cmd">printf("Len: %d\n", strlen(name));</span> break your build under <span class="cmd">/W4 /WX</span>?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">strlen returns a <span class="cmd">size_t</span>, not an <span class="cmd">int</span>, and <span class="cmd">%d</span> expects an int — so MSVC raises a format mismatch warning and <span class="cmd">/WX</span> turns it into a stopped build. Same family as the <span class="cmd">C4244</span> you hit in session 1: the type and the specifier have to agree. Fix it with an explicit cast, <span class="cmd">(int)strlen(name)</span>, which is you telling the compiler "yes, on purpose."</div>
+                </details>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- CHECKPOINT -->
+        <div class="checkpoint">
+          <div class="checkpoint-header">
+            <span class="badge badge-green">Checkpoint</span>
+            <span class="checkpoint-title">Ready to move on when:</span>
+            <span class="cp-counter">0/4</span>
+          </div>
+          <div class="checkpoint-items">
+            <div class="cp-item" data-id="cp-p3b-1"><span class="cp-cb">✓</span><span class="cp-text">You can declare an array, loop over every element, and explain why the loop stops at count - 1</span></div>
+            <div class="cp-item" data-id="cp-p3b-2"><span class="cp-cb">✓</span><span class="cp-text">You can explain what '\0' is and why char name[32] only holds 31 characters</span></div>
+            <div class="cp-item" data-id="cp-p3b-3"><span class="cp-cb">✓</span><span class="cp-text">You've read a name with fgets, stripped the newline, and compared it with strcmp correctly</span></div>
+            <div class="cp-item" data-id="cp-p3b-4"><span class="cp-cb">✓</span><span class="cp-text">Your high-score table inserts in the right place and is committed to GitHub</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>

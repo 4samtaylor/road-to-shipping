@@ -1,0 +1,666 @@
+<!-- PHASE 2 -->
+  <div class="phase" id="phase2">
+    <div class="phase-header">
+      <div class="phase-n">02</div>
+      <div class="phase-meta">
+        <div class="phase-tag">Core Logic</div>
+        <div class="phase-title">Input, Loops &amp; Conditionals</div>
+      </div>
+      <div class="phase-right">
+        <div class="phase-week">Weeks 2–3</div>
+        <div class="phase-chevron">▼</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-inner">
+
+        <!-- DATA TYPES REFERENCE -->
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Concepts First</span>&nbsp;&nbsp;Data Types — read this before the exercises
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="stack gap-14">
+
+              <div class="callout callout--purple callout--bar callout--sm">
+                <div class="eyebrow eyebrow--md t-purple mb-6">// The core rule</div>
+                <div class="prose t-muted2 italic">C is <strong class="t-text">statically typed</strong> — every variable's type must be declared upfront and cannot change. You experienced this in session 1: returning a float from an int function produced a warning. The compiler caught the mismatch immediately. That's static typing working in your favour.</div>
+              </div>
+
+              <div class="gap-10" style="display:grid;grid-template-columns:1fr 1fr">
+                <div class="panel">
+                  <div class="eyebrow eyebrow--tight eyebrow--lg t-accent mb-6">int — whole numbers</div>
+                  <div class="fs-10 t-muted2 mb-8">4 bytes &nbsp;·&nbsp; specifier: <span class="cmd">%d</span> &nbsp;·&nbsp; range: ±2.1 billion</div>
+<pre class="code-panel code-panel--sm c-str">int age = 20;
+int score = -50;
+int frame = 0;
+printf("%d", age); <span class="c-cm">// 20</span></pre>
+                  <div class="fs-10 t-muted mt-8">Use for: health, score, frame count, enemy count</div>
+                </div>
+                <div class="panel">
+                  <div class="eyebrow eyebrow--tight eyebrow--lg t-accent mb-6">float — decimal numbers</div>
+                  <div class="fs-10 t-muted2 mb-8">4 bytes &nbsp;·&nbsp; specifier: <span class="cmd">%f</span> &nbsp;·&nbsp; ~7 digits precision</div>
+<pre class="code-panel code-panel--sm c-str">float speed = 2.5f; <span class="c-cm">// f suffix = float</span>
+float x = 100.0f;
+printf("%f", speed);   <span class="c-cm">// 2.500000</span>
+printf("%.2f", speed); <span class="c-cm">// 2.50</span></pre>
+                  <div class="fs-10 t-muted mt-8">Use for: position x/y, velocity, speed, timers</div>
+                </div>
+                <div class="panel">
+                  <div class="eyebrow eyebrow--tight eyebrow--lg t-accent mb-6">double — high precision decimal</div>
+                  <div class="fs-10 t-muted2 mb-8">8 bytes &nbsp;·&nbsp; specifier: <span class="cmd">%lf</span> &nbsp;·&nbsp; ~15 digits precision</div>
+<pre class="code-panel code-panel--sm c-str">double pi = 3.14159265358979;
+<span class="c-cm">// 1.8 without f suffix IS a double</span>
+<span class="c-cm">// That caused the C4305 warning in session 1</span>
+printf("%.5lf", pi); <span class="c-cm">// 3.14159</span></pre>
+                  <div class="fs-10 t-muted mt-8">Float is fine for games. Double for high precision physics.</div>
+                </div>
+                <div class="panel">
+                  <div class="eyebrow eyebrow--tight eyebrow--lg t-accent mb-6">char — single character</div>
+                  <div class="fs-10 t-muted2 mb-8">1 byte &nbsp;·&nbsp; specifier: <span class="cmd">%c</span> &nbsp;·&nbsp; stored as ASCII number</div>
+<pre class="code-panel code-panel--sm c-str">char grade = 'A'; <span class="c-cm">// single quotes</span>
+char input = '\0'; <span class="c-cm">// null = nothing yet</span>
+printf("%c", grade); <span class="c-cm">// A</span>
+printf("%d", grade); <span class="c-cm">// 65 (ASCII number)</span></pre>
+                  <div class="fs-10 t-muted mt-8">Use for: key input, individual characters, small flags</div>
+                </div>
+              </div>
+
+              <div class="panel">
+                <div class="eyebrow eyebrow--tight eyebrow--lg t-accent mb-8">void — no value</div>
+                <div class="gap-12" style="display:grid;grid-template-columns:1fr 1fr;align-items:start">
+                  <div class="prose prose--tight t-muted2">Represents "nothing." Used for functions that don't return a value. When you see <span class="cmd">void</span> as a return type, the function is doing something (moving, printing, updating) rather than calculating a result to hand back.</div>
+<pre class="code-panel code-panel--sm c-str">void player_move(Player* p) {
+    p-&gt;x += 5;
+    <span class="c-cm">// no return needed</span>
+}
+int get_score() {
+    return 100; <span class="c-cm">// returns a value</span>
+}</pre>
+                </div>
+              </div>
+
+              <div class="callout callout--yellow" style="padding:14px">
+                <div class="eyebrow eyebrow--md t-yellow mb-8">// Format specifiers — must match the type exactly</div>
+                <div class="fs-10" style="display:grid;grid-template-columns:90px 90px 1fr;gap:6px 12px;align-items:center">
+                  <div class="t-muted2 py-4 bb">Type</div>
+                  <div class="t-muted2 py-4 bb">Specifier</div>
+                  <div class="t-muted2 py-4 bb">Notes</div>
+                  <div class="t-accent">int</div><div><span class="cmd">%d</span></div><div class="t-muted2">whole number</div>
+                  <div class="t-accent">float</div><div><span class="cmd">%f</span></div><div class="t-muted2">6 decimal places by default. Use %.2f for 2 places.</div>
+                  <div class="t-accent">double</div><div><span class="cmd">%lf</span></div><div class="t-muted2">same as %f in printf, differs in scanf</div>
+                  <div class="t-accent">char</div><div><span class="cmd">%c</span></div><div class="t-muted2">single character. Use %d to see ASCII value.</div>
+                  <div class="t-accent">bool</div><div><span class="cmd">%d</span></div><div class="t-muted2">prints 1 (true) or 0 (false)</div>
+                </div>
+                <div class="callout callout--orange mt-10 fs-11 t-orange" style="padding:10px 12px">⚠ Wrong specifier doesn't crash — it prints garbage. The compiler may not catch it. Always match type to specifier.</div>
+              </div>
+
+              <div class="callout callout--orange callout--bar" style="padding:14px">
+                <div class="eyebrow eyebrow--md t-orange mb-8">// Type conversion — what you discovered in session 1</div>
+                <div class="prose t-text mb-10"><strong class="t-orange">float → int:</strong> truncated, not rounded. 1.8 → 1. 7.9 → 7.<br><strong class="t-orange">double → float:</strong> precision reduced. Caused C4305 in session 1.<br><strong class="t-accent">int → float:</strong> safe — no data lost. Use an explicit cast to convert intentionally:</div>
+<pre class="code-panel p-12 fs-10 lh-17 c-str">float x = 1.8f;
+int n = (int)x; <span class="c-cm">// explicit cast — silences C4244, means "I know what I'm doing"</span>
+printf("%d", n); <span class="c-cm">// 1</span></pre>
+              </div>
+
+              <div class="panel">
+                <div class="eyebrow eyebrow--md t-muted2 mb-8">// sizeof() — verify sizes on your machine</div>
+<pre class="code-panel p-12 fs-10 lh-17 c-str">printf("int:    %d bytes\n", sizeof(int));
+printf("float:  %d bytes\n", sizeof(float));
+printf("double: %d bytes\n", sizeof(double));
+printf("char:   %d bytes\n", sizeof(char));
+<span class="c-cm">// Expected on your x86 Windows setup: 4, 4, 8, 1</span></pre>
+              </div>
+
+              <div class="callout callout--accent" style="padding:14px">
+                <div class="eyebrow eyebrow--md t-accent mb-8">// Which type for your game data</div>
+                <div class="fs-10" style="display:grid;grid-template-columns:1fr auto;gap:6px 24px">
+                  <div class="t-muted2 py-4 bb">Game Data</div><div class="t-muted2 py-4 bb">Type</div>
+                  <div class="t-text">Player x, y position</div><div><span class="cmd">float</span></div>
+                  <div class="t-text">Health, score, lives, frame count</div><div><span class="cmd">int</span></div>
+                  <div class="t-text">Speed, velocity</div><div><span class="cmd">float</span></div>
+                  <div class="t-text">Key pressed / input character</div><div><span class="cmd">char</span></div>
+                  <div class="t-text">Is player alive? Is game paused?</div><div><span class="cmd">bool</span></div>
+                  <div class="t-text">Delta time (time between frames)</div><div><span class="cmd">float</span></div>
+                  <div class="t-text">High precision physics</div><div><span class="cmd">double</span></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- LOOPS & CONDITIONALS PLAIN ENGLISH -->
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Explain Like I'm New</span>&nbsp;&nbsp;Loops and conditionals, in plain English
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="stack gap-14">
+
+              <div class="callout callout--blue callout--bar">
+                <div class="eyebrow eyebrow--lg t-blue mb-8">// A loop is the engine of every game</div>
+                <div class="prose prose--loose t-text">
+                  In session 1 your program ran once, top to bottom, and exited. A game can't do that. A game has to keep going — draw, listen, move, draw again — about 60 times every second, until the player quits. That repetition is a loop. <strong class="t-accent">The frame loop is the single most important structure in your game.</strong>
+                </div>
+<pre class="code-panel mt-12"><span class="c-kw">while</span> (<span class="c-var">running</span>) {   <span class="c-cm">// keep going until this stops being true</span>
+    <span class="c-cm">// read input   → what did the player press?</span>
+    <span class="c-cm">// update       → move things, check collisions, subtract health</span>
+    <span class="c-cm">// draw         → put the new picture on screen</span>
+}                    <span class="c-cm">// then straight back to the top. One pass = one frame.</span></pre>
+                <div class="prose stack gap-8 mt-12 t-muted2">
+                  <div><span class="cmd">while</span> — "keep doing this until the condition goes false." Use it when you don't know how many times: the game runs until the player dies or quits.</div>
+                  <div><span class="cmd">for</span> — "do this an exact number of times." Use it when you do know: spawn 10 enemies, print 5 high scores, step through every bullet.</div>
+                  <div class="t-text mt-4">Same machinery, different question. <strong class="t-accent">while = until something changes. for = a known count.</strong></div>
+                </div>
+              </div>
+
+              <div class="callout callout--blue callout--bar">
+                <div class="eyebrow eyebrow--lg t-blue mb-8">// if / else is the decision gate</div>
+                <div class="prose prose--loose t-text">
+                  An <span class="cmd">if</span> asks a yes/no question and only runs its block when the answer is yes. Everything a game "decides" is built out of these. Did the bullet hit? Is health at zero? Is the guess too high?
+                </div>
+<pre class="code-panel mt-12"><span class="c-kw">if</span> (<span class="c-var">health</span> &lt;= <span class="c-num">0</span>) {
+    <span class="c-var">alive</span> = <span class="c-num">0</span>;              <span class="c-cm">// gate opened — run this</span>
+} <span class="c-kw">else if</span> (<span class="c-var">health</span> &lt; <span class="c-num">25</span>) {
+    <span class="c-fn">printf</span>(<span class="c-str">"Low health!\n"</span>); <span class="c-cm">// first gate was shut, this one opened</span>
+} <span class="c-kw">else</span> {
+    <span class="c-cm">// every gate above was shut — this is the fallback</span>
+}</pre>
+                <div class="prose stack gap-8 mt-12 t-muted2">
+                  <div>C checks the gates <strong class="t-text">in order</strong> and stops at the first one that's true. The rest never run. So put the most specific test first.</div>
+                  <div><span class="cmd">=</span> assigns. <span class="cmd">==</span> compares. <span class="cmd">if (health = 0)</span> sets health to 0 and then asks "is 0 true?" — always false, and you've silently wiped the variable. /W4 catches most of these. Not all.</div>
+                </div>
+              </div>
+
+              <div class="callout callout--yellow">
+                <div class="eyebrow eyebrow--lg t-yellow mb-8">// What this maps to in the game you're going to build</div>
+                <div class="fs-11" style="display:grid;grid-template-columns:1fr auto;gap:6px 24px">
+                  <div class="t-muted2 py-4 bb">In the game</div><div class="t-muted2 py-4 bb">The C behind it</div>
+                  <div class="t-text">The game keeps running until you close it</div><div><span class="cmd">while (running)</span></div>
+                  <div class="t-text">Every enemy on screen gets moved this frame</div><div><span class="cmd">for (i = 0; i &lt; n; i++)</span></div>
+                  <div class="t-text">Player touched a spike, so lose health</div><div><span class="cmd">if (collided)</span></div>
+                  <div class="t-text">Health hit zero, so show Game Over</div><div><span class="cmd">if (health &lt;= 0)</span></div>
+                  <div class="t-text">Frame counter ticking up 60 times a second</div><div><span class="cmd">frame++</span></div>
+                </div>
+                <div class="fs-11 t-muted mt-10">The frame counter you build below is that first row, for real. It's a small program, but it's the same shape as the loop that will run your finished game.</div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- SESSION PLAN -->
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-green">Session Plan</span>&nbsp;&nbsp;Phase 2 in three sittings — A, B, C
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+
+            <div class="callout callout--yellow callout--sm mb-14">
+              <div class="eyebrow eyebrow--md t-yellow mb-6">// How to use this</div>
+              <div class="prose prose--sm t-muted2">A phase is not a unit of work. A Saturday afternoon is. Each card below is one 2–3 hour sitting: warm up cold, build one thing, break it on purpose, commit. Session 1 already ran this shape by accident — this just names it. Don't start a session without doing the warm-up first, and don't end one without the commit.</div>
+            </div>
+
+            <div class="stack gap-12">
+
+              <div class="sess-card">
+                <div class="sess-head"><div class="sess-name">// Session A — scanf and the type table</div><div class="sess-time">~2 hrs</div></div>
+                <div class="sess-rows">
+                  <div class="sess-k">Warm-up 10 min</div>
+                  <div class="sess-v">Notes closed, editor open.<br>1. Write a <span class="cmd">printf</span> that prints a float to exactly 2 decimals.<br>2. What does the <span class="cmd">f</span> in <span class="cmd">2.5f</span> change, and which session 1 warning did it clear?<br>3. From memory: what does <span class="cmd">\r</span> do to the cursor?</div>
+                  <div class="sess-k">Build</div>
+                  <div class="sess-v"><strong>types_demo.c</strong> — read an int, a float and a char with <span class="cmd">scanf</span>, echo all three back with the right specifiers. Then print <span class="cmd">sizeof</span> for int, float, double and char.</div>
+                  <div class="sess-k">Break it</div>
+                  <div class="sess-v">Predict first, then run. Swap one <span class="cmd">%d</span> for <span class="cmd">%f</span> and look at the number that comes out. Then delete the space in <span class="cmd">scanf(" %c", &amp;c)</span> and run it twice in a row.</div>
+                  <div class="sess-k">Commit</div>
+                  <div class="sess-v"><span class="cmd">git add types_demo.c</span><br><span class="cmd">git commit -m "feat: scanf input and a types demo"</span><br><span class="cmd">git push</span></div>
+                </div>
+              </div>
+
+              <div class="sess-card">
+                <div class="sess-head"><div class="sess-name">// Session B — conditionals, loops, frame counter</div><div class="sess-time">~2.5 hrs</div></div>
+                <div class="sess-rows">
+                  <div class="sess-k">Warm-up 10 min</div>
+                  <div class="sess-v">1. Without looking, write the three parts of a <span class="cmd">for</span> header in order.<br>2. What does the space in <span class="cmd">scanf(" %c", &amp;input)</span> actually skip?<br>3. Say out loud what <span class="cmd">=</span> does and what <span class="cmd">==</span> does.</div>
+                  <div class="sess-k">Build</div>
+                  <div class="sess-v"><strong>frame_loop.c</strong> from the starter code below, then all three of its TODOs. This is the loop your whole game runs on — write it, don't paste it.</div>
+                  <div class="sess-k">Break it</div>
+                  <div class="sess-v">Change <span class="cmd">while (input != 'q')</span> to <span class="cmd">while (input = 'q')</span>. Predict, build, read the exact warning, then put it back. Then run the loop as <span class="cmd">for (i = 0; i &lt;= 10; i++)</span> and count the lines that print.</div>
+                  <div class="sess-k">Commit</div>
+                  <div class="sess-v"><span class="cmd">git add frame_loop.c</span><br><span class="cmd">git commit -m "feat: frame counter loop with a quit key"</span><br><span class="cmd">git push</span></div>
+                </div>
+              </div>
+
+              <div class="sess-card">
+                <div class="sess-head"><div class="sess-name">// Session C — rand() and the guessing game</div><div class="sess-time">~3 hrs</div></div>
+                <div class="sess-rows">
+                  <div class="sess-k">Warm-up 10 min</div>
+                  <div class="sess-v">1. Write a <span class="cmd">while</span> loop that keeps going until a variable named <span class="cmd">won</span> is true.<br>2. What does <span class="cmd">srand(time(NULL))</span> fix, and what breaks without it?<br>3. What does <span class="cmd">%</span> give you, and what's the range of <span class="cmd">rand() % 100</span>?</div>
+                  <div class="sess-k">Build</div>
+                  <div class="sess-v"><strong>guess.c</strong> — computer picks 1–100, you guess, it says higher or lower, it counts your guesses. Everything from sessions A and B in one program.</div>
+                  <div class="sess-k">Break it</div>
+                  <div class="sess-v">Delete the <span class="cmd">srand</span> line and run the game three times, writing down the secret number each time. Then change <span class="cmd">rand() % 100 + 1</span> to <span class="cmd">rand() % 100</span> and work out which number can now never be the answer.</div>
+                  <div class="sess-k">Commit</div>
+                  <div class="sess-v"><span class="cmd">git add guess.c</span><br><span class="cmd">git commit -m "feat: number guessing game with high/low hints"</span><br><span class="cmd">git push</span></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-header"><span class="badge badge-green">Tasks</span></div>
+          <div class="section-block-body">
+            <div class="tasks" id="tasks-2">
+              <div class="task" data-id="p2-scanf-basics">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Learn scanf — read an integer, a float, and a character from the user <span class="task-tag t-industry">Industry</span></div>
+                  <div class="task-note"><span class="task-time">~30 min</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p2-variables-types">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Variables and types: int, float, char, bool — declare, assign, modify</div>
+                  <div class="task-note"><span class="task-time">~45 min</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p2-conditionals">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Conditionals: if / else if / else — write a program that behaves differently on different input</div>
+                  <div class="task-note"><span class="task-time">~30 min</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p2-loops">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Loops: for and while — write both, understand when to use each</div>
+                  <div class="task-note"><span class="task-time">~45 min</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p2-frame-counter">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Build: Frame counter loop — prints frame number until user types 'q', then prints what they typed <span class="task-tag t-industry">Industry</span></div>
+                  <div class="task-note">This is your first proto-game-loop. Take it seriously. <span class="task-time">~1 hr</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p2-guessing-game">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Build: Number guessing game — computer picks 1-100, user guesses, hints given <span class="task-tag t-crucial">Crucial</span></div>
+                  <div class="task-note">Combines everything above. Don't skip. <span class="task-time">~1.5 hrs</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p2-commit-github">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Commit both builds to GitHub <span class="task-tag t-git">Git</span></div>
+                  <div class="task-note"><span class="task-time">~10 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Starter Code</span>&nbsp;&nbsp;frame_loop.c
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body">
+            <div class="code-wrap">
+              <div class="code-label">
+                <span>frame_loop.c — your first game loop</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+<pre><span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
+
+<span class="c-type">int</span> <span class="c-fn">main</span>() {
+    <span class="c-type">int</span> <span class="c-var">frame</span> = <span class="c-num">0</span>;
+    <span class="c-type">char</span> <span class="c-var">input</span> = <span class="c-str">'\0'</span>;
+
+    <span class="c-fn">printf</span>(<span class="c-str">"Frame loop started. Type a character + Enter to stop.\n\n"</span>);
+
+    <span class="c-kw">while</span> (<span class="c-var">input</span> != <span class="c-str">'q'</span>) {
+        <span class="c-fn">printf</span>(<span class="c-str">"Frame: %d\n"</span>, <span class="c-var">frame</span>);
+        <span class="c-var">frame</span>++;
+
+        <span class="c-cm">// Read one character from the user</span>
+        <span class="c-cm">// Note: scanf waits for Enter — that's expected for now</span>
+        <span class="c-fn">scanf</span>(<span class="c-str">" %c"</span>, &amp;<span class="c-var">input</span>);
+    }
+
+    <span class="c-fn">printf</span>(<span class="c-str">"\nYou entered: %c\n"</span>, <span class="c-var">input</span>);
+    <span class="c-fn">printf</span>(<span class="c-str">"Total frames run: %d\n"</span>, <span class="c-var">frame</span>);
+
+    <span class="c-cm">// TODO: Change 'q' to a different quit character</span>
+    <span class="c-cm">// TODO: Add a max frame count — quit automatically after 100 frames</span>
+    <span class="c-cm">// TODO: Print "HALFWAY!" when frame == 50</span>
+
+    <span class="c-kw">return</span> <span class="c-num">0</span>;
+}</pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- RANDOM NUMBERS -->
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Starter Code</span>&nbsp;&nbsp;random_number.c — how the computer picks 1–100
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body">
+            <div class="code-wrap">
+              <div class="code-label">
+                <span>random_number.c — you need this for the guessing game</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+<pre><span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
+<span class="c-pp">#include</span> <span class="c-str">&lt;stdlib.h&gt;</span>   <span class="c-cm">// rand() and srand() live here — a different toolbox to stdio.h</span>
+<span class="c-pp">#include</span> <span class="c-str">&lt;time.h&gt;</span>     <span class="c-cm">// time() lives here</span>
+
+<span class="c-type">int</span> <span class="c-fn">main</span>(<span class="c-type">void</span>) {
+    <span class="c-type">int</span> <span class="c-var">secret</span>;
+
+    <span class="c-cm">// Seed the generator ONCE, at the top of main. Never inside a loop.</span>
+    <span class="c-cm">// time(NULL) = seconds since 1970 — a different number every run.</span>
+    <span class="c-cm">// The (unsigned int) cast is deliberate: time() hands back a time_t,</span>
+    <span class="c-cm">// srand() wants an unsigned int. Same C4244 lesson from session 1.</span>
+    <span class="c-fn">srand</span>((<span class="c-type">unsigned int</span>)<span class="c-fn">time</span>(<span class="c-kw">NULL</span>));
+
+    <span class="c-cm">// rand() gives a big whole number. % 100 keeps only the remainder</span>
+    <span class="c-cm">// after dividing by 100, which is 0–99. Add 1 to shift it to 1–100.</span>
+    <span class="c-var">secret</span> = <span class="c-fn">rand</span>() % <span class="c-num">100</span> + <span class="c-num">1</span>;
+
+    <span class="c-fn">printf</span>(<span class="c-str">"Secret number: %d\n"</span>, <span class="c-var">secret</span>);
+
+    <span class="c-cm">// TODO: run it 3 times. Different number each time? Good.</span>
+    <span class="c-cm">// TODO: comment out the srand line and run it 3 more times. Watch what happens.</span>
+    <span class="c-cm">// TODO: change the range to 1-10, then to 1-1000.</span>
+
+    <span class="c-kw">return</span> <span class="c-num">0</span>;
+}</pre>
+            </div>
+            <div class="code-island" style="border-top:1px solid var(--border);padding:14px 16px">
+              <div class="eyebrow eyebrow--md t-muted2 mb-10">// Seeding — the one sentence that explains it</div>
+              <div class="prose t-text">
+                <span class="cmd">rand()</span> isn't actually random. It's a recipe that turns one number into the next, forever — so <strong class="t-accent">the same seed always produces the same sequence.</strong> Without <span class="cmd">srand</span> the seed defaults to 1 every single run, and your guessing game picks the identical "random" number every time you launch it. Seeding with the clock means the recipe starts somewhere new each run.
+                <br><br>
+                Seed once. If you call <span class="cmd">srand(time(NULL))</span> inside your guess loop, every call within the same second reseeds with the same value and <span class="cmd">rand()</span> hands you the same number back.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-orange">Stuck?</span>&nbsp;&nbsp;Common errors at this stage
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="stuck-items">
+              <div class="stuck-item">
+                <div class="stuck-q">scanf seems to skip input or read the wrong character</div>
+                <div class="stuck-a">The space before %c in scanf(" %c", &amp;input) is intentional. It eats the leftover newline from pressing Enter. Without it, scanf captures Enter instead of your character. One of the most famous C beginner traps — remember it forever.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">My while loop runs forever and I can't stop it</div>
+                <div class="stuck-a">Press Ctrl+C in the terminal to kill it. Then check: is your condition ever becoming false? Add a printf inside the loop to see what input is reading each iteration. Also confirm you're using != not = in your while condition.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">When should I use for vs while?</div>
+                <div class="stuck-a">for = you know how many times (counting frames, iterating 10 enemies). while = you loop until something changes (waiting for input, game running until player dies). In your game: the main game loop is while. Spawning 5 enemies in a row is for.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">I don't understand what &amp; does in scanf</div>
+                <div class="stuck-a">The &amp; gives scanf the memory address of your variable — where it lives — so it can write directly into it. Without &amp;, you pass the current value (useless to scanf). Think of it as giving someone your house address vs telling them what's inside. scanf needs the address to deliver the new value.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Claude Code Prompts</span>&nbsp;&nbsp;Phase 2
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="callout callout--purple callout--bar mb-16">
+              <div class="eyebrow eyebrow--md t-purple mb-8">// What you know now — and how that changes your prompts</div>
+              <div class="prose t-muted2 italic">
+                You now understand variables, types, loops, and conditionals. That means you can look at AI-generated code and ask the right questions: Is this the right type? Why a while loop and not for? What happens if the user never types 'q'?<br><br>
+                <strong class="t-text">This phase introduces a critical habit: never ask AI to "build the feature" — ask it to build one specific piece, then you wire it together.</strong> The game loop structure (input → update → render) is yours to design. AI fills in the implementation details.
+              </div>
+            </div>
+
+            <div class="callout callout--orange mb-16">
+              <div class="eyebrow eyebrow--md t-orange mb-8">// The scaffolding technique — get structure, write logic yourself</div>
+              <div class="prose t-text">
+                For learning phases, the most effective AI prompt asks for <strong class="t-accent">structure without implementation</strong> — the skeleton with comments, not the filled-in version. This forces you to write the actual logic, which is where the learning happens. AI gives you the shape. You give it the substance.
+              </div>
+            </div>
+
+            <div class="prompt-items">
+              <div class="prompt-item">
+                <div class="prompt-label">Get structure, not implementation (the scaffolding technique)</div>
+                <div class="prompt-text">I'm learning C and building a number guessing game. I want a while loop that keeps running until the user guesses correctly. The computer picks a random number 1-100. Give me just the loop structure with TODO comments where I need to fill in logic — don't write the actual logic for me. I want to do that myself.</div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">When you've written it yourself and want a review</div>
+                <div class="prompt-text">Review this C code I wrote myself. I'm learning. Tell me: (1) anything technically wrong or dangerous, (2) anything that could break with unexpected input, (3) whether my types are correct for what I'm storing. Don't rewrite it — explain what to fix and why: [paste code]</div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">When you don't understand why your loop behaves wrong</div>
+                <div class="prompt-text">I have a while loop in C that's behaving unexpectedly. Expected: [describe]. Actual: [describe]. Here's the code: [paste]. Don't fix it for me — walk me through what's actually happening each iteration so I can find the problem myself.</div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">When choosing between for and while</div>
+                <div class="prompt-text">I'm building [describe the feature] in C. Should I use a for loop or a while loop here, and why? What would happen if I used the other one? I want to understand the tradeoff, not just get an answer.</div>
+              </div>
+            </div>
+
+            <div class="callout callout--accent mt-16">
+              <div class="eyebrow eyebrow--md t-accent mb-8">// The rule for this phase</div>
+              <div class="prose t-text">
+                Write the frame loop and the guessing game <strong class="t-accent">yourself first</strong>. Get it working or get it stuck. Only then ask AI — either to explain what went wrong, or to review what you built. <br><br>If you let AI write the game loop for you, you'll have a game loop you don't understand. When it breaks in Phase 5 (and it will), you'll have no idea where to look.
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- PREDICT THE OUTPUT -->
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-yellow">Predict the Output</span>&nbsp;&nbsp;4 drills — guess first, then run it
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+
+            <div class="callout callout--yellow callout--sm mb-14">
+              <div class="eyebrow eyebrow--md t-yellow mb-6">// These four are the classic traps of this phase</div>
+              <div class="prose prose--sm t-muted2">Every one of them compiles clean and runs fine. That's what makes them dangerous — nothing warns you, the program just quietly does something other than what you meant. Prediction on paper first, then run.</div>
+            </div>
+
+            <div class="quiz-items">
+
+              <div class="quiz-item drill-item">
+                <div class="quiz-q">1. Integer division</div>
+<pre><span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
+
+<span class="c-type">int</span> <span class="c-fn">main</span>(<span class="c-type">void</span>) {
+    <span class="c-type">int</span> <span class="c-var">a</span> = <span class="c-num">7</span>;
+    <span class="c-type">int</span> <span class="c-var">b</span> = <span class="c-num">2</span>;
+
+    <span class="c-fn">printf</span>(<span class="c-str">"%d\n"</span>, <span class="c-var">a</span> / <span class="c-var">b</span>);
+    <span class="c-fn">printf</span>(<span class="c-str">"%d\n"</span>, <span class="c-var">a</span> % <span class="c-var">b</span>);
+    <span class="c-fn">printf</span>(<span class="c-str">"%.2f\n"</span>, (<span class="c-type">float</span>)<span class="c-var">a</span> / <span class="c-var">b</span>);
+    <span class="c-kw">return</span> <span class="c-num">0</span>;
+}</pre>
+                <div class="drill-run">Write your prediction down, then compile and run it.</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a"><pre class="p-12 fs-12 mb-10">3
+1
+3.50</pre>
+                  Two ints divided give an int. The remainder isn't rounded up, it's discarded — 7/2 is 3, not 4. <span class="cmd">%</span> hands you the part that was thrown away.<br><br>
+                  Casting <em>one</em> side to float is enough: the other side gets converted to match, and the whole expression becomes floating point. <strong class="t-text">The game bug this causes:</strong> a health bar drawn as <span class="cmd">health / max_health</span> with two ints is 0 for every value below full, so the bar is empty until the instant it's full.</div>
+                </details>
+              </div>
+
+              <div class="quiz-item drill-item">
+                <div class="quiz-q">2. Off by one — how many times does this run?</div>
+<pre><span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
+
+<span class="c-type">int</span> <span class="c-fn">main</span>(<span class="c-type">void</span>) {
+    <span class="c-type">int</span> <span class="c-var">i</span>;
+
+    <span class="c-kw">for</span> (<span class="c-var">i</span> = <span class="c-num">0</span>; <span class="c-var">i</span> &lt;= <span class="c-num">5</span>; <span class="c-var">i</span>++) {
+        <span class="c-fn">printf</span>(<span class="c-str">"%d "</span>, <span class="c-var">i</span>);
+    }
+    <span class="c-fn">printf</span>(<span class="c-str">"\n"</span>);
+    <span class="c-fn">printf</span>(<span class="c-str">"i ended at %d\n"</span>, <span class="c-var">i</span>);
+    <span class="c-kw">return</span> <span class="c-num">0</span>;
+}</pre>
+                <div class="drill-run">Write your prediction down, then compile and run it.</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a"><pre class="p-12 fs-12 mb-10">0 1 2 3 4 5
+i ended at 6</pre>
+                  Six numbers, not five. <span class="cmd">&lt;=</span> lets the body run once more than the number suggests, and it's the single most common loop bug there is.<br><br>
+                  The second line is the other half of the lesson: when the loop exits, <span class="cmd">i</span> is one <em>past</em> the last value it used, because the loop only stops after the test has already failed. Both of these matter enormously in Phase 3.5, where <span class="cmd">i</span> is an array index and one extra step reads memory that isn't yours.</div>
+                </details>
+              </div>
+
+              <div class="quiz-item drill-item">
+                <div class="quiz-q">3. <span class="cmd">=</span> versus <span class="cmd">==</span> — both of these are legal C</div>
+<pre><span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
+
+<span class="c-type">int</span> <span class="c-fn">main</span>(<span class="c-type">void</span>) {
+    <span class="c-type">int</span> <span class="c-var">health</span> = <span class="c-num">100</span>;
+    <span class="c-type">int</span> <span class="c-var">test</span>;
+
+    <span class="c-var">test</span> = (<span class="c-var">health</span> == <span class="c-num">50</span>);
+    <span class="c-fn">printf</span>(<span class="c-str">"A: test %d, health %d\n"</span>, <span class="c-var">test</span>, <span class="c-var">health</span>);
+
+    <span class="c-var">test</span> = (<span class="c-var">health</span> = <span class="c-num">50</span>);
+    <span class="c-fn">printf</span>(<span class="c-str">"B: test %d, health %d\n"</span>, <span class="c-var">test</span>, <span class="c-var">health</span>);
+    <span class="c-kw">return</span> <span class="c-num">0</span>;
+}</pre>
+                <div class="drill-run">Write your prediction down, then compile and run it.</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a"><pre class="p-12 fs-12 mb-10">A: test 0, health 100
+B: test 50, health 50</pre>
+                  <span class="cmd">==</span> asks a question and hands back 1 or 0. <span class="cmd">=</span> performs an assignment and hands back <em>the value it just assigned</em>. Line B did two things at once: it wrecked health, and it produced 50.<br><br>
+                  Now picture line B inside an <span class="cmd">if</span>. The condition is 50, anything non-zero is true in C, so the branch <strong class="t-text">always runs</strong> and your health is gone. That's the classic.<br><br>
+                  Written outside an <span class="cmd">if</span> like this, it's ordinary legal C and nothing warns. Put it in a condition and MSVC at <span class="cmd">/W4</span> raises <span class="cmd">C4706</span> — assignment within a conditional expression — and <span class="cmd">/WX</span> turns that into a stopped build. That's your flags doing the job you turned them on for.</div>
+                </details>
+              </div>
+
+              <div class="quiz-item drill-item">
+                <div class="quiz-q">4. A char is a number wearing a costume</div>
+<pre><span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
+
+<span class="c-type">int</span> <span class="c-fn">main</span>(<span class="c-type">void</span>) {
+    <span class="c-type">char</span> <span class="c-var">c</span> = <span class="c-str">'A'</span>;
+
+    <span class="c-fn">printf</span>(<span class="c-str">"%c %d\n"</span>, <span class="c-var">c</span>, <span class="c-var">c</span>);
+    <span class="c-var">c</span> = (<span class="c-type">char</span>)(<span class="c-var">c</span> + <span class="c-num">2</span>);
+    <span class="c-fn">printf</span>(<span class="c-str">"%c %d\n"</span>, <span class="c-var">c</span>, <span class="c-var">c</span>);
+    <span class="c-fn">printf</span>(<span class="c-str">"%d\n"</span>, <span class="c-str">'a'</span> - <span class="c-str">'A'</span>);
+    <span class="c-kw">return</span> <span class="c-num">0</span>;
+}</pre>
+                <div class="drill-run">Write your prediction down, then compile and run it.</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a"><pre class="p-12 fs-12 mb-10">A 65
+C 67
+32</pre>
+                  A <span class="cmd">char</span> is a one-byte integer holding an ASCII code. <span class="cmd">'A'</span> is 65. Add 2 and you have 67, which <span class="cmd">%c</span> shows as C and <span class="cmd">%d</span> shows as 67 — same byte, two ways of looking at it. The specifier decides what you see, not the data.<br><br>
+                  The <span class="cmd">(char)</span> cast is there because <span class="cmd">c + 2</span> is an <span class="cmd">int</span>, and putting an int back in a char box is the same narrowing that produced C4244 in session 1. And <span class="cmd">'a' - 'A'</span> being exactly 32 is the whole trick behind flipping letter case by hand.</div>
+                </details>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- QUIZ -->
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Quiz Yourself</span>&nbsp;&nbsp;5 questions — answer out loud before revealing
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="quiz-items">
+
+              <div class="quiz-item">
+                <div class="quiz-q">1. Why is there a space in <span class="cmd">scanf(" %c", &amp;input)</span>?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">The space tells scanf to skip over any leftover whitespace first — including the Enter key still sitting in the input buffer from the previous read. Without it, scanf grabs that newline as your character and the loop appears to skip a turn. And the <span class="cmd">&amp;</span> hands scanf the address of your variable so it can write into it, rather than a copy of its value.</div>
+                </details>
+              </div>
+
+              <div class="quiz-item">
+                <div class="quiz-q">2. Spawning 10 enemies vs running the game until the player quits — which gets a <span class="cmd">for</span> and which gets a <span class="cmd">while</span>?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">10 enemies is a <span class="cmd">for</span> — you know the count before you start. The game running until quit is a <span class="cmd">while</span> — you have no idea how many frames that will be, only what makes it stop. Known count = for. Until something changes = while.</div>
+                </details>
+              </div>
+
+              <div class="quiz-item">
+                <div class="quiz-q">3. You delete the <span class="cmd">srand</span> line from your guessing game. What happens when you run it three times?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">The same secret number all three times. <span class="cmd">rand()</span> is a recipe that walks from one number to the next, and without <span class="cmd">srand</span> it always starts from seed 1 — same seed, same sequence, same first number. Seeding with <span class="cmd">time(NULL)</span> starts the recipe somewhere new every run.</div>
+                </details>
+              </div>
+
+              <div class="quiz-item">
+                <div class="quiz-q">4. What range does <span class="cmd">rand() % 100 + 1</span> produce, and what would you write for 1–6?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">1 to 100. <span class="cmd">% 100</span> keeps the remainder after dividing by 100, which is 0–99, and <span class="cmd">+ 1</span> shifts the whole range up by one. For a dice roll: <span class="cmd">rand() % 6 + 1</span>. The pattern is <span class="cmd">rand() % (how many) + (lowest)</span>.</div>
+                </details>
+              </div>
+
+              <div class="quiz-item">
+                <div class="quiz-q">5. What's wrong with <span class="cmd">while (input = 'q')</span>?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">One equals sign assigns, two compares. That line stuffs 'q' into input and then asks "is 'q' true?" — it is (any non-zero value is true), so the loop runs forever and your input variable is destroyed on every pass. You wanted <span class="cmd">while (input != 'q')</span>. /W4 flags most of these, which is exactly why you turned it on.</div>
+                </details>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="checkpoint">
+          <div class="checkpoint-header">
+            <span class="badge badge-green">Checkpoint</span>
+            <span class="checkpoint-title">Ready to move on when:</span>
+            <span class="cp-counter">0/4</span>
+          </div>
+          <div class="checkpoint-items">
+            <div class="cp-item" data-id="cp-p2-1"><span class="cp-cb">✓</span><span class="cp-text">Your frame loop runs, reads input, and stops on the correct character</span></div>
+            <div class="cp-item" data-id="cp-p2-2"><span class="cp-cb">✓</span><span class="cp-text">Your guessing game gives correct high/low hints and detects the win</span></div>
+            <div class="cp-item" data-id="cp-p2-3"><span class="cp-cb">✓</span><span class="cp-text">You can explain what scanf(" %c", &amp;input) does — including the space and the &amp;</span></div>
+            <div class="cp-item" data-id="cp-p2-4"><span class="cp-cb">✓</span><span class="cp-text">Both programs committed to GitHub</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>

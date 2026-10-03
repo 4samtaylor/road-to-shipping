@@ -1,0 +1,273 @@
+<!-- PHASE 6 -->
+  <div class="phase" id="phase6">
+    <div class="phase-header">
+      <div class="phase-n">06</div>
+      <div class="phase-meta">
+        <div class="phase-tag">Game Systems</div>
+        <div class="phase-title">Build the Prototype Together</div>
+      </div>
+      <div class="phase-right">
+        <div class="phase-week">Weeks 8–12</div>
+        <div class="phase-chevron">▼</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-inner">
+
+        <!-- GAME LOOP PLAIN ENGLISH -->
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Explain Like I'm New</span>&nbsp;&nbsp;The game loop &amp; state machine, in plain English
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="stack gap-14">
+
+              <div class="callout callout--blue callout--bar">
+                <div class="eyebrow eyebrow--lg t-blue mb-8">// The game loop is a flipbook</div>
+                <div class="prose prose--loose t-text">
+                  A game isn't one picture — it's a flipbook drawn 60 times a second. Each page (frame) the game does the same three things, then flips to the next page. That's the entire heartbeat of every game ever made:
+                </div>
+<pre class="code-panel mt-12"><span class="c-kw">while</span> (game_running) {
+    handle_input();  <span class="c-cm">// 1. What did the player just press?</span>
+    update();        <span class="c-cm">// 2. Move everything, check collisions, apply rules</span>
+    render();        <span class="c-cm">// 3. Draw the current picture to the screen</span>
+}                    <span class="c-cm">// then loop — draw the next page of the flipbook</span></pre>
+                <div class="prose t-muted2 mt-12">
+                  Input → Update → Render, 60 times a second. The player's brain fills in the motion between pages, exactly like a flipbook. <strong class="t-text">Keep these three as separate functions</strong> — when something breaks, you'll know whether it's an input bug, a logic bug, or a drawing bug.
+                </div>
+              </div>
+
+              <div class="callout callout--yellow">
+                <div class="eyebrow eyebrow--lg t-yellow mb-8">// A state machine is a TV with channels</div>
+                <div class="prose prose--loose t-text">
+                  Your game is never doing everything at once. At any moment it's on exactly <strong class="t-accent">one channel</strong>: the menu, the gameplay, the pause screen, or game over. A state machine is just a variable that remembers which channel you're on, plus the rules for changing channels.
+                </div>
+<pre class="code-panel mt-12"><span class="c-kw">typedef enum</span> { STATE_MENU, STATE_PLAYING, STATE_GAME_OVER } <span class="c-type">GameState</span>;
+
+<span class="c-cm">// In update(), you check the channel and act accordingly:</span>
+<span class="c-kw">switch</span> (game-&gt;<span class="c-var">state</span>) {
+    <span class="c-kw">case</span> STATE_MENU:      <span class="c-cm">/* wait for Start */</span> <span class="c-kw">break</span>;
+    <span class="c-kw">case</span> STATE_PLAYING:   <span class="c-cm">/* run the actual game */</span> <span class="c-kw">break</span>;
+    <span class="c-kw">case</span> STATE_GAME_OVER: <span class="c-cm">/* show score, wait for restart */</span> <span class="c-kw">break</span>;
+}</pre>
+                <div class="prose t-muted2 mt-12">
+                  Without this, you end up with <span class="cmd">if (inMenu)</span> and <span class="cmd">if (isPlaying)</span> scattered through your whole codebase, fighting each other. With a state machine, each channel handles itself cleanly and you change channels by changing one variable.
+                </div>
+              </div>
+
+              <div class="callout callout--orange callout--bar">
+                <div class="eyebrow eyebrow--lg t-orange mb-8">// AABB collision — do two boxes overlap?</div>
+                <div class="prose prose--loose t-text">
+                  AABB stands for Axis-Aligned Bounding Box — fancy words for "two rectangles that aren't rotated." The question "did the bullet hit the enemy?" is really "do these two boxes overlap?" Picture two windows on a wall: they overlap <strong class="t-accent">only if</strong> neither one is fully to the left, right, above, or below the other.
+                </div>
+<pre class="code-panel mt-12"><span class="c-cm">// Returns true if box A and box B overlap</span>
+<span class="c-var">a</span>.x &lt; <span class="c-var">b</span>.x + <span class="c-var">b</span>.w &amp;&amp;  <span class="c-cm">// A's left edge is left of B's right edge</span>
+<span class="c-var">a</span>.x + <span class="c-var">a</span>.w &gt; <span class="c-var">b</span>.x &amp;&amp;  <span class="c-cm">// A's right edge is right of B's left edge</span>
+<span class="c-var">a</span>.y &lt; <span class="c-var">b</span>.y + <span class="c-var">b</span>.h &amp;&amp;  <span class="c-cm">// A's top is above B's bottom</span>
+<span class="c-var">a</span>.y + <span class="c-var">a</span>.h &gt; <span class="c-var">b</span>.y     <span class="c-cm">// A's bottom is below B's top</span></pre>
+                <div class="prose t-muted2 mt-12">
+                  Four comparisons. If all four are true, the boxes overlap and you've got a hit. This one function handles the player touching pickups, bullets hitting enemies, and the player landing on platforms — <strong class="t-text">the bulk of 2D collision in your runner.</strong>
+                </div>
+              </div>
+
+              <div class="callout callout--accent">
+                <div class="eyebrow eyebrow--lg t-accent mb-8">// How it all fits together — one frame, start to finish</div>
+<pre class="code-panel">One frame begins <span class="c-cm">(1/60th of a second)</span>
+  <span class="c-cm">→ handle_input(): player pressed Right → remember that</span>
+  <span class="c-cm">→ update():</span>
+      <span class="c-cm">→ check state — we're PLAYING</span>
+      <span class="c-cm">→ player_move(&amp;player, 5, 0)  (uses the pointer from Phase 3)</span>
+      <span class="c-cm">→ for each enemy: did AABB overlap the player? → take damage</span>
+      <span class="c-cm">→ if player.alive is false → switch state to GAME_OVER</span>
+  <span class="c-cm">→ render(): draw the player and enemies at their new spots</span>
+Frame ends → loop → next frame</pre>
+                <div class="prose t-text mt-12">Every concept from Phases 1–5 shows up here: the loop (Phase 2), the Player struct and pointers (Phase 3), the window and input (Phase 5). <strong class="t-accent">This phase is where it all connects.</strong></div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-header"><span class="badge badge-green">Tasks</span></div>
+          <div class="section-block-body">
+            <div class="tasks" id="tasks-6">
+              <div class="task" data-id="p6-game-loop">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Implement a proper game loop: process input → update → render</div>
+                  <div class="task-note">Every game ever made follows this structure. Make it explicit in your code. <span class="task-time">~45 min</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p6-state-machine">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Build a state machine: MENU → PLAYING → GAME_OVER <span class="task-tag t-crucial">Crucial</span></div>
+                  <div class="task-note">Without this your code becomes spaghetti the moment complexity arrives <span class="task-time">~1 hr</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p6-aabb-collision">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Implement AABB collision detection between two rectangles</div>
+                  <div class="task-note"><span class="task-time">~30 min</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p6-connect-player">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Connect your Player struct from Phase 3 to your window from Phase 5</div>
+                  <div class="task-note">This is where it all starts coming together <span class="task-time">~45 min</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p6-code-review">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Weekly code review with your partner — read each other's code, ask questions <span class="task-tag t-crucial">Crucial</span></div>
+                  <div class="task-note"><span class="task-time">~30 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Starter Code</span>&nbsp;&nbsp;game_state.h
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body">
+            <div class="code-wrap">
+              <div class="code-label">
+                <span>game_state.h — state machine pattern</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+<pre><span class="c-pp">#pragma once</span>
+
+<span class="c-cm">// All possible game states</span>
+<span class="c-kw">typedef enum</span> {
+    <span class="c-var">STATE_MENU</span>,
+    <span class="c-var">STATE_PLAYING</span>,
+    <span class="c-var">STATE_PAUSED</span>,
+    <span class="c-var">STATE_GAME_OVER</span>
+} <span class="c-type">GameState</span>;
+
+<span class="c-cm">// The whole game lives in this struct</span>
+<span class="c-kw">typedef struct</span> {
+    <span class="c-type">GameState</span> <span class="c-var">state</span>;
+    <span class="c-type">Player</span>    <span class="c-var">player</span>;
+    <span class="c-type">int</span>       <span class="c-var">score</span>;
+    <span class="c-type">float</span>     <span class="c-var">delta_time</span>; <span class="c-cm">// seconds since last frame</span>
+} <span class="c-type">Game</span>;
+
+<span class="c-cm">// AABB collision: do rectangles a and b overlap?</span>
+<span class="c-kw">static inline</span> <span class="c-type">int</span> <span class="c-fn">aabb_overlap</span>(
+    <span class="c-type">float</span> <span class="c-var">ax</span>, <span class="c-type">float</span> <span class="c-var">ay</span>, <span class="c-type">float</span> <span class="c-var">aw</span>, <span class="c-type">float</span> <span class="c-var">ah</span>,
+    <span class="c-type">float</span> <span class="c-var">bx</span>, <span class="c-type">float</span> <span class="c-var">by</span>, <span class="c-type">float</span> <span class="c-var">bw</span>, <span class="c-type">float</span> <span class="c-var">bh</span>)
+{
+    <span class="c-kw">return</span> <span class="c-var">ax</span> &lt; <span class="c-var">bx</span>+<span class="c-var">bw</span> &amp;&amp; <span class="c-var">ax</span>+<span class="c-var">aw</span> &gt; <span class="c-var">bx</span> &amp;&amp;
+           <span class="c-var">ay</span> &lt; <span class="c-var">by</span>+<span class="c-var">bh</span> &amp;&amp; <span class="c-var">ay</span>+<span class="c-var">ah</span> &gt; <span class="c-var">by</span>;
+}
+
+<span class="c-cm">// Your game loop structure — call each every frame:</span>
+<span class="c-type">void</span> <span class="c-fn">game_init</span>(<span class="c-type">Game</span>* <span class="c-var">g</span>);
+<span class="c-type">void</span> <span class="c-fn">game_handle_input</span>(<span class="c-type">Game</span>* <span class="c-var">g</span>);
+<span class="c-type">void</span> <span class="c-fn">game_update</span>(<span class="c-type">Game</span>* <span class="c-var">g</span>);
+<span class="c-type">void</span> <span class="c-fn">game_render</span>(<span class="c-type">Game</span>* <span class="c-var">g</span>);</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Claude Code Prompts</span>&nbsp;&nbsp;Phase 6
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+
+            <div class="callout callout--purple callout--bar mb-16">
+              <div class="eyebrow eyebrow--md t-purple mb-8">// Two people, one codebase, one AI — how this changes everything</div>
+              <div class="prose t-muted2 italic">
+                By Phase 6 you and your partner are both writing code. AI doesn't know what your partner wrote last week. It doesn't know your naming conventions, your struct layout, or which functions already exist. If you don't give it that context, it will invent its own — and your partner's code won't connect to it.<br><br>
+                <strong class="t-text">Always give AI the relevant context from your actual codebase before asking it to write anything.</strong> Paste the struct definition. Paste the function signatures. Tell it what already exists. The more context it has, the better the output fits.
+              </div>
+            </div>
+
+            <div class="callout callout--orange mb-16">
+              <div class="eyebrow eyebrow--md t-orange mb-8">// The context block — paste this before every implementation prompt</div>
+              <div class="prose t-text mb-10">Before asking AI to implement anything in Phase 6+, open with:</div>
+              <div class="prose t-text" style="background:var(--bg);border:1px solid var(--border2);padding:12px 14px">
+                "Here is the relevant context from my game:<br>
+                — Game struct: [paste Game struct]<br>
+                — Existing functions: [list function signatures]<br>
+                — Naming convention: snake_case, prefixed by system (player_, game_, enemy_)<br>
+                — No new dependencies, no new files unless I ask<br><br>
+                Now implement: [specific request]"
+              </div>
+            </div>
+
+            <div class="prompt-items">
+              <div class="prompt-item">
+                <div class="prompt-label">Implement game_update — with full context provided</div>
+                <div class="prompt-text">I'm building a game in C. Here is my Game struct: [paste struct]. Existing functions: game_init, game_handle_input, game_render. Naming: snake_case, game_ prefix. No new dependencies. Write ONLY game_update(Game* g) that: switches on state, updates player position from input when PLAYING, transitions to GAME_OVER when player.alive is false. Match my existing style exactly.</div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Plan a system before implementing it</div>
+                <div class="prompt-text">I want to add a state machine to my C game with states: MENU, PLAYING, PAUSED, GAME_OVER. Before I write any code, describe: (1) how to represent this in a typedef enum, (2) where the state variable should live (in my Game struct or global), (3) what a clean transition looks like. Don't write the implementation — I want to understand the design first.</div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Review code your partner wrote</div>
+                <div class="prompt-text">My teammate wrote this C code for our game. I need to understand it well enough to build on it and catch any issues before we go further. Walk me through what it does, flag anything that might not connect cleanly to the systems I'm building, and tell me if there are any edge cases it doesn't handle: [paste code]</div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Debug a system that's not behaving right</div>
+                <div class="prompt-text">My C game system has a bug. Context: [paste relevant structs and functions]. Expected behaviour: [describe]. Actual behaviour: [describe]. I've already checked: [what you've tried]. Walk me through your reasoning about what could cause this — don't just give me the fix, I want to understand why it's happening.</div>
+              </div>
+            </div>
+
+            <div class="callout callout--accent mt-16">
+              <div class="eyebrow eyebrow--md t-accent mb-8">// The progression: how prompting evolves across all phases</div>
+              <div class="stack gap-10 fs-11">
+                <div class="kv kv--80">
+                  <div class="t-yellow fw-500">Phase 1</div>
+                  <div class="t-muted2">Explain this to me. What does this error mean? You're learning to read code — AI is a tutor.</div>
+                </div>
+                <div class="kv kv--80">
+                  <div class="t-yellow fw-500">Phase 2</div>
+                  <div class="t-muted2">Give me the skeleton, I'll fill it in. Review what I wrote. AI is a scaffolder and reviewer.</div>
+                </div>
+                <div class="kv kv--80">
+                  <div class="t-yellow fw-500">Phase 3</div>
+                  <div class="t-muted2">Here is my interface. Implement the body. AI is an implementer within your design.</div>
+                </div>
+                <div class="kv kv--80">
+                  <div class="t-yellow fw-500">Phase 5</div>
+                  <div class="t-muted2">Here is my working code. Add exactly this, here. Don't touch the rest. AI is a surgical assistant.</div>
+                </div>
+                <div class="kv kv--80">
+                  <div class="t-accent fw-500">Phase 6+</div>
+                  <div class="t-text">Here is the full context of my codebase. Implement X to fit this system. AI is a contractor working inside your architecture. You are the architect.</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="checkpoint">
+          <div class="checkpoint-header">
+            <span class="badge badge-green">Checkpoint</span>
+            <span class="checkpoint-title">Ready to move on when:</span>
+            <span class="cp-counter">0/3</span>
+          </div>
+          <div class="checkpoint-items">
+            <div class="cp-item" data-id="cp-p6-1"><span class="cp-cb">✓</span><span class="cp-text">Your game has at least 3 states and transitions between them correctly</span></div>
+            <div class="cp-item" data-id="cp-p6-2"><span class="cp-cb">✓</span><span class="cp-text">Player moves on screen and collision with at least one object is detected</span></div>
+            <div class="cp-item" data-id="cp-p6-3"><span class="cp-cb">✓</span><span class="cp-text">Your partner can clone the repo, build it, and run it without asking you for help</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>

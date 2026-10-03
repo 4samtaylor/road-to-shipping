@@ -1,0 +1,305 @@
+<!-- PHASE 5 -->
+  <div class="phase" id="phase5">
+    <div class="phase-header">
+      <div class="phase-n">05</div>
+      <div class="phase-meta">
+        <div class="phase-tag">Graphics</div>
+        <div class="phase-title">Open a Window. Move Something.</div>
+      </div>
+      <div class="phase-right">
+        <div class="phase-week">Weeks 5–7</div>
+        <div class="phase-chevron">▼</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-inner">
+
+        <!-- THE BRIDGE -->
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Explain Like I'm New</span>&nbsp;&nbsp;From console to window — what actually changes
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="stack gap-14">
+
+              <div class="callout callout--purple callout--bar">
+                <div class="eyebrow eyebrow--lg t-purple mb-8">// Read this before you look at the code below</div>
+                <div class="prose prose--loose t-muted2 italic">
+                  This is the steepest step in the whole roadmap, and it's not because the code is harder. Everything you've written so far has been in charge of itself. From here, it isn't. That single change is what makes Win32 feel alien, and it's worth understanding before you read a line of it.
+                </div>
+              </div>
+
+              <div class="callout callout--blue callout--bar">
+                <div class="eyebrow eyebrow--lg t-blue mb-8">// Your program stops being in charge</div>
+                <div class="prose prose--loose t-text">
+                  A console program runs top to bottom. It decides when to print. When it wants input it calls <span class="cmd">scanf</span> and everything stops dead until the user hits Enter. <strong class="t-accent">You call the system.</strong><br><br>
+                  A windowed program is the other way round. Your window is one of fifty things on the desktop, and Windows owns the mouse, the keyboard and the screen. It decides when your window needs redrawing, when a key was pressed, when the user clicked the X. <strong class="t-accent">The system calls you.</strong>
+                </div>
+<pre class="code-panel mt-12"><span class="c-cm">CONSOLE                          WINDOWED</span>
+<span class="c-cm">-------                          --------</span>
+you print                        you ask Windows "anything for me?"
+you call scanf and wait          Windows hands you a message
+nothing happens without you      Windows calls WndProc, you react
+program ends when main ends      program ends when Windows says so</pre>
+                <div class="prose t-muted2 mt-12">
+                  That inversion has a name — event-driven. It's why there's a function in the starter code you never call yourself. <span class="cmd">WndProc</span> is your phone number: you hand it to Windows once, and Windows rings it whenever something happens.
+                </div>
+              </div>
+
+              <div class="callout callout--yellow">
+                <div class="eyebrow eyebrow--lg t-yellow mb-8">// Your Phase 2 frame loop is still there — it just grew a mailbox</div>
+                <div class="prose prose--loose t-text mb-12">
+                  You already built this shape. The message loop is the same <span class="cmd">while</span> you wrote in frame_loop.c, with the input step replaced by "check the mailbox."
+                </div>
+                <div class="gap-2 fs-11-5" style="display:grid;grid-template-columns:1fr 1fr">
+                  <div class="panel panel--sm t-accent fw-500">Phase 2 — frame_loop.c</div>
+                  <div class="panel panel--sm t-accent fw-500">Phase 5 — win32_window.c</div>
+                  <div class="panel panel--sm t-muted2"><span class="cmd">while (input != 'q')</span></div>
+                  <div class="panel panel--sm t-muted2"><span class="cmd">while (GetMessage(...))</span></div>
+                  <div class="panel panel--sm t-muted2"><span class="cmd">scanf(" %c", &amp;input)</span> — wait for a key</div>
+                  <div class="panel panel--sm t-muted2"><span class="cmd">GetMessage</span> — wait for an event</div>
+                  <div class="panel panel--sm t-muted2"><span class="cmd">if (input == ...)</span> — react to it</div>
+                  <div class="panel panel--sm t-muted2"><span class="cmd">DispatchMessage</span> → your WndProc reacts</div>
+                  <div class="panel panel--sm t-muted2"><span class="cmd">printf("Frame: %d\n", frame)</span></div>
+                  <div class="panel panel--sm t-muted2"><span class="cmd">WM_PAINT</span> → FillRect draws the frame</div>
+                  <div class="panel panel--sm t-muted2">loop ends when the user types 'q'</div>
+                  <div class="panel panel--sm t-muted2"><span class="cmd">WM_DESTROY</span> → PostQuitMessage stops it</div>
+                </div>
+                <div class="prose t-text mt-12">
+                  Same loop. Same three jobs — <strong class="t-accent">read input, update, draw</strong>. The only real difference is that the input now arrives as a numbered message in a queue instead of a character you asked for.
+                </div>
+              </div>
+
+              <div class="callout callout--accent">
+                <div class="eyebrow eyebrow--lg t-accent mb-8">// About the wall of types you're about to hit</div>
+                <div class="prose prose--loose t-text">
+                  <span class="cmd">LRESULT</span>, <span class="cmd">HWND</span>, <span class="cmd">WPARAM</span>, <span class="cmd">LPSTR</span>, <span class="cmd">HINSTANCE</span>, <span class="cmd">WNDCLASS</span>. It looks like a different language. It isn't — they're renamed versions of types you already know. <span class="cmd">HWND</span> is a pointer with a fancy name. <span class="cmd">WPARAM</span> is a number. Win32 is from 1993 and it named everything twice.<br><br>
+                  <strong class="t-accent">Understanding about 20% of this file on the first read is the correct outcome.</strong> Nobody memorises the boilerplate. Real Win32 programmers copy the same window setup they've copied for years and spend their attention on the two places that matter: the <span class="cmd">switch</span> inside WndProc, and the <span class="cmd">while</span> loop in WinMain. Those two you should genuinely understand.<br><br>
+                  Everything else is a form you fill in once. You already have the mental model that matters — you built the loop in Phase 2, the struct in Phase 3, and the array in Phase 3.5. This phase just wires them to a screen.
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-header"><span class="badge badge-green">Tasks</span></div>
+          <div class="section-block-body">
+            <div class="tasks" id="tasks-5">
+              <div class="task" data-id="p5-win32-window">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Open a blank window using Win32 API <span class="task-tag t-industry">Industry</span></div>
+                  <div class="task-note">Use the starter code — Win32 is verbose but understand each piece <span class="task-time">~45 min</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p5-message-loop">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Understand the Windows message loop — this is your game loop at the OS level</div>
+                  <div class="task-note"><span class="task-time">~20 min</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p5-gdi-rectangle">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Draw a colored rectangle on the window using GDI</div>
+                  <div class="task-note"><span class="task-time">~30 min</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p5-keyboard-input">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Read keyboard input and move the rectangle on screen <span class="task-tag t-industry">Industry</span></div>
+                  <div class="task-note"><span class="task-time">~30 min</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p5-frame-timer">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Add a frame timer — limit to 60fps, print frame time to console <span class="task-tag t-crucial">Crucial</span></div>
+                  <div class="task-note"><span class="task-time">~30 min</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p5-sdl2-migration">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Optional: migrate to SDL2 for a cleaner, cross-platform foundation</div>
+                  <div class="task-note">SDL2 wraps platform-specific code. Most indie C++ games use it. <span class="task-time">~1.5 hrs</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Starter Code</span>&nbsp;&nbsp;win32_window.c
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body">
+            <div class="code-wrap">
+              <div class="code-label">
+                <span>win32_window.c — compile: <span class="cmd">cl win32_window.c user32.lib gdi32.lib</span></span>
+                <button class="copy-btn">Copy</button>
+              </div>
+<pre><span class="c-pp">#include</span> <span class="c-str">&lt;windows.h&gt;</span>
+
+<span class="c-cm">// Global state — keeps track of our rect position</span>
+<span class="c-kw">static</span> <span class="c-type">int</span> <span class="c-var">g_rect_x</span> = <span class="c-num">100</span>;
+<span class="c-kw">static</span> <span class="c-type">int</span> <span class="c-var">g_rect_y</span> = <span class="c-num">100</span>;
+<span class="c-kw">static</span> <span class="c-type">HWND</span> <span class="c-var">g_hwnd</span> = <span class="c-kw">NULL</span>;
+
+<span class="c-cm">// Windows calls this function for every event (key press, mouse move, close, etc.)</span>
+<span class="c-type">LRESULT CALLBACK</span> <span class="c-fn">WindowProc</span>(<span class="c-type">HWND</span> <span class="c-var">hwnd</span>, <span class="c-type">UINT</span> <span class="c-var">msg</span>, <span class="c-type">WPARAM</span> <span class="c-var">wp</span>, <span class="c-type">LPARAM</span> <span class="c-var">lp</span>) {
+    <span class="c-kw">switch</span> (<span class="c-var">msg</span>) {
+        <span class="c-kw">case</span> WM_KEYDOWN:
+            <span class="c-kw">if</span> (<span class="c-var">wp</span> == VK_LEFT)  <span class="c-var">g_rect_x</span> -= <span class="c-num">5</span>;
+            <span class="c-kw">if</span> (<span class="c-var">wp</span> == VK_RIGHT) <span class="c-var">g_rect_x</span> += <span class="c-num">5</span>;
+            <span class="c-kw">if</span> (<span class="c-var">wp</span> == VK_UP)    <span class="c-var">g_rect_y</span> -= <span class="c-num">5</span>;
+            <span class="c-kw">if</span> (<span class="c-var">wp</span> == VK_DOWN)  <span class="c-var">g_rect_y</span> += <span class="c-num">5</span>;
+            <span class="c-fn">InvalidateRect</span>(<span class="c-var">hwnd</span>, <span class="c-kw">NULL</span>, <span class="c-kw">TRUE</span>); <span class="c-cm">// Tell Windows to redraw</span>
+            <span class="c-kw">break</span>;
+        <span class="c-kw">case</span> WM_PAINT: {
+            <span class="c-type">PAINTSTRUCT</span> <span class="c-var">ps</span>;
+            <span class="c-type">HDC</span> <span class="c-var">hdc</span> = <span class="c-fn">BeginPaint</span>(<span class="c-var">hwnd</span>, &amp;<span class="c-var">ps</span>);
+            <span class="c-fn">FillRect</span>(<span class="c-var">hdc</span>, &amp;<span class="c-var">ps</span>.rcPaint, (<span class="c-type">HBRUSH</span>)(<span class="c-type">COLOR_WINDOW</span>+<span class="c-num">1</span>)); <span class="c-cm">// Clear</span>
+            <span class="c-type">RECT</span> <span class="c-var">r</span> = { <span class="c-var">g_rect_x</span>, <span class="c-var">g_rect_y</span>, <span class="c-var">g_rect_x</span>+<span class="c-num">50</span>, <span class="c-var">g_rect_y</span>+<span class="c-num">50</span> };
+            <span class="c-fn">FillRect</span>(<span class="c-var">hdc</span>, &amp;<span class="c-var">r</span>, <span class="c-fn">CreateSolidBrush</span>(<span class="c-fn">RGB</span>(<span class="c-num">0</span>,<span class="c-num">200</span>,<span class="c-num">100</span>)));
+            <span class="c-fn">EndPaint</span>(<span class="c-var">hwnd</span>, &amp;<span class="c-var">ps</span>);
+        } <span class="c-kw">break</span>;
+        <span class="c-kw">case</span> WM_DESTROY:
+            <span class="c-fn">PostQuitMessage</span>(<span class="c-num">0</span>);
+            <span class="c-kw">break</span>;
+        <span class="c-kw">default</span>:
+            <span class="c-kw">return</span> <span class="c-fn">DefWindowProc</span>(<span class="c-var">hwnd</span>, <span class="c-var">msg</span>, <span class="c-var">wp</span>, <span class="c-var">lp</span>);
+    }
+    <span class="c-kw">return</span> <span class="c-num">0</span>;
+}
+
+<span class="c-type">int WINAPI</span> <span class="c-fn">WinMain</span>(<span class="c-type">HINSTANCE</span> <span class="c-var">hInst</span>, <span class="c-type">HINSTANCE</span> <span class="c-var">hPrev</span>, <span class="c-type">LPSTR</span> <span class="c-var">lpCmd</span>, <span class="c-type">int</span> <span class="c-var">nShow</span>) {
+    <span class="c-cm">// Register the window class</span>
+    <span class="c-type">WNDCLASS</span> <span class="c-var">wc</span> = {<span class="c-num">0</span>};
+    <span class="c-var">wc</span>.lpfnWndProc   = <span class="c-fn">WindowProc</span>;
+    <span class="c-var">wc</span>.hInstance     = <span class="c-var">hInst</span>;
+    <span class="c-var">wc</span>.lpszClassName = <span class="c-str">"GameWindow"</span>;
+    <span class="c-var">wc</span>.hCursor       = <span class="c-fn">LoadCursor</span>(<span class="c-kw">NULL</span>, IDC_ARROW);
+    <span class="c-fn">RegisterClass</span>(&amp;<span class="c-var">wc</span>);
+
+    <span class="c-cm">// Create the window</span>
+    <span class="c-var">g_hwnd</span> = <span class="c-fn">CreateWindowEx</span>(<span class="c-num">0</span>, <span class="c-str">"GameWindow"</span>, <span class="c-str">"My First Window"</span>,
+                   WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
+                   <span class="c-num">800</span>, <span class="c-num">600</span>, <span class="c-kw">NULL</span>, <span class="c-kw">NULL</span>, <span class="c-var">hInst</span>, <span class="c-kw">NULL</span>);
+    <span class="c-fn">ShowWindow</span>(<span class="c-var">g_hwnd</span>, <span class="c-var">nShow</span>);
+
+    <span class="c-cm">// The message loop — this IS the game loop at the OS level</span>
+    <span class="c-type">MSG</span> <span class="c-var">msg</span>;
+    <span class="c-kw">while</span> (<span class="c-fn">GetMessage</span>(&amp;<span class="c-var">msg</span>, <span class="c-kw">NULL</span>, <span class="c-num">0</span>, <span class="c-num">0</span>)) {
+        <span class="c-fn">TranslateMessage</span>(&amp;<span class="c-var">msg</span>);
+        <span class="c-fn">DispatchMessage</span>(&amp;<span class="c-var">msg</span>);
+    }
+    <span class="c-kw">return</span> (<span class="c-type">int</span>)<span class="c-var">msg</span>.wParam;
+}
+
+<span class="c-cm">// TODO: Add WASD controls alongside arrow keys</span>
+<span class="c-cm">// TODO: Add a speed variable and let +/- keys change it</span>
+<span class="c-cm">// TODO: Prevent the rect from moving outside the window bounds</span></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-orange">Stuck?</span>&nbsp;&nbsp;Win32 specifics
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="stuck-items">
+              <div class="stuck-item">
+                <div class="stuck-q">Linker errors about unresolved user32 or gdi32 symbols</div>
+                <div class="stuck-a">You need to link the Windows libraries. Compile with: <span class="cmd">cl win32_window.c user32.lib gdi32.lib</span>. These libraries contain the actual implementations of CreateWindow, GetMessage, etc.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">The rectangle doesn't move smoothly — it flickers</div>
+                <div class="stuck-a">That's GDI — it's not designed for smooth animation. It's expected here. The lesson is: understand what Win32 gives you and why game engines replace it with GPU-based rendering. When you move to SDL2 or OpenGL, this goes away.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">I don't understand what LRESULT, HWND, WPARAM etc. mean</div>
+                <div class="stuck-a">These are Windows type aliases — HWND is a "handle to a window" (essentially a pointer), LRESULT is a long integer result, WPARAM/LPARAM are message parameters. You don't need to memorize them — just know they're Windows-specific names for ordinary types. The concepts (callback functions, event loops) are universal.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Claude Code Prompts</span>&nbsp;&nbsp;Phase 5
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+
+            <div class="callout callout--purple callout--bar mb-16">
+              <div class="eyebrow eyebrow--md t-purple mb-8">// Win32 is where AI is most dangerous to blindly trust</div>
+              <div class="prose t-muted2 italic">
+                Win32 has decades of boilerplate, deprecated functions, and platform-specific quirks. AI knows all of them — which means it can write code that compiles, runs, and is completely wrong for what you need. It might use an old API, add features you didn't ask for, or structure the message loop in a way that will fight with your game loop later.<br><br>
+                <strong class="t-text">The rule for this phase: use AI to understand, not to generate.</strong> Read the starter code until you understand every line. Ask AI to explain, not to write. When you do ask it to write, describe exactly which function to touch and what not to change.
+              </div>
+            </div>
+
+            <div class="callout callout--orange mb-16">
+              <div class="eyebrow eyebrow--md t-orange mb-8">// The "don't rewrite my file" instruction — use it every time</div>
+              <div class="prose t-text">
+                When you have working code and want to add one thing, AI's default is to rewrite the whole file "to be cleaner." This replaces code you understand with code you don't — and often breaks the structure you built deliberately.<br><br>
+                Always include: <strong class="t-accent">"Don't rewrite my whole file. Show me only the code to add and where to put it."</strong>
+              </div>
+            </div>
+
+            <div class="prompt-items">
+              <div class="prompt-item">
+                <div class="prompt-label">Understand each Win32 function before using it</div>
+                <div class="prompt-text">I'm learning Win32 in C. Don't write any code. Explain what each of these does in plain English and why it must be called in this order: RegisterClass, CreateWindowEx, ShowWindow, GetMessage, TranslateMessage, DispatchMessage. Then explain what would happen if I removed TranslateMessage.</div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Add one specific thing without touching the rest</div>
+                <div class="prompt-text">I have a working Win32 window in C with a message loop. I want to add WASD movement alongside the existing arrow key controls. Show me ONLY the 4 lines to add inside the WM_KEYDOWN case — don't rewrite my whole file, don't add new functions, don't change the structure.</div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Add a frame timer — surgical insertion</div>
+                <div class="prompt-text">I have a Win32 message loop in C. I want to cap it at 60fps using QueryPerformanceCounter and print the frame time in milliseconds. Show me: (1) where to declare the timer variables, (2) the exact code to add inside the loop. Don't touch anything else in my file. Here's my current loop: [paste loop]</div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Connect your Player struct to the window</div>
+                <div class="prompt-text">I have a Player struct in C (float x, float y, int health, bool alive) and a Win32 window that draws a green rectangle at g_x, g_y. I want to replace the global g_x/g_y with a Player instance and call player_move() on key input. Tell me exactly what to change — don't rewrite the whole file, just the 3-4 spots that need updating.</div>
+              </div>
+            </div>
+
+            <div class="callout callout--accent mt-16">
+              <div class="eyebrow eyebrow--md t-accent mb-8">// The "surgical edit" mindset</div>
+              <div class="prose t-text">
+                As systems get more complex, the most valuable thing you can do with AI is describe <strong class="t-accent">the minimum change</strong> needed, not the desired end state. "Make my game have WASD movement" gives AI permission to restructure everything. "Add 4 lines inside WM_KEYDOWN for WASD" gives it a precise, verifiable scope. <br><br>
+                Surgical prompts → small diffs → easy to read → easy to understand → easy to commit with confidence.
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="checkpoint">
+          <div class="checkpoint-header">
+            <span class="badge badge-green">Checkpoint</span>
+            <span class="checkpoint-title">Ready to move on when:</span>
+            <span class="cp-counter">0/4</span>
+          </div>
+          <div class="checkpoint-items">
+            <div class="cp-item" data-id="cp-p5-1"><span class="cp-cb">✓</span><span class="cp-text">A window opens, a colored rectangle is visible on screen</span></div>
+            <div class="cp-item" data-id="cp-p5-2"><span class="cp-cb">✓</span><span class="cp-text">Arrow keys move the rectangle — it responds to input</span></div>
+            <div class="cp-item" data-id="cp-p5-3"><span class="cp-cb">✓</span><span class="cp-text">You can explain what the message loop is doing and why it exists</span></div>
+            <div class="cp-item" data-id="cp-p5-4"><span class="cp-cb">✓</span><span class="cp-text">Frame time is printed — you know how fast your loop runs</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>

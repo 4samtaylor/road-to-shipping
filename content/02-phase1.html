@@ -1,0 +1,547 @@
+<!-- ─── PHASES ─── -->
+  <!-- PHASE 1 -->
+  <div class="phase open" id="phase1">
+    <div class="phase-header">
+      <div class="phase-n">01</div>
+      <div class="phase-meta">
+        <div class="phase-tag">Foundation</div>
+        <div class="phase-title">Hello World — Compile &amp; Run</div>
+      </div>
+      <div class="phase-right">
+        <div class="phase-week">Week 1</div>
+        <div class="phase-chevron">▲</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-inner">
+
+        <!-- CONCEPTS -->
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Concepts First</span>&nbsp;&nbsp;Read before writing any code
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="stack gap-10">
+              <div class="callout callout--blue callout--bar">
+                <div class="eyebrow eyebrow--md t-blue mb-8">// What a .c file actually is</div>
+                <div class="prose t-text">A .c file is just a text file. The .c extension tells the compiler "this text is written in the C language." Nothing runs until you compile it. Writing code is writing instructions. Compiling translates those instructions into something the CPU can execute.</div>
+              </div>
+              <div class="callout callout--blue callout--bar">
+                <div class="eyebrow eyebrow--md t-blue mb-8">// cd vs cl — two completely different things</div>
+                <div class="prose t-text"><strong class="t-accent">cd</strong> (Change Directory) — navigation. Moves you to a folder in the terminal. Like clicking into a folder in Windows Explorer but with text. You must be in the right folder before compiling.<br><br><strong class="t-accent">cl</strong> — the actual compiler. Give it a .c filename and it produces a .exe. If your code has errors, it stops and prints which line and why. No .exe is produced until all errors are fixed.<br><br><strong class="t-accent">dir</strong> — lists files in your current folder. Run this if you're not sure where you are.</div>
+              </div>
+              <div class="callout callout--purple callout--bar">
+                <div class="eyebrow eyebrow--md t-purple mb-6">// How to think about the compiler</div>
+                <div class="prose t-muted2 italic">The compiler is a strict editor who speaks machine. You write in human-readable C. The computer speaks only binary. The compiler translates between the two — with zero tolerance for ambiguity. A missing semicolon, a misspelled function, using a variable before declaring it — it stops and refuses to produce anything. This strictness is a feature. It catches mistakes before they become bugs in a running game.</div>
+              </div>
+              <div class="panel" style="padding:14px 16px">
+                <div class="eyebrow eyebrow--md t-muted2 mb-10">// Standard workflow — always save before compiling</div>
+                <div class="row gap-8" style="align-items:center;flex-wrap:wrap">
+                  <div class="keycap">Edit code</div><div class="t-muted">→</div>
+                  <div class="keycap">Ctrl+S (save)</div><div class="t-muted">→</div>
+                  <div class="keycap">Ctrl+` (terminal)</div><div class="t-muted">→</div>
+                  <div class="keycap">cl hello_world.c</div><div class="t-muted">→</div>
+                  <div class="keycap">hello_world.exe</div><div class="t-muted">→</div>
+                  <div class="keycap">↑ arrow = repeat</div>
+                </div>
+                <div class="fs-10 t-muted mt-10">The compiler reads from disk — not from what's open on screen. If you don't save, you compile the old version. Make Ctrl+S automatic.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TASKS -->
+        <div class="section-block">
+          <div class="section-block-header"><span class="badge badge-green">Tasks</span></div>
+          <div class="section-block-body">
+            <div class="tasks" id="tasks-1">
+              <div class="task" data-id="p1-hello-world-printf">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Write, compile and run a Hello World program using printf <span class="task-tag t-industry">Industry</span></div>
+                  <div class="task-note">Use the starter code below — modify the string, recompile, see it change <span class="task-time">~20 min</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p1-starter-todos">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Complete all 3 TODOs in the starter code — change string, add printf, print a number with %d</div>
+                  <div class="task-note">Each TODO teaches a specific concept. Don't skip them. <span class="task-time">~20 min</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p1-compiler-error">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Intentionally cause a compiler error — then read and fix it <span class="task-tag t-crucial">Crucial</span></div>
+                  <div class="task-note">Remove a semicolon. Remove a quote. See what the error says. Builds error-reading instinct. <span class="task-time">~15 min</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p1-commit-github">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Commit your Hello World to GitHub <span class="task-tag t-git">Git</span></div>
+                  <div class="task-note">git add . → git commit -m "feat: hello world compiles and runs" → git push <span class="task-time">~10 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STARTER CODE -->
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Starter Code</span>&nbsp;&nbsp;hello_world.c — every line explained
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body">
+            <div class="code-wrap">
+              <div class="code-label">
+                <span>hello_world.c</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+<pre><span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>   <span class="c-cm">// "Go get me a toolbox." stdio.h has printf, scanf, etc.</span>
+                      <span class="c-cm">// Without this line, printf doesn't exist.</span>
+
+<span class="c-type">int</span> <span class="c-fn">main</span>() {         <span class="c-cm">// Every C program starts here. main() is where execution begins.</span>
+                      <span class="c-cm">// int = this function returns a whole number when done.</span>
+                      <span class="c-cm">// { opens the function body — everything inside belongs to main.</span>
+
+    <span class="c-fn">printf</span>(<span class="c-str">"Hello, World!\n"</span>);
+    <span class="c-cm">// printf prints text to the terminal.</span>
+    <span class="c-cm">// \n = new line — like pressing Enter. MUST be inside the quotes.</span>
+    <span class="c-cm">// ; ends every statement. Missing it = compiler error.</span>
+
+    <span class="c-cm">// TODO 1: Change the string above and recompile. See it change.</span>
+    <span class="c-cm">// TODO 2: Add a second printf with your name.</span>
+    <span class="c-cm">// TODO 3: printf("I am %d years old\n", 28);  — %d is replaced by the number.</span>
+
+    <span class="c-kw">return</span> <span class="c-num">0</span>;  <span class="c-cm">// 0 = success. Tells the OS the program finished cleanly.</span>
+}             <span class="c-cm">// Closes main. Every { needs a matching }.</span></pre>
+            </div>
+            <div class="code-island" style="border-top:1px solid var(--border);padding:14px 16px">
+              <div class="eyebrow eyebrow--md t-muted2 mb-10">// Compile &amp; run — 3 commands every time</div>
+              <div class="code-inset fs-11 lh-18 t-accent">
+                cd C:\Users\4samt\Documents\Dev\game-dev-exercises &nbsp;<span class="t-muted2"># navigate to your repo</span><br>
+                cl hello_world.c &nbsp;<span class="t-muted2"># compile — produces hello_world.exe</span><br>
+                hello_world.exe &nbsp;<span class="t-muted2"># run it</span>
+              </div>
+              <div class="fs-10 t-muted mt-10">After first compile: use <span class="cmd">↑</span> arrow in terminal to bring back previous command. Compile + run = two keystrokes.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STUCK -->
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-orange">Stuck?</span>&nbsp;&nbsp;Errors from session 1 + common Phase 1 issues
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="stuck-items">
+              <div class="stuck-item">
+                <div class="stuck-q">"'cl' is not recognized as a command"</div>
+                <div class="stuck-a">You're in the wrong terminal. Open a new terminal with Ctrl+` — the VS banner should appear automatically after the settings.json fix. If it doesn't, check that your settings.json was saved correctly and the vcvars32.bat path is correct.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">error C2017: unknown escape sequence (the \n error from session 1)</div>
+                <div class="stuck-a">Your \n ended up outside the quotes. It must be INSIDE the string: <span class="cmd">printf("text\n")</span> not <span class="cmd">printf("text")\n</span>. \n only means "new line" inside a string. Outside it, the compiler sees a backslash and the letter n — which it doesn't recognise.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">I saved but the compiler still uses the old version</div>
+                <div class="stuck-a">Check the tab in VS Code — if there's a dot (●) next to the filename, it's unsaved. Ctrl+S, then compile. The compiler reads from disk. What's on screen doesn't matter until saved.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">Program compiles but the window closes immediately</div>
+                <div class="stuck-a">Normal — it runs and exits instantly. Add <span class="cmd">getchar();</span> before <span class="cmd">return 0;</span> to pause. Or run it from the VS Code terminal rather than double-clicking the .exe.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">VS Code says "Do you want to install the C/C++ Extension Pack?"</div>
+                <div class="stuck-a">Click Install. Always. This gives you syntax highlighting, error detection, and autocomplete for C. Without it VS Code is just a plain text editor for C files.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CLAUDE PROMPTS -->
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Claude Code Prompts</span>&nbsp;&nbsp;Use these at this phase
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+
+            <div class="callout callout--purple callout--bar mb-16">
+              <div class="eyebrow eyebrow--md t-purple mb-8">// How to think about AI as a coding partner</div>
+              <div class="prose t-muted2 italic">
+                AI is a fast, tireless implementer — but it has no judgment about your project. It doesn't know your architecture, your conventions, or what you actually need. It will confidently produce code that compiles, runs, and solves the wrong problem.<br><br>
+                <strong class="t-text">Your job is to be the architect. AI is the contractor.</strong> You design the system, specify the interface, and verify the output. The more precisely you specify, the better the output. Vague prompts produce generic code. Specific prompts produce code that fits.
+              </div>
+            </div>
+
+            <div class="callout callout--orange mb-16">
+              <div class="eyebrow eyebrow--md t-orange mb-8">// Why Phase 1 matters for AI prompting</div>
+              <div class="prose t-text">
+                Right now you understand what <span class="cmd">printf</span>, <span class="cmd">return 0</span>, <span class="cmd">#include</span>, and <span class="cmd">\n</span> do. That's enough to evaluate AI output at this level.<br><br>
+                If you can't read the code, you can't catch when AI makes a mistake. And it will make mistakes — wrong escape sequences, wrong format specifiers, wrong return types. You already know what those look like because you hit them in session 1. <strong class="t-accent">Understanding errors makes you immune to confident wrong answers.</strong>
+              </div>
+            </div>
+
+            <div class="eyebrow eyebrow--md t-muted2 mb-12">// Phase 1 prompts — copy and adapt</div>
+
+            <div class="prompt-items">
+              <div class="prompt-item">
+                <div class="prompt-label">When you get a compiler error you don't understand</div>
+                <div class="prompt-text">I'm learning C for the first time. I got this compiler error: [paste full error output here]. Explain what it means in plain language, tell me which line caused it and why, then show me exactly how to fix it.</div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">When you want to understand code line by line</div>
+                <div class="prompt-text">I'm a beginner learning C. Explain this code to me line by line — what each part does, why it's there, and what would break if I removed it: [paste code]</div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">When you want AI to write a printf for you</div>
+                <div class="prompt-text">Write a single printf statement in C that prints: "Player: [name] | Score: [score] | HP: [health]" where name is a string, score is an int, and health is an int. Use the correct format specifiers. Nothing else — just the one line.</div>
+              </div>
+            </div>
+
+            <div class="callout callout--accent mt-16">
+              <div class="eyebrow eyebrow--md t-accent mb-8">// The prompting pattern that works at every phase</div>
+              <div class="stack gap-8 fs-11">
+                <div class="kv kv--120">
+                  <div class="t-accent fw-500">Be specific</div>
+                  <div class="t-muted2">Name the function, the types, the inputs, the outputs. "make it print stuff" → bad. "write printf that prints an int with %d" → good.</div>
+                </div>
+                <div class="kv kv--120">
+                  <div class="t-accent fw-500">Scope it small</div>
+                  <div class="t-muted2">Ask for one thing at a time. AI asked for "a whole game" will make architectural decisions you didn't approve. Ask for one function, one file, one fix.</div>
+                </div>
+                <div class="kv kv--120">
+                  <div class="t-accent fw-500">Read before use</div>
+                  <div class="t-muted2">Never paste generated code into your project without reading every line. Understand what it does before it becomes your code.</div>
+                </div>
+                <div class="kv kv--120">
+                  <div class="t-accent fw-500">Push back</div>
+                  <div class="t-muted2">If the output is more complex than you need, say so: "simplify this — I don't need [X] yet." AI defaults to thorough. You need minimal and understandable.</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- GIT -->
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-orange">Git</span>&nbsp;&nbsp;Committing your work — 3 commands
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="code-island fs-11 lh-18 t-accent" style="border:1px solid var(--border);padding:14px 16px">
+              git add . &nbsp;<span class="t-muted2"># stage everything — the dot means "all files"</span><br>
+              git commit -m "feat: hello world compiles and runs" &nbsp;<span class="t-muted2"># snapshot with label</span><br>
+              git push &nbsp;<span class="t-muted2"># send to GitHub — partner can now see it</span>
+            </div>
+            <div class="stack gap-8 mt-12 fs-12-5 t-muted2">
+              <div><strong class="t-text">git add .</strong> — "Stage everything." You're telling Git which changes to include in the next snapshot.</div>
+              <div><strong class="t-text">git commit -m "..."</strong> — "Take a snapshot and label it." Lives in history forever. Until you push, it only exists on your machine.</div>
+              <div><strong class="t-text">git push</strong> — "Send to GitHub." After this your partner can see it. Go to github.com/4samtaylor/game-dev-exercises and refresh to confirm.</div>
+            </div>
+            <div class="mt-12 fs-10 t-muted">Commit message format: <span class="cmd">type: short description</span> — Types: <span class="cmd">feat</span> · <span class="cmd">fix</span> · <span class="cmd">refactor</span> · <span class="cmd">docs</span></div>
+          </div>
+        </div>
+
+        <!-- BUILD.BAT -->
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-yellow">build.bat</span>&nbsp;&nbsp;Stop typing compile commands — automate it
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+
+            <div class="callout callout--blue callout--bar mb-14">
+              <div class="eyebrow eyebrow--md t-blue mb-8">// What a .bat file is and why you want one</div>
+              <div class="prose t-text">
+                A <strong class="t-accent">.bat file</strong> (batch file) is a plain text file containing a list of terminal commands. When you run it, Windows executes every command inside it in order — exactly as if you had typed them yourself.<br><br>
+                Right now your compile command is:<br>
+                <span class="keycap t-accent" style="display:block;margin:8px 0">cl hello_world.c</span>
+                That's fine for one file. But as your project grows you'll have multiple .c files, compiler flags, output folders, and linker options. Typing that full command every time is error-prone and slow. A build.bat wraps all of it into one word: <span class="cmd">build</span>.<br><br>
+                <strong class="t-accent">Every professional C/C++ project has some form of build automation.</strong> This is the simplest version of that concept.
+              </div>
+            </div>
+
+            <div class="callout callout--purple callout--bar mb-14">
+              <div class="eyebrow eyebrow--md t-purple mb-6">// The analogy</div>
+              <div class="prose t-muted2 italic">Think of build.bat as a recipe card. Instead of measuring out every ingredient and step every time you cook, you write the recipe once and follow it. Your build.bat is the recipe for turning your source code into a runnable game. One command. Every time. No mistakes.</div>
+            </div>
+
+            <div class="eyebrow eyebrow--tight eyebrow--lg t-muted2 mb-10">// Step 1 — Create the file</div>
+            <div class="prose t-text mb-12">
+              In VS Code, in your <strong class="t-accent">game-dev-exercises</strong> folder, create a new file called <span class="cmd">build.bat</span>. Make sure it's in the same folder as your .c files — not inside a subfolder.
+            </div>
+
+            <div class="eyebrow eyebrow--tight eyebrow--lg t-muted2 mb-10">// Step 2 — Start simple: Hello World build</div>
+            <div class="code-wrap mb-14">
+              <div class="code-label">
+                <span>build.bat — Phase 1 version (single file)</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+<pre class="code-panel fs-11" style="overflow-x:auto"><span class="c-cm">@echo off</span>                        <span class="c-cm">rem  hides the commands from printing to terminal</span>
+
+<span class="c-cm">rem ── Compile ──────────────────────────────────────────</span>
+<span class="c-str">cl</span> hello_world.c <span class="c-num">/Fe:hello_world.exe</span>   <span class="c-cm">rem  /Fe: sets the output .exe name</span>
+
+<span class="c-cm">rem  Check if compile succeeded — %ERRORLEVEL% is 0 on success</span>
+<span class="c-kw">if</span> <span class="c-num">%ERRORLEVEL%</span> <span class="c-kw">neq</span> 0 (
+    <span class="c-str">echo.</span>
+    <span class="c-str">echo  BUILD FAILED.</span>
+    <span class="c-kw">exit</span> /b 1
+)
+
+<span class="c-str">echo.</span>
+<span class="c-str">echo  BUILD OK — hello_world.exe</span></pre>
+            </div>
+
+            <div class="eyebrow eyebrow--tight eyebrow--lg t-muted2 mb-10">// Step 3 — Run it</div>
+            <div class="prose t-text mb-12">
+              In your terminal, just type:
+              <span class="t-accent fs-11" style="display:block;background:var(--bg);border:1px solid var(--border2);padding:8px 14px;margin:8px 0">build</span>
+              That's it. Windows finds build.bat, runs every line inside it, and either reports BUILD OK or BUILD FAILED with the compiler error. Then run your .exe as normal.
+            </div>
+
+            <div class="eyebrow eyebrow--tight eyebrow--lg t-muted2 mb-10">// Step 4 — Grow it as your project grows</div>
+            <div class="code-wrap mb-14">
+              <div class="code-label">
+                <span>build.bat — Phase 3+ version (multiple files)</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+<pre class="code-panel fs-11" style="overflow-x:auto"><span class="c-cm">@echo off</span>
+
+<span class="c-cm">rem ── Compiler flags ────────────────────────────────────</span>
+<span class="c-cm">rem  /W4      = turn on most warnings (your compiler catching mistakes)</span>
+<span class="c-cm">rem  /WX      = treat warnings as errors (no silent problems)</span>
+<span class="c-cm">rem  /Zi      = include debug info (lets you use the debugger)</span>
+<span class="c-cm">rem  /Od      = disable optimisation (faster compile during dev)</span>
+<span class="c-cm">rem  /Fe:     = name the output .exe</span>
+<span class="c-pp">set</span> FLAGS=<span class="c-num">/W4 /WX /Zi /Od</span>
+
+<span class="c-cm">rem ── Source files — add new .c files here as you create them ──</span>
+<span class="c-pp">set</span> SOURCES=<span class="c-str">main.c player.c</span>
+
+<span class="c-cm">rem ── Compile ───────────────────────────────────────────</span>
+<span class="c-str">cl</span> <span class="c-num">%FLAGS%</span> <span class="c-str">%SOURCES%</span> <span class="c-num">/Fe:game.exe</span>
+
+<span class="c-kw">if</span> <span class="c-num">%ERRORLEVEL%</span> <span class="c-kw">neq</span> 0 (
+    <span class="c-str">echo.</span>
+    <span class="c-str">echo  BUILD FAILED.</span>
+    <span class="c-kw">exit</span> /b 1
+)
+
+<span class="c-str">echo.</span>
+<span class="c-str">echo  BUILD OK — game.exe</span></pre>
+            </div>
+
+            <div class="callout callout--yellow">
+              <div class="eyebrow eyebrow--md t-yellow mb-8">// What the flags actually do — read this</div>
+              <div class="stack gap-8 fs-11">
+                <div><span class="cmd">/W4</span> <span class="t-muted2">— turns on most compiler warnings. The compiler will flag things that look suspicious even if they technically compile. These warnings are almost always real problems.</span></div>
+                <div><span class="cmd">/WX</span> <span class="t-muted2">— treats warnings as errors. Your build fails if there are any warnings. This forces you to write clean code. Standard in professional game studios.</span></div>
+                <div><span class="cmd">/Zi</span> <span class="t-muted2">— includes debug information in the .exe. Required if you want to use a debugger to step through code line by line and inspect variable values — which you will need.</span></div>
+                <div><span class="cmd">/Od</span> <span class="t-muted2">— disables compiler optimisations. Faster compile time during development. When you ship, swap to /O2 for a faster executable.</span></div>
+                <div><span class="cmd">set SOURCES=</span> <span class="t-muted2">— this is where you list every .c file in your project. Adding a new source file = add it here. One place, always correct.</span></div>
+              </div>
+            </div>
+
+            <div class="callout callout--accent mt-14" style="padding:12px 16px">
+              <div class="eyebrow eyebrow--md t-accent mb-8">// Updated workflow with build.bat</div>
+              <div class="row gap-8" style="align-items:center;flex-wrap:wrap">
+                <div class="keycap">Edit code</div><div class="t-muted">→</div>
+                <div class="keycap">Ctrl+S</div><div class="t-muted">→</div>
+                <div class="keycap">Ctrl+`</div><div class="t-muted">→</div>
+                <div class="fs-11 t-accent" style="background:var(--bg);border:1px solid var(--accent-line-strong);padding:6px 12px">build</div><div class="t-muted">→</div>
+                <div class="keycap">game.exe</div>
+              </div>
+              <div class="fs-10 t-muted mt-10">After first run: ↑ arrow brings back <span class="cmd">build</span>. One keystroke to compile everything, no matter how many files your project has.</div>
+            </div>
+
+            <div class="callout callout--orange mt-14" style="padding:12px 16px">
+              <div class="eyebrow eyebrow--md t-orange mb-8">// Important — add build artifacts to .gitignore</div>
+              <div class="prose prose--tight t-muted2">build.bat itself should be committed — it's part of your project. But the files it produces (*.exe, *.obj, *.pdb) should NOT be committed. Your .gitignore from Phase 4 already covers this. Make sure build.bat is in git but your compiled output isn't.</div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- PREDICT THE OUTPUT -->
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-yellow">Predict the Output</span>&nbsp;&nbsp;4 drills — guess first, then run it
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+
+            <div class="callout callout--yellow callout--sm mb-14">
+              <div class="eyebrow eyebrow--md t-yellow mb-6">// How these work</div>
+              <div class="prose prose--sm t-muted2">Read the code. <strong class="t-text">Write your prediction down on paper</strong> — not in your head, on paper, because your head will quietly agree with whatever comes out. Then compile it and compare. The ones you get wrong are the only ones that teach you anything. Session 1 was accidentally this exercise; this is the deliberate version.</div>
+            </div>
+
+            <div class="quiz-items">
+
+              <div class="quiz-item drill-item">
+                <div class="quiz-q">1. The <span class="cmd">\r</span> you found by accident in session 1</div>
+<pre><span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
+
+<span class="c-type">int</span> <span class="c-fn">main</span>(<span class="c-type">void</span>) {
+    <span class="c-fn">printf</span>(<span class="c-str">"Lets\r party up!\n"</span>);
+    <span class="c-kw">return</span> <span class="c-num">0</span>;
+}</pre>
+                <div class="drill-run">Write your prediction down, then compile and run it.</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">It prints <span class="cmd"> party up!</span> — with a leading space, and no sign of "Lets" at all.<br><br>
+                  <span class="cmd">\r</span> is carriage return: send the cursor back to column 0 of the same line without moving down. <span class="cmd">\n</span> is the one that moves down. So "Lets" gets printed, the cursor jumps back to the start, and " party up!" is painted straight over the top of it. Ten characters covering four — nothing survives.<br><br>
+                  You didn't break anything in session 1. You found the oldest trick in terminal rendering, and in Phase 4.5 you'll use it deliberately to redraw a whole game every frame.</div>
+                </details>
+              </div>
+
+              <div class="quiz-item drill-item">
+                <div class="quiz-q">2. Two backslashes and two percent signs</div>
+<pre><span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
+
+<span class="c-type">int</span> <span class="c-fn">main</span>(<span class="c-type">void</span>) {
+    <span class="c-fn">printf</span>(<span class="c-str">"C:\\Users\\4samt\\new%%directory\n"</span>);
+    <span class="c-fn">printf</span>(<span class="c-str">"backslash: \\ percent: %%\n"</span>);
+    <span class="c-kw">return</span> <span class="c-num">0</span>;
+}</pre>
+                <div class="drill-run">Write your prediction down, then compile and run it.</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a"><pre class="p-12 fs-12 mb-10">C:\Users\4samt\new%directory
+backslash: \ percent: %</pre>
+                  Two doubled characters, two completely different reasons. <span class="cmd">\\</span> is the <strong class="t-text">compiler's</strong> rule — inside a string literal a backslash starts an escape sequence, so one backslash needs two. That's resolved before your program ever runs.<br><br>
+                  <span class="cmd">%%</span> is <strong class="t-text">printf's</strong> rule — a percent sign starts a format specifier, so printf needs two to print one. That happens at runtime, inside printf. If you ever print a string that came from somewhere else with <span class="cmd">printf(text)</span>, a stray <span class="cmd">%</span> in it will make printf go looking for an argument you never passed. Use <span class="cmd">printf("%s", text)</span>.</div>
+                </details>
+              </div>
+
+              <div class="quiz-item drill-item">
+                <div class="quiz-q">3. Truncation — the C4244 from session 1, on purpose this time</div>
+<pre><span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
+
+<span class="c-type">int</span> <span class="c-fn">main</span>(<span class="c-type">void</span>) {
+    <span class="c-type">float</span> <span class="c-var">x</span> = <span class="c-num">1.8f</span>;
+    <span class="c-type">int</span>   <span class="c-var">n</span> = (<span class="c-type">int</span>)<span class="c-var">x</span>;
+
+    <span class="c-fn">printf</span>(<span class="c-str">"%d\n"</span>, <span class="c-var">n</span>);
+    <span class="c-fn">printf</span>(<span class="c-str">"%.1f\n"</span>, <span class="c-var">x</span>);
+    <span class="c-fn">printf</span>(<span class="c-str">"%d\n"</span>, (<span class="c-type">int</span>)<span class="c-num">9.99f</span>);
+    <span class="c-kw">return</span> <span class="c-num">0</span>;
+}</pre>
+                <div class="drill-run">Write your prediction down, then compile and run it.</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a"><pre class="p-12 fs-12 mb-10">1
+1.8
+9</pre>
+                  float to int <strong class="t-text">truncates toward zero</strong>. It does not round. 1.8 becomes 1 and 9.99 becomes 9 — the fraction is thrown in the bin, not weighed up.<br><br>
+                  This is exactly what <span class="cmd">int var(float x) { return x; }</span> was doing silently in session 1, and why the compiler raised C4244. Note that <span class="cmd">x</span> itself is untouched — it still prints 1.8. The <span class="cmd">(int)</span> cast doesn't change the behaviour one bit; it changes the conversation with the compiler from "you might not have meant this" to "I meant it."</div>
+                </details>
+              </div>
+
+              <div class="quiz-item drill-item">
+                <div class="quiz-q">4. Four printfs, how many lines?</div>
+<pre><span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
+
+<span class="c-type">int</span> <span class="c-fn">main</span>(<span class="c-type">void</span>) {
+    <span class="c-fn">printf</span>(<span class="c-str">"A"</span>);
+    <span class="c-fn">printf</span>(<span class="c-str">"B\n"</span>);
+    <span class="c-fn">printf</span>(<span class="c-str">"C\nD"</span>);
+    <span class="c-fn">printf</span>(<span class="c-str">"E\n"</span>);
+    <span class="c-kw">return</span> <span class="c-num">0</span>;
+}</pre>
+                <div class="drill-run">Write your prediction down, then compile and run it.</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">Three lines from four calls:<pre class="p-12 fs-12" style="margin:10px 0">AB
+C
+DE</pre>
+                  <span class="cmd">printf</span> never adds a newline for you. The breaks land exactly where you put <span class="cmd">\n</span> and nowhere else — which means one printf can produce two lines, and two printfs can produce one.<br><br>
+                  This is why the command prompt sometimes reappears glued to the end of your last word: you forgot the <span class="cmd">\n</span> on the final line.</div>
+                </details>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- QUIZ -->
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Quiz Yourself</span>&nbsp;&nbsp;5 questions — answer out loud before revealing
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="quiz-items">
+
+              <div class="quiz-item">
+                <div class="quiz-q">1. What does <span class="cmd">\r</span> do, and why did "Lets" disappear from your output?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a"><span class="cmd">\r</span> is carriage return. It snaps the cursor back to the start of the current line without moving down a line. You printed <span class="cmd">"Lets\r party up!\n"</span> — so "Lets" was printed, the cursor jumped back to column 0, and " party up!" was typed straight over the top of it. Nothing was deleted. It was overwritten.</div>
+                </details>
+              </div>
+
+              <div class="quiz-item">
+                <div class="quiz-q">2. <span class="cmd">1.8f</span> goes into a function that returns <span class="cmd">int</span>. What comes out, and why?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a"><span class="cmd">1</span>. Not 2. Float to int truncates — the decimal part is chopped off, not rounded. That's what warning <span class="cmd">C4244: possible loss of data</span> was telling you. <span class="cmd">7.9f</span> would give 7, and <span class="cmd">-1.8f</span> would give -1 (toward zero).</div>
+                </details>
+              </div>
+
+              <div class="quiz-item">
+                <div class="quiz-q">3. Why do you have to write <span class="cmd">\\</span> to print one backslash, and <span class="cmd">%%</span> to print one percent sign?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">Inside a printf string, both characters are already doing a job. A backslash starts an escape sequence (<span class="cmd">\n</span>, <span class="cmd">\t</span>) and a percent starts a format specifier (<span class="cmd">%d</span>, <span class="cmd">%f</span>). Doubling them says "I mean the symbol itself, not the instruction." That's why your path printed as <span class="cmd">C:\User\4samt\new%directory</span>.</div>
+                </details>
+              </div>
+
+              <div class="quiz-item">
+                <div class="quiz-q">4. You changed the code, hit <span class="cmd">build</span>, and the output is identical. First thing to check?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">Whether you saved. Look for the dot (●) on the VS Code tab. The compiler reads the file from disk — it has no idea what's on your screen. Ctrl+S, then build. Second thing to check: did the build actually succeed, or did you get BUILD FAILED and then run a stale .exe from the last good compile?</div>
+                </details>
+              </div>
+
+              <div class="quiz-item">
+                <div class="quiz-q">5. What does <span class="cmd">return 0;</span> at the bottom of main actually tell anyone?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">It tells the operating system the program finished cleanly. 0 means success, anything else means failure. That's the exact same value your build.bat reads as <span class="cmd">%ERRORLEVEL%</span> — which is how the <span class="cmd">if %ERRORLEVEL% neq 0</span> line knows to print BUILD FAILED.</div>
+                </details>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- CHECKPOINT -->
+        <div class="checkpoint">
+          <div class="checkpoint-header">
+            <span class="badge badge-green">Checkpoint</span>
+            <span class="checkpoint-title">Ready to move on when:</span>
+            <span class="cp-counter">0/6</span>
+          </div>
+          <div class="checkpoint-items">
+            <div class="cp-item" data-id="cp-p1-1"><span class="cp-cb">✓</span><span class="cp-text">You can write a .c file from scratch, compile with cl, and run the .exe</span></div>
+            <div class="cp-item" data-id="cp-p1-2"><span class="cp-cb">✓</span><span class="cp-text">You can use printf to print text and numbers (%d) to the terminal</span></div>
+            <div class="cp-item" data-id="cp-p1-3"><span class="cp-cb">✓</span><span class="cp-text">You understand what \n does and why it must be inside the quotes</span></div>
+            <div class="cp-item" data-id="cp-p1-4"><span class="cp-cb">✓</span><span class="cp-text">You've read at least one compiler error and understood what it told you</span></div>
+            <div class="cp-item" data-id="cp-p1-5"><span class="cp-cb">✓</span><span class="cp-text">build.bat exists in your repo, runs with a single word, and is committed to GitHub</span></div>
+            <div class="cp-item" data-id="cp-p1-6"><span class="cp-cb">✓</span><span class="cp-text">Hello World is committed and visible on github.com</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>

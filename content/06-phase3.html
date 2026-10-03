@@ -1,0 +1,764 @@
+<!-- PHASE 3 -->
+  <div class="phase" id="phase3">
+    <div class="phase-header">
+      <div class="phase-n">03</div>
+      <div class="phase-meta">
+        <div class="phase-tag">Structure</div>
+        <div class="phase-title">Functions, Structs &amp; Pointers</div>
+      </div>
+      <div class="phase-right">
+        <div class="phase-week">Weeks 3–4</div>
+        <div class="phase-chevron">▼</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-inner">
+
+        <!-- PLAIN ENGLISH WALKTHROUGH -->
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Explain Like I'm New</span>&nbsp;&nbsp;Functions, in plain English
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="stack gap-14">
+
+              <div class="callout callout--blue callout--bar">
+                <div class="eyebrow eyebrow--lg t-blue mb-8">// A function is a machine</div>
+                <div class="prose prose--loose t-text">
+                  A function is a machine: you put something in, it does something, and hands something back. Think of a <strong class="t-accent">vending machine</strong>.
+                </div>
+<pre class="code-panel mt-12"><span class="c-type">float</span> <span class="c-fn">var</span>(<span class="c-type">float</span> <span class="c-var">x</span>) {
+    <span class="c-kw">return</span> <span class="c-var">x</span>;
+}</pre>
+                <div class="prose stack gap-8 mt-12 t-muted2">
+                  <div><span class="t-accent">float x</span> — the slot you put money into (the input). <span class="cmd">float</span> means it accepts decimals like 1.8.</div>
+                  <div><span class="t-accent">float var(...)</span> — the float at the front is what the machine spits out. Again, a decimal.</div>
+                  <div><span class="t-accent">return x</span> — "hand back whatever was put in." This machine just gives back exactly what you gave it.</div>
+                  <div class="t-text mt-4">So <span class="cmd">var(1.8)</span> → puts 1.8 in → gets 1.8 back. A simple pass-through.</div>
+                </div>
+              </div>
+
+              <div class="callout callout--blue callout--bar">
+                <div class="eyebrow eyebrow--lg t-blue mb-8">// printf is a fill-in-the-blank sentence</div>
+                <div class="prose prose--loose t-text">
+                  The <span class="cmd">%</span> symbols are blank slots. The values after the comma fill them in:
+                </div>
+<pre class="code-panel" style="margin:12px 0"><span class="c-fn">printf</span>(<span class="c-str">"I am %f years old\n"</span>, <span class="c-fn">var</span>(<span class="c-num">1.8</span>));
+<span class="c-cm">//           ^^              ^^^^^^^</span>
+<span class="c-cm">//        blank slot       fills this slot</span></pre>
+                <div class="prose stack gap-8 t-muted2">
+                  <div><span class="cmd">%d</span> — the slot expects a whole number (integer). 28, -5, 1000. No decimals.</div>
+                  <div><span class="cmd">%f</span> — the slot expects a decimal number (float). 1.8, 3.14, -0.5.</div>
+                  <div class="t-text mt-4">Using the wrong one is like a form asking for your age in whole years, but you write 1.8 — the form gets confused. That's why an earlier bug printed <span class="cmd">1</span>: the code used <span class="cmd">%d</span>, so 1.8 got chopped to 1.</div>
+                </div>
+              </div>
+
+              <div class="callout callout--yellow">
+                <div class="eyebrow eyebrow--lg t-yellow mb-8">// How var(1.8) becomes "I am 1.8 years old" — read inside-out</div>
+                <div class="prose stack gap-8 t-text">
+                  <div><strong class="t-accent">1.</strong> <span class="cmd">var(1.8)</span> — put 1.8 into the vending machine, get 1.8 back</div>
+                  <div><strong class="t-accent">2.</strong> <span class="cmd">printf("I am %f years old\n", 1.8)</span> — fill the %f slot with 1.8</div>
+                  <div><strong class="t-accent">3.</strong> Output: <span class="cmd">I am 1.800000 years old</span> &nbsp;(use <span class="cmd">%.1f</span> to get 1.8 instead of 1.800000)</div>
+                </div>
+              </div>
+
+              <div class="callout callout--purple callout--bar">
+                <div class="eyebrow eyebrow--lg t-purple mb-8">// Defining vs running — the recipe book</div>
+                <div class="prose prose--loose t-muted2 italic">
+                  A program starts at <span class="cmd upright">main</span> — but defining a function earlier in the file isn't "running" it, it's just describing the machine to the compiler beforehand. Think of a recipe book: writing the recipe for <span class="cmd upright">var</span> (the machine exists, but isn't turned on yet) happens before <span class="cmd upright">main</span> actually uses the recipe for the first time. The definition can sit at the top of the file; it only runs when something calls it.
+                </div>
+              </div>
+
+              <div class="callout callout--blue callout--bar">
+                <div class="eyebrow eyebrow--lg t-blue mb-8">// Two different returns — they are not the same</div>
+                <div class="prose prose--loose t-text mb-12">This is the key confusion. There are two separate functions, each with their own return:</div>
+                <div class="gap-2 fs-12-5" style="display:grid;grid-template-columns:1fr 1fr">
+                  <div class="panel p-12 t-muted2"></div>
+                  <div class="panel p-12 t-accent fw-500" style="text-align:center">var &nbsp;|&nbsp; main</div>
+                  <div class="panel p-12 t-muted2">Returns to...</div>
+                  <div class="panel p-12 t-text" style="text-align:center">caller (line 14) &nbsp;|&nbsp; the OS</div>
+                  <div class="panel p-12 t-muted2">Returns...</div>
+                  <div class="panel p-12 t-text" style="text-align:center">1.8 (result) &nbsp;|&nbsp; 0 (success)</div>
+                </div>
+                <div class="prose t-muted2 mt-12">
+                  <span class="cmd">return x</span> inside var → gives 1.8 back to the line that called it.<br>
+                  <span class="cmd">return 0</span> inside main → tells the OS "the program finished without errors."<br>
+                  <strong class="t-text">They're completely separate. return 0 has nothing to do with 1.8.</strong>
+                </div>
+              </div>
+
+              <div class="callout callout--accent">
+                <div class="eyebrow eyebrow--lg t-accent mb-8">// The full flow, in plain English</div>
+<pre class="code-panel">Program starts <span class="c-cm">→ enter main</span>
+  <span class="c-cm">→ reach the printf line</span>
+    <span class="c-cm">→ pause printf, call var(1.8)</span>
+      <span class="c-cm">→ var receives 1.8, returns 1.8, shuts down</span>
+    <span class="c-cm">→ printf gets 1.8 back, prints the sentence</span>
+  <span class="c-cm">→ reach return 0 → program exits, tells OS "all good"</span></pre>
+              </div>
+
+              <div class="callout callout--blue callout--bar">
+                <div class="eyebrow eyebrow--lg t-blue mb-8">// The big picture — every C program</div>
+<pre class="code-panel"><span class="c-pp">#include</span>     <span class="c-cm">→ borrow the toolbox (printf lives in stdio.h)</span>
+<span class="c-type">float</span> <span class="c-fn">var</span>()  <span class="c-cm">→ define your own mini-machine</span>
+<span class="c-fn">main</span>()       <span class="c-cm">→ the "start here" — every C program begins in main</span>
+<span class="c-fn">printf</span>()     <span class="c-cm">→ use the toolbox to print to the screen</span>
+<span class="c-kw">return</span> <span class="c-num">0</span>     <span class="c-cm">→ tell the OS "I finished successfully"</span></pre>
+                <div class="prose t-text mt-12">Every C program is just: <strong class="t-accent">borrow tools → define machines → run main → done.</strong></div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- SESSION PLAN -->
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-green">Session Plan</span>&nbsp;&nbsp;Phase 3 in three sittings — D, E, F
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+
+            <div class="callout callout--yellow callout--sm mb-14">
+              <div class="eyebrow eyebrow--md t-yellow mb-6">// Session E is the one that matters</div>
+              <div class="prose prose--sm t-muted2">Pointers are the concept everything after this leans on. If you only get one clean 3-hour block this phase, spend it on session E — and do session F's debugger walkthrough the same day if you still have energy, because watching <span class="cmd">p-&gt;health</span> change in the Watch panel is what makes pointers stop being abstract.</div>
+            </div>
+
+            <div class="stack gap-12">
+
+              <div class="sess-card">
+                <div class="sess-head"><div class="sess-name">// Session D — functions that do one thing</div><div class="sess-time">~2 hrs</div></div>
+                <div class="sess-rows">
+                  <div class="sess-k">Warm-up 10 min</div>
+                  <div class="sess-v">1. Without looking, write the signature of a function that takes two floats and returns nothing.<br>2. Session 1's <span class="cmd">int var(float x) { return x; }</span> — which warning, and why?<br>3. What happens if you call a function that's defined below <span class="cmd">main</span>, and what fixes it?</div>
+                  <div class="sess-k">Build</div>
+                  <div class="sess-v"><strong>functions.c</strong> — three small ones: <span class="cmd">int add_scores(int a, int b)</span>, <span class="cmd">void print_banner(void)</span>, <span class="cmd">int clamp_health(int h)</span>. Call all three from main. Clean under <span class="cmd">/W4 /WX</span>.</div>
+                  <div class="sess-k">Break it</div>
+                  <div class="sess-v">Move one function definition below <span class="cmd">main</span> and delete its declaration at the top. Predict the error, then read the real one (<span class="cmd">C4013</span>, and <span class="cmd">/WX</span> turning it into a stopped build). Put the declaration back and watch it clear.</div>
+                  <div class="sess-k">Commit</div>
+                  <div class="sess-v"><span class="cmd">git add functions.c</span><br><span class="cmd">git commit -m "feat: small single-purpose functions"</span><br><span class="cmd">git push</span></div>
+                </div>
+              </div>
+
+              <div class="sess-card">
+                <div class="sess-head"><div class="sess-name">// Session E — the Player struct and pointers</div><div class="sess-time">~3 hrs</div></div>
+                <div class="sess-rows">
+                  <div class="sess-k">Warm-up 10 min</div>
+                  <div class="sess-v">1. Without looking, write a struct holding two floats and an int, and give it a name with <span class="cmd">typedef</span>.<br>2. What does <span class="cmd">&amp;x</span> hand you, and what does <span class="cmd">*p</span> hand you?<br>3. When do you use <span class="cmd">.</span> and when do you use <span class="cmd">-&gt;</span>?</div>
+                  <div class="sess-k">Build</div>
+                  <div class="sess-v"><strong>player.h + player.c</strong> from the starter code, plus <span class="cmd">player_heal</span> written by you. Build both files: <span class="cmd">cl /W4 /WX main.c player.c /Fe:game.exe</span>.</div>
+                  <div class="sess-k">Break it</div>
+                  <div class="sess-v">Change <span class="cmd">player_move(Player* p, ...)</span> to <span class="cmd">player_move(Player p, ...)</span>, fix the arrows to dots so it compiles, and run it. The player refuses to move. That's the photocopy problem happening to you, live, instead of in a diagram.</div>
+                  <div class="sess-k">Commit</div>
+                  <div class="sess-v"><span class="cmd">git add player.h player.c main.c</span><br><span class="cmd">git commit -m "feat: Player struct with pointer-based move and damage"</span><br><span class="cmd">git push</span></div>
+                </div>
+              </div>
+
+              <div class="sess-card">
+                <div class="sess-head"><div class="sess-name">// Session F — .h / .c split, the debugger, the refactor</div><div class="sess-time">~2.5 hrs</div></div>
+                <div class="sess-rows">
+                  <div class="sess-k">Warm-up 10 min</div>
+                  <div class="sess-v">1. Without looking, say what goes in a <span class="cmd">.h</span> and what goes in a <span class="cmd">.c</span>.<br>2. What does <span class="cmd">#pragma once</span> prevent?<br>3. Rewrite <span class="cmd">p-&gt;health</span> using only a star and a dot.</div>
+                  <div class="sess-k">Build</div>
+                  <div class="sess-v">Refactor the guessing game onto functions and the Player struct, split across files. Then run the debugger walkthrough below: breakpoint inside <span class="cmd">player_move</span>, <span class="cmd">p-&gt;health</span> in the Watch panel, step through it.</div>
+                  <div class="sess-k">Break it</div>
+                  <div class="sess-v">Delete <span class="cmd">#pragma once</span> from player.h and <span class="cmd">#include "player.h"</span> twice in main.c. Predict the failure, then read the real redefinition error (<span class="cmd">C2011</span>).</div>
+                  <div class="sess-k">Commit</div>
+                  <div class="sess-v"><span class="cmd">git add .</span><br><span class="cmd">git commit -m "refactor: guessing game onto functions and Player struct"</span><br><span class="cmd">git push</span></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-header"><span class="badge badge-green">Tasks</span></div>
+          <div class="section-block-body">
+            <div class="tasks" id="tasks-3">
+              <div class="task" data-id="p3-functions">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Write functions with parameters and return values — keep them small and single-purpose</div>
+                  <div class="task-note"><span class="task-time">~1 hr</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p3-player-struct">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Define a Player struct with position, health, and name fields</div>
+                  <div class="task-note">This will become the actual player in your game <span class="task-time">~45 min</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p3-pointers">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Learn pointers — what the * and &amp; operators do and why they exist <span class="task-tag t-crucial">Crucial</span></div>
+                  <div class="task-note">Don't rush past this. Pointers appear in all game code. <span class="task-time">~1.5 hrs</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p3-refactor-guessing-game">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Refactor your guessing game to use functions and a Player struct</div>
+                  <div class="task-note">Same behavior, cleaner code. This is what "proper" code means. <span class="task-time">~1.5 hrs</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p3-header-files">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Separate into .h and .c files — understand declarations vs definitions</div>
+                  <div class="task-note"><span class="task-time">~45 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Starter Code</span>&nbsp;&nbsp;player.h + player.c
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body">
+            <div class="code-wrap">
+              <div class="code-label">
+                <span>player.h — the declaration (what exists)</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+<pre><span class="c-pp">#pragma once</span>
+<span class="c-pp">#include</span> <span class="c-str">&lt;stdbool.h&gt;</span>
+
+<span class="c-cm">// A struct groups related data together</span>
+<span class="c-cm">// Think of it as a blueprint for a game object</span>
+<span class="c-kw">typedef struct</span> {
+    <span class="c-type">float</span> <span class="c-var">x</span>;
+    <span class="c-type">float</span> <span class="c-var">y</span>;
+    <span class="c-type">int</span>   <span class="c-var">health</span>;
+    <span class="c-type">bool</span>  <span class="c-var">alive</span>;
+} <span class="c-type">Player</span>;
+
+<span class="c-cm">// Function declarations — the "what" without the "how"</span>
+<span class="c-type">Player</span> <span class="c-fn">player_create</span>(<span class="c-type">float</span> <span class="c-var">start_x</span>, <span class="c-type">float</span> <span class="c-var">start_y</span>);
+<span class="c-type">void</span>   <span class="c-fn">player_move</span>(<span class="c-type">Player</span>* <span class="c-var">p</span>, <span class="c-type">float</span> <span class="c-var">dx</span>, <span class="c-type">float</span> <span class="c-var">dy</span>);
+<span class="c-type">void</span>   <span class="c-fn">player_take_damage</span>(<span class="c-type">Player</span>* <span class="c-var">p</span>, <span class="c-type">int</span> <span class="c-var">amount</span>);
+<span class="c-type">void</span>   <span class="c-fn">player_print</span>(<span class="c-type">Player</span>* <span class="c-var">p</span>);</pre>
+            </div>
+            <div class="code-wrap mt-2">
+              <div class="code-label">
+                <span>player.c — the definitions (the actual code)</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+<pre><span class="c-pp">#include</span> <span class="c-str">"player.h"</span>
+<span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
+
+<span class="c-type">Player</span> <span class="c-fn">player_create</span>(<span class="c-type">float</span> <span class="c-var">start_x</span>, <span class="c-type">float</span> <span class="c-var">start_y</span>) {
+    <span class="c-type">Player</span> <span class="c-var">p</span>;
+    <span class="c-var">p</span>.x      = <span class="c-var">start_x</span>;
+    <span class="c-var">p</span>.y      = <span class="c-var">start_y</span>;
+    <span class="c-var">p</span>.health = <span class="c-num">100</span>;
+    <span class="c-var">p</span>.alive  = <span class="c-kw">true</span>;
+    <span class="c-kw">return</span> <span class="c-var">p</span>;
+}
+
+<span class="c-cm">// Player* means "a pointer to a Player" — we pass by pointer</span>
+<span class="c-cm">// so the function can MODIFY the original, not a copy</span>
+<span class="c-type">void</span> <span class="c-fn">player_move</span>(<span class="c-type">Player</span>* <span class="c-var">p</span>, <span class="c-type">float</span> <span class="c-var">dx</span>, <span class="c-type">float</span> <span class="c-var">dy</span>) {
+    <span class="c-var">p</span>-&gt;<span class="c-var">x</span> += <span class="c-var">dx</span>;
+    <span class="c-var">p</span>-&gt;<span class="c-var">y</span> += <span class="c-var">dy</span>;
+}
+
+<span class="c-type">void</span> <span class="c-fn">player_take_damage</span>(<span class="c-type">Player</span>* <span class="c-var">p</span>, <span class="c-type">int</span> <span class="c-var">amount</span>) {
+    <span class="c-var">p</span>-&gt;<span class="c-var">health</span> -= <span class="c-var">amount</span>;
+    <span class="c-kw">if</span> (<span class="c-var">p</span>-&gt;<span class="c-var">health</span> &lt;= <span class="c-num">0</span>) {
+        <span class="c-var">p</span>-&gt;<span class="c-var">health</span> = <span class="c-num">0</span>;
+        <span class="c-var">p</span>-&gt;<span class="c-var">alive</span> = <span class="c-kw">false</span>;
+    }
+}
+
+<span class="c-type">void</span> <span class="c-fn">player_print</span>(<span class="c-type">Player</span>* <span class="c-var">p</span>) {
+    <span class="c-fn">printf</span>(<span class="c-str">"Player pos: (%.1f, %.1f) health: %d alive: %s\n"</span>,
+           <span class="c-var">p</span>-&gt;<span class="c-var">x</span>, <span class="c-var">p</span>-&gt;<span class="c-var">y</span>, <span class="c-var">p</span>-&gt;<span class="c-var">health</span>,
+           <span class="c-var">p</span>-&gt;<span class="c-var">alive</span> ? <span class="c-str">"yes"</span> : <span class="c-str">"no"</span>);
+}
+
+<span class="c-cm">// TODO: Add player_heal(Player* p, int amount)</span>
+<span class="c-cm">// TODO: Add player_is_dead(Player* p) that returns bool</span>
+<span class="c-cm">// TODO: Add bounds checking to player_move so x/y can't go negative</span></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- POINTERS PLAIN ENGLISH -->
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Explain Like I'm New</span>&nbsp;&nbsp;Pointers, in plain English
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="stack gap-14">
+
+              <div class="callout callout--blue callout--bar">
+                <div class="eyebrow eyebrow--lg t-blue mb-8">// Memory is a street of numbered houses</div>
+                <div class="prose prose--loose t-text">
+                  Every variable in your program lives somewhere in memory — like a house on a street, each with its own address. A <strong class="t-accent">pointer</strong> is just a piece of paper with a house's address written on it.
+                </div>
+<pre class="code-panel mt-12"><span class="c-type">int</span> <span class="c-var">x</span> = <span class="c-num">5</span>;        <span class="c-cm">// a house with the number 5 inside it</span>
+<span class="c-type">int</span>* <span class="c-var">p</span> = &amp;<span class="c-var">x</span>;     <span class="c-cm">// p is a paper holding x's address</span>
+<span class="c-fn">printf</span>(<span class="c-str">"%d"</span>, *<span class="c-var">p</span>); <span class="c-cm">// *p = "go to that address, look inside" → 5</span></pre>
+                <div class="prose stack gap-8 mt-12 t-muted2">
+                  <div><span class="cmd">&amp;x</span> — "the address of x." The &amp; gives you the house's location, not what's inside.</div>
+                  <div><span class="cmd">*p</span> — "go to the address p holds and look inside." This is called dereferencing.</div>
+                  <div class="t-text">A pointer doesn't hold the value — it holds <em>where the value lives</em>.</div>
+                </div>
+              </div>
+
+              <div class="callout callout--yellow">
+                <div class="eyebrow eyebrow--lg t-yellow mb-8">// Why games pass pointers — the photocopy problem</div>
+                <div class="prose prose--loose t-text mb-12">
+                  When you hand a function a normal value, C makes a <strong class="t-accent">photocopy</strong>. The function scribbles on the copy — your original is untouched.
+                </div>
+<pre class="code-panel"><span class="c-cm">// WITHOUT a pointer — works on a photocopy</span>
+<span class="c-type">void</span> <span class="c-fn">move</span>(<span class="c-type">Player</span> <span class="c-var">p</span>) { <span class="c-var">p</span>.x += <span class="c-num">5</span>; }  <span class="c-cm">// changes the copy, not the real player</span>
+
+<span class="c-cm">// WITH a pointer — works on the real thing</span>
+<span class="c-type">void</span> <span class="c-fn">move</span>(<span class="c-type">Player</span>* <span class="c-var">p</span>) { <span class="c-var">p</span>-&gt;<span class="c-var">x</span> += <span class="c-num">5</span>; } <span class="c-cm">// reaches the real player by address</span></pre>
+                <div class="prose t-muted2 mt-12">
+                  Passing <span class="cmd">Player p</span> is like giving someone a photocopy of your house plans — they can scribble on it but your house doesn't change. Passing <span class="cmd">Player* p</span> is like giving them your address — now they can walk in and actually move your furniture. <strong class="t-text">Every game function that changes an object takes a pointer.</strong>
+                </div>
+              </div>
+
+              <div class="callout callout--purple callout--bar">
+                <div class="eyebrow eyebrow--lg t-purple mb-8">// The arrow vs the dot — one simple rule</div>
+                <div class="prose prose--loose t-muted2">
+                  <span class="cmd upright">p-&gt;health</span> is just shorthand for "go to the address, then grab the health field." You'll see it everywhere in game code. The rule is dead simple:<br><br>
+                  <strong class="t-accent">Pointer? Use the arrow →</strong> &nbsp;<span class="cmd upright">p-&gt;health</span><br>
+                  <strong class="t-accent">Actual value? Use the dot .</strong> &nbsp;<span class="cmd upright">player.health</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- DEBUGGER -->
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-yellow">Tooling</span>&nbsp;&nbsp;The Debugger — watch a pointer change live
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="stack gap-14">
+
+              <div class="callout callout--orange callout--bar">
+                <div class="eyebrow eyebrow--lg t-orange mb-8">// Why printf debugging runs out of road</div>
+                <div class="prose prose--loose t-text">
+                  Printing values has worked fine so far because your programs are twenty lines long. It stops working the moment there's a loop running sixty times a second, a struct with six fields, and a function three calls deep.<br><br>
+                  You end up adding a printf, rebuilding, running, reading, deleting the printf, adding another one somewhere else. Every cycle costs a build. And a printf only shows you what you thought to ask for — <strong class="t-orange">it can't show you the thing you didn't suspect.</strong>
+                </div>
+                <div class="prose t-muted2 mt-12">
+                  A debugger freezes the program mid-run and lets you look at everything at once. No rebuild, no guessing which variable to print. You already paid for this — it just isn't switched on yet.
+                </div>
+              </div>
+
+              <div class="callout callout--accent">
+                <div class="eyebrow eyebrow--lg t-accent mb-8">// You already did the hard part in session 1</div>
+                <div class="prose prose--loose t-text">
+                  Your build.bat has <span class="cmd">/Zi</span> in it. That flag tells <span class="cmd">cl</span> to write a <strong class="t-accent">PDB</strong> — a symbol file, <span class="cmd">game.pdb</span>, sitting right next to <span class="cmd">game.exe</span>. It's the map that says "this machine instruction came from line 42 of player.c, and the thing in that register is called <span class="cmd">p</span>."<br><br>
+                  Without it a debugger sees a wall of assembly. With it, you get your own source code with a yellow arrow on the current line. The linker line you saw in session 1 — <span class="cmd">/debug /out:game.exe</span> — is the other half of the same setup. Nothing to install. One config file and you're in.
+                </div>
+              </div>
+
+              <div class="callout callout--blue callout--bar">
+                <div class="eyebrow eyebrow--lg t-blue mb-10">// Setting it up — four steps, once, forever</div>
+                <div class="prose t-muted2" style="display:grid;grid-template-columns:22px 1fr;gap:8px 12px">
+                  <div class="t-blue">1</div><div>In VS Code, install the <strong class="t-text">C/C++</strong> extension from Microsoft (<span class="cmd">ms-vscode.cpptools</span>). That's what provides the <span class="cmd">cppvsdbg</span> debug type — the one that speaks MSVC and PDB.</div>
+                  <div class="t-blue">2</div><div>Open your repo <strong class="t-text">as a folder</strong> (File → Open Folder), not as a single file. <span class="cmd">${workspaceFolder}</span> only means something if VS Code has a folder open.</div>
+                  <div class="t-blue">3</div><div>Create <span class="cmd">.vscode/launch.json</span> in the repo root and paste the config below. Commit it — your partner gets debugging for free.</div>
+                  <div class="t-blue">4</div><div><strong class="t-accent">Run <span class="cmd upright">build</span> first, every single time.</strong> F5 launches the exe that's on disk. It does not compile for you. This is the number one reason breakpoints "don't work."</div>
+                </div>
+              </div>
+
+              <div class="code-wrap">
+                <div class="code-label">
+                  <span>.vscode/launch.json — minimal MSVC config</span>
+                  <button class="copy-btn">Copy</button>
+                </div>
+<pre>{
+  <span class="c-str">"version"</span>: <span class="c-str">"0.2.0"</span>,
+  <span class="c-str">"configurations"</span>: [
+    {
+      <span class="c-str">"name"</span>: <span class="c-str">"Debug game.exe"</span>,
+      <span class="c-str">"type"</span>: <span class="c-str">"cppvsdbg"</span>,
+      <span class="c-str">"request"</span>: <span class="c-str">"launch"</span>,
+      <span class="c-str">"program"</span>: <span class="c-str">"${workspaceFolder}/game.exe"</span>,
+      <span class="c-str">"args"</span>: [],
+      <span class="c-str">"stopAtEntry"</span>: <span class="c-kw">false</span>,
+      <span class="c-str">"cwd"</span>: <span class="c-str">"${workspaceFolder}"</span>,
+      <span class="c-str">"environment"</span>: [],
+      <span class="c-str">"console"</span>: <span class="c-str">"integratedTerminal"</span>
+    }
+  ]
+}</pre>
+              </div>
+
+              <div class="code-island" style="border:1px solid var(--border);padding:14px 16px">
+                <div class="eyebrow eyebrow--md t-muted2 mb-10">// Four keys and one panel. That's the whole debugger.</div>
+                <div class="fs-12" style="display:grid;grid-template-columns:110px 1fr;gap:6px 18px;align-items:baseline">
+                  <div class="t-muted2 py-4 bb">Key</div><div class="t-muted2 py-4 bb">What it does</div>
+                  <div><span class="cmd">F9</span></div><div class="t-muted2">Breakpoint on / off for the line the cursor is on. A red dot appears in the left margin. Execution stops <em>before</em> that line runs.</div>
+                  <div><span class="cmd">F5</span></div><div class="t-muted2">Start debugging. Also "keep going" once you're stopped — runs until the next breakpoint.</div>
+                  <div><span class="cmd">F10</span></div><div class="t-muted2">Step over. Run this whole line, including any function it calls, and stop on the next one. This is the key you'll use 90% of the time.</div>
+                  <div><span class="cmd">F11</span></div><div class="t-muted2">Step into. If the line calls <em>your</em> function, go inside it and stop on its first line.</div>
+                  <div><span class="cmd">Shift+F5</span></div><div class="t-muted2">Stop. Kills the program and gets you out.</div>
+                  <div><span class="cmd">Ctrl+Shift+D</span></div><div class="t-muted2">Opens the Run and Debug sidebar, where the Watch panel lives.</div>
+                </div>
+                <div class="prose prose--sm t-muted2 mt-12">
+                  <strong class="t-text">The Watch panel</strong> is the point of the whole exercise. Type any expression into it — <span class="cmd">p</span>, <span class="cmd">*p</span>, <span class="cmd">p-&gt;health</span>, <span class="cmd">hero.x</span> — and it re-evaluates after every step. You can also just hover a variable in the editor while stopped.
+                </div>
+              </div>
+
+              <div class="callout callout--purple callout--bar">
+                <div class="eyebrow eyebrow--lg t-purple mb-10">// The payoff exercise — do this one, it's the whole lesson</div>
+                <div class="prose prose--loose t-text mb-12">
+                  Every explanation of pointers on this page is a metaphor. This is the thing itself. Ten minutes.
+                </div>
+                <div class="prose t-muted2" style="display:grid;grid-template-columns:22px 1fr;gap:8px 12px">
+                  <div class="t-purple">1</div><div>Run <span class="cmd">build</span>. Make sure it succeeded before you touch F5.</div>
+                  <div class="t-purple">2</div><div>Open player.c. Put the cursor on the first line inside <span class="cmd">player_take_damage</span> and press <span class="cmd">F9</span>.</div>
+                  <div class="t-purple">3</div><div>Press <span class="cmd">F5</span>. The program starts, then freezes on that line with a yellow arrow the first time damage is dealt.</div>
+                  <div class="t-purple">4</div><div>Open the Watch panel and add three expressions: <span class="cmd">p</span>, <span class="cmd">*p</span>, and <span class="cmd">p-&gt;health</span>.</div>
+                  <div class="t-purple">5</div><div>Look at them before you step. <span class="cmd">p</span> is a number like <span class="cmd">0x00affc10</span> — that's the address, the piece of paper with the house number on it. <span class="cmd">*p</span> expands into the whole Player. <span class="cmd">p-&gt;health</span> is one field inside it.</div>
+                  <div class="t-purple">6</div><div>Press <span class="cmd">F10</span> once. Watch <span class="cmd">p-&gt;health</span> drop. <strong class="t-accent">Nothing in this function is named "hero" — and hero's health just changed anyway.</strong> That is what a pointer does, and you are watching it happen.</div>
+                  <div class="t-purple">7</div><div>Now go up to <span class="cmd">main</span>, add <span class="cmd">&amp;hero</span> to the Watch panel, and compare it to <span class="cmd">p</span>. Same number. Same house.</div>
+                </div>
+                <div class="prose t-text mt-12">
+                  Do the same thing with the broken version from session E — <span class="cmd">player_move(Player p, ...)</span>, no asterisk. Watch <span class="cmd">p.x</span> change inside the function, then step out and watch <span class="cmd">hero.x</span> sit there untouched. <strong class="t-accent">The copy dying at the closing brace, on screen.</strong>
+                </div>
+              </div>
+
+              <div class="stuck-items">
+                <div class="stuck-item">
+                  <div class="stuck-q">My breakpoints are hollow circles — "the breakpoint will not currently be hit, no symbols have been loaded"</div>
+                  <div class="stuck-a">Three causes, in the order they actually happen.<br><br>
+                    <strong class="t-text">1. Stale exe.</strong> You edited the .c file and hit F5 without running <span class="cmd">build</span>. VS Code launches whatever <span class="cmd">game.exe</span> is on disk — it has no idea your source changed, and the line numbers in the old PDB no longer match your editor. Run <span class="cmd">build</span>, then F5. Make it muscle memory.<br><br>
+                    <strong class="t-text">2. No PDB.</strong> Check <span class="cmd">/Zi</span> is still in build.bat and that <span class="cmd">game.pdb</span> exists next to <span class="cmd">game.exe</span>. If you cleaned the folder, or your .gitignore rules led you to delete it, there are no symbols to load. Rebuild.<br><br>
+                    <strong class="t-text">3. Wrong program path.</strong> <span class="cmd">"program"</span> must point at the exe your build.bat actually produces. If build.bat says <span class="cmd">/Fe:game.exe</span> in the repo root, <span class="cmd">${workspaceFolder}/game.exe</span> is right. If you build into a subfolder, the path has to say so. And if you opened a single file instead of the folder, <span class="cmd">${workspaceFolder}</span> isn't your repo at all.</div>
+                </div>
+                <div class="stuck-item">
+                  <div class="stuck-q">F11 jumped me into a screenful of assembly I didn't write</div>
+                  <div class="stuck-a">You stepped into a library function — <span class="cmd">printf</span>, <span class="cmd">scanf</span>, <span class="cmd">strlen</span>. Those come from the C runtime and you don't have their source, so the debugger shows you the disassembly. Press <span class="cmd">Shift+F11</span> to step back out, and use <span class="cmd">F10</span> on lines that call library functions. <span class="cmd">F11</span> is for stepping into functions <em>you</em> wrote.</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-orange">Stuck?</span>&nbsp;&nbsp;Pointers specifically
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="stuck-items">
+              <div class="stuck-item">
+                <div class="stuck-q">What is a pointer actually?</div>
+                <div class="stuck-a">Every variable lives at a memory address. A pointer stores that address. <span class="cmd">int x = 5</span> stores the value 5. <span class="cmd">int* p = &amp;x</span> stores the address of x. <span class="cmd">*p</span> reads what's at that address (5). We use pointers in game functions so the function modifies the original object, not a copy. Think of it as giving someone your house address vs handing them a copy of everything in it.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">Why use Player* instead of Player in function parameters?</div>
+                <div class="stuck-a">When you pass Player (no asterisk), C copies the entire struct. Changes inside the function don't affect the original. When you pass Player* (pointer), you pass the address — the function can reach back through it and modify the real player. Every game function that changes an object passes a pointer.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">Why use -&gt; instead of . when using a pointer to a struct?</div>
+                <div class="stuck-a"><span class="cmd">p-&gt;health</span> is shorthand for <span class="cmd">(*p).health</span>. Simple rule: pointer = arrow (-&gt;), value = dot (.). When you have Player* p, use p-&gt;health. When you have Player p directly, use p.health.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">Linker error: "unresolved external symbol player_move"</div>
+                <div class="stuck-a">You declared the function in player.h but the compiler can't find the definition. You're probably only compiling main.c. Compile both files: <span class="cmd">cl main.c player.c</span>. Both need to be listed.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">What's the difference between player.h and player.c?</div>
+                <div class="stuck-a">The .h file (header) contains declarations — "these things exist." The .c file contains definitions — "here's how they work." Other files #include the .h to know what's available without reading the implementation. This lets you and your partner work on separate files independently.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Claude Code Prompts</span>&nbsp;&nbsp;Phase 3
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+
+            <div class="callout callout--purple callout--bar mb-16">
+              <div class="eyebrow eyebrow--md t-purple mb-8">// This phase is where AI prompting gets architectural</div>
+              <div class="prose t-muted2 italic">
+                Functions and structs are the building blocks of game systems. When you ask AI to write a function, you are making an architectural decision — what it's named, what it takes in, what it returns, what it does to the data. <strong class="t-text">If you don't specify these things, AI will invent them.</strong> And its invented architecture may not match your game.<br><br>
+                The skill to develop here: design the interface first (the function signature), then ask AI to implement the body. You own the shape. AI fills in the detail.
+              </div>
+            </div>
+
+            <div class="callout callout--orange mb-16">
+              <div class="eyebrow eyebrow--md t-orange mb-8">// Bad prompt vs good prompt — real example</div>
+              <div class="stack gap-10 fs-11">
+                <div style="border-left:2px solid var(--orange);padding:8px 12px;background:var(--orange-wash)">
+                  <div class="eyebrow eyebrow--tight eyebrow--md t-orange mb-4">✗ Bad — you've given up control</div>
+                  <div class="t-muted2">"Write a player system for my game"</div>
+                  <div class="t-muted fs-10 mt-4">AI will invent the struct fields, function names, file structure, and architecture. None of it will match what you build in Phase 5. You'll be refactoring it constantly.</div>
+                </div>
+                <div style="border-left:2px solid var(--accent);padding:8px 12px;background:var(--accent-wash)">
+                  <div class="eyebrow eyebrow--tight eyebrow--md t-accent mb-4">✓ Good — you own the architecture</div>
+                  <div class="t-text">"I have a Player struct with fields: float x, float y, int health, bool alive. Write ONLY the body of player_heal(Player* p, int amount) — it should add amount to p-&gt;health, cap it at 100, and not change alive. Declaration already exists in player.h."</div>
+                  <div class="t-muted fs-10 mt-4">AI implements exactly what you specified. The struct is yours. The function signature is yours. AI wrote the 3 lines inside.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="prompt-items">
+              <div class="prompt-item">
+                <div class="prompt-label">Understanding pointers — concept only, no code</div>
+                <div class="prompt-text">I'm learning C and struggling with pointers. Without writing any code, explain using a concrete real-world analogy: what a pointer is, what &amp; does, what * does, and why we pass Player* to a function instead of Player. Then give me one sentence that tells me when to use -&gt; vs dot notation.</div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Implement one specific function you designed</div>
+                <div class="prompt-text">I have a Player struct in C with: float x, float y, int health, bool alive. I've already written the declaration in player.h. Write ONLY the function body for player_heal(Player* p, int amount) — adds amount to p-&gt;health, caps at 100, doesn't touch alive. Match the style of my existing player.c functions. Nothing else.</div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Design a new struct — get the fields, not the code</div>
+                <div class="prompt-text">I'm building a 2D game in C. I need an Enemy struct. The enemy has a position, health, a type (melee or ranged as an enum), and a flag for whether it's alive. List the fields with types only — no functions, no code, no extra fields I didn't ask for. I'll write the rest.</div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Review your struct design before writing code</div>
+                <div class="prompt-text">Before I write any code, review this struct design for my 2D C game: [describe your struct and its fields]. Tell me: (1) are the types correct for how I described using them, (2) is anything missing that will obviously cause problems later, (3) anything I should split into a separate struct. Don't add features — just flag problems.</div>
+              </div>
+            </div>
+
+            <div class="callout callout--accent mt-16">
+              <div class="eyebrow eyebrow--md t-accent mb-8">// The interface-first principle</div>
+              <div class="prose t-text">
+                Before asking AI to write any function, write the declaration yourself first:<br><br>
+                <span class="keycap t-accent" style="display:block;margin:8px 0">void player_heal(Player* p, int amount);</span>
+                That one line forces you to decide: what does this function need? What does it return? What does it modify? Once you can write that line, you understand the function well enough to verify whatever AI writes inside it. <strong class="t-accent">Declaration first. Implementation second. Always.</strong>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- PREDICT THE OUTPUT -->
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-yellow">Predict the Output</span>&nbsp;&nbsp;4 drills — guess first, then run it
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+
+            <div class="callout callout--yellow callout--sm mb-14">
+              <div class="eyebrow eyebrow--md t-yellow mb-6">// Run these in the debugger the second time</div>
+              <div class="prose prose--sm t-muted2">Predict on paper, run, compare. Then go back through drills 1 and 3 with a breakpoint and the Watch panel open — these are short enough to step through line by line, and seeing the copy die at the closing brace does more than any explanation on this page.</div>
+            </div>
+
+            <div class="quiz-items">
+
+              <div class="quiz-item drill-item">
+                <div class="quiz-q">1. Copy versus pointer — the same function twice</div>
+<pre><span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
+
+<span class="c-kw">typedef struct</span> {
+    <span class="c-type">int</span> <span class="c-var">health</span>;
+} <span class="c-type">Player</span>;
+
+<span class="c-type">void</span> <span class="c-fn">hurt_copy</span>(<span class="c-type">Player</span> <span class="c-var">p</span>)  { <span class="c-var">p</span>.health -= <span class="c-num">10</span>; }
+<span class="c-type">void</span> <span class="c-fn">hurt_real</span>(<span class="c-type">Player</span>* <span class="c-var">p</span>) { <span class="c-var">p</span>-&gt;health -= <span class="c-num">10</span>; }
+
+<span class="c-type">int</span> <span class="c-fn">main</span>(<span class="c-type">void</span>) {
+    <span class="c-type">Player</span> <span class="c-var">hero</span>;
+    <span class="c-var">hero</span>.health = <span class="c-num">100</span>;
+
+    <span class="c-fn">hurt_copy</span>(<span class="c-var">hero</span>);
+    <span class="c-fn">printf</span>(<span class="c-str">"after hurt_copy: %d\n"</span>, <span class="c-var">hero</span>.health);
+
+    <span class="c-fn">hurt_real</span>(&amp;<span class="c-var">hero</span>);
+    <span class="c-fn">printf</span>(<span class="c-str">"after hurt_real: %d\n"</span>, <span class="c-var">hero</span>.health);
+    <span class="c-kw">return</span> <span class="c-num">0</span>;
+}</pre>
+                <div class="drill-run">Write your prediction down, then compile and run it.</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a"><pre class="p-12 fs-12 mb-10">after hurt_copy: 100
+after hurt_real: 90</pre>
+                  <span class="cmd">hurt_copy</span> ran. It subtracted 10. It worked perfectly — on a photocopy of hero that C created for the call and destroyed at the closing brace. No warning, no error, no effect.<br><br>
+                  <span class="cmd">hurt_real</span> got the address instead, reached back through it, and changed the real thing. <strong class="t-text">This is the single most important behaviour in the phase</strong>, and the reason every function in player.c takes a <span class="cmd">Player*</span>.</div>
+                </details>
+              </div>
+
+              <div class="quiz-item drill-item">
+                <div class="quiz-q">2. What does <span class="cmd">b = a</span> do to a struct?</div>
+<pre><span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
+
+<span class="c-kw">typedef struct</span> {
+    <span class="c-type">int</span>   <span class="c-var">health</span>;
+    <span class="c-type">float</span> <span class="c-var">x</span>;
+} <span class="c-type">Player</span>;
+
+<span class="c-type">int</span> <span class="c-fn">main</span>(<span class="c-type">void</span>) {
+    <span class="c-type">Player</span> <span class="c-var">a</span>;
+    <span class="c-type">Player</span> <span class="c-var">b</span>;
+
+    <span class="c-var">a</span>.health = <span class="c-num">100</span>;
+    <span class="c-var">a</span>.x      = <span class="c-num">5.0f</span>;
+
+    <span class="c-var">b</span> = <span class="c-var">a</span>;
+    <span class="c-var">b</span>.health = <span class="c-num">1</span>;
+
+    <span class="c-fn">printf</span>(<span class="c-str">"a.health %d  b.health %d\n"</span>, <span class="c-var">a</span>.health, <span class="c-var">b</span>.health);
+    <span class="c-fn">printf</span>(<span class="c-str">"a.x %.1f  b.x %.1f\n"</span>, <span class="c-var">a</span>.x, <span class="c-var">b</span>.x);
+    <span class="c-kw">return</span> <span class="c-num">0</span>;
+}</pre>
+                <div class="drill-run">Write your prediction down, then compile and run it.</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a"><pre class="p-12 fs-12 mb-10">a.health 100  b.health 1
+a.x 5.0  b.x 5.0</pre>
+                  One short line copied every byte. From that moment <span class="cmd">a</span> and <span class="cmd">b</span> are two separate Players that happen to have started out identical — changing one cannot touch the other.<br><br>
+                  <strong class="t-accent">Hold on to this one.</strong> In C, a struct is a value. In GDScript, which is where your actual game gets built, objects are references — the same two lines would give you two names for one object, and setting <span class="cmd">b.health</span> would change <span class="cmd">a.health</span> too. See the C → Godot handoff section at the bottom of this page.</div>
+                </details>
+              </div>
+
+              <div class="quiz-item drill-item">
+                <div class="quiz-q">3. Three spellings, one box</div>
+<pre><span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
+
+<span class="c-kw">typedef struct</span> {
+    <span class="c-type">int</span> <span class="c-var">health</span>;
+} <span class="c-type">Player</span>;
+
+<span class="c-type">int</span> <span class="c-fn">main</span>(<span class="c-type">void</span>) {
+    <span class="c-type">Player</span>  <span class="c-var">hero</span>;
+    <span class="c-type">Player</span>* <span class="c-var">p</span> = &amp;<span class="c-var">hero</span>;
+
+    <span class="c-var">hero</span>.health = <span class="c-num">100</span>;
+    <span class="c-var">p</span>-&gt;health   -= <span class="c-num">30</span>;
+    (*<span class="c-var">p</span>).health -= <span class="c-num">20</span>;
+
+    <span class="c-fn">printf</span>(<span class="c-str">"%d %d\n"</span>, <span class="c-var">hero</span>.health, <span class="c-var">p</span>-&gt;health);
+    <span class="c-kw">return</span> <span class="c-num">0</span>;
+}</pre>
+                <div class="drill-run">Write your prediction down, then compile and run it.</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a"><span class="cmd">50 50</span><br><br>
+                  <span class="cmd">p-&gt;health</span> is nothing more than shorthand for <span class="cmd">(*p).health</span>. Both mean "go to the address, then take the health field." And <span class="cmd">hero.health</span> is that same field reached the direct way.<br><br>
+                  Three spellings, one box in memory. The two printed numbers are identical because there is only one Player in this entire program — <span class="cmd">p</span> is a note with hero's address written on it, not a second player.</div>
+                </details>
+              </div>
+
+              <div class="quiz-item drill-item">
+                <div class="quiz-q">4. Truncation, now living inside a struct</div>
+<pre><span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
+
+<span class="c-kw">typedef struct</span> {
+    <span class="c-type">float</span> <span class="c-var">x</span>;
+    <span class="c-type">int</span>   <span class="c-var">steps</span>;
+} <span class="c-type">Player</span>;
+
+<span class="c-type">int</span> <span class="c-fn">main</span>(<span class="c-type">void</span>) {
+    <span class="c-type">Player</span> <span class="c-var">hero</span>;
+    <span class="c-var">hero</span>.x     = <span class="c-num">0.0f</span>;
+    <span class="c-var">hero</span>.steps = <span class="c-num">0</span>;
+
+    <span class="c-var">hero</span>.x     += <span class="c-num">2.7f</span>;
+    <span class="c-var">hero</span>.steps += (<span class="c-type">int</span>)<span class="c-num">2.7f</span>;
+
+    <span class="c-fn">printf</span>(<span class="c-str">"x %.1f  steps %d\n"</span>, <span class="c-var">hero</span>.x, <span class="c-var">hero</span>.steps);
+    <span class="c-fn">printf</span>(<span class="c-str">"%d\n"</span>, (<span class="c-type">int</span>)(<span class="c-var">hero</span>.x * <span class="c-num">2.0f</span>));
+    <span class="c-kw">return</span> <span class="c-num">0</span>;
+}</pre>
+                <div class="drill-run">Write your prediction down, then compile and run it.</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a"><pre class="p-12 fs-12 mb-10">x 2.7  steps 2
+5</pre>
+                  The float field keeps its fraction. The int field throws it away — truncated toward zero, so 2.7 adds 2 and 5.4 comes out 5. Session 1's C4244 lesson, now happening one field away from another field that behaves differently.<br><br>
+                  <strong class="t-text">The game bug:</strong> keep a position as an int and every fractional movement is lost, so a player moving 2.7 per frame actually moves 2 and drifts further behind the truth every frame. Positions stay <span class="cmd">float</span>. You truncate once, at the moment you draw, and never store the result back.</div>
+                </details>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- QUIZ -->
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Quiz Yourself</span>&nbsp;&nbsp;5 questions — answer out loud before revealing
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="quiz-items">
+
+              <div class="quiz-item">
+                <div class="quiz-q">1. <span class="cmd">void move(Player p)</span> and <span class="cmd">void move(Player* p)</span> — only one of them actually moves your player. Which, and why?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">The pointer version. Without the asterisk, C hands the function a full photocopy of the struct — it edits the copy, the copy is thrown away when the function ends, and your real player never moved. With <span class="cmd">Player*</span> you're handing over the address, so the function reaches back into the original.</div>
+                </details>
+              </div>
+
+              <div class="quiz-item">
+                <div class="quiz-q">2. What is <span class="cmd">p-&gt;health</span> shorthand for, and when would you write <span class="cmd">p.health</span> instead?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a"><span class="cmd">p-&gt;health</span> is shorthand for <span class="cmd">(*p).health</span> — go to the address, then grab the field. Use the arrow when you're holding a pointer. Use the dot when you're holding the actual struct: <span class="cmd">Player player; player.health</span>. Pointer = arrow, value = dot.</div>
+                </details>
+              </div>
+
+              <div class="quiz-item">
+                <div class="quiz-q">3. In one sentence each: what does <span class="cmd">&amp;x</span> give you, and what does <span class="cmd">*p</span> give you?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a"><span class="cmd">&amp;x</span> gives the address where x lives — the house number, not what's inside. <span class="cmd">*p</span> goes to the address p is holding and reads what's there. Same <span class="cmd">&amp;</span> you were already using in <span class="cmd">scanf(" %c", &amp;input)</span> back in Phase 2 — you were handing scanf an address the whole time.</div>
+                </details>
+              </div>
+
+              <div class="quiz-item">
+                <div class="quiz-q">4. The build says <span class="cmd">unresolved external symbol player_move</span>. What did you forget?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">To compile player.c. The declaration in player.h told the compiler the function exists, so compiling succeeded — but the linker then went looking for the actual body and found nothing. Fix: <span class="cmd">cl main.c player.c</span>, or add player.c to the <span class="cmd">set SOURCES=</span> line in your build.bat. Compiler error vs linker error is a real distinction: one means "I don't understand this," the other means "I can't find this."</div>
+                </details>
+              </div>
+
+              <div class="quiz-item">
+                <div class="quiz-q">5. What belongs in player.h and what belongs in player.c?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">The .h holds declarations — the struct definition and the function signatures. It's the "what exists" list that other files include. The .c holds the definitions — the actual bodies. That split is what lets you and your partner work in separate files without reading each other's implementations, and it's the reason a header change forces a rebuild while a .c change doesn't.</div>
+                </details>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="checkpoint">
+          <div class="checkpoint-header">
+            <span class="badge badge-green">Checkpoint</span>
+            <span class="checkpoint-title">Ready to move on when:</span>
+            <span class="cp-counter">0/4</span>
+          </div>
+          <div class="checkpoint-items">
+            <div class="cp-item" data-id="cp-p3-1"><span class="cp-cb">✓</span><span class="cp-text">You can explain why player_move takes a Player* instead of a Player</span></div>
+            <div class="cp-item" data-id="cp-p3-2"><span class="cp-cb">✓</span><span class="cp-text">Your Player struct compiles across two files (.h + .c)</span></div>
+            <div class="cp-item" data-id="cp-p3-3"><span class="cp-cb">✓</span><span class="cp-text">You added at least one function yourself (heal, bounds check, etc.)</span></div>
+            <div class="cp-item" data-id="cp-p3-4"><span class="cp-cb">✓</span><span class="cp-text">Code committed to GitHub</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,35 @@
+# Publishes the site whenever content or code changes on main.
+# Progress commits (progress/**) don't redeploy: the page reads them from the API.
+name: Deploy site
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['progress/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check content before publishing
+        run: python3 tools/validate.py
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v4

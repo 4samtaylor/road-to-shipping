@@ -1,0 +1,62 @@
+{
+  "version": "v11",
+  "files": [
+    "00-start.html",
+    "01-cheatsheet.html",
+    "02-phase1.html",
+    "03-session1.html",
+    "04-session2.html",
+    "05-phase2.html",
+    "06-phase3.html",
+    "07-phase3b.html",
+    "08-phase4.html",
+    "09-phase4b.html",
+    "10-phase5.html",
+    "11-phase6.html",
+    "12-phase7.html",
+    "13-godot-bridge.html",
+    "14-weekly-sync.html"
+  ],
+  "groups": [
+    [
+      "Setup",
+      [
+        "setup"
+      ]
+    ],
+    [
+      "Reference",
+      [
+        "cheatsheet"
+      ]
+    ],
+    [
+      "Sessions",
+      [
+        "session1",
+        "session2"
+      ]
+    ],
+    [
+      "Phases",
+      [
+        "phase1",
+        "phase2",
+        "phase3",
+        "phase3b",
+        "phase4",
+        "phase4b",
+        "phase5",
+        "phase6",
+        "phase7"
+      ]
+    ],
+    [
+      "The Handoff",
+      [
+        "godot-bridge",
+        "sync-agenda"
+      ]
+    ]
+  ]
+}

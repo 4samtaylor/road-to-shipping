@@ -1,0 +1,228 @@
+<!-- PHASE 7 -->
+  <div class="phase" id="phase7">
+    <div class="phase-header">
+      <div class="phase-n">07</div>
+      <div class="phase-meta">
+        <div class="phase-tag">Working With AI</div>
+        <div class="phase-title">Directing Claude Code Properly</div>
+      </div>
+      <div class="phase-right">
+        <div class="phase-week">Ongoing from week 3</div>
+        <div class="phase-chevron">▼</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-inner">
+
+        <div class="section-block">
+          <div class="section-block-header"><span class="badge badge-green">Rules</span></div>
+          <div class="section-block-body">
+            <div class="tasks" id="tasks-7">
+              <div class="task" data-id="p7-read-every-line">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Never accept generated code without reading every line first <span class="task-tag t-crucial">Crucial</span></div>
+                  <div class="task-note">AI code can be plausible and wrong simultaneously. Your name is on the commit. <span class="task-time">~10 min</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p7-name-function-signature">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Always name the function, its parameters, and its return type in your prompt</div>
+                  <div class="task-note">Bad: "make the player move" — Good: "write move(Player* p, float dx, float dy) that updates x and y with bounds checking against a 800x600 window" <span class="task-time">~15 min</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p7-ask-explain">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Ask Claude to explain any code you don't understand before using it</div>
+                  <div class="task-note"><span class="task-time">~10 min</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p7-push-back-simplify">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Push back when code is overcomplicated — "simplify this, I don't need X feature yet"</div>
+                  <div class="task-note"><span class="task-time">~10 min</span></div>
+                </div>
+              </div>
+              <div class="task" data-id="p7-architecture-decisions">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Architecture decisions come from you — not the AI <span class="task-tag t-crucial">Crucial</span></div>
+                  <div class="task-note">Use Claude Code for implementation. Design the system yourself first, then ask it to implement pieces. <span class="task-time">~15 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Prompt Templates</span>&nbsp;&nbsp;Copy and adapt these
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="prompt-items">
+              <div class="prompt-item">
+                <div class="prompt-label">The "implement this specific thing" prompt</div>
+                <div class="prompt-text">I'm building a game in C. I need you to implement [function name] with this signature: [signature]. It should: [bullet list of exact behaviors]. Follow the patterns already in my code. Don't add any dependencies I haven't mentioned. Don't write any other functions — just this one.</div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">The "explain before I use it" prompt</div>
+                <div class="prompt-text">Before I use this code, explain to me: (1) what each function does in plain English, (2) what could go wrong if inputs are invalid, (3) anything I should change for my specific use case: [paste code]</div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">The "I'm stuck on a bug" prompt</div>
+                <div class="prompt-text">I have a bug in my C code. Here's what I expect to happen: [describe]. Here's what actually happens: [describe]. Here's the relevant code: [paste]. Walk me through how to debug this — don't just give me the fix, help me find it myself so I learn.</div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">The "is my approach right?" prompt</div>
+                <div class="prompt-text">I'm about to implement [feature] in my C game. My plan is: [describe your approach]. Before I write the code — is this a sound approach? Are there obvious problems I haven't considered? Don't write the code yet, just critique the plan.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROMPT REPRODUCTION EXERCISES -->
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Exercises</span>&nbsp;&nbsp;Prompt-to-Code — can you write the prompt that produces this?
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+
+            <div class="callout callout--purple callout--bar mb-18">
+              <div class="eyebrow eyebrow--lg t-purple mb-8">// How these work</div>
+              <div class="prose prose--loose t-text">
+                Each exercise shows a target piece of game code. <strong class="t-accent">Your job: write the prompt that would make Claude Code produce it</strong> — without looking at the reference prompt first. The comments in the code map each line back to the keyword your prompt needs to contain. If your prompt is missing a keyword, the AI has to guess — and guessing is where wrong code comes from.<br><br>
+                This is the real skill: not memorizing C, but knowing exactly what to specify so the AI builds <em>your</em> system, not its own invention. Write your prompt, then expand the reference to check what you missed.
+              </div>
+            </div>
+
+            <!-- EXERCISE 1 -->
+            <div class="mb-16" style="border:1px solid var(--border)">
+              <div class="eyebrow eyebrow--tight eyebrow--xl bb t-accent" style="background:var(--surface2);padding:10px 16px">Exercise 1 — A simple function (Phase 3 knowledge)</div>
+              <div class="p-16">
+                <div class="prose t-muted2 mb-12">Target output. The comments point to the prompt keywords you must include:</div>
+<pre class="code-panel"><span class="c-cm">// KEYWORD: "function named player_heal"  → names the function</span>
+<span class="c-cm">// KEYWORD: "returns nothing / void"       → fixes the return type</span>
+<span class="c-cm">// KEYWORD: "takes a Player pointer and an int amount" → exact params</span>
+<span class="c-type">void</span> <span class="c-fn">player_heal</span>(<span class="c-type">Player</span>* <span class="c-var">p</span>, <span class="c-type">int</span> <span class="c-var">amount</span>) {
+    <span class="c-var">p</span>-&gt;<span class="c-var">health</span> += <span class="c-var">amount</span>;        <span class="c-cm">// KEYWORD: "add amount to health"</span>
+    <span class="c-kw">if</span> (<span class="c-var">p</span>-&gt;<span class="c-var">health</span> &gt; <span class="c-num">100</span>)         <span class="c-cm">// KEYWORD: "cap at 100" → the upper bound</span>
+        <span class="c-var">p</span>-&gt;<span class="c-var">health</span> = <span class="c-num">100</span>;
+}</pre>
+                <div class="acc-section mt-12" style="border:1px solid var(--blue-line)">
+                  <div class="section-block-header t-blue" style="background:var(--blue-dim)">
+                    <span class="fs-10">▸ Reveal a reference prompt — check what you missed</span>
+                    <span class="acc-toggle-icon">▼</span>
+                  </div>
+                  <div class="acc-body" style="padding:14px 16px">
+                    <div class="prompt-text fs-12-5">I have a Player struct in C with fields: float x, float y, int health, bool alive. Write a function named player_heal that returns void and takes a Player pointer and an int amount. It should add amount to the player's health, then cap health at 100. Don't write any other functions — just this one. Match my existing player.c style.</div>
+                    <div class="prose prose--sm t-muted2 mt-10">Notice what the prompt locks down: the name, the return type, the exact parameters, the behavior, the cap, and the scope ("just this one"). Leave any of these out and the AI invents them — maybe it returns the new health, maybe it caps at 99, maybe it adds three more helper functions. Specification is control.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- EXERCISE 2 -->
+            <div class="mb-16" style="border:1px solid var(--border)">
+              <div class="eyebrow eyebrow--tight eyebrow--xl bb t-accent" style="background:var(--surface2);padding:10px 16px">Exercise 2 — A struct you designed (Phase 3 knowledge)</div>
+              <div class="p-16">
+                <div class="prose t-muted2 mb-12">Target output — an Enemy struct. The AI should produce exactly these fields, no extras:</div>
+<pre class="code-panel"><span class="c-cm">// KEYWORD: "enum for enemy type, melee or ranged" → the EnemyType enum</span>
+<span class="c-kw">typedef enum</span> { ENEMY_MELEE, ENEMY_RANGED } <span class="c-type">EnemyType</span>;
+
+<span class="c-cm">// KEYWORD: "struct named Enemy"          → names the struct</span>
+<span class="c-kw">typedef struct</span> {
+    <span class="c-type">float</span>     <span class="c-var">x</span>, <span class="c-var">y</span>;     <span class="c-cm">// KEYWORD: "float position"   → use float for x/y</span>
+    <span class="c-type">int</span>       <span class="c-var">health</span>;   <span class="c-cm">// KEYWORD: "int health"       → whole number</span>
+    <span class="c-type">EnemyType</span> <span class="c-var">type</span>;     <span class="c-cm">// KEYWORD: "a type field"     → reuse the enum above</span>
+    <span class="c-type">bool</span>      <span class="c-var">alive</span>;    <span class="c-cm">// KEYWORD: "alive flag"       → bool, not int</span>
+} <span class="c-type">Enemy</span>;
+<span class="c-cm">// KEYWORD: "fields only, no functions, no extras" → stops scope creep</span></pre>
+                <div class="acc-section mt-12" style="border:1px solid var(--blue-line)">
+                  <div class="section-block-header t-blue" style="background:var(--blue-dim)">
+                    <span class="fs-10">▸ Reveal a reference prompt — check what you missed</span>
+                    <span class="acc-toggle-icon">▼</span>
+                  </div>
+                  <div class="acc-body" style="padding:14px 16px">
+                    <div class="prompt-text fs-12-5">I'm building a 2D game in C. Define a struct named Enemy with: a float position (x and y), an int health, a type field that is an enum of melee or ranged, and a bool alive flag. Give me the enum and the struct only — no functions, no extra fields I didn't ask for. I'll write the rest myself.</div>
+                    <div class="prose prose--sm t-muted2 mt-10">The trap here is scope creep. Ask vaguely for "an enemy system" and you'll get spawn functions, AI behavior, a render call — none of which match what you've built. Specifying "fields only, no functions" keeps the architecture yours.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- EXERCISE 3 -->
+            <div class="mb-16" style="border:1px solid var(--border)">
+              <div class="eyebrow eyebrow--tight eyebrow--xl bb t-accent" style="background:var(--surface2);padding:10px 16px">Exercise 3 — A surgical edit (Phase 5 knowledge)</div>
+              <div class="p-16">
+                <div class="prose t-muted2 mb-12">Target output — only the lines to ADD inside an existing WM_KEYDOWN block. Not a rewrite:</div>
+<pre class="code-panel"><span class="c-cm">// KEYWORD: "add WASD alongside existing arrow keys" → adds, doesn't replace</span>
+<span class="c-cm">// KEYWORD: "inside the WM_KEYDOWN case"  → exact location</span>
+<span class="c-kw">if</span> (<span class="c-var">wp</span> == <span class="c-str">'A'</span>) <span class="c-var">g_x</span> -= <span class="c-num">5</span>;   <span class="c-cm">// KEYWORD: "move left"</span>
+<span class="c-kw">if</span> (<span class="c-var">wp</span> == <span class="c-str">'D'</span>) <span class="c-var">g_x</span> += <span class="c-num">5</span>;   <span class="c-cm">// KEYWORD: "move right"</span>
+<span class="c-kw">if</span> (<span class="c-var">wp</span> == <span class="c-str">'W'</span>) <span class="c-var">g_y</span> -= <span class="c-num">5</span>;   <span class="c-cm">// KEYWORD: "move up"</span>
+<span class="c-kw">if</span> (<span class="c-var">wp</span> == <span class="c-str">'S'</span>) <span class="c-var">g_y</span> += <span class="c-num">5</span>;   <span class="c-cm">// KEYWORD: "move down"</span>
+<span class="c-cm">// KEYWORD: "don't rewrite my file, show only lines to add" → surgical scope</span></pre>
+                <div class="acc-section mt-12" style="border:1px solid var(--blue-line)">
+                  <div class="section-block-header t-blue" style="background:var(--blue-dim)">
+                    <span class="fs-10">▸ Reveal a reference prompt — check what you missed</span>
+                    <span class="acc-toggle-icon">▼</span>
+                  </div>
+                  <div class="acc-body" style="padding:14px 16px">
+                    <div class="prompt-text fs-12-5">I have a working Win32 window in C that moves a rectangle with arrow keys using g_x and g_y, handled inside a WM_KEYDOWN case. Add WASD movement alongside the existing arrow keys — A/D move left/right by 5, W/S move up/down by 5. Show me ONLY the lines to add and where they go. Don't rewrite my file, don't add new functions, don't change the structure.</div>
+                    <div class="prose prose--sm t-muted2 mt-10">The two critical phrases: "alongside the existing" (so it adds, not replaces) and "show me ONLY the lines to add, don't rewrite my file" (so you get a small reviewable diff instead of a regenerated file you have to re-read entirely). As systems grow, surgical scope is what keeps AI safe to use.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- EXERCISE 4 -->
+            <div class="mb-16" style="border:1px solid var(--border)">
+              <div class="eyebrow eyebrow--tight eyebrow--xl bb t-accent" style="background:var(--surface2);padding:10px 16px">Exercise 4 — A system that fits your codebase (Phase 6 knowledge)</div>
+              <div class="p-16">
+                <div class="prose t-muted2 mb-12">Target output — a game_update that uses YOUR existing struct and functions, in your style:</div>
+<pre class="code-panel"><span class="c-cm">// KEYWORD: "switch on the current state"  → the state-machine shape</span>
+<span class="c-type">void</span> <span class="c-fn">game_update</span>(<span class="c-type">Game</span>* <span class="c-var">g</span>) {
+    <span class="c-kw">switch</span> (<span class="c-var">g</span>-&gt;<span class="c-var">state</span>) {       <span class="c-cm">// KEYWORD: "Game struct has a state field"</span>
+        <span class="c-kw">case</span> STATE_PLAYING:    <span class="c-cm">// KEYWORD: "only update when PLAYING"</span>
+            <span class="c-fn">player_move</span>(&amp;<span class="c-var">g</span>-&gt;<span class="c-var">player</span>, <span class="c-var">g</span>-&gt;<span class="c-var">input_dx</span>, <span class="c-num">0</span>);
+            <span class="c-cm">// KEYWORD: "call my existing player_move" → reuse, don't reinvent</span>
+            <span class="c-kw">if</span> (!<span class="c-var">g</span>-&gt;<span class="c-var">player</span>.<span class="c-var">alive</span>)   <span class="c-cm">// KEYWORD: "when player not alive"</span>
+                <span class="c-var">g</span>-&gt;<span class="c-var">state</span> = STATE_GAME_OVER; <span class="c-cm">// KEYWORD: "transition to GAME_OVER"</span>
+            <span class="c-kw">break</span>;
+        <span class="c-kw">case</span> STATE_MENU: <span class="c-kw">case</span> STATE_GAME_OVER: <span class="c-kw">break</span>;
+    }
+}
+<span class="c-cm">// KEYWORD: "match my style, no new dependencies" → fits the codebase</span></pre>
+                <div class="acc-section mt-12" style="border:1px solid var(--blue-line)">
+                  <div class="section-block-header t-blue" style="background:var(--blue-dim)">
+                    <span class="fs-10">▸ Reveal a reference prompt — check what you missed</span>
+                    <span class="acc-toggle-icon">▼</span>
+                  </div>
+                  <div class="acc-body" style="padding:14px 16px">
+                    <div class="prompt-text fs-12-5">Here is my game's context. Game struct: { GameState state; Player player; int input_dx; }. GameState enum: MENU, PLAYING, GAME_OVER. I already have a function player_move(Player* p, float dx, float dy) and player has a bool alive field. Write ONLY game_update(Game* g) that switches on the current state, and when PLAYING calls my existing player_move using input_dx, then transitions to GAME_OVER if the player is not alive. Match my snake_case style. No new dependencies, no new files.</div>
+                    <div class="prose prose--sm t-muted2 mt-10">This is the Phase 6 lesson in one prompt: you paste the context (struct, enum, existing functions) <em>first</em>, then ask for the implementation. Without that context block the AI invents its own struct, its own move function, its own state names — and nothing connects to what you and your partner already built.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- THE ANTI-PATTERN -->
+            <div class="callout callout--orange callout--bar" style="padding:16px 18px">
+              <div class="eyebrow eyebrow--lg t-orange mb-10">// The anti-pattern these exercises train you to avoid</div>
+              <div class="prose prose--loose t-text">
+                Every one of these exercises is really teaching the same thing: <strong class="t-orange">the gap between what you specify and what you leave unspecified is where wrong code is born.</strong> The AI fills every gap with a guess. A guess that compiles and runs looks correct — until it silently doesn't match your architecture, your types, or your partner's code.<br><br>
+                If you can write a prompt that reproduces the target exactly, you understand the system well enough to verify anything the AI hands back. That is the actual goal of this whole roadmap: <strong class="t-accent">not to write every line yourself, but to know enough to direct and verify.</strong>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,116 @@
+<!-- ─── CHEAT SHEET ─── -->
+  <div class="phase" id="cheatsheet" style="border-top:2px solid var(--purple)">
+    <div class="phase-header">
+      <div class="phase-n t-purple" style="font-size:30px">::</div>
+      <div class="phase-meta">
+        <div class="phase-tag t-purple">Reference</div>
+        <div class="phase-title">Cheat Sheet — quick recall, nothing new</div>
+      </div>
+      <div class="phase-right">
+        <div class="phase-week t-purple">One screen</div>
+        <div class="phase-chevron">▼</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-inner">
+
+        <div class="section-block">
+          <div class="section-block-header"><span class="badge badge-purple">Quick Reference</span>&nbsp;&nbsp;Everything here is taught elsewhere in this roadmap — this is just recall</div>
+          <div class="section-block-body">
+            <div class="cheat-grid">
+
+              <div class="cheat-card">
+                <div class="cheat-card-label t-blue">// Format specifiers</div>
+                <div class="cheat-rows">
+                  <div class="cheat-row"><span class="cmd">%d</span><span>int</span></div>
+                  <div class="cheat-row"><span class="cmd">%f</span><span>float — 6 decimals by default</span></div>
+                  <div class="cheat-row"><span class="cmd">%.2f</span><span>float, exactly 2 decimals</span></div>
+                  <div class="cheat-row"><span class="cmd">%lf</span><span>double (scanf only — printf uses %f)</span></div>
+                  <div class="cheat-row"><span class="cmd">%s</span><span>string — reads/prints until '\0'</span></div>
+                  <div class="cheat-row"><span class="cmd">%c</span><span>single char</span></div>
+                  <div class="cheat-row"><span class="cmd">bool</span><span>no specifier — print as %d, gives 1/0</span></div>
+                </div>
+              </div>
+
+              <div class="cheat-card">
+                <div class="cheat-card-label t-blue">// Escape sequences</div>
+                <div class="cheat-rows">
+                  <div class="cheat-row"><span class="cmd">\n</span><span>new line</span></div>
+                  <div class="cheat-row"><span class="cmd">\r</span><span>cursor back to line start — repaint in place</span></div>
+                  <div class="cheat-row"><span class="cmd">\t</span><span>tab</span></div>
+                  <div class="cheat-row"><span class="cmd">\\</span><span>literal backslash</span></div>
+                  <div class="cheat-row"><span class="cmd">%%</span><span>literal percent sign (printf only)</span></div>
+                </div>
+              </div>
+
+              <div class="cheat-card">
+                <div class="cheat-card-label t-orange">// Compile</div>
+                <div class="cheat-rows">
+                  <div class="cheat-row"><span class="cmd">cl file.c</span><span>compile one file</span></div>
+                  <div class="cheat-row"><span class="cmd">build</span><span>run build.bat — always run before F5</span></div>
+                  <div class="cheat-row"><span class="cmd">/W4</span><span>turn on strict warnings</span></div>
+                  <div class="cheat-row"><span class="cmd">/WX</span><span>warnings fail the build</span></div>
+                  <div class="cheat-row"><span class="cmd">/Zi</span><span>include debug symbols (PDB)</span></div>
+                  <div class="cheat-row"><span class="cmd">/Fe:</span><span>name the output .exe</span></div>
+                </div>
+              </div>
+
+              <div class="cheat-card">
+                <div class="cheat-card-label t-orange">// Git — daily</div>
+                <div class="cheat-rows">
+                  <div class="cheat-row"><span class="cmd">git add .</span><span>stage everything changed</span></div>
+                  <div class="cheat-row"><span class="cmd">git commit -m</span><span>snapshot with a label</span></div>
+                  <div class="cheat-row"><span class="cmd">git push</span><span>send commits to GitHub</span></div>
+                  <div class="cheat-row"><span class="cmd">git pull</span><span>bring your partner's commits down</span></div>
+                  <div class="cheat-row"><span class="cmd">git status</span><span>what's changed, what's staged</span></div>
+                  <div class="cheat-row"><span class="cmd">git log --oneline</span><span>compact commit history</span></div>
+                </div>
+              </div>
+
+              <div class="cheat-card">
+                <div class="cheat-card-label t-orange">// Commit message types</div>
+                <div class="cheat-rows">
+                  <div class="cheat-row"><span class="cmd">feat:</span><span>new feature</span></div>
+                  <div class="cheat-row"><span class="cmd">fix:</span><span>bug fix</span></div>
+                  <div class="cheat-row"><span class="cmd">refactor:</span><span>restructuring, no behavior change</span></div>
+                  <div class="cheat-row"><span class="cmd">docs:</span><span>readme / comment changes</span></div>
+                </div>
+                <div class="cheat-note">Format: <span class="cmd">type: short description</span>. Example: <span class="cmd">feat: add player_take_damage function</span></div>
+              </div>
+
+              <div class="cheat-card">
+                <div class="cheat-card-label t-purple">// -&gt; vs .</div>
+                <div class="cheat-rows">
+                  <div class="cheat-row"><span class="cmd">p.x</span><span>p is a struct value</span></div>
+                  <div class="cheat-row"><span class="cmd">p-&gt;x</span><span>p is a pointer to a struct</span></div>
+                </div>
+                <div class="cheat-note"><span class="cmd">p-&gt;x</span> is shorthand for <span class="cmd">(*p).x</span> — follow the pointer, then dot.</div>
+              </div>
+
+              <div class="cheat-card">
+                <div class="cheat-card-label t-purple">// scanf(" %c") space rule</div>
+                <div class="cheat-note" style="margin-top:0">The space before <span class="cmd">%c</span> eats the leftover newline sitting in the input buffer from the last Enter press. Without it, scanf reads Enter instead of your character. Doesn't apply to %d, %f, or %s — only %c.</div>
+              </div>
+
+              <div class="cheat-card">
+                <div class="cheat-card-label t-yellow">// rand() idiom</div>
+                <div class="cheat-note" style="margin-top:0"><span class="cmd">rand() % (how many) + (lowest)</span><br>Example: <span class="cmd">rand() % 6 + 1</span> → 1 to 6, a die roll. Always call <span class="cmd">srand(time(NULL))</span> once at the top of main first.</div>
+              </div>
+
+              <div class="cheat-card">
+                <div class="cheat-card-label t-yellow">// Debugger keys</div>
+                <div class="cheat-rows">
+                  <div class="cheat-row"><span class="cmd">F9</span><span>toggle breakpoint on current line</span></div>
+                  <div class="cheat-row"><span class="cmd">F5</span><span>start debugging / continue to next breakpoint</span></div>
+                  <div class="cheat-row"><span class="cmd">F10</span><span>step over — run this line, don't enter calls</span></div>
+                  <div class="cheat-row"><span class="cmd">F11</span><span>step into — go inside the function called</span></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>

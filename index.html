@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Road to Shipping</title>
+<meta name="theme-color" content="#0e0e1a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+</head>
+<body>
+<header class="tb">
+  <button class="icb" id="tb-rail" title="Toggle navigation (Esc closes)">☰</button>
+  <div class="tb-brand">Road to Shipping <span>/ v11</span></div>
+  <div class="tb-seg" id="tb-seg"></div>
+  <div class="tb-stat" id="tb-count"></div>
+  <div class="tb-stat est" id="tb-est"></div>
+  <div class="tb-sync" id="tb-sync" title="GitHub sync status"></div>
+  <button class="tb-btn" id="tb-edit" title="Edit text and tasks in place"><span class="lbl">Edit</span> <kbd>E</kbd></button>
+  <button class="tb-btn" id="tb-search"><span class="lbl">Search</span> <kbd>⌘K</kbd></button>
+  <button class="icb" id="tb-theme" title="Switch theme">◑</button>
+  <div class="tb-menu-wrap">
+    <button class="icb" id="tb-more" title="More">⋯</button>
+    <div class="tb-menu" id="tb-menu">
+      <div class="tb-menu-lbl">View</div>
+      <button class="mi" id="m-expand">Expand all phases</button>
+      <button class="mi" id="m-collapse">Collapse all phases</button>
+      <button class="mi" id="m-solo">One phase at a time <span>off</span></button>
+      <div class="hr-thin"></div>
+      <div class="tb-menu-lbl">Content</div>
+      <button class="mi" id="m-edit">Edit mode <span>e</span></button>
+      <button class="mi" id="m-download">Download edited HTML <span>html</span></button>
+      <button class="mi danger" id="m-revert">Revert my content edits</button>
+      <div class="hr-thin"></div>
+      <button class="mi" id="m-publish">Publish edits as a PR <span>github</span></button>
+      <div class="hr-thin"></div>
+      <div class="tb-menu-lbl">GitHub</div>
+      <button class="mi" id="m-connect">Connect this device <span>token</span></button>
+      <button class="mi" id="m-share">Copy my progress link <span>share</span></button>
+      <div id="m-people"></div>
+      <div class="hr-thin"></div>
+      <div class="tb-menu-lbl">Progress</div>
+      <button class="mi" id="m-export">Export progress <span>json</span></button>
+      <button class="mi" id="m-import">Import / merge <span>json</span></button>
+      <button class="mi danger" id="m-reset">Clear progress</button>
+      <div class="hr-thin"></div>
+      <div class="tb-menu-lbl">Keys</div>
+      <button class="mi" tabindex="-1" style="cursor:default">Search <span>⌘K or /</span></button>
+      <button class="mi" tabindex="-1" style="cursor:default">Prev / next phase <span>[ ]</span></button>
+      <button class="mi" tabindex="-1" style="cursor:default">Edit mode <span>e</span></button>
+    </div>
+  </div>
+</header>
+<div class="readbar" id="readbar"></div>
+<div class="seg-tip" id="seg-tip"></div>
+<input type="file" id="file-in" accept="application/json,.json" style="display:none">
+
+<div class="pal-bd" id="pal-bd">
+  <div class="pal">
+    <input class="pal-in" id="pal-in" placeholder="Search phases, sections, tasks, checkpoints…" autocomplete="off" spellcheck="false">
+    <div class="pal-res" id="pal-res"></div>
+    <div class="pal-foot"><span>↑↓ move</span><span>↵ open</span><span>esc close</span></div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <span id="toast-msg"></span>
+  <button id="toast-act"></button>
+  <button class="x" id="toast-x">Dismiss</button>
+</div>
+
+<div class="em-bar">
+  <b>Edit mode</b>
+  <span>Click any text to change it · hover a task for ⧉ / ×</span>
+  <button id="em-publish">Publish as PR</button>
+  <button id="em-download">Download HTML</button>
+  <button id="em-done">Done</button>
+</div>
+
+<div class="shell">
+<aside class="rl" id="rail">
+  <button class="rl-resume" id="rl-resume"><span class="rl-resume-txt"></span></button>
+  <div class="rl-lastvisit" id="rl-lastvisit"></div>
+</aside>
+<main class="main" id="content">
+  <div class="view-banner" id="view-banner"></div>
+  <div class="content-loading" id="content-loading">Loading the roadmap…</div>
+</main>
+</div>
+<script src="js/sync.js"></script>
+<script src="js/boot.js"></script>
+</body>
+</html>
