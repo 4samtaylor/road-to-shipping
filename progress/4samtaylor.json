@@ -1,7 +1,12 @@
 {
   "user": "4samtaylor",
-  "updated": "2026-10-03T21:04:22.374Z",
+  "updated": "2026-10-03T22:17:43.600Z",
   "state": {
+    "_closed": {},
+    "_log": {
+      "2026-10-03": 4
+    },
+    "_logDay": "2026-10-03",
     "_notes": {},
     "cp-p1-1": false,
     "cp-p1-2": false,
@@ -35,10 +40,10 @@
     "cp-p6-1": false,
     "cp-p6-2": false,
     "cp-p6-3": false,
-    "p1-commit-github": false,
-    "p1-compiler-error": false,
-    "p1-hello-world-printf": false,
-    "p1-starter-todos": false,
+    "p1-commit-github": true,
+    "p1-compiler-error": true,
+    "p1-hello-world-printf": true,
+    "p1-starter-todos": true,
     "p2-commit-github": false,
     "p2-conditionals": false,
     "p2-frame-counter": false,
