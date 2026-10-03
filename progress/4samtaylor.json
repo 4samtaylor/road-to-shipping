@@ -1,10 +1,27 @@
 {
   "user": "4samtaylor",
-  "updated": "2026-10-03T22:17:43.600Z",
+  "updated": "2026-10-03T22:17:51.612Z",
   "state": {
-    "_closed": {},
+    "_closed": {
+      "0": "[",
+      "1": "o",
+      "2": "b",
+      "3": "j",
+      "4": "e",
+      "5": "c",
+      "6": "t",
+      "7": " ",
+      "8": "O",
+      "9": "b",
+      "10": "j",
+      "11": "e",
+      "12": "c",
+      "13": "t",
+      "14": "]",
+      "15": "1"
+    },
     "_log": {
-      "2026-10-03": 4
+      "2026-10-03": 5
     },
     "_logDay": "2026-10-03",
     "_notes": {},
@@ -49,7 +66,7 @@
     "p2-frame-counter": false,
     "p2-guessing-game": false,
     "p2-loops": false,
-    "p2-scanf-basics": false,
+    "p2-scanf-basics": true,
     "p2-variables-types": false,
     "p3-functions": false,
     "p3-header-files": false,
