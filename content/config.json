@@ -1,5 +1,7 @@
 {
-    "branch":  "main",
-    "owner":  "4samtaylor",
-    "repo":  "road-to-shipping"
+  "owner": "4samtaylor",
+  "repo": "road-to-shipping",
+  "branch": "main",
+  "supabaseUrl": "https://qvrpzycindlchwjzoqph.supabase.co",
+  "supabaseKey": "sb_publishable_Iaa3PCnhvHOymVtJKr4VHg_TaRvRYXY"
 }

@@ -1,19 +1,13 @@
-/* Loads content/*.html in manifest order, brings progress up to date,
-   then starts js/app.js. */
+/* Loads content/*.html in manifest order, signs in and brings
+   progress up to date, then starts js/app.js. */
 (function () {
   'use strict';
-  var RTS = window.RTS;
   var main = document.getElementById('content');
   var loading = document.getElementById('content-loading');
+  var GH = window.RTS_GH, CLOUD = window.RTS_CLOUD;
 
-  var view = new URLSearchParams(location.search).get('user');
-  var me = RTS.login();
-  if (view && me && view.toLowerCase() === me.toLowerCase()) view = null;
-  if (view) {
-    RTS.viewing = view;
-    window.RTS_KEY = 'roadmap_v3:view:' + view.toLowerCase();
-    document.body.classList.add('viewing');
-  }
+  // app.js calls RTS.onSave(state) after every save
+  window.RTS = { onSave: function (s) { CLOUD.onSave(s); } };
 
   function getText(url) {
     return fetch(url, { cache: 'no-cache' }).then(function (r) {
@@ -22,23 +16,24 @@
     });
   }
 
-  Promise.all([getText('content/manifest.json').then(JSON.parse), RTS.loadConfig()])
+  Promise.all([getText('content/manifest.json').then(JSON.parse), GH.loadConfig()])
     .then(function (res) {
-      var man = res[0];
+      var man = res[0], config = res[1] || {};
       window.RTS_GROUPS = man.groups;
-      return Promise.all(man.files.map(function (f) {
-        return getText('content/' + f).then(function (t) { return [f, t]; });
-      }));
+      return Promise.all([
+        Promise.all(man.files.map(function (f) { return getText('content/' + f).then(function (t) { return [f, t]; }); })),
+        CLOUD.init(config)
+      ]);
     })
-    .then(function (parts) {
-      parts.forEach(function (p) {
+    .then(function (res) {
+      res[0].forEach(function (p) {
         var tpl = document.createElement('template');
         tpl.innerHTML = p[1];
         Array.prototype.forEach.call(tpl.content.children, function (el) { el.setAttribute('data-src', p[0]); });
         main.appendChild(tpl.content);
       });
       if (loading) loading.remove();
-      return RTS.pullBeforeStart();
+      return CLOUD.pullBeforeStart();
     })
     .then(function () {
       return new Promise(function (resolve, reject) {
@@ -49,7 +44,7 @@
         document.body.appendChild(s);
       });
     })
-    .then(function () { RTS.start(); })
+    .then(function () { GH.start(); CLOUD.start(); })
     .catch(function (err) {
       var msg = location.protocol === 'file:'
         ? 'This page loads its content files, which browsers block when you open it straight from disk. Use the GitHub Pages link, or run <code>python -m http.server</code> in this folder and open http://localhost:8000.'

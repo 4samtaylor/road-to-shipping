@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Privacy · Road to Shipping</title>
+<link rel="stylesheet" href="css/app.css">
+<style>
+  body { padding: 0; }
+  .doc { max-width: 680px; margin: 0 auto; padding: 48px 22px 80px; font-size: 13.5px; line-height: 1.8; color: var(--text); }
+  .doc h1 { font-family: var(--font-display); font-size: 30px; margin-bottom: 6px; }
+  .doc h2 { font-family: var(--font-display); font-size: 17px; margin: 28px 0 6px; }
+  .doc p, .doc li { color: var(--muted2); }
+  .doc ul { padding-left: 20px; }
+  .doc a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="doc">
+  <p><a href="./">← Back to the roadmap</a></p>
+  <h1>Privacy</h1>
+  <p>Last updated October 2026.</p>
+
+  <h2>What we store</h2>
+  <ul>
+    <li>Your email address and password, used only to sign you in. Passwords are stored hashed by Supabase, never in readable form, and we can't see them.</li>
+    <li>Your roadmap progress: which tasks and checkpoints you've completed, your task notes, your scratchpad, and your session log.</li>
+  </ul>
+
+  <h2>Where it's kept</h2>
+  <p>In a Supabase database. Access rules mean only your signed-in account can read or change your progress. A copy also stays in your browser so the app works offline.</p>
+
+  <h2>What we don't do</h2>
+  <p>No ads, no tracking scripts, no analytics, and nothing is sold or shared.</p>
+
+  <h2>Deleting your data</h2>
+  <p>In the app, open the menu (⋯) and choose <b>Delete my account</b>. That removes your account and everything saved in it right away. Signing out removes the account's copy from that device's sync bookkeeping; your progress stays in your account.</p>
+
+  <h2>Questions</h2>
+  <p>Open an issue at <a href="https://github.com/4samtaylor/road-to-shipping/issues">github.com/4samtaylor/road-to-shipping</a>.</p>
+</div>
+</body>
+</html>

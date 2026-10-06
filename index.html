@@ -15,7 +15,7 @@
 <body>
 <header class="tb">
   <button class="icb" id="tb-rail" title="Toggle navigation (Esc closes)">☰</button>
-  <div class="tb-brand">Road to Shipping <span>/ v11</span></div>
+  <div class="tb-brand">Road to Shipping <span>/ v12</span></div>
   <div class="tb-seg" id="tb-seg"></div>
   <div class="tb-stat" id="tb-count"></div>
   <div class="tb-stat est" id="tb-est"></div>
@@ -38,10 +38,13 @@
       <div class="hr-thin"></div>
       <button class="mi" id="m-publish">Publish edits as a PR <span>github</span></button>
       <div class="hr-thin"></div>
-      <div class="tb-menu-lbl">GitHub</div>
-      <button class="mi" id="m-connect">Connect this device <span>token</span></button>
-      <button class="mi" id="m-share">Copy my progress link <span>share</span></button>
-      <div id="m-people"></div>
+      <div class="tb-menu-lbl">Account</div>
+      <button class="mi" id="m-account">Sign in to sync <span>account</span></button>
+      <button class="mi" id="m-import">Import old GitHub progress <span>once</span></button>
+      <button class="mi" id="m-connect">Connect GitHub <span>for edits</span></button>
+      <a class="mi" href="privacy.html">Privacy <span>page</span></a>
+      <button class="mi" id="m-signout">Sign out</button>
+      <button class="mi danger" id="m-delete">Delete my account</button>
       <div class="hr-thin"></div>
       <div class="tb-menu-lbl">Progress</div>
       <button class="mi" id="m-export">Export progress <span>json</span></button>
@@ -81,17 +84,41 @@
   <button id="em-done">Done</button>
 </div>
 
+<div class="auth" id="auth" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+  <div class="auth-card">
+    <h2 id="auth-title">Sign in to sync</h2>
+    <p class="auth-sub">One account keeps your progress the same on every device.</p>
+    <form id="auth-form" novalidate>
+      <label class="auth-lbl" for="auth-email">Email</label>
+      <input class="auth-in" id="auth-email" name="email" type="email" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="you@example.com" required>
+      <label class="auth-lbl" for="auth-pass">Password</label>
+      <input class="auth-in" id="auth-pass" name="password" type="password" autocomplete="current-password" minlength="8" required>
+      <p class="auth-hint" id="auth-hint" hidden>At least 8 characters. Your iPhone or browser can suggest a strong one and remember it.</p>
+      <button class="auth-btn primary" id="auth-submit" type="submit">Sign in</button>
+    </form>
+    <div class="auth-row">
+      <button class="auth-link" id="auth-mode" type="button">New here? Create an account</button>
+      <button class="auth-link" id="auth-forgot" type="button">Forgot password?</button>
+    </div>
+    <button class="auth-btn" id="auth-google" type="button" hidden>Continue with Google</button>
+    <div class="auth-msg" id="auth-msg" aria-live="polite"></div>
+    <button class="auth-link" id="auth-skip" type="button">Not now, keep progress on this device only</button>
+    <p class="auth-fine">By signing in you agree to the <a href="privacy.html">privacy page</a>.</p>
+  </div>
+</div>
+
 <div class="shell">
 <aside class="rl" id="rail">
   <button class="rl-resume" id="rl-resume"><span class="rl-resume-txt"></span></button>
   <div class="rl-lastvisit" id="rl-lastvisit"></div>
 </aside>
 <main class="main" id="content">
-  <div class="view-banner" id="view-banner"></div>
   <div class="content-loading" id="content-loading">Loading the roadmap…</div>
 </main>
 </div>
-<script src="js/sync.js"></script>
+<script src="js/vendor/supabase-2.117.2.js"></script>
+<script src="js/github.js"></script>
+<script src="js/cloud.js"></script>
 <script src="js/boot.js"></script>
 </body>
 </html>
