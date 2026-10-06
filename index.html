@@ -5,31 +5,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Road to Shipping</title>
 <meta name="theme-color" content="#0e0e1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Roadmap">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
-</head>
-<body>
 <header class="tb">
   <button class="icb" id="tb-rail" title="Toggle navigation (Esc closes)">☰</button>
-  <div class="tb-brand">Road to Shipping <span>/ v12</span></div>
+  <div class="tb-brand">Road to Shipping <span>/ v13</span></div>
   <div class="tb-seg" id="tb-seg"></div>
   <div class="tb-stat" id="tb-count"></div>
   <div class="tb-stat est" id="tb-est"></div>
   <div class="tb-sync" id="tb-sync" title="GitHub sync status"></div>
   <button class="tb-btn" id="tb-edit" title="Edit text and tasks in place"><span class="lbl">Edit</span> <kbd>E</kbd></button>
-  <button class="tb-btn" id="tb-search"><span class="lbl">Search</span> <kbd>⌘K</kbd></button>
+  <button class="tb-btn" id="tb-search" aria-label="Search"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg><span class="lbl">Search</span> <kbd>⌘K</kbd></button>
   <button class="icb" id="tb-theme" title="Switch theme">◑</button>
   <div class="tb-menu-wrap">
-    <button class="icb" id="tb-more" title="More">⋯</button>
+    <button class="icb" id="tb-more" title="More" aria-label="Menu" aria-haspopup="true">⋯</button>
     <div class="tb-menu" id="tb-menu">
       <div class="tb-menu-lbl">View</div>
       <button class="mi" id="m-expand">Expand all phases</button>
       <button class="mi" id="m-collapse">Collapse all phases</button>
-      <button class="mi" id="m-solo">One phase at a time <span>off</span></button>
+      <button class="mi" id="m-solo">Focus mode: one phase open <span>on</span></button>
+      <button class="mi mobile-only" id="m-theme">Switch theme <span>◑</span></button>
       <div class="hr-thin"></div>
       <div class="tb-menu-lbl">Content</div>
       <button class="mi" id="m-edit">Edit mode <span>e</span></button>
@@ -48,13 +49,15 @@
       <div class="hr-thin"></div>
       <div class="tb-menu-lbl">Progress</div>
       <button class="mi" id="m-export">Export progress <span>json</span></button>
-      <button class="mi" id="m-import">Import / merge <span>json</span></button>
+      <button class="mi" id="m-import-json">Import / merge <span>json</span></button>
       <button class="mi danger" id="m-reset">Clear progress</button>
       <div class="hr-thin"></div>
-      <div class="tb-menu-lbl">Keys</div>
-      <button class="mi" tabindex="-1" style="cursor:default">Search <span>⌘K or /</span></button>
-      <button class="mi" tabindex="-1" style="cursor:default">Prev / next phase <span>[ ]</span></button>
-      <button class="mi" tabindex="-1" style="cursor:default">Edit mode <span>e</span></button>
+      <div class="keys-only">
+        <div class="tb-menu-lbl">Keys</div>
+        <button class="mi" tabindex="-1" style="cursor:default">Search <span>⌘K or /</span></button>
+        <button class="mi" tabindex="-1" style="cursor:default">Prev / next phase <span>[ ]</span></button>
+        <button class="mi" tabindex="-1" style="cursor:default">Edit mode <span>e</span></button>
+      </div>
     </div>
   </div>
 </header>
@@ -106,6 +109,15 @@
     <p class="auth-fine">By signing in you agree to the <a href="privacy.html">privacy page</a>.</p>
   </div>
 </div>
+
+<aside class="help" id="help" role="dialog" aria-modal="false" aria-labelledby="help-title" hidden>
+  <div class="help-hd">
+    <div><div class="help-kick">Help</div><h2 id="help-title"></h2></div>
+    <button class="icb" id="help-x" aria-label="Close help">✕</button>
+  </div>
+  <div class="help-body" id="help-body"></div>
+</aside>
+<button class="help-fab" id="help-fab" hidden>Stuck?</button>
 
 <div class="shell">
 <aside class="rl" id="rail">

@@ -114,7 +114,7 @@ function injectPerPhase() {
     var inner = $('.phase-inner', s.el);
     if (!inner) return;
     var blocks = $$('.section-block', s.el);
-    if (blocks.length > 2) {
+    if (blocks.length > 2 && !s.staged) {
       var h = '<div class="ptoc"><span class="ptoc-lbl">In this phase</span>';
       blocks.forEach(function (b, i) {
         var hd = $('.section-block-header', b);
@@ -144,7 +144,7 @@ function injectPerPhase() {
 function refresh() {
   var all = $$('.task'), done = all.filter(function (t) { return t.classList.contains('done'); });
   var pct = all.length ? Math.round(done.length / all.length * 100) : 0;
-  $('#tb-count').innerHTML = '<b>' + done.length + '</b> <em>/ ' + all.length + ' tasks</em> · <b>' + pct + '%</b>';
+  $('#tb-count').innerHTML = '<b>' + done.length + '</b><em> / ' + all.length + '</em><span class="tb-x"><em> tasks</em> · <b>' + pct + '%</b></span>';
   if ($('#strip-val')) $('#strip-val').textContent = done.length + ' / ' + all.length + ' tasks · ' + pct + '%';
   $('#tb-est').innerHTML = '<em>≈</em> <b>' + fmtMins((all.length - done.length) * MIN_PER_TASK) + '</b> <em>left</em>';
 
@@ -216,9 +216,7 @@ function decorateHeaders() {
     var right = $('.phase-right', s.el);
     var c = counts(s);
     if (!right || !c.tasks) return;
-    right.insertAdjacentHTML('afterbegin',
-      '<div class="ph-prog"><i><b></b></i><span>0/' + c.tasks + '</span></div>' +
-      '<div class="ph-est">≈' + fmtMins(c.tasks * MIN_PER_TASK) + '</div>');
+    right.insertAdjacentHTML('afterbegin', '<div class="ph-est">' + c.tasks + ' tasks · ≈' + fmtMins(c.tasks * MIN_PER_TASK) + '</div>');
   });
 }
 
@@ -226,6 +224,7 @@ function decorateHeaders() {
 function setOpen(phase, open) {
   if (!phase.classList.contains('phase')) return;
   phase.classList.toggle('open', open);
+  updateHelpFab();
 }
 function goTo(id, opts) {
   opts = opts || {};
@@ -291,9 +290,20 @@ document.addEventListener('click', function (e) {
   if (e.target.closest('.tn-wrap')) return;
 
   if ((el = e.target.closest('.phase-header'))) {
-    var ph = el.closest('.phase');
-    setOpen(ph, !ph.classList.contains('open'));
+    var ph = el.closest('.phase'), opening = !ph.classList.contains('open');
+    if (opening && state._solo) {
+      sections.forEach(function (o) { if (o.isPhase && o.el !== ph) setOpen(o.el, false); });
+      setOpen(ph, true);
+      scrollToEl(ph, TOPBAR + 6);
+    } else setOpen(ph, opening);
     save();
+    return;
+  }
+  if ((el = e.target.closest('[data-help]'))) { openHelp(el.dataset.help); return; }
+  if ((el = e.target.closest('[data-stage]'))) {
+    var st = document.getElementById(el.dataset.stage);
+    var sh = st && $('.phase-header', st.closest('.phase'));
+    if (st) { scrollToEl(st, TOPBAR + (sh ? sh.offsetHeight : 0) + 10); flash(st); }
     return;
   }
   if ((el = e.target.closest('.section-block-header'))) {
@@ -455,14 +465,16 @@ function buildIndex() {
   var out = [];
   sections.forEach(function (s) {
     out.push({ kind: 'phase', title: s.num + '  ' + s.title, where: s.week || '', run: function () { goTo(s.id); } });
-    $$('.section-block', s.el).forEach(function (b, i) {
+    $$('.section-block', s.el).concat(s.help ? $$('.section-block', s.help) : []).forEach(function (b) {
       var hd = $('.section-block-header', b);
       if (!hd) return;
+      var inHelp = !!(s.help && s.help.contains(b));
       out.push({
-        kind: 'section', title: (hd.textContent || '').trim().replace(/\s+/g, ' '), where: s.num + ' ' + s.title,
+        kind: inHelp ? 'help' : 'section', title: (hd.textContent || '').trim().replace(/\s+/g, ' '), where: s.num + ' ' + s.title,
         run: function () {
-          if (s.isPhase) setOpen(s.el, true);
           if (b.classList.contains('acc-section')) b.classList.add('open');
+          if (inHelp) { openHelp(s.id); setTimeout(function () { b.scrollIntoView({ block: 'start' }); flash(b); }, 60); return; }
+          if (s.isPhase) setOpen(s.el, true);
           setTimeout(function () { scrollToEl(b, TOPBAR + 74); flash(b); }, 60);
         }
       });
@@ -502,7 +514,7 @@ function renderPal(q) {
       return { kind: 'phase', title: s.num + '  ' + s.title, where: s.week || '', run: function () { goTo(s.id); } };
     }));
   } else {
-    var W = { phase: 0, action: 1, section: 2, task: 3, check: 4 };
+    var W = { phase: 0, action: 1, section: 2, help: 2, task: 3, check: 4 };
     res = index.concat(actions()).map(function (r) {
       var i = r.title.toLowerCase().indexOf(q);
       if (i < 0) return null;
@@ -563,6 +575,7 @@ function spy() {
     $$('.seg').forEach(function (i) { i.classList.toggle('on', i.dataset.seg === cur.id); });
     $$('.strip-cell').forEach(function (i) { i.classList.toggle('on', i.dataset.strip === cur.id); });
     updateDock();
+    updateHelpFab();
     state._lastId = cur.id;
   }
   var h = document.documentElement.scrollHeight - window.innerHeight;
@@ -602,7 +615,7 @@ document.addEventListener('keydown', function (e) {
   if (typing) return;
   if (e.key === '/') { e.preventDefault(); openPal(); return; }
   if (e.key.toLowerCase() === 'e' && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); setEditing(!document.body.classList.contains('editing')); return; }
-  if (e.key === 'Escape') { closeMenu(); closeRailMobile(); hideToast(); return; }
+  if (e.key === 'Escape') { closeMenu(); closeRailMobile(); closeHelp(); hideToast(); return; }
   if (e.key === ']' || e.key === '[') {
     e.preventDefault();
     var i = sections.findIndex(function (s) { return s.id === lastSpy; });
@@ -616,7 +629,10 @@ document.addEventListener('keydown', function (e) {
 function closeMenu() { $('#tb-menu').classList.remove('open'); }
 function closeRailMobile() { document.body.classList.remove('rail-open'); }
 $('#tb-more').addEventListener('click', function (e) { e.stopPropagation(); $('#tb-menu').classList.toggle('open'); });
-document.addEventListener('click', function (e) { if (!e.target.closest('.tb-menu-wrap')) closeMenu(); });
+document.addEventListener('click', function (e) {
+  if (!e.target.closest('.tb-menu-wrap')) closeMenu();
+  if (document.body.classList.contains('rail-open') && !e.target.closest('.rl, #tb-rail')) closeRailMobile();
+});
 $('#tb-rail').addEventListener('click', function () {
   if (window.matchMedia('(max-width: 860px)').matches) document.body.classList.toggle('rail-open');
   else document.body.classList.toggle('rail-off');
@@ -633,7 +649,8 @@ $('#m-solo').addEventListener('click', function () {
   save(); closeMenu();
 });
 $('#m-export').addEventListener('click', function () { exportState(); closeMenu(); });
-$('#m-import').addEventListener('click', function () { $('#file-in').click(); closeMenu(); });
+$('#m-import-json').addEventListener('click', function () { $('#file-in').click(); closeMenu(); });
+$('#m-theme').addEventListener('click', function () { setTheme(state._theme === 'light' ? 'dark' : 'light'); closeMenu(); });
 $('#m-reset').addEventListener('click', function () { closeMenu(); resetState(); });
 $('#file-in').addEventListener('change', function (e) { if (e.target.files[0]) importState(e.target.files[0]); e.target.value = ''; });
 $('#toast-x').addEventListener('click', hideToast);
@@ -661,9 +678,6 @@ function buildDock() {
   var shell = $('.shell');
   shell.insertAdjacentHTML('beforeend',
     '<aside class="dock" id="dock">' +
-    '<div class="dk-sec"><div class="dk-lbl"><span>Now</span><b id="dk-where"></b></div>' +
-    '<div class="dk-card"><div class="dk-now" id="dk-now"></div>' +
-    '<div class="dk-btns"><button class="dk-btn go" id="dk-done">Mark done</button><button class="dk-btn" id="dk-jump">Show me</button></div></div></div>' +
     '<div class="dk-sec"><div class="dk-lbl"><span>Session</span><b id="dk-closed"></b></div>' +
     '<div class="dk-card"><div class="dk-clock" id="dk-clock">0:00</div><div class="dk-sub" id="dk-sub">not started</div>' +
     '<div class="dk-btns"><button class="dk-btn" id="dk-toggle">Start</button><button class="dk-btn" id="dk-reset">Reset</button></div></div></div>' +
@@ -675,15 +689,6 @@ function buildDock() {
   document.body.classList.add('has-dock');
   $('#dk-pad').value = state._scratch || '';
   $('#dk-pad').addEventListener('input', function (e) { state._scratch = e.target.value; save(); });
-  $('#dk-done').addEventListener('click', function () {
-    var t = nextTask();
-    if (!t) return;
-    t.classList.add('done');
-    logDone();
-    refresh(); save();
-    flash(t);
-  });
-  $('#dk-jump').addEventListener('click', resume);
   $('#dk-toggle').addEventListener('click', function () {
     var s = state._timer || { acc: 0, at: 0 };
     if (s.at) { s.acc += Date.now() - s.at; s.at = 0; } else { s.at = Date.now(); }
@@ -706,15 +711,11 @@ function tickClock() {
   var today = new Date().toISOString().slice(0, 10);
   $('#dk-closed').textContent = (state._logDay === today && +state._closed || 0) + ' closed today';
 }
+function promptsIn(o) { return o ? $$('.prompt-item', o.el).concat(o.help ? $$('.prompt-item', o.help) : []) : []; }
 function updateDock() {
   if (!$('#dock')) return;
   var t = nextTask();
   var sec = t ? byId[(t.closest('.phase') || {}).id] : null;
-  $('#dk-where').textContent = sec ? sec.num + ' · ' + (sec.week || '') : '';
-  $('#dk-now').innerHTML = t
-    ? '<small>' + esc(sec ? sec.title : '') + '</small>' + esc(taskLabel(t).slice(0, 150))
-    : '<small>Nothing left</small>Every task is checked off. Ship it.';
-  $('#dk-done').disabled = !t;
 
   var here = byId[lastSpy] || sec || sections[0];
   var cp = null;
@@ -722,8 +723,8 @@ function updateDock() {
   if (!cp) cp = $$('.cp-item').filter(function (c) { return !c.classList.contains('done'); })[0];
   $('#dk-cp').innerHTML = cp ? esc(cpLabel(cp).slice(0, 190)) : '<em>All checkpoints cleared.</em>';
 
-  var host = here && $('.prompt-item', here.el) ? here : (sec && $('.prompt-item', sec.el) ? sec : null);
-  var prompts = host ? $$('.prompt-item', host.el).slice(0, 3) : [];
+  var host = promptsIn(here).length ? here : (promptsIn(sec).length ? sec : null);
+  var prompts = promptsIn(host).slice(0, 3);
   $('#dk-prompts').innerHTML = prompts.length ? prompts.map(function (p, i) {
     var lbl = ($('.prompt-label', p) || {}).textContent || 'Prompt';
     return '<button class="dk-prompt" data-dkp="' + i + '">' + esc(lbl.trim().slice(0, 90)) + '<span>click to copy</span></button>';
@@ -735,7 +736,7 @@ document.addEventListener('click', function (e) {
   if (!b) return;
   var host = byId[$('#dk-prompts').dataset.host];
   if (!host) return;
-  var p = $$('.prompt-item', host.el)[+b.dataset.dkp];
+  var p = promptsIn(host)[+b.dataset.dkp];
   var txt = $('.prompt-text', p);
   if (txt) copyPrompt(txt);
 });
@@ -800,12 +801,125 @@ function updateNext() {
   $('#wn-ph').innerHTML = cleared.length + ' of ' + ph.length + ' <em>· ' + (state._log ? Object.keys(state._log).length : 0) + ' working days logged</em>';
 }
 
+/* ─── v13: SHOW LESS ──────────────────────────────────────────
+   Every phase is regrouped at load into the same five stages
+   (Learn → Trace → Practice → Build → Review), each with a size label,
+   goals from the checkpoint at the top, and "Stuck?" + Claude prompts
+   moved into a help drawer. Content files stay untouched: blocks move
+   after markAnchors(), so edits still map back to their source.
+   ───────────────────────────────────────────────────────────── */
+var STAGES = [['learn', 'Learn'], ['trace', 'Trace'], ['practice', 'Practice'], ['build', 'Build'], ['review', 'Review']];
+function stageOf(block) {
+  var b = (($('.badge', block) || {}).textContent || '').trim().toLowerCase();
+  if (/^stuck|claude code prompts/.test(b)) return 'help';
+  if (/predict/.test(b)) return 'trace';
+  if (/^tasks|^exercises/.test(b)) return 'practice';
+  if (/starter code|^git|build\.bat|tooling|prompt templates|^build|^stretch/.test(b)) return 'build';
+  if (/quiz|mixed review/.test(b)) return 'review';
+  return 'learn';
+}
+function plural(n, w) { return n + ' ' + w + (n === 1 ? '' : 's'); }
+function stageSize(key, els) {
+  var box = document.createElement('div');
+  els.forEach(function (e) { box.appendChild(e.cloneNode(true)); });
+  if (key === 'learn') {
+    var words = (box.textContent.match(/\S+/g) || []).length;
+    return plural(els.length, 'read') + ' · ~' + Math.max(1, Math.round(words / 200)) + ' min';
+  }
+  if (key === 'trace') {
+    var d = $$('.quiz-item', box).length;
+    return plural(d, 'drill') + ' · ~' + Math.max(5, Math.round(d * 2.5)) + ' min';
+  }
+  if (key === 'practice') {
+    var t = $$('.task', box).length, m = 0;
+    $$('.task-time', box).forEach(function (x) { var n = /(\d+)/.exec(x.textContent); if (n) m += +n[1]; });
+    m = m || t * MIN_PER_TASK;
+    return t ? plural(t, 'task') + ' · ~' + (m < 120 ? m + ' min' : fmtMins(m)) : plural($$('.quiz-item', box).length, 'exercise');
+  }
+  if (key === 'build') {
+    var c = $$('.code-wrap', box).length;
+    return (c ? plural(c, 'file') + ' · ' : '') + plural(els.length, 'section');
+  }
+  var q = $$('.quiz-item', box).length, cp = $$('.cp-item', box).length;
+  return [q ? plural(q, 'question') : '', cp ? plural(cp, 'check') : ''].filter(Boolean).join(' · ');
+}
+function stagePhase(s) {
+  var inner = $('.phase-inner', s.el);
+  if (!inner || !$('.tasks, .checkpoint', inner)) return;
+  var bins = { learn: [], trace: [], practice: [], build: [], review: [], help: [] };
+  Array.prototype.slice.call(inner.children).forEach(function (k) {
+    if (k.classList.contains('checkpoint')) bins.review.push(k);
+    else if (k.classList.contains('section-block')) bins[stageOf(k)].push(k);
+    else bins.learn.push(k);
+  });
+
+  var cps = $$('.cp-text', inner).map(function (c) { return c.textContent.trim(); });
+  var html = cps.length ? '<div class="goals"><div class="goals-lbl">By the end of this phase</div><ul>' +
+    cps.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul></div>' : '';
+  html += '<nav class="stage-nav" aria-label="Stages in this phase">';
+  var n = 0;
+  STAGES.forEach(function (st) {
+    if (bins[st[0]].length) html += '<button data-stage="' + s.id + '-' + st[0] + '"><b>' + (++n) + '</b> ' + st[1] + '</button>';
+  });
+  if (bins.help.length) html += '<button class="stage-help" data-help="' + s.id + '">Stuck? Help</button>';
+  inner.insertAdjacentHTML('afterbegin', html + '</nav>');
+
+  n = 0;
+  STAGES.forEach(function (st) {
+    var els = bins[st[0]];
+    if (!els.length) return;
+    var sec = document.createElement('section');
+    sec.className = 'stage';
+    sec.id = s.id + '-' + st[0];
+    sec.innerHTML = '<div class="stage-hd"><span class="stage-n">' + (++n) + '</span><span class="stage-name">' + st[1] +
+      '</span><span class="stage-size">' + esc(stageSize(st[0], els)) + '</span></div>';
+    els.forEach(function (e) { sec.appendChild(e); });
+    inner.appendChild(sec);
+  });
+
+  if (bins.help.length) {
+    var set = document.createElement('div');
+    set.className = 'help-set';
+    set.hidden = true;
+    bins.help.forEach(function (b) { b.classList.add('open'); set.appendChild(b); });
+    $('#help-body').appendChild(set);
+    s.help = set;
+  }
+  s.staged = true;
+}
+function stageAll() { sections.forEach(function (s) { if (s.isPhase) stagePhase(s); }); }
+
+function openHelp(id) {
+  var s = byId[id];
+  if (!s || !s.help) return;
+  $$('.help-set').forEach(function (h) { h.hidden = h !== s.help; });
+  $('#help-title').textContent = s.num + ' · ' + s.title;
+  $('#help').hidden = false;
+  document.body.classList.add('help-open');
+  $('#help-body').scrollTop = 0;
+  $('#help-x').focus({ preventScroll: true });
+}
+function closeHelp() {
+  if ($('#help').hidden) return;
+  $('#help').hidden = true;
+  document.body.classList.remove('help-open');
+}
+function updateHelpFab() {
+  var s = byId[lastSpy], fab = $('#help-fab');
+  fab.hidden = !(s && s.help && s.el.classList.contains('open'));
+  if (!fab.hidden) fab.dataset.help = s.id;
+}
+$('#help-x').addEventListener('click', closeHelp);
+document.addEventListener('click', function (e) {
+  if (!$('#help').hidden && !e.target.closest('#help, [data-help], .pal-bd, .toast')) closeHelp();
+});
+
 /* ─── CONTENT EDITING ─────────────────────────────────────────
    Anchors are stable containers; an edit stores that anchor's
    innerHTML (with runtime UI stripped) under state._edits.
    ───────────────────────────────────────────────────────────── */
 if (!state._edits) state._edits = {};
-var INJECTED = '.tn-btn, .tn-wrap, .ptoc, .ph-prog, .ph-est, .em-ctl, .em-add';
+var INJECTED = '.tn-btn, .tn-wrap, .ptoc, .ph-prog, .ph-est, .em-ctl, .em-add, .goals, .stage-nav, .stage-hd';
 
 function markAnchors() {
   sections.forEach(function (s) {
@@ -1010,9 +1124,9 @@ $('#em-download').addEventListener('click', downloadHTML);
 /* ─── BOOT ─── */
 markAnchors();
 restoreEdits();
+stageAll();
 buildRail();
 $('#rail').insertAdjacentHTML('beforeend', '<div class="rl-log" id="rl-log"></div>');
-buildStrip();
 buildDock();
 buildNext();
 renderLog();
@@ -1021,9 +1135,15 @@ decorateHeaders();
 injectPerPhase();
 applyState();
 setTheme(state._theme === 'light' ? 'light' : 'dark');
+if (state._solo === undefined) state._solo = true;   // v13: focus mode is the default
 $('#m-solo span').textContent = state._solo ? 'on' : 'off';
 
-if (state._phases) {
+if (state._solo) {
+  var focus = byId[state._lastId] && byId[state._lastId].isPhase ? byId[state._lastId] : null;
+  var nt = nextTask();
+  if (!focus && nt && nt.closest('.phase')) focus = byId[nt.closest('.phase').id];
+  sections.forEach(function (s) { if (s.isPhase) setOpen(s.el, focus ? s === focus : false); });
+} else if (state._phases) {
   sections.forEach(function (s) {
     if (s.isPhase && Object.prototype.hasOwnProperty.call(state._phases, s.id)) setOpen(s.el, !!state._phases[s.id]);
   });
@@ -1086,7 +1206,7 @@ document.addEventListener('keydown', function (e) {
 a11ySync();
 
 
-/* ─── v11: hooks for js/sync.js ─── */
+/* ─── hooks for js/cloud.js and js/github.js ─── */
 window.RTS_app = {
   getState: function () { return state; },
   setState: function (s) {
