@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Road to Shipping</string>
+    <string name="title_activity_main">Road to Shipping</string>
+    <string name="package_name">io.github.samtaylor.roadtoshipping</string>
+    <string name="custom_url_scheme">io.github.samtaylor.roadtoshipping</string>
+</resources>
