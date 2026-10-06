@@ -123,7 +123,7 @@ program ends when main ends      program ends when Windows says so</pre>
                   <div class="task-note"><span class="task-time">~30 min</span></div>
                 </div>
               </div>
-              <div class="task" data-id="p5-sdl2-migration">
+              <div class="task" data-id="p5-sdl2-migration" data-optional>
                 <div class="task-cb">✓</div>
                 <div class="task-content">
                   <div class="task-text">Optional: migrate to SDL2 for a cleaner, cross-platform foundation</div>
@@ -212,7 +212,7 @@ program ends when main ends      program ends when Windows says so</pre>
 
         <div class="section-block acc-section">
           <div class="section-block-header">
-            <span class="badge badge-orange">Stuck?</span>&nbsp;&nbsp;Win32 specifics
+            <span class="badge badge-orange">Stuck &amp; Curious</span>&nbsp;&nbsp;Win32 specifics
             <span class="acc-toggle-icon">▼</span>
           </div>
           <div class="acc-body section-block-body">
@@ -228,6 +228,21 @@ program ends when main ends      program ends when Windows says so</pre>
               <div class="stuck-item">
                 <div class="stuck-q">I don't understand what LRESULT, HWND, WPARAM etc. mean</div>
                 <div class="stuck-a">These are Windows type aliases — HWND is a "handle to a window" (essentially a pointer), LRESULT is a long integer result, WPARAM/LPARAM are message parameters. You don't need to memorize them — just know they're Windows-specific names for ordinary types. The concepts (callback functions, event loops) are universal.</div>
+              </div>
+            </div>
+            <div class="eyebrow eyebrow--md t-blue curious-lbl">// Curious — the "why" questions</div>
+            <div class="stuck-items">
+              <div class="stuck-item">
+                <div class="stuck-q">Why does a Windows program need a message loop at all?</div>
+                <div class="stuck-a">Windows doesn't call your code when something happens — it drops a message in your queue and waits for you to collect it. Key pressed, mouse moved, window resized, X clicked: all messages. If your program stops collecting them for a few seconds, Windows decides it has frozen and greys the window out with "Not Responding". The loop is you checking your post.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">GetMessage or PeekMessage?</div>
+                <div class="stuck-a"><span class="cmd">GetMessage</span> waits until a message arrives — perfect for a normal app that only redraws when something happens, and it's what the starter uses. A game can't wait, so it switches to <span class="cmd">PeekMessage</span>: "anything for me? no? fine, run a frame". It's exactly <span class="cmd">scanf</span> versus <span class="cmd">_kbhit</span> from Phase 4.5, one level down.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">Why WinMain instead of main?</div>
+                <div class="stuck-a">A Windows GUI program has a different starting point so it can be handed things a console program doesn't get, like the handle to its own instance. Under the hood the C runtime still sets everything up and then calls your WinMain, the same way it calls main for a console program. Your game logic doesn't care which one started it.</div>
               </div>
             </div>
           </div>
@@ -297,6 +312,54 @@ program ends when main ends      program ends when Windows says so</pre>
             <div class="cp-item" data-id="cp-p5-2"><span class="cp-cb">✓</span><span class="cp-text">Arrow keys move the rectangle — it responds to input</span></div>
             <div class="cp-item" data-id="cp-p5-3"><span class="cp-cb">✓</span><span class="cp-text">You can explain what the message loop is doing and why it exists</span></div>
             <div class="cp-item" data-id="cp-p5-4"><span class="cp-cb">✓</span><span class="cp-text">Frame time is printed — you know how fast your loop runs</span></div>
+          </div>
+        </div>
+
+        <!-- BUILD SPEC -->
+        <div class="section-block acc-section open" data-order="-1">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Build Spec</span>&nbsp;&nbsp;Write the requirements before you build
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="prose prose--sm t-muted2 mb-14">Three requirements per build, written <strong class="t-text">before</strong> you open the editor. Each line is something you can test: run the program and answer yes or no. This is the <span class="cmd">It should:</span> list from the Phase 07 "implement this" prompt — writing it for yourself now is practice for writing it for Claude later. Tick the build when all three pass.</div>
+            <div class="spec">
+              <div class="spec-item">
+                <h4><span>win32_window.c</span> — it should:</h4>
+                <ul>
+                  <li>open a window with your game's name in the title bar, and quit completely when you click the X (nothing left running in Task Manager)</li>
+                  <li>draw a filled rectangle that the arrow keys move — and that can't leave the window</li>
+                  <li>print the frame time to the console once a second, holding about 60 fps without pinning a CPU core</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MIXED REVIEW -->
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Mixed Review</span>&nbsp;&nbsp;one from Phase 3.5, one from Phase 4.5
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="prose prose--sm t-muted2 mb-14">Two questions from earlier phases. Remembering something after a gap is what makes it stay — answer out loud first.</div>
+            <div class="quiz-items">
+              <div class="quiz-item">
+                <div class="quiz-q">1. <span class="t-muted">[Phase 3.5]</span> Win32 has you write <span class="cmd">GetClientRect(hwnd, &amp;rect);</span>. Why the <span class="cmd">&amp;</span>?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">Because the function fills in your struct for you, and to change your struct it needs its address — exactly like <span class="cmd">player_move(&amp;hero, …)</span> and <span class="cmd">scanf("%d", &amp;n)</span>. Whenever a Win32 function "returns" a struct through a parameter, it's writing through a pointer you handed it.</div>
+                </details>
+              </div>
+              <div class="quiz-item">
+                <div class="quiz-q">2. <span class="t-muted">[Phase 4.5]</span> Why did the runner build each frame in a <span class="cmd">char</span> array before printing it — and where does that idea show up in this phase?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">So the whole frame appears at once instead of being drawn piece by piece, which is what flicker is. In a window it's called double buffering: draw everything to an off-screen bitmap, then copy it to the window in one go. Same idea, pixels instead of characters.</div>
+                </details>
+              </div>
+            </div>
           </div>
         </div>
 

@@ -1912,7 +1912,7 @@ a.mi { text-decoration: none; }
   .phase-week { font-size: 10.5px; white-space: nowrap; }
   .phase-inner { padding: 18px 14px; }
   .ph-est { display: none; }
-  .stage-nav { flex-wrap: nowrap; overflow-x: auto; margin: 0 -14px 22px; padding: 0 14px 4px; scrollbar-width: none; }
+  .stage-nav { flex-wrap: nowrap; overflow-x: auto; margin: 0 -10px 22px; padding: 0 10px 4px; scrollbar-width: none; }
   .stage-nav::-webkit-scrollbar { display: none; }
   .stage-nav button { flex: none; padding: 9px 12px; font-size: 12px; }
   .stage-nav .stage-help { margin-left: 0; }
@@ -1952,4 +1952,73 @@ a.mi { text-decoration: none; }
   .spec-item li, .spec-item h4 { font-size: 14px; }
   .king { grid-template-columns: 1fr; gap: 2px; font-size: 14px; }
   .king dd { margin-bottom: 8px; }
+}
+
+/* ─── v13: phone polish — readable sizes, no squeezed rows, nothing past the edge ─── */
+@media (max-width: 860px) {
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+  /* smallest text on a phone is ~10px caps / 11.5px body */
+  .badge, .task-tag { font-size: 10px; letter-spacing: .1em; padding: 3px 7px; white-space: nowrap; }
+  .eyebrow, .goals-lbl, .help-kick, .phase-tag, .sess-k, .prompt-label, .cheat-card-label,
+  .weekly-label, .hero-eyebrow, .wn .kick, .wn-item .k { font-size: 10.5px; letter-spacing: .12em; }
+  .task-time, .stage-size, .cp-counter, .phase-week, .sess-name, .sess-time, .drill-run,
+  .hero-stat, .hero-legend-item, .code-label, .tn-meta { font-size: 11.5px; }
+  .cmd { font-size: .9em; }
+  .fs-10 { font-size: 12px !important; }
+  .fs-11 { font-size: 12.5px !important; }
+  .fs-11-5, .fs-12 { font-size: 13px !important; }
+  .fs-12-5 { font-size: 14px !important; }
+  .quiz-q, .stuck-q, .cp-item, .step-title { font-size: 14px; }
+  .prompt-text { font-size: 13.5px; padding: 12px 12px 12px; }
+  .prompt-text::after { position: static; display: block; margin-top: 8px; font-size: 10px; }
+  pre { font-size: 12px; padding: 12px; }
+
+  /* section headers: badge on its own line, subtitle gets the full width */
+  .section-block-header { flex-wrap: wrap; row-gap: 6px; padding: 12px; font-size: 11.5px; letter-spacing: .06em; line-height: 1.45; }
+  .section-block-header .acc-toggle-icon { order: -1; margin-left: auto; }
+  .section-block-header .badge { order: -2; }
+
+  /* less nested padding, so text isn't a narrow column inside three boxes */
+  .main { padding-left: 12px; padding-right: 12px; }
+  .phase-inner { padding: 16px 10px; }
+  .section-block-body { padding: 14px 10px; }
+  .callout, .callout--sm, .stuck-item, .quiz-item, .prompt-item, .sess-card, .sync-step { padding: 12px; }
+  .callout[style], .code-island[style] { padding: 12px !important; }
+  .checkpoint { padding: 14px 12px; }
+  .panel { padding: 12px; }
+  .code-label { padding: 8px 12px; gap: 10px; }
+  .setup-guide { padding: 18px 14px; margin-bottom: 32px; }
+  .setup-guide-header { flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+  .setup-step { grid-template-columns: 28px minmax(0, 1fr); gap: 12px; }
+  .hero-meta { width: 100%; }
+  .hero-stat { flex: 1 1 auto; padding: 8px 12px; }
+
+  /* tasks: bigger checkbox, text uses the full row, "note" moves underneath */
+  .task { padding: 12px 6px; gap: 10px; }
+  .task-cb, .cp-cb { width: 20px; height: 20px; font-size: 11px; margin-top: 1px; }
+  .task-content { flex: 1 1 calc(100% - 30px); min-width: 0; }
+  .tn-btn { margin-left: 30px; font-size: 10.5px; padding: 6px 10px; }
+  .cp-item { padding: 7px 4px; gap: 10px; }
+  .checkpoint-header { flex-wrap: wrap; }
+  .sess-head { flex-wrap: wrap; row-gap: 2px; }
+  .sess-time, .phase-week, .stage-size, .task-time { white-space: nowrap; }
+
+  /* tap targets */
+  .quiz-item details > summary { padding: 8px 12px; font-size: 11px; }
+  .copy-btn { font-size: 10.5px; padding: 6px 10px; }
+  .ptoc-lbl { font-size: 10.5px; }
+  .ptoc button { font-size: 11.5px; padding: 8px 10px; }
+  .toast button { padding: 8px 12px; font-size: 11px; }
+  .cmd .cmd, .fs-10 .cmd, .eyebrow .cmd { font-size: 1em; }
+
+  /* grids written inline in the content: let cells shrink, stack side-by-side panels */
+  [style*="display:grid"] > *, .kv > *, .sess-rows > * { min-width: 0; }
+  [style*="display:grid"], .kv, .sess-rows, .cheat-row { overflow-wrap: anywhere; }   /* long identifiers like _physics_process(delta) */
+  [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: minmax(0, 1fr) !important; }
+  [style*="grid-template-columns:90px 90px 1fr"] { grid-template-columns: 60px 52px minmax(0, 1fr) !important; }
+  [style*="grid-template-columns:110px 1fr"] { grid-template-columns: 84px minmax(0, 1fr) !important; }
+  .kv--120 { grid-template-columns: 92px minmax(0, 1fr); }
+  .cheat-row { grid-template-columns: 72px minmax(0, 1fr); }
+  .loop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
