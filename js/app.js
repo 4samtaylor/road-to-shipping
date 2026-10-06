@@ -703,7 +703,8 @@ function tickClock() {
   el.classList.toggle('run', !!s.at);
   $('#dk-sub').textContent = s.at ? 'running' : (ms ? 'paused' : 'not started');
   $('#dk-toggle').textContent = s.at ? 'Pause' : (ms ? 'Resume' : 'Start');
-  $('#dk-closed').textContent = (state._closed || 0) + ' closed today';
+  var today = new Date().toISOString().slice(0, 10);
+  $('#dk-closed').textContent = (state._logDay === today && +state._closed || 0) + ' closed today';
 }
 function updateDock() {
   if (!$('#dock')) return;
@@ -745,7 +746,7 @@ function logDone() {
   if (!state._log) state._log = {};
   state._log[d] = (state._log[d] || 0) + 1;
   if (state._logDay !== d) { state._logDay = d; state._closed = 0; }
-  state._closed = (state._closed || 0) + 1;
+  state._closed = (+state._closed || 0) + 1;
   save();
   renderLog();
 }
