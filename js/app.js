@@ -184,6 +184,7 @@ function refresh() {
 
   updateDock();
   updateNext();
+  if (!currentView && $('#dash')) renderDash();
   var next = nextTask();
   var btn = $('#rl-resume');
   if (next) {
@@ -229,15 +230,10 @@ function setOpen(phase, open) {
 }
 function goTo(id, opts) {
   opts = opts || {};
-  var s = byId[id];
-  if (!s) return;
-  if (s.isPhase) {
-    if (state._solo) sections.forEach(function (o) { if (o.isPhase && o.id !== id) setOpen(o.el, false); });
-    setOpen(s.el, true);
-  }
-  scrollToEl(s.el, TOPBAR + 6);
+  if (!byId[id]) return;
+  navigate(id);   // every section is its own page now
   save();
-  if (opts.flash) flash(s.el);
+  if (opts.flash) flash(byId[id].el);
 }
 function scrollToEl(el, offset) {
   var y = window.pageYOffset + el.getBoundingClientRect().top - (offset || TOPBAR + 78);
@@ -250,6 +246,8 @@ function flash(el) {
   setTimeout(function () { el.classList.remove('flash'); }, 1700);
 }
 function revealTask(t) {
+  var home = t.closest('.phase, #setup');
+  if (home) ensureSection(home.id);
   var phase = t.closest('.phase');
   if (phase) setOpen(phase, true);
   var acc = t.closest('.acc-section');
@@ -291,6 +289,7 @@ document.addEventListener('click', function (e) {
   if (e.target.closest('.tn-wrap')) return;
 
   if ((el = e.target.closest('.phase-header'))) {
+    if (currentView) return;
     var ph = el.closest('.phase'), opening = !ph.classList.contains('open');
     if (opening && state._solo) {
       sections.forEach(function (o) { if (o.isPhase && o.el !== ph) setOpen(o.el, false); });
@@ -473,6 +472,7 @@ function buildIndex() {
       out.push({
         kind: inHelp ? 'help' : 'section', title: (hd.textContent || '').trim().replace(/\s+/g, ' '), where: s.num + ' ' + s.title,
         run: function () {
+          ensureSection(s.id);
           if (b.classList.contains('acc-section')) b.classList.add('open');
           if (inHelp) { openHelp(s.id); setTimeout(function () { b.scrollIntoView({ block: 'start' }); flash(b); }, 60); return; }
           if (s.isPhase) setOpen(s.el, true);
@@ -572,8 +572,7 @@ function resume() {
 /* ─── SCROLL SPY ─── */
 var spyPending = false, lastSpy = '';
 function spy() {
-  var cur = sections[0];
-  sections.forEach(function (s) { if (s.el.getBoundingClientRect().top <= TOPBAR + 90) cur = s; });
+  var cur = byId[currentView] || sections[0];
   if (cur.id !== lastSpy) {
     lastSpy = cur.id;
     $$('.rl-item').forEach(function (i) { i.classList.toggle('on', i.dataset.go === cur.id); });
@@ -646,9 +645,7 @@ $('#tb-rail').addEventListener('click', function () {
 $('#tb-theme').addEventListener('click', function () { setTheme(state._theme === 'light' ? 'dark' : 'light'); });
 $('#tb-search').addEventListener('click', openPal);
 $('#rl-resume').addEventListener('click', resume);
-$('#m-expand').addEventListener('click', function () { setAll(true); closeMenu(); });
-$('#m-collapse').addEventListener('click', function () { setAll(false); closeMenu(); });
-$('#m-solo').addEventListener('click', function () {
+if ($('#m-solo')) $('#m-solo').addEventListener('click', function () {
   state._solo = !state._solo;
   $('#m-solo span').textContent = state._solo ? 'on' : 'off';
   if (state._solo && lastSpy) goTo(lastSpy);
@@ -910,19 +907,22 @@ document.addEventListener('click', function (e) {
   if (!$('#help').hidden && !e.target.closest('#help, [data-help], .pal-bd, .toast')) closeHelp();
 });
 
-/* ─── v14: CHEAT SHEETS, SKILL LEVELS, TIME ───────────────────
+/* ─── v15: CHEAT SHEETS, EXPLAINERS, TIME, DASHBOARD ──────────
    content/glossary.json lists the concepts each phase introduces.
-   Inline code in the content that matches an entry becomes a link to
-   a pop-up card; the dock (desktop) and a drawer (narrower screens)
-   show the current phase's whole sheet. Every entry can be rated
-   Not started / Practiced / Solid (state._skills → skills table).
-   Time on each phase is counted while you're active on it
-   (state._time → user_state rows "_time:<phase>"); the current
-   session lives on this device only (state._session).
+   Inline code that matches an entry links to an explainer (three tabs:
+   definition, mental model, in our game) in a floating window, the
+   same window that shows a phase's whole cheat sheet and the time
+   breakdown. Skill levels live on the cheat-sheet list (state._skills
+   → skills table). Time on each phase is counted while you're active
+   on it (state._time → user_state "_time:<phase>"); the current
+   session stays on this device (state._session).
+   The app opens on a dashboard of every section; each section is its
+   own page at #/<id>.
    ───────────────────────────────────────────────────────────── */
 var GLOSS = null, glossById = {}, glossAlias = {};
 var LEVELS = ['Not started', 'Practiced', 'Solid'];
 var KIND_ORDER = ['concept', 'syntax', 'type', 'function', 'tool'];
+var TABS = [['def', 'Definition'], ['model', 'Mental model'], ['game', 'In our game']];
 if (!state._skills) state._skills = {};
 if (!state._time) state._time = {};
 
@@ -931,9 +931,12 @@ function fmtDur(sec) {
   if (sec < 60) return sec ? '<1m' : '0m';
   var m = Math.floor(sec / 60);
   if (m < 60) return m + 'm';
-  return Math.floor(m / 60) + 'h ' + (m % 60 ? (m % 60) + 'm' : '').trim();
+  return (Math.floor(m / 60) + 'h ' + (m % 60 ? (m % 60) + 'm' : '')).trim();
 }
+function lsGetv(k, d) { try { var v = localStorage.getItem(k); return v === null ? d : v; } catch (e) { return d; } }
+function lsSetv(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
 
+/* ─── glossary ─── */
 function loadGlossary() {
   return fetch('content/glossary.json', { cache: 'no-cache' })
     .then(function (r) { return r.ok ? r.json() : null; })
@@ -958,23 +961,17 @@ function loadGlossary() {
     })
     .catch(function () {});
 }
-
 function findEntry(text, pid) {
   var t = text.trim().replace(/\s+/g, ' ');
   var tries = [t, t.replace(/;$/, ''), t.replace(/\(.*$/, ''), t.split(' ')[0]];
-  var pick = function (list) {
-    var same = list.filter(function (e) { return e.phase === pid; })[0];
-    return same || list[0];
-  };
+  var pick = function (list) { return list.filter(function (e) { return e.phase === pid; })[0] || list[0]; };
   for (var i = 0; i < tries.length; i++) if (glossAlias[tries[i]]) return pick(glossAlias[tries[i]]);
-  var hits = Object.keys(glossById).map(function (k) { return glossById[k]; })
-    .filter(function (e) { return e.re && e.re.test(t); });
+  var hits = Object.keys(glossById).map(function (k) { return glossById[k]; }).filter(function (e) { return e.re && e.re.test(t); });
   return hits.length ? pick(hits) : null;
 }
 function linkTerms() {
   sections.forEach(function (s) {
-    var scopes = [s.el].concat(s.help ? [s.help] : []);
-    scopes.forEach(function (root) {
+    [s.el].concat(s.help ? [s.help] : []).forEach(function (root) {
       $$('.cmd', root).forEach(function (el) {
         if (el.closest('pre, .term') || el.dataset.term) return;
         var e = findEntry(el.textContent || '', s.id);
@@ -993,11 +990,12 @@ function linkTerms() {
   });
 }
 
-function skillHTML(id, compact) {
+/* ─── skill levels (on the cheat-sheet list) ─── */
+function skillHTML(id) {
   var lv = +state._skills[id] || 0;
-  return '<div class="skill' + (compact ? ' skill--dots' : '') + '" data-skill="' + id + '" role="group" aria-label="How well do you know this?">' +
+  return '<div class="skill skill--dots" data-skill="' + id + '" role="group" aria-label="How well do you know it?">' +
     LEVELS.map(function (l, i) {
-      return '<button data-lv="' + i + '" class="lv' + i + (lv === i ? ' on' : '') + '" title="' + l + '" aria-pressed="' + (lv === i) + '">' + (compact ? '' : l) + '</button>';
+      return '<button data-lv="' + i + '" class="lv' + i + (lv === i ? ' on' : '') + '" title="' + l + '" aria-label="' + l + '" aria-pressed="' + (lv === i) + '"></button>';
     }).join('') + '</div>';
 }
 function setSkill(id, lv) {
@@ -1014,95 +1012,111 @@ function sheetCount(pid) {
   var list = (GLOSS && GLOSS.phases[pid]) || [];
   var solid = list.filter(function (e) { return +state._skills[e.id] === 2; }).length;
   var practiced = list.filter(function (e) { return +state._skills[e.id] === 1; }).length;
-  return solid + ' solid · ' + practiced + ' practiced · ' + list.length + ' total';
+  return list.length + ' concepts · ' + solid + ' solid · ' + practiced + ' practiced';
 }
 function sheetHTML(pid) {
   var list = (GLOSS && GLOSS.phases[pid]) || [];
   if (!list.length) return '<div class="cs-empty">No cheat sheet for this section.</div>';
-  var h = '<div class="cs-count" data-phase="' + pid + '">' + sheetCount(pid) + '</div>';
+  var h = '<div class="cs-head"><span class="cs-count" data-phase="' + pid + '">' + sheetCount(pid) + '</span>' +
+    '<span class="cs-legend"><i class="lv0"></i>not started <i class="lv1"></i>practiced <i class="lv2"></i>solid</span></div>';
   KIND_ORDER.forEach(function (k) {
     var items = list.filter(function (e) { return e.kind === k; });
     if (!items.length) return;
     h += '<div class="cs-kind">' + esc(GLOSS.kinds[k] || k) + '</div>';
     items.forEach(function (e) {
-      h += '<div class="cs-item"><button class="cs-term" data-term="' + e.id + '">' + esc(e.term) + '</button>' +
-        skillHTML(e.id, true) + '<div class="cs-what">' + esc(e.what) + '</div></div>';
+      h += '<div class="cs-item" data-cs="' + e.id + '">' +
+        '<button class="cs-row" aria-expanded="false"><span class="cs-chev" aria-hidden="true">▸</span><span class="cs-term">' + esc(e.term) + '</span></button>' +
+        skillHTML(e.id) +
+        '<div class="cs-more"><div class="cs-what">' + esc(e.what) + '</div>' +
+        '<button class="cs-explain" data-term="' + e.id + '">Explain it three ways ›</button></div></div>';
     });
   });
   return h;
 }
 
-/* pop-up card for one entry */
-var tpFor = null;
-function openTerm(id, anchor) {
+/* ─── floating window: explainers, cheat sheets, time ─── */
+var fwStack = [];
+function fwEl() {
+  var w = $('#fw');
+  if (w) return w;
+  document.body.insertAdjacentHTML('beforeend',
+    '<div class="fw-scrim" id="fw-scrim" hidden></div>' +
+    '<div class="fw" id="fw" role="dialog" aria-modal="true" aria-labelledby="fw-title" hidden>' +
+    '<div class="fw-hd"><button class="fw-back" id="fw-back" aria-label="Back" hidden>‹</button>' +
+    '<div class="fw-hd-txt"><div class="fw-kick" id="fw-kick"></div><h2 class="fw-title" id="fw-title"></h2></div>' +
+    '<button class="fw-x" id="fw-x" type="button" aria-label="Close">✕</button></div>' +
+    '<div class="fw-body" id="fw-body"></div></div>');
+  // Close and back get their own listeners so they work no matter what else handles clicks or taps
+  $('#fw-x').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); fwClose(); });
+  $('#fw-back').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); fwBack(); });
+  $('#fw-scrim').addEventListener('click', function (e) { e.stopPropagation(); fwClose(); });
+  return $('#fw');
+}
+function fwOpen(view, push) {
+  var w = fwEl();
+  if (!push) fwStack = [];
+  fwStack.push(view);
+  fwRender();
+  w.hidden = false;
+  $('#fw-scrim').hidden = false;
+  document.body.classList.add('fw-open');
+  $('#fw-x').focus({ preventScroll: true });
+}
+function fwRender() {
+  var v = fwStack[fwStack.length - 1];
+  if (!v) return;
+  $('#fw').className = 'fw' + (v.cls ? ' ' + v.cls : '');
+  $('#fw-kick').textContent = v.kicker || '';
+  $('#fw-title').textContent = v.title || '';
+  $('#fw-body').innerHTML = v.html();
+  $('#fw-body').scrollTop = 0;
+  $('#fw-back').hidden = fwStack.length < 2;
+}
+function fwBack() { if (fwStack.length > 1) { fwStack.pop(); fwRender(); } }
+function fwClose() {
+  var w = $('#fw');
+  if (!w || w.hidden) return;
+  w.hidden = true;
+  $('#fw-scrim').hidden = true;
+  document.body.classList.remove('fw-open');
+  fwStack = [];
+}
+
+function openTerm(id, fromSheet) {
   var e = glossById[id];
   if (!e) return;
-  var tp = $('#tp');
-  if (!tp) {
-    document.body.insertAdjacentHTML('beforeend', '<div class="tp" id="tp" role="dialog" aria-labelledby="tp-term" hidden></div>');
-    tp = $('#tp');
-  }
   var s = byId[e.phase];
-  tp.innerHTML = '<div class="tp-hd"><span class="tp-kind">' + esc((GLOSS.kinds[e.kind] || e.kind).replace(/s$/, '')) + '</span>' +
-    '<button class="icb tp-x" aria-label="Close">✕</button></div>' +
-    '<div class="tp-term" id="tp-term">' + esc(e.term) + '</div>' +
-    '<div class="tp-what">' + esc(e.what) + '</div>' +
-    (e.example ? '<pre class="tp-ex">' + esc(e.example) + '</pre>' : '') +
-    (e.gotcha ? '<div class="tp-gotcha"><b>Watch out:</b> ' + esc(e.gotcha) + '</div>' : '') +
-    '<div class="tp-lbl">How well do you know it?</div>' + skillHTML(e.id, false) +
-    '<div class="tp-foot"><span>From ' + esc(s ? s.num + ' · ' + s.title : e.phase) + '</span>' +
-    '<button class="tp-all" data-sheet="' + e.phase + '">Whole cheat sheet</button></div>';
-  tp.hidden = false;
-  tpFor = anchor || null;
-  placeTerm();
-  $('.tp-x', tp).focus({ preventScroll: true });
+  fwOpen({
+    cls: 'fw--term',
+    kicker: (GLOSS.kinds[e.kind] || e.kind).replace(/s$/, '').replace(/ & commands$/, ''),
+    title: e.term,
+    html: function () {
+      var tab = lsGetv('rts_explain_tab', 'def');
+      if (!e[tab]) tab = 'def';
+      var body = function (key) {
+        if (key === 'def') return '<p>' + esc(e.def || e.what) + '</p>' + (e.example ? '<pre class="fw-code">' + esc(e.example) + '</pre>' : '');
+        if (key === 'model') return '<p>' + esc(e.model || '') + '</p>';
+        return '<p>' + esc(e.game || '') + '</p>' + (e.gameCode ? '<pre class="fw-code">' + esc(e.gameCode) + '</pre>' : '');
+      };
+      return '<p class="ex-sum">' + esc(e.what) + '</p>' +
+        '<div class="ex-tabs" role="tablist">' + TABS.map(function (t) {
+          return '<button role="tab" data-extab="' + t[0] + '" aria-selected="' + (t[0] === tab) + '"' + (t[0] === tab ? ' class="on"' : '') + '>' + t[1] + '</button>';
+        }).join('') + '</div>' +
+        TABS.map(function (t) { return '<div class="ex-panel" role="tabpanel" data-expanel="' + t[0] + '"' + (t[0] === tab ? '' : ' hidden') + '>' + body(t[0]) + '</div>'; }).join('') +
+        (e.gotcha ? '<div class="ex-gotcha"><b>Watch out:</b> ' + esc(e.gotcha) + '</div>' : '') +
+        '<div class="fw-foot"><span>From ' + esc(s ? s.num + ' · ' + s.title : e.phase) + '</span><span class="fw-acts">' +
+        (askOn() ? '<a class="fw-btn ask" target="_blank" rel="noopener" href="' + askURL(askTermPrompt(e)) + '">Ask Claude</a>' : '') +
+        (fromSheet ? '' : '<button class="fw-btn" data-sheet="' + e.phase + '">Cheat sheet</button>') + '</span></div>';
+    }
+  }, !!fromSheet);
 }
-function placeTerm() {
-  var tp = $('#tp');
-  if (!tp || tp.hidden) return;
-  if (window.matchMedia('(max-width: 860px)').matches || !tpFor || !document.body.contains(tpFor)) {
-    tp.classList.add('sheet'); tp.style.left = tp.style.top = ''; return;
-  }
-  tp.classList.remove('sheet');
-  var r = tpFor.getBoundingClientRect(), w = tp.offsetWidth, hgt = tp.offsetHeight;
-  var left = Math.min(window.innerWidth - w - 12, Math.max(12, r.left));
-  var top = r.bottom + 8;
-  if (top + hgt > window.innerHeight - 12) top = Math.max(TOPBAR + 8, r.top - hgt - 8);
-  tp.style.left = left + 'px';
-  tp.style.top = top + 'px';
-}
-function closeTerm() { var tp = $('#tp'); if (tp && !tp.hidden) { tp.hidden = true; if (tpFor && tpFor.focus) tpFor.focus({ preventScroll: true }); tpFor = null; } }
-window.addEventListener('scroll', function () { if (tpFor && !window.matchMedia('(max-width: 860px)').matches) closeTerm(); }, { passive: true });
-window.addEventListener('resize', placeTerm);
-
-/* drawer: whole cheat sheet, or time breakdown, for narrower screens */
-function openDrawer(kind, pid) {
-  var d = $('#sheet');
-  if (!d) {
-    document.body.insertAdjacentHTML('beforeend', '<aside class="help sheet-drawer" id="sheet" role="dialog" aria-labelledby="sheet-title" hidden>' +
-      '<div class="help-hd"><div><div class="help-kick" id="sheet-kick"></div><h2 id="sheet-title"></h2></div>' +
-      '<button class="icb" id="sheet-x" aria-label="Close">✕</button></div><div class="help-body" id="sheet-body"></div></aside>');
-    d = $('#sheet');
-    $('#sheet-x').addEventListener('click', closeDrawer);
-  }
-  closeHelp();
+function openSheet(pid) {
   var s = byId[pid];
-  if (kind === 'time') {
-    $('#sheet-kick').textContent = 'Time';
-    $('#sheet-title').textContent = 'Where your time went';
-    $('#sheet-body').innerHTML = timeHTML();
-  } else {
-    $('#sheet-kick').textContent = 'Cheat sheet';
-    $('#sheet-title').textContent = s ? s.num + ' · ' + s.title : '';
-    $('#sheet-body').innerHTML = sheetHTML(pid);
-  }
-  d.hidden = false;
-  document.body.classList.add('help-open');
-  $('#sheet-body').scrollTop = 0;
-  $('#sheet-x').focus({ preventScroll: true });
+  fwOpen({ cls: 'fw--sheet', kicker: 'Cheat sheet', title: s ? s.num + ' · ' + s.title : '', html: function () { return sheetHTML(pid); } }, false);
 }
-function closeDrawer() { var d = $('#sheet'); if (d && !d.hidden) { d.hidden = true; document.body.classList.remove('help-open'); } }
-function dockShowsSheet() { var d = $('#dock'); return !!(d && d.offsetParent); }
+function openTime() {
+  fwOpen({ cls: 'fw--time', kicker: 'Time', title: 'Where your time went', html: timeHTML }, false);
+}
 
 /* ─── time on task ─── */
 var ACTIVE_MS = 5 * 60 * 1000, SESSION_GAP = 30 * 60 * 1000;
@@ -1111,10 +1125,8 @@ var lastInput = Date.now(), lastTick = Date.now(), unsavedSecs = 0;
   window.addEventListener(ev, function () { lastInput = Date.now(); }, { passive: true });
 });
 function activePhase() {
-  var open = sections.filter(function (s) { return s.isPhase && s.el.classList.contains('open') && byId[s.id] && $('.tasks, .checkpoint', s.el); });
-  var spied = byId[lastSpy];
-  if (spied && spied.isPhase && spied.el.classList.contains('open')) return spied.id;
-  return open.length === 1 ? open[0].id : null;
+  var s = byId[currentView];
+  return s && s.isPhase && $('.tasks, .checkpoint', s.el) ? s.id : null;
 }
 function session() {
   var now = Date.now(), ss = state._session;
@@ -1145,6 +1157,7 @@ function sessionSecs() {
   if (!ss || Date.now() - ss.last > SESSION_GAP) return 0;
   return Object.keys(ss.by).reduce(function (a, k) { return a + ss.by[k]; }, 0);
 }
+function totalSecs() { return Object.keys(state._time).reduce(function (a, k) { return a + (+state._time[k] || 0); }, 0); }
 function updateTimeUI() {
   var cur = sessionSecs();
   var chip = $('#tb-time');
@@ -1170,6 +1183,10 @@ function updateTimeUI() {
     var today = new Date().toISOString().slice(0, 10);
     $('#dk-closed').textContent = (state._logDay === today && +state._closed || 0) + ' closed today';
   }
+  var ds = $('#dash-time');
+  if (ds) ds.textContent = fmtDur(totalSecs());
+  var dss = $('#dash-session');
+  if (dss) dss.textContent = fmtDur(cur);
 }
 function timeHTML() {
   var ss = state._session, live = ss && Date.now() - ss.last <= SESSION_GAP;
@@ -1181,14 +1198,13 @@ function timeHTML() {
     }).join('') + '<div class="tm-row tm-total"><span>Total</span><b>' + fmtDur(sessionSecs()) + '</b></div>';
   } else h += '<div class="tm-empty">Nothing yet. Time counts while you\'re active in an open phase.</div>';
   h += '</div><div class="tm-sec"><div class="tm-lbl">All time, by phase</div>';
-  var all = 0;
   sections.forEach(function (s) {
     if (!s.isPhase || !$('.tasks, .checkpoint', s.el)) return;
-    var t = +state._time[s.id] || 0; all += t;
+    var t = +state._time[s.id] || 0;
     h += '<div class="tm-row' + (phaseDone(s) ? ' done' : '') + '"><span>' + (phaseDone(s) ? '✓ ' : '') + esc(s.num + ' · ' + s.title) + '</span><b>' + fmtDur(t) + '</b></div>';
   });
-  h += '<div class="tm-row tm-total"><span>Total</span><b>' + fmtDur(all) + '</b></div></div>' +
-    '<div class="tm-note">Counted while this page is open and you\'ve used it in the last 5 minutes. A break of 30 minutes starts a new session.</div>';
+  h += '<div class="tm-row tm-total"><span>Total</span><b>' + fmtDur(totalSecs()) + '</b></div></div>' +
+    '<div class="tm-note">Counted while a phase is open and you\'ve used the page in the last 5 minutes. A 30-minute break starts a new session.</div>';
   return h;
 }
 document.addEventListener('visibilitychange', function () {
@@ -1196,49 +1212,201 @@ document.addEventListener('visibilitychange', function () {
 });
 setInterval(tickTime, 5000);
 
-/* clicks for terms, skills, sheets and the time drawer */
+/* ─── Ask Claude (optional): opens claude.ai with the question written ─── */
+function askOn() { return lsGetv('rts_ask_claude', '0') === '1'; }
+function askURL(text) { return 'https://claude.ai/new?q=' + encodeURIComponent(text.slice(0, 1800)); }
+var ASK_INTRO = 'I\'m teaching myself C (beginner, Windows + MSVC, building a small terminal game, then a Win32 window). ';
+function askTermPrompt(e) {
+  return ASK_INTRO + 'Explain "' + e.term + '" (' + e.what + ') in plain English, give me a mental model, and show a tiny example from a simple terminal game. ' +
+    'Then ask me one question to check I understood. Don\'t write my project code for me.';
+}
+function askPhasePrompt(s) {
+  var t = $$(TASK, s.el).filter(function (x) { return !x.classList.contains('done'); })[0];
+  return ASK_INTRO + 'I\'m on "' + s.num + ' · ' + s.title + '" of my roadmap.' + (t ? ' My current task: ' + taskLabel(t) + '.' : '') +
+    ' My question: \n\n(Teach me and give hints — don\'t just hand me the finished code.)';
+}
+function renderAsk() {
+  var on = askOn();
+  var mi = $('#m-ask');
+  if (mi) $('span', mi).textContent = on ? 'on' : 'off';
+  $$('.stage-ask, .prompt-ask').forEach(function (n) { n.remove(); });
+  if (!on) return;
+  $$('.stage-nav').forEach(function (nav) {
+    var s = byId[nav.closest('.phase').id];
+    if (s) nav.insertAdjacentHTML('beforeend', '<a class="stage-ask" target="_blank" rel="noopener" href="' + askURL(askPhasePrompt(s)) + '">Ask Claude</a>');
+  });
+  $$('.prompt-item').forEach(function (p) {
+    var t = $('.prompt-text', p);
+    if (t) p.insertAdjacentHTML('beforeend', '<a class="prompt-ask" target="_blank" rel="noopener" href="' + askURL((t.innerText || t.textContent).trim()) + '">Open in Claude ›</a>');
+  });
+}
+
+/* ─── dashboard and section pages ─── */
+var currentView = null;   // null = dashboard, else a section id
+function sectionFromHash() {
+  var m = /^#\/(.+)$/.exec(location.hash || '');
+  var id = m ? decodeURIComponent(m[1]) : null;
+  return id && byId[id] ? id : null;
+}
+function showView(id, opts) {
+  opts = opts || {};
+  currentView = id || null;
+  document.body.classList.toggle('view-dash', !currentView);
+  document.body.classList.toggle('view-section', !!currentView);
+  sections.forEach(function (s) { s.el.classList.toggle('is-current', s.id === currentView); });
+  var weekly = $('.weekly');
+  if (weekly) weekly.classList.toggle('is-current', currentView === 'sync-agenda');
+  if (currentView && byId[currentView].isPhase) setOpen(byId[currentView].el, true);
+  if (!currentView) renderDash();
+  renderSecbar();
+  if (!opts.keepScroll) window.scrollTo(0, 0);
+  closeRailMobile(); closeHelp(); fwClose();
+  lastSpy = '';
+  spy();
+  updateTimeUI();
+}
+function navigate(id) {
+  var hash = id ? '#/' + encodeURIComponent(id) : '#/';
+  if (location.hash !== hash) history.pushState(null, '', hash);
+  showView(id);
+}
+function ensureSection(id) { if (currentView !== id) navigate(id); }
+window.addEventListener('popstate', function () { showView(sectionFromHash()); });
+
+function renderSecbar() {
+  var bar = $('#secbar'), foot = $('#secfoot');
+  if (!bar) {
+    $('.main').insertAdjacentHTML('afterbegin', '<nav class="secbar" id="secbar" aria-label="Section"></nav>');
+    $('.main').insertAdjacentHTML('beforeend', '<nav class="secfoot" id="secfoot" aria-label="Next section"></nav>');
+    bar = $('#secbar'); foot = $('#secfoot');
+  }
+  if (!currentView) { bar.innerHTML = ''; foot.innerHTML = ''; return; }
+  var i = sections.findIndex(function (s) { return s.id === currentView; });
+  var prev = sections[i - 1], next = sections[i + 1];
+  bar.innerHTML = '<button class="sb-back" data-dash>‹ All sections</button>' +
+    '<span class="sb-pos">' + (i + 1) + ' of ' + sections.length + '</span>';
+  foot.innerHTML = (prev ? '<button class="sf-btn" data-go="' + prev.id + '"><small>‹ Previous</small>' + esc(prev.num + ' · ' + prev.title) + '</button>' : '<span></span>') +
+    '<button class="sf-btn sf-dash" data-dash><small>Back to</small>All sections</button>' +
+    (next ? '<button class="sf-btn sf-next" data-go="' + next.id + '"><small>Next ›</small>' + esc(next.num + ' · ' + next.title) + '</button>' : '<span></span>');
+}
+
+function renderDash() {
+  var dash = $('#dash');
+  if (!dash) {
+    $('.main').insertAdjacentHTML('afterbegin', '<section class="dash" id="dash" aria-label="All sections"></section>');
+    dash = $('#dash');
+  }
+  var all = $$(TASK), done = all.filter(function (t) { return t.classList.contains('done'); });
+  var pct = all.length ? Math.round(done.length / all.length * 100) : 0;
+  var next = nextTask(), nextSec = next ? byId[(next.closest('.phase') || {}).id] : null;
+  var phases = sections.filter(function (s) { return s.isPhase && $('.tasks, .checkpoint', s.el); });
+  var cleared = phases.filter(phaseDone).length;
+  var h = '<header class="dash-hd"><div class="dash-kick">// C/C++ · Game dev · Road to shipping</div>' +
+    '<h1 class="dash-title">Your roadmap</h1>' +
+    '<div class="dash-stats">' +
+    '<div class="ds"><b>' + done.length + '<em> / ' + all.length + '</em></b><span>tasks · ' + pct + '%</span></div>' +
+    '<div class="ds"><b>' + cleared + '<em> / ' + phases.length + '</em></b><span>phases cleared</span></div>' +
+    '<button class="ds ds-btn" data-time><b id="dash-time">' + fmtDur(totalSecs()) + '</b><span>time spent ›</span></button>' +
+    '<button class="ds ds-btn" data-time><b id="dash-session">' + fmtDur(sessionSecs()) + '</b><span>this session ›</span></button>' +
+    '</div>' +
+    (next ? '<button class="dash-go" data-resume><small>Continue · ' + esc(nextSec ? nextSec.num + ' ' + nextSec.title : '') + '</small>' + esc(taskLabel(next).slice(0, 110)) + '</button>'
+          : '<div class="dash-go done"><small>All done</small>Every task is checked off. Ship it.</div>') +
+    '</header>';
+  var used = {}, rows = [];
+  GROUPS.forEach(function (g) {
+    var ids = g[1].filter(function (id) { return byId[id]; });
+    if (!ids.length) return;
+    ids.forEach(function (id) { used[id] = 1; });
+    var last = rows[rows.length - 1];
+    // small neighbouring groups (Setup, Reference, Sessions) share one row
+    if (last && ids.length <= 2 && last.ids.length + ids.length <= 4 && last.small) { last.label += ' · ' + g[0]; last.ids = last.ids.concat(ids); }
+    else rows.push({ label: g[0], ids: ids, small: ids.length <= 2 });
+  });
+  rows.forEach(function (r) { h += dashGroup(r.label, r.ids, nextSec); });
+  var rest = sections.filter(function (s) { return !used[s.id]; }).map(function (s) { return s.id; });
+  if (rest.length) h += dashGroup('More', rest, nextSec);
+  dash.innerHTML = h;
+}
+function dashGroup(label, ids, nextSec) {
+  return '<div class="dash-grp"><div class="dash-grp-lbl">' + esc(label) + '</div><div class="dash-grid">' + ids.map(function (id) {
+    var s = byId[id], c = counts(s), spent = +state._time[id] || 0, done = phaseDone(s), cur = nextSec && nextSec.id === id;
+    var tag = (($('.phase-tag', s.el) || {}).textContent || '').trim();
+    var meta = [s.week, c.tasks ? plural(c.tasks, 'task') : ''].filter(Boolean).join(' · ');
+    var status = done ? '✓ Complete' : cur ? 'Up next' : c.done ? 'In progress' : (c.tasks ? 'Not started' : 'Reference');
+    return '<button class="dcard' + (done ? ' done' : '') + (cur ? ' cur' : '') + (TINT[id] ? ' tint-' + TINT[id] : '') + '" data-go="' + id + '">' +
+      '<span class="dc-top"><span class="dc-num">' + esc(s.num) + '</span><span class="dc-status">' + status + '</span></span>' +
+      (tag ? '<span class="dc-tag">' + esc(tag) + '</span>' : '') +
+      '<span class="dc-title">' + esc(s.title) + '</span>' +
+      (meta ? '<span class="dc-meta">' + esc(meta) + '</span>' : '') +
+      (c.tasks ? '<span class="dc-bar"><i style="width:' + Math.round(c.done / c.tasks * 100) + '%"></i></span>' +
+        '<span class="dc-foot"><span>' + c.done + '/' + c.tasks + ' tasks</span><span>' + (spent >= 60 ? fmtDur(spent) : '') + '</span></span>' : '') +
+      '</button>';
+  }).join('') + '</div></div>';
+}
+
+/* ─── clicks ─── */
 document.addEventListener('click', function (e) {
   if (document.body.classList.contains('editing')) return;
   var el;
+  if (e.target.closest('#fw-x, #fw-back, #fw-scrim')) return;   // handled by their own listeners
   if ((el = e.target.closest('.skill [data-lv]'))) { e.stopPropagation(); setSkill(el.closest('.skill').dataset.skill, +el.dataset.lv); return; }
-  if ((el = e.target.closest('[data-term]'))) { e.preventDefault(); e.stopPropagation(); openTerm(el.dataset.term, el); return; }
-  if ((el = e.target.closest('[data-sheet]'))) {
-    e.stopPropagation(); closeTerm();
-    var pid = el.dataset.sheet;
-    if (dockShowsSheet()) { renderDockSheet(pid); var ds = $('#dk-sheet'); if (ds) { ds.scrollIntoView({ block: 'start' }); flash(ds); } }
-    else openDrawer('sheet', pid);
+  if ((el = e.target.closest('[data-extab]'))) {
+    e.stopPropagation();
+    var tab = el.dataset.extab;
+    lsSetv('rts_explain_tab', tab);
+    $$('[data-extab]', el.parentNode).forEach(function (b) { var on = b === el; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
+    $$('[data-expanel]', $('#fw-body')).forEach(function (p) { p.hidden = p.dataset.expanel !== tab; });
     return;
   }
-  if ((el = e.target.closest('[data-time]'))) { e.stopPropagation(); closeMenu(); openDrawer('time'); return; }
-  var tp = $('#tp');
-  if (tp && !tp.hidden && !e.target.closest('#tp')) closeTerm();
-  var d = $('#sheet');
-  if (d && !d.hidden && !e.target.closest('#sheet, .pal-bd, .toast')) closeDrawer();
+  if ((el = e.target.closest('.cs-row'))) {
+    e.stopPropagation();
+    var item = el.closest('.cs-item'), open = !item.classList.contains('open');
+    item.classList.toggle('open', open);
+    el.setAttribute('aria-expanded', open);
+    return;
+  }
+  if ((el = e.target.closest('[data-term]'))) {
+    e.preventDefault(); e.stopPropagation();
+    openTerm(el.dataset.term, !!el.closest('#fw'));
+    return;
+  }
+  if ((el = e.target.closest('[data-sheet]'))) { e.stopPropagation(); openSheet(el.dataset.sheet); return; }
+  if ((el = e.target.closest('[data-time]'))) { e.stopPropagation(); closeMenu(); openTime(); return; }
+  if ((el = e.target.closest('[data-dash]'))) { e.stopPropagation(); navigate(null); return; }
+  if ((el = e.target.closest('[data-resume]'))) { e.stopPropagation(); resume(); return; }
+  if ((el = e.target.closest('#m-ask'))) {
+    e.stopPropagation(); closeMenu();
+    lsSetv('rts_ask_claude', askOn() ? '0' : '1');
+    renderAsk();
+    toast(askOn() ? 'Ask Claude is on: buttons open claude.ai with your question written' : 'Ask Claude is off');
+    return;
+  }
 }, true);
 document.addEventListener('keydown', function (e) {
-  if (e.key === 'Escape') { closeTerm(); closeDrawer(); }
-});
+  if (e.key === 'Escape' && $('#fw') && !$('#fw').hidden) { e.stopPropagation(); fwClose(); }
+}, true);
 
 var dockSheetFor = '';
 function renderDockSheet(pid) {
   var box = $('#dk-sheet');
   if (!box || !GLOSS) return;
   if (!pid) {
-    var s = byId[lastSpy], act = activePhase();
-    pid = s && GLOSS.phases[s.id] ? s.id : (dockSheetFor || (act && GLOSS.phases[act] ? act : 'phase1'));
+    var s = byId[currentView];
+    pid = s && GLOSS.phases[s.id] ? s.id : (dockSheetFor || 'phase1');
   }
-  if (!pid || pid === dockSheetFor && box.innerHTML) return;
+  if (pid === dockSheetFor && box.innerHTML) return;
   dockSheetFor = pid;
   var sec = byId[pid];
   $('#dk-sheet-where').textContent = sec ? sec.num : '';
   box.innerHTML = sheetHTML(pid);
 }
+
 /* ─── CONTENT EDITING ─────────────────────────────────────────
    Anchors are stable containers; an edit stores that anchor's
    innerHTML (with runtime UI stripped) under state._edits.
    ───────────────────────────────────────────────────────────── */
 if (!state._edits) state._edits = {};
-var INJECTED = '.tn-btn, .tn-wrap, .ptoc, .ph-prog, .ph-est, .em-ctl, .em-add, .goals, .stage-nav, .stage-hd, .ph-time';
+var INJECTED = '.tn-btn, .tn-wrap, .ptoc, .ph-prog, .ph-est, .em-ctl, .em-add, .goals, .stage-nav, .stage-hd, .ph-time, .dash, .secbar, .secfoot, .prompt-ask, .stage-ask';
 
 function markAnchors() {
   sections.forEach(function (s) {
@@ -1464,35 +1632,14 @@ decorateHeaders();
 injectPerPhase();
 applyState();
 setTheme(state._theme === 'light' ? 'light' : 'dark');
-if (state._solo === undefined) state._solo = true;   // v13: focus mode is the default
-$('#m-solo span').textContent = state._solo ? 'on' : 'off';
-
-if (state._solo) {
-  var focus = byId[state._lastId] && byId[state._lastId].isPhase ? byId[state._lastId] : null;
-  var nt = nextTask();
-  if (!focus && nt && nt.closest('.phase')) focus = byId[nt.closest('.phase').id];
-  sections.forEach(function (s) { if (s.isPhase) setOpen(s.el, focus ? s === focus : false); });
-} else if (state._phases) {
-  sections.forEach(function (s) {
-    if (s.isPhase && Object.prototype.hasOwnProperty.call(state._phases, s.id)) setOpen(s.el, !!state._phases[s.id]);
-  });
-} else {
-  setAll(false);
-  var first = nextTask();
-  if (first && first.closest('.phase')) setOpen(first.closest('.phase'), true);
-}
+sections.forEach(function (s) { if (s.isPhase) setOpen(s.el, true); });   // only the current section is shown
+renderAsk();
+showView(sectionFromHash(), { keepScroll: false });
 if (state._lastVisit) {
   var d = new Date(state._lastVisit);
   $('#rl-lastvisit').textContent = 'Last session: ' + d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
 }
 spy();
-
-if (state._lastId && byId[state._lastId] && (state._scroll || 0) > 600) {
-  var s = byId[state._lastId];
-  setTimeout(function () {
-    toast('You stopped in ' + s.num + ' · ' + s.title, 'Take me back', function () { goTo(s.id, { flash: true }); });
-  }, 700);
-}
 
 /* ─── ACCESSIBILITY: keyboard + screen-reader semantics for clickable rows ───
    Tasks and checkpoint items behave as checkboxes; phase and section headers
@@ -1550,6 +1697,7 @@ window.RTS_app = {
     $$('.skill[data-skill]').forEach(function (g) { var lv = +state._skills[g.dataset.skill] || 0; $$('button', g).forEach(function (b) { b.classList.toggle('on', +b.dataset.lv === lv); }); });
     $$('.cs-count').forEach(function (c) { c.textContent = sheetCount(c.dataset.phase); });
     updateTimeUI();
+    if (!currentView && $('#dash')) renderDash();
     try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
   },
   toast: toast,

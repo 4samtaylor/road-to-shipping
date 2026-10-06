@@ -1,6 +1,6 @@
 /* Offline support: network first, cached copy when offline.
    GitHub API calls are never cached. */
-var CACHE = 'rts-v14';
+var CACHE = 'rts-v15';
 self.addEventListener('install', function (e) { self.skipWaiting(); });
 self.addEventListener('activate', function (e) {
   e.waitUntil(caches.keys().then(function (keys) {
