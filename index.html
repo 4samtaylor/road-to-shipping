@@ -11,11 +11,12 @@
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <link rel="stylesheet" href="css/app.css">
+<script>try { var rtsS = JSON.parse(localStorage.getItem('roadmap_v3') || '{}'); if (rtsS._theme) document.documentElement.setAttribute('data-theme', rtsS._theme); } catch (e) {}</script>
 </head>
 <body>
 <header class="tb">
   <button class="icb" id="tb-rail" title="Toggle navigation (Esc closes)">☰</button>
-  <div class="tb-brand">Road to Shipping <span>/ v15</span></div>
+  <div class="tb-brand">Road to Shipping <span>/ v16</span></div>
   <div class="tb-seg" id="tb-seg"></div>
   <div class="tb-stat" id="tb-count"></div>
   <div class="tb-stat est" id="tb-est"></div>
@@ -23,13 +24,13 @@
   <div class="tb-sync" id="tb-sync" title="GitHub sync status"></div>
   <button class="tb-btn" id="tb-edit" title="Edit text and tasks in place"><span class="lbl">Edit</span> <kbd>E</kbd></button>
   <button class="tb-btn" id="tb-search" aria-label="Search"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg><span class="lbl">Search</span> <kbd>⌘K</kbd></button>
-  <button class="icb" id="tb-theme" title="Switch theme">◑</button>
+  <button class="icb" id="tb-theme" title="Theme and fonts" aria-label="Theme and fonts">◑</button>
   <div class="tb-menu-wrap">
     <button class="icb" id="tb-more" title="More" aria-label="Menu" aria-haspopup="true">⋯</button>
     <div class="tb-menu" id="tb-menu">
       <div class="tb-menu-lbl">View</div>
       <button class="mi" data-dash>All sections <span>home</span></button>
-      <button class="mi mobile-only" id="m-theme">Switch theme <span>◑</span></button>
+      <button class="mi" id="m-theme">Appearance <span>theme · fonts</span></button>
       <button class="mi" data-time>Time spent <span>by phase</span></button>
       <button class="mi" id="m-ask">Ask Claude buttons <span>off</span></button>
       <div class="hr-thin"></div>
