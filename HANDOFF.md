@@ -1,135 +1,106 @@
 # Road to Shipping: session handoff
 
-Last session: October 2026. Owner: Sam (GitHub `4samtaylor`). Read this first in a new session.
+Last updated: 6 October 2026 (v16). Owner: Sam (GitHub `4samtaylor`). Read this first in a new session.
 
 ## What this is
 
-A C game-dev learning roadmap (13 phases, C → raylib prototype → Godot handoff) that Sam and a partner work through. It started as a single bundled HTML file (v9). It's now a web app on GitHub Pages with accounts and synced progress, being piloted by Sam alone across his PC and iPhone. The long-term option is a store app via Capacitor.
+A C game-dev learning roadmap (13 phases: C → terminal game → Win32 window → prototype → Godot handoff) that Sam works through, with a partner reviewing progress. It's a web app on GitHub Pages with accounts and synced progress, piloted by Sam on his PC and iPhone (home-screen app). A store app via Capacitor is started but paused.
 
 - **Site:** https://4samtaylor.github.io/road-to-shipping/
 - **Repo:** https://github.com/4samtaylor/road-to-shipping (public)
 - **Local copy:** `C:\Users\4samt\.claude\Claude Workspace\Game Project\road-to-shipping`
 - **Supabase project:** `qvrpzycindlchwjzoqph` (Supabase connector available)
+- **Design canvas (themes):** https://claude.ai/artifact/1XxjpMqMMEmW1iDa9f5CgC, pinned in Sam's claude.ai sidebar; snapshot in `design/theme-workshop/`
 
 ## Where things stand
 
 | Item | Status |
 |---|---|
-| v10: design-system refactor (tokens, primitives, a11y, contrast, dead CSS) | Done |
-| v11: split into repo, GitHub Pages, PR automation, `setup.ps1` | Done and live |
-| Supabase database (tables, RLS, newest-wins triggers, delete-account) | Done. Migrations `init_progress_sync` + `harden_functions` applied; security advisor clean except the intentional `delete_my_account` |
-| Supabase URL Configuration (Site URL + redirects) | Done |
-| v12: email + password sign-in and cloud sync | Done and live. Sam's account exists; 80 progress rows verified in Supabase |
-| v13: Step 2 "show less", Step 3 curriculum, phone polish | Done and live (PRs #1–#4, #6 merged Oct 6 2026) |
-| Android app (Capacitor) | PR #5 open, **paused**: build needs JDK 21 (Android Studio ships Java 25; Gradle 8.14 needs ≤24). Next: install Temurin 21, build, test on emulator. Don't merge #5 until built: it also switches Pages to publish `www/` |
-| v14: cheat sheets, skill levels, time tracking, larger desktop | Done (see "How v14 works"). Migration `skills_and_admin_views` applied; file in `supabase/migrations/` |
-| v15: dashboard home, section pages, explainers, floating windows, Ask Claude | Done (see "How v15 works") |
-| v16: theme + font picker | Done. Six themes (dark, light, graphite, paper, dusk, blueprint) and reading/code font choices; per device |
-| Admin views | `admin.user_overview` (one row per user) and `admin.user_activity` (every row, newest first). Table Editor → schema dropdown → `admin` |
-| Supabase auth settings (confirm email off, min 8, sign-ups off) | Done by Sam |
-| Custom SMTP | Skipped on purpose (password sign-in doesn't need it) |
-| Supabase GitHub integration | Deliberately **off**; see Decisions |
+| v10–v12: design system, repo + Pages, email/password sign-in + cloud sync | Live |
+| v13: five-stage phases, help drawer, curriculum Step 3 (King order, specs, stretches, mixed review, Stuck & Curious), phone polish | Live (PRs #1–#4, #6) |
+| v14: cheat sheets, skill levels, time tracking, larger desktop text | Live (PR #7) |
+| Quiet sync indicator (background time saves don't flash "saving…") | Live (PR #8) |
+| v15: dashboard home, one section per page, three-tab explainers, floating window, optional Ask Claude links | Live (PR #9) |
+| v16: theme picker (6 themes) + reading/code font picker | Live (PR #10) |
+| Supabase | Tables `profiles`, `progress`, `notes`, `user_state`, `skills`; RLS on all; newest-wins triggers; `delete_my_account()`. Migrations: `init_progress_sync`, `harden_functions`, `skills_and_admin_views`. Security advisor: only the intentional `delete_my_account` and a "leaked password protection" suggestion |
+| Admin views | `admin.user_overview`, `admin.user_activity` (Table Editor → schema dropdown → `admin`). Not exposed to the API |
+| Auth settings | Confirm email off, min password 8, new sign-ups off (Sam did these) |
+| Android app (Capacitor) | **Paused.** PR #5 open against `main`. Build needs JDK 21 (see Next steps). Don't merge until built: it also switches Pages to publish `www/` |
+| Custom SMTP, Supabase GitHub integration | Deliberately off (see Decisions) |
 
 ## Repo layout
 
 ```
-index.html               shell: top bar, rail, sign-in panel, menu
-css/app.css              all styles; tokens at top (dark + light), primitives, utilities
-js/app.js                roadmap UI (from v10); hooks at bottom: window.RTS_app
-js/cloud.js              Supabase sign-in + offline-first sync
-js/github.js             edit mode → branch + PR (needs a GitHub token on that device only)
-js/boot.js               loads content in manifest order → pre-sync → app.js
-js/vendor/supabase-2.117.2.js   vendored supabase-js UMD build
-content/manifest.json    file order + rail groups (RTS_GROUPS)
-content/config.json      owner/repo/branch + supabaseUrl + publishable key (public by design)
-content/NN-*.html        one fragment per phase/section
-supabase/setup.sql       readable copy of what's applied to the database
-tools/validate.py        content check (CI): tag balance, unique id/data-id, no script/on*= handlers
-.github/workflows/       pages.yml (deploy), roadmap-edits.yml (validate + auto-merge label roadmap-edit)
-progress/4samtaylor.json old v11 progress; one-time import via menu
-privacy.html, sw.js, manifest.webmanifest, icons/, setup.ps1, README.md
+index.html                 shell: top bar, rail, sign-in, menu, help drawer; inline script applies saved theme before paint
+css/app.css                all styles: tokens per theme at top, then components; later "v13…v16" blocks layer on top
+js/app.js                  the app: stages, dashboard + routing, glossary/explainers, floating window, time, themes, edit mode
+js/cloud.js                Supabase sign-in + offline-first sync
+js/github.js               edit mode → branch + PR (needs a GitHub token on that device)
+js/boot.js                 loads content in manifest order → pre-sync → app.js
+js/vendor/                 supabase-js UMD build
+content/manifest.json      file order + rail/dashboard groups
+content/config.json        owner/repo/branch + Supabase URL + publishable key (public by design)
+content/NN-*.html          one fragment per phase/section
+content/glossary.json      cheat-sheet + explainer entries per phase (ids are skill ids)
+supabase/setup.sql         readable summary of the first two migrations
+supabase/migrations/       migration files from 2026-10-06 on
+design/theme-workshop/     snapshot of the theme design canvas
+tools/validate.py          content check (CI)
+.github/workflows/         pages.yml (deploy), roadmap-edits.yml
+privacy.html, sw.js, manifest.webmanifest, icons/, fonts/, setup.ps1, README.md
 ```
+
+## How the app works now
+
+- **Views (v15):** opens on a dashboard (`renderDash()`): progress, time, a Continue button, a card per section. Each section is its own page at `#/<id>` (`navigate()` / `showView()`, history-backed). CSS keys off `body.view-dash` / `body.view-section`; only `.is-current` shows.
+- **Phase pages (v13):** `stagePhase()` regroups blocks by badge into Learn / Trace / Practice / Build / Review (`stageOf()`); "Stuck…" and "Claude Code Prompts" move to the help drawer. It runs after `markAnchors()`, so edit keys (`phase:blkN`) still mean "Nth `.section-block` in the source file". **Append new blocks at the end of a phase file** so existing keys don't shift. `data-order="-1"` puts a block first in its stage.
+- **Curriculum blocks:** Build Spec, Stretch Goal (optional task: `data-optional`, excluded from totals and Resume), Mixed Review, Pair with King, Stuck & Curious. Copy an existing block to add one.
+- **Cheat sheets + explainers (v14–v15):** `content/glossary.json`, 91 entries: `what`, `def`, `model`, `game` (+ `gameCode`), `example`, `gotcha`, `aliases`, `match`. Inline `.cmd` text that matches links (once per section) to the explainer. Desktop ≥1200px shows the current phase's sheet in the side panel. **Never rename or reuse an entry id** (it's the skill id).
+- **Floating window:** `#fw` (`fwOpen` / `fwBack` / `fwClose`) is the one popup for explainers, whole cheat sheets, time, and Appearance. ✕, Back and the backdrop have their own listeners.
+- **Skill levels:** dots on cheat-sheet rows; `state._skills` → `skills` table.
+- **Time:** counted every 5 s while visible, active in the last 5 min, and on a phase page. `state._time[phase]` syncs as `user_state` rows `_time:<phase>` (merge keeps the max). `state._session` is device-only and resets after a 30-min gap. Background time saves don't show "saving…".
+- **Themes + fonts (v16):** `[data-theme]` token blocks in `css/app.css` plus the `THEMES` list in `js/app.js`. `--font-mono` is the reading/UI font (historical name); `--font-code` is for code. Non-default fonts load from Google Fonts on demand. Theme and fonts are per device.
+- **Ask Claude:** off by default (menu toggle; `rts_ask_claude`). Links to `https://claude.ai/new?q=<prompt>`, which uses Sam's own Pro plan. Not yet confirmed that the prefill works while signed in; ask Sam.
 
 ## How sync works (js/cloud.js)
 
-- State is flattened into fields: `p:<data-id>` (task/checkpoint done) → `progress`, `n:<id>` → `notes`, `s:<key>` (`_scratch`, `_log`, `_logDay`, `_closed`) → `user_state`.
-- Per account, localStorage keeps `rts_snap:<uid>`, `rts_meta:<uid>` (per-field timestamps), `rts_outbox:<uid>`.
-- A change goes to localStorage immediately, then is upserted after 1.5 s. A DB trigger `keep_newest` rejects stale rows. Pulls happen on boot, focus, visibility change, and coming back online.
-- First sign-in on a device: server wins where it has a value; local-only values upload. That's how existing PC progress migrates.
-- Per-device only (not synced): theme, open phases, scroll, timer, unpublished edits.
-- Delete account = RPC `delete_my_account()` (security definer, cascades).
+- Fields: `p:<data-id>` → `progress`, `n:<id>` → `notes`, `k:<id>` → `skills`, `s:<key>` (`_scratch`, `_log`, `_logDay`, `_closed`, `_time:<phase>`) → `user_state`.
+- Per account, localStorage keeps `rts_snap:<uid>`, `rts_meta:<uid>` (per-field timestamps), `rts_outbox:<uid>`. Changes save locally first, then upsert after 1.5 s; trigger `keep_newest` rejects stale rows. Pulls on boot, focus, visibility change, coming back online.
+- Device-only: theme, fonts, session, scroll, unpublished edits, Ask Claude toggle, explainer tab.
 
 ## Decisions and why
 
-- **GitHub for content + code, Supabase for accounts + progress.** Progress was in public repo files in v11; it moved for privacy and because strangers can't be given repo write access.
-- **Email + password, not magic link.** On iPhone, an email link opens Safari, which keeps its sign-in separate from the home-screen app. iCloud Keychain + Face ID makes passwords nearly as smooth, and no email gets sent, so no SMTP.
-- **Supabase GitHub integration off.** The connector applies migrations directly; running both risks migration-history drift. Turn it on only if someone besides Claude changes the DB. First add the two applied migrations as files under `supabase/migrations/` matching the live versions.
-- **Google sign-in hidden.** Turn it on later with `"googleSignIn": true` in config.json after Google console setup.
-- **Sign in with Apple waits for the App Store.** It needs the paid Apple Developer account.
-- **Legacy class names kept as aliases** of the primitives (`.eyebrow`, `.btn`, `.tag`, `.callout`), because app.js hooks into them.
-
-## How v13 works
-
-- **Stages are built at load, not in the content files.** `stagePhase()` in `js/app.js` sorts each phase's blocks by badge into Learn / Trace / Practice / Build / Review; "Stuck…" and "Claude Code Prompts" go to the help drawer. Mapping is in `stageOf()`. A block can ask to go first in its stage with `data-order="-1"`; the checkpoint always closes Review.
-- **This runs after `markAnchors()`**, so edit keys (`phase:blkN`) still mean "Nth `.section-block` in the source file". New blocks are appended at the end of a phase file so existing keys don't shift.
-- **Curriculum block types:** Build Spec (practice, first), Stretch Goal (build), Mixed Review (review), Pair with King (learn, last), Stuck & Curious (help). Scratch helpers that generated them aren't in the repo; copy an existing block.
-- **Optional tasks:** `data-optional` on a `.task` keeps it out of totals, phase counts and Resume. Its progress key still syncs.
-- **Focus mode** (`_solo`) is on by default and per device.
-- **Phase 3 / 3.5 swap:** Phase 03 = Functions, Arrays & Strings; 3.5 = Pointers & Structs. Task ids kept their old prefixes (`p3b-*` tasks now live in Phase 03 and vice versa); that's intentional, ids are progress keys.
-
-## How v14 works
-
-- **Cheat sheets** come from `content/glossary.json` (per phase: id, term, kind, what, example, gotcha, aliases, match). Inline `.cmd` text that matches an alias or regex becomes a link (once per section) to a pop-up card. Desktop ≥1200px: the dock shows the current phase's sheet. Narrower: "Cheat sheet" chip in each phase opens a drawer. **Entry ids are skill ids — never rename or reuse one.**
-- **Skill levels** (`state._skills`, 0–2) sync as `k:<id>` fields to the `skills` table.
-- **Time:** counted every 5 s while the tab is visible, input happened in the last 5 min, and a phase is open/in view. `state._time[phase]` syncs as `user_state` rows `_time:<phase>` (merge keeps the max, so time never goes backwards). `state._session` (device only) resets after a 30-min gap. Saved to the account about once a minute.
-- **Migrations:** new DB changes go in `supabase/migrations/` with the version the connector reports.
-
-## How v15 works
-
-- **Views:** the app opens on a dashboard (`#dash`, built by `renderDash()`); each section is its own page at `#/<id>` (`navigate()` / `showView()`, history-backed, so the browser Back button works). Only `.is-current` is shown; CSS keys off `body.view-dash` / `body.view-section`. `goTo()` and `revealTask()` route through `navigate()`/`ensureSection()`. Focus mode and expand/collapse are gone.
-- **Explainers:** glossary entries carry `def`, `model`, `game` (+ `gameCode`) for three tabs. The last tab used is remembered per device (`rts_explain_tab`). Skill dots live only on cheat-sheet lists now.
-- **Floating window** (`#fw`, `fwOpen/fwBack/fwClose`) is the one popup for explainers, whole cheat sheets and the time breakdown, on every screen size. ✕, Back and the scrim have their own listeners. The Stuck? help drawer is unchanged.
-- **Ask Claude** is off by default (menu → Ask Claude buttons; `rts_ask_claude` in localStorage). It links to `https://claude.ai/new?q=<prompt>`, so it uses the person's own Claude plan. An in-app chat would need an API key billed per use; a Claude Pro subscription can't power it.
-
-## Themes and fonts (v16)
-
-- Themes are `[data-theme="<id>"]` token blocks in `css/app.css`; the list, swatches and default fonts are `THEMES` in `js/app.js`. The calm themes map `--blue/--purple/--yellow/--orange` onto the accent or neutrals so labels stop being rainbow.
-- `--font-mono` is now the reading/UI font (the name is historical) and `--font-code` is for code (`pre`, `.cmd`, …). Fonts other than JetBrains Mono/Syne load from Google Fonts on demand.
-- `state._theme`, `_font`, `_codeFont` are device-only (not synced). An inline script in `index.html` applies the saved theme before first paint.
-- Design exploration canvas: https://claude.ai/artifact/1XxjpMqMMEmW1iDa9f5CgC
+- **GitHub for content + code, Supabase for accounts + progress** (privacy; strangers can't get repo write access).
+- **Email + password, not magic link** (iPhone home-screen app keeps its own sign-in; no SMTP needed).
+- **Supabase GitHub integration off:** migrations go through the connector; files are saved in `supabase/migrations/` afterwards.
+- **No in-app Claude chat:** it would need an API key billed per use; a Claude Pro subscription can't power it, and Sam only wants Pro. Ask Claude links into claude.ai instead.
+- **Themes are per device**, so phone and PC can differ.
+- **Google sign-in hidden** (`"googleSignIn": true` in config later). **Sign in with Apple** waits for the App Store.
 
 ## Gotchas learned
 
-- Merges made with `GITHUB_TOKEN` don't trigger other workflows. `roadmap-edits.yml` runs `gh workflow run pages.yml` after auto-merging.
-- Never dedent or reformat content fragments: `<pre>` code blocks depend on exact whitespace.
-- `data-id` values are progress keys. Rewording a task is fine; changing or deleting an id orphans saved progress.
-- Supabase's built-in email (no SMTP) only delivers to Supabase team members, so Sam's account email should match his Supabase login for password resets.
-- Inputs under 16px make iPhone zoom in; `.auth-in` is 16px on mobile.
-- The page needs a server (`python -m http.server 8000`); opening `index.html` from disk fails by design.
-- The v11 app kept committing `progress/4samtaylor.json` to `main`. Always pull before pushing.
-- Python's `http.server` gets cached hard by the browser; after editing, fetch the changed files with `{cache:'reload'}` or hard-refresh before trusting what you see.
-- Supabase writes through the connector (even `update`) can be blocked by Claude Code's permission check; ask Sam before any DB change.
+- Never dedent or reformat content fragments: `<pre>` blocks depend on exact whitespace.
+- `data-id` values and glossary ids are progress/skill keys. Reword freely; never change or delete an id.
+- Merges made with `GITHUB_TOKEN` don't trigger other workflows (`roadmap-edits.yml` runs `gh workflow run pages.yml` itself).
+- Testing locally: `python -m http.server 8000` (opening `index.html` from disk fails). The browser and the service worker cache hard. Unregister the SW, clear caches, and fetch changed files with `{cache:'reload'}` before trusting what you see.
+- Local checkout has untracked `android/`, `node_modules/`, `www/` from the Android branch, excluded via `.git/info/exclude`. Don't `git add -A` on another branch without checking `git status`.
+- Large heredocs in the Bash tool can fail on quoting; write long files with the Write tool instead.
+- Supabase writes through the connector can be blocked by Claude Code's permission check. Ask Sam before any DB change.
+- Supabase's built-in email only reaches Supabase team members; Sam's account email matches his Supabase login.
+- Inputs under 16px make iPhone zoom in.
 
 ## Next steps
 
-**Step 1 (pilot):** account created and verified (Oct 6 2026). Now a two-week pilot on PC + iPhone: ticks match, offline edits survive, nothing gets lost.
-
-**Step 2: show less on screen at once** (done)
-- Focus mode by default: only the current phase open.
-- Progress indicators from 5 to 2 (keep top bar + rail; drop hero strip, per-phase bars, dock duplicate).
-- Every phase in one order: **Learn → Trace → Practice → Build → Review**, with size labels ("4 drills · ~10 min").
-- "Stuck?" and Claude prompts move into a help drawer.
-- "By the end you can…" goals at the top of each phase, built from its checkpoint list.
-
-**Step 3: curriculum** (done, except skill levels)
-- *Khan:* move Predict the Output before tasks; add a stretch version to every build (guessing game, high-score table, ASCII runner, prototype); mixed review (two earlier-phase questions per quiz); skill levels Not started / Practiced / Solid saved to the account (this needs a new table, a good moment to adopt migration files); three requirement bullets before each Build, tied to Phase 07.
-- *K.N. King:* swap so Phase 03 = Functions, Arrays & Strings and Phase 3.5 = Pointers & Structs (Player struct moves to 3.5). Add integer division/casting (02), `#define` constants (03), save high score with `fopen`, a multi-file ASCII Runner + `build.bat` before Phase 06. "Stuck?" becomes "Stuck & Curious" with 3–4 Q&A items per phase. Add a "Pair with King" line per phase: 01 → ch 1–2, 02 → 3–7, 03 → 8–10, 13, 3.5 → 11, 12, 16, multi-file → 14–15 (check against Sam's copy). Leave out unions, advanced pointers, and bit work.
-
-**Store-ready later:** Sign in with Apple, a custom domain (needed for Universal Links), content bundled inside the app with over-the-air content updates (code ships through review), notifications, Capacitor wrap. Android first.
+1. **Pilot (running):** two weeks on PC + iPhone. Check ticks, notes, skills and time match across devices, and offline edits survive.
+2. **Ask Claude:** confirm with Sam that the claude.ai prefill works while signed in.
+3. **Themes:** Sam may keep iterating on the design canvas. Port any changes into `css/app.css` and `THEMES`. A theme could become the default for new devices once he picks a favourite.
+4. **Collaboration (proposed, awaiting Sam's choice):** (a) read-only share with a friend by email; (b) comments + mentor "verified" checkpoints + mentor skill ratings; (c) editor role (personal tasks, weekly goals); (d) notifications. Each step is a small table plus RLS policies.
+5. **Checked code exercises (proposed, awaiting choice):** a free "type the exact output" check for Predict-the-Output drills first. Then optionally run code on a hosted runner (Judge0/Piston) for pass/fail, with Claude feedback through a Supabase Edge Function (needs an Anthropic API key, which Sam doesn't want for now). Windows-only code (conio, Win32) can't run there.
+6. **Android (paused):** install JDK 21 (`winget install --id EclipseAdoptium.Temurin.21.JDK -e`, about 170 MB; ask first), point `JAVA_HOME` at it, then `npm run build && npx cap sync android && cd android && gradlew.bat assembleDebug`, and test on emulator `Medium_Phone_API_37.0`. iOS later via a cloud Mac build (Codemagic or GitHub Actions macOS) + TestFlight; needs the Apple Developer account ($99/yr).
+7. **Store-ready later:** Sign in with Apple, custom domain (Universal Links), content bundled with over-the-air updates, notifications.
 
 ## Working with Sam
 
-- Direct and brief. Act on routine work, show the result, and ask only when stakes are high.
-- Prefers plain, clean output and step-by-step instructions with exact clicks and commands. He runs commands in Windows Terminal or VS Code.
-- Has: Git, GitHub CLI (signed in), VS Code, Chrome/Edge on Windows, an iPhone.
-- Test before shipping. Past builds were verified with Playwright against a mocked GitHub/Supabase API, and the SQL against a local Postgres harness with fake `auth.uid()`.
+- Direct and brief. Act on routine work, show the result, ask only when stakes are high. He's fine with Claude merging tested PRs and deploying.
+- Wants plain output and exact clicks and commands. Uses Windows Terminal / VS Code, GitHub CLI (signed in), Chrome/Edge, an iPhone. No Mac, no Android phone.
+- Test before shipping: check in the browser preview at 375/390/430 px and 1280 px, with real clicks for anything interactive.
