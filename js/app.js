@@ -8,6 +8,7 @@
 var KEY = window.RTS_KEY || 'roadmap_v3';
 var TOPBAR = 54;
 var MIN_PER_TASK = 25;
+var TASK = '.task:not([data-optional])';   // stretch tasks don't count toward progress
 
 var $ = function (s, r) { return (r || document).querySelector(s); };
 var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
@@ -57,7 +58,7 @@ var byId = {};
 sections.forEach(function (s) { byId[s.id] = s; });
 
 function counts(s) {
-  var t = $$('.task', s.el), c = $$('.cp-item', s.el);
+  var t = $$(TASK, s.el), c = $$('.cp-item', s.el);
   return {
     tasks: t.length, done: t.filter(function (x) { return x.classList.contains('done'); }).length,
     cps: c.length, cpsDone: c.filter(function (x) { return x.classList.contains('done'); }).length
@@ -142,7 +143,7 @@ function injectPerPhase() {
 
 /* ─── PROGRESS ─── */
 function refresh() {
-  var all = $$('.task'), done = all.filter(function (t) { return t.classList.contains('done'); });
+  var all = $$(TASK), done = all.filter(function (t) { return t.classList.contains('done'); });
   var pct = all.length ? Math.round(done.length / all.length * 100) : 0;
   $('#tb-count').innerHTML = '<b>' + done.length + '</b><em> / ' + all.length + '</em><span class="tb-x"><em> tasks</em> · <b>' + pct + '%</b></span>';
   if ($('#strip-val')) $('#strip-val').textContent = done.length + ' / ' + all.length + ' tasks · ' + pct + '%';
@@ -195,7 +196,7 @@ function refresh() {
 }
 function cssId(id) { return id.replace(/([^\w-])/g, '\\$1'); }
 function nextTask() {
-  var t = $$('.task').filter(function (x) { return !x.classList.contains('done'); });
+  var t = $$(TASK).filter(function (x) { return !x.classList.contains('done'); });
   return t.length ? t[0] : null;
 }
 function taskLabel(t) {
@@ -794,7 +795,7 @@ function updateNext() {
   $('#wn-task').innerHTML = t ? esc(taskLabel(t).slice(0, 130)) : '<em>Nothing left.</em>';
   var cp = $$('.cp-item').filter(function (c) { return !c.classList.contains('done'); })[0];
   $('#wn-cp').innerHTML = cp ? esc(cpLabel(cp).slice(0, 130)) : '<em>All cleared.</em>';
-  var all = $$('.task'), done = all.filter(function (x) { return x.classList.contains('done'); });
+  var all = $$(TASK), done = all.filter(function (x) { return x.classList.contains('done'); });
   $('#wn-rem').innerHTML = (all.length - done.length) + ' tasks <em>· ≈' + fmtMins((all.length - done.length) * MIN_PER_TASK) + ' of work</em>';
   var ph = sections.filter(function (s) { var c = counts(s); return c.tasks > 0; });
   var cleared = ph.filter(function (s) { var c = counts(s); return c.done === c.tasks; });
@@ -813,7 +814,7 @@ function stageOf(block) {
   var b = (($('.badge', block) || {}).textContent || '').trim().toLowerCase();
   if (/^stuck|claude code prompts/.test(b)) return 'help';
   if (/predict/.test(b)) return 'trace';
-  if (/^tasks|^exercises/.test(b)) return 'practice';
+  if (/^tasks|^exercises|^build spec/.test(b)) return 'practice';
   if (/starter code|^git|build\.bat|tooling|prompt templates|^build|^stretch/.test(b)) return 'build';
   if (/quiz|mixed review/.test(b)) return 'review';
   return 'learn';
@@ -831,14 +832,14 @@ function stageSize(key, els) {
     return plural(d, 'drill') + ' · ~' + Math.max(5, Math.round(d * 2.5)) + ' min';
   }
   if (key === 'practice') {
-    var t = $$('.task', box).length, m = 0;
+    var t = $$(TASK, box).length, m = 0;
     $$('.task-time', box).forEach(function (x) { var n = /(\d+)/.exec(x.textContent); if (n) m += +n[1]; });
     m = m || t * MIN_PER_TASK;
     return t ? plural(t, 'task') + ' · ~' + (m < 120 ? m + ' min' : fmtMins(m)) : plural($$('.quiz-item', box).length, 'exercise');
   }
   if (key === 'build') {
-    var c = $$('.code-wrap', box).length;
-    return (c ? plural(c, 'file') + ' · ' : '') + plural(els.length, 'section');
+    var c = $$('.code-wrap', box).length, x = $$('.task[data-optional]', box).length;
+    return (c ? plural(c, 'file') + ' · ' : '') + plural(els.length, 'section') + (x ? ' · ' + x + ' stretch' : '');
   }
   var q = $$('.quiz-item', box).length, cp = $$('.cp-item', box).length;
   return [q ? plural(q, 'question') : '', cp ? plural(cp, 'check') : ''].filter(Boolean).join(' · ');
@@ -851,6 +852,14 @@ function stagePhase(s) {
     if (k.classList.contains('checkpoint')) bins.review.push(k);
     else if (k.classList.contains('section-block')) bins[stageOf(k)].push(k);
     else bins.learn.push(k);
+  });
+  // within a stage, source order wins unless a block asks to go first (data-order="-1");
+  // the checkpoint always closes Review
+  var weight = function (k) { return k.classList.contains('checkpoint') ? 99 : +(k.dataset.order || 0); };
+  Object.keys(bins).forEach(function (key) {
+    bins[key] = bins[key].map(function (k, i) { return [k, i]; })
+      .sort(function (a, b) { return weight(a[0]) - weight(b[0]) || a[1] - b[1]; })
+      .map(function (x) { return x[0]; });
   });
 
   var cps = $$('.cp-text', inner).map(function (c) { return c.textContent.trim(); });

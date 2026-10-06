@@ -1933,3 +1933,23 @@ a.mi { text-decoration: none; }
   #tb-theme { display: none; }
   .tb-brand { font-size: 12px; }
 }
+
+/* ─── v13: curriculum blocks ─── */
+.task[data-optional] { border-style: dashed; }
+.task[data-optional] .task-cb { border-style: dashed; }
+.t-stretch { background: var(--blue-dim); color: var(--blue); border: 1px solid var(--blue-line); }
+.spec { display: flex; flex-direction: column; gap: 14px; }
+.spec-item { border: 1px solid var(--border); border-left: 3px solid var(--blue); padding: 12px 14px; }
+.spec-item h4 { font-size: 12.5px; font-weight: 500; color: var(--text); margin-bottom: 8px; }
+.spec-item h4 span { color: var(--blue); }
+.spec-item ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.spec-item li { font-size: 12.5px; line-height: 1.6; color: var(--muted2); }
+.king { display: grid; grid-template-columns: 110px 1fr; gap: 6px 16px; font-size: 12px; line-height: 1.7; }
+.king dt { color: var(--muted2); }
+.king dd { margin: 0; color: var(--text); }
+.curious-lbl { margin: 18px 0 10px; }
+@media (max-width: 860px) {
+  .spec-item li, .spec-item h4 { font-size: 14px; }
+  .king { grid-template-columns: 1fr; gap: 2px; font-size: 14px; }
+  .king dd { margin-bottom: 8px; }
+}
