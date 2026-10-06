@@ -77,12 +77,12 @@
   <span class="c-cm">→ handle_input(): player pressed Right → remember that</span>
   <span class="c-cm">→ update():</span>
       <span class="c-cm">→ check state — we're PLAYING</span>
-      <span class="c-cm">→ player_move(&amp;player, 5, 0)  (uses the pointer from Phase 3)</span>
+      <span class="c-cm">→ player_move(&amp;player, 5, 0)  (uses the pointer from Phase 3.5)</span>
       <span class="c-cm">→ for each enemy: did AABB overlap the player? → take damage</span>
       <span class="c-cm">→ if player.alive is false → switch state to GAME_OVER</span>
   <span class="c-cm">→ render(): draw the player and enemies at their new spots</span>
 Frame ends → loop → next frame</pre>
-                <div class="prose t-text mt-12">Every concept from Phases 1–5 shows up here: the loop (Phase 2), the Player struct and pointers (Phase 3), the window and input (Phase 5). <strong class="t-accent">This phase is where it all connects.</strong></div>
+                <div class="prose t-text mt-12">Every concept from Phases 1–5 shows up here: the loop (Phase 2), the Player struct and pointers (Phase 3.5), the window and input (Phase 5). <strong class="t-accent">This phase is where it all connects.</strong></div>
               </div>
 
             </div>
@@ -117,7 +117,7 @@ Frame ends → loop → next frame</pre>
               <div class="task" data-id="p6-connect-player">
                 <div class="task-cb">✓</div>
                 <div class="task-content">
-                  <div class="task-text">Connect your Player struct from Phase 3 to your window from Phase 5</div>
+                  <div class="task-text">Connect your Player struct from Phase 3.5 to your window from Phase 5</div>
                   <div class="task-note">This is where it all starts coming together <span class="task-time">~45 min</span></div>
                 </div>
               </div>
@@ -238,7 +238,7 @@ Frame ends → loop → next frame</pre>
                   <div class="t-muted2">Give me the skeleton, I'll fill it in. Review what I wrote. AI is a scaffolder and reviewer.</div>
                 </div>
                 <div class="kv kv--80">
-                  <div class="t-yellow fw-500">Phase 3</div>
+                  <div class="t-yellow fw-500">Phase 3.5</div>
                   <div class="t-muted2">Here is my interface. Implement the body. AI is an implementer within your design.</div>
                 </div>
                 <div class="kv kv--80">

@@ -76,7 +76,7 @@ program ends when main ends      program ends when Windows says so</pre>
                 <div class="prose prose--loose t-text">
                   <span class="cmd">LRESULT</span>, <span class="cmd">HWND</span>, <span class="cmd">WPARAM</span>, <span class="cmd">LPSTR</span>, <span class="cmd">HINSTANCE</span>, <span class="cmd">WNDCLASS</span>. It looks like a different language. It isn't — they're renamed versions of types you already know. <span class="cmd">HWND</span> is a pointer with a fancy name. <span class="cmd">WPARAM</span> is a number. Win32 is from 1993 and it named everything twice.<br><br>
                   <strong class="t-accent">Understanding about 20% of this file on the first read is the correct outcome.</strong> Nobody memorises the boilerplate. Real Win32 programmers copy the same window setup they've copied for years and spend their attention on the two places that matter: the <span class="cmd">switch</span> inside WndProc, and the <span class="cmd">while</span> loop in WinMain. Those two you should genuinely understand.<br><br>
-                  Everything else is a form you fill in once. You already have the mental model that matters — you built the loop in Phase 2, the struct in Phase 3, and the array in Phase 3.5. This phase just wires them to a screen.
+                  Everything else is a form you fill in once. You already have the mental model that matters — you built the loop in Phase 2, the array in Phase 3, and the struct in Phase 3.5. This phase just wires them to a screen.
                 </div>
               </div>
 
