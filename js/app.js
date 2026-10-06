@@ -388,13 +388,99 @@ function toast(msg, actionLabel, action) {
 function hideToast() { $('#toast').classList.remove('show'); }
 
 /* ─── THEME ─── */
+/* ─── APPEARANCE: theme + fonts (this device only) ─── */
+var THEMES = [
+  { id: 'dark', name: 'Neon terminal', desc: 'The original: bright green on near-black, colour-coded labels.', sw: ['#080810', '#13131f', '#00ff88', '#ff7043', '#4fc3f7'], meta: '#0e0e1a', ui: 'jetbrains', display: "'Syne', sans-serif" },
+  { id: 'light', name: 'Neon light', desc: 'The original palette on a warm light background.', sw: ['#f3f2f2', '#fbfaf9', '#1c7f52', '#a9522a', '#2a6a9e'], meta: '#fbfaf9', ui: 'jetbrains', display: "'Syne', sans-serif" },
+  { id: 'graphite', name: 'Graphite', desc: 'Quiet dark greys with one soft sage accent.', sw: ['#15171b', '#22262c', '#8fd3b6', '#a3aab4', '#e3e5e9'], meta: '#1c1f24', ui: 'plexsans', code: 'plexmono', display: 'var(--font-mono)' },
+  { id: 'paper', name: 'Paper', desc: 'Light and calm: ink on off-white with one blue.', sw: ['#f5f5f2', '#ffffff', '#3552c9', '#5c616b', '#1c1f24'], meta: '#ffffff', ui: 'atkinson', display: 'var(--font-mono)' },
+  { id: 'dusk', name: 'Dusk', desc: 'Warm brown-black with an amber accent.', sw: ['#1a1714', '#2a2520', '#e3a35a', '#b0a699', '#ede6dc'], meta: '#221e1a', ui: 'grotesk', display: "'Space Grotesk', sans-serif" },
+  { id: 'blueprint', name: 'Blueprint', desc: 'The terminal feel, calmer: navy with one sky blue.', sw: ['#0f1622', '#1a2535', '#6cb6f0', '#9db0c7', '#dbe4f0'], meta: '#141d2b', ui: 'jetbrains', display: "'Syne', sans-serif" }
+];
+var UI_FONTS = [
+  { id: 'jetbrains', name: 'JetBrains Mono', note: 'monospace', css: "'JetBrains Mono', monospace" },
+  { id: 'plexsans', name: 'IBM Plex Sans', note: 'clean sans', css: "'IBM Plex Sans', sans-serif", g: 'IBM+Plex+Sans:wght@400;500;600;700' },
+  { id: 'atkinson', name: 'Atkinson Hyperlegible', note: 'made for legibility', css: "'Atkinson Hyperlegible', sans-serif", g: 'Atkinson+Hyperlegible:wght@400;700' },
+  { id: 'inter', name: 'Inter', note: 'popular UI sans', css: "'Inter', sans-serif", g: 'Inter:wght@400;500;600;700' },
+  { id: 'lexend', name: 'Lexend', note: 'easy reading', css: "'Lexend', sans-serif", g: 'Lexend:wght@400;500;600;700' },
+  { id: 'sourcesans', name: 'Source Sans 3', note: 'friendly sans', css: "'Source Sans 3', sans-serif", g: 'Source+Sans+3:wght@400;500;600;700' },
+  { id: 'grotesk', name: 'Space Grotesk', note: 'geometric', css: "'Space Grotesk', sans-serif", g: 'Space+Grotesk:wght@400;500;600;700' },
+  { id: 'system', name: 'System font', note: 'your device default', css: "system-ui, -apple-system, 'Segoe UI', sans-serif" }
+];
+var CODE_FONTS = [
+  { id: 'jetbrains', name: 'JetBrains Mono', css: "'JetBrains Mono', monospace" },
+  { id: 'firacode', name: 'Fira Code', css: "'Fira Code', monospace", g: 'Fira+Code:wght@400;500' },
+  { id: 'plexmono', name: 'IBM Plex Mono', css: "'IBM Plex Mono', monospace", g: 'IBM+Plex+Mono:wght@400;500' },
+  { id: 'sourcecode', name: 'Source Code Pro', css: "'Source Code Pro', monospace", g: 'Source+Code+Pro:wght@400;500' },
+  { id: 'robotomono', name: 'Roboto Mono', css: "'Roboto Mono', monospace", g: 'Roboto+Mono:wght@400;500' }
+];
+function byIdIn(list, id) { return list.filter(function (x) { return x.id === id; })[0]; }
+function loadFont(f) {
+  if (!f || !f.g || document.querySelector('link[data-font="' + f.id + '"]')) return;
+  var l = document.createElement('link');
+  l.rel = 'stylesheet';
+  l.href = 'https://fonts.googleapis.com/css2?family=' + f.g + '&display=swap';
+  l.setAttribute('data-font', f.id);
+  document.head.appendChild(l);
+}
+function applyAppearance() {
+  var th = byIdIn(THEMES, state._theme) || THEMES[0];
+  var ui = byIdIn(UI_FONTS, state._font) || byIdIn(UI_FONTS, th.ui);
+  var code = byIdIn(CODE_FONTS, state._codeFont) || byIdIn(CODE_FONTS, th.code || 'jetbrains');
+  var root = document.documentElement;
+  // switch instantly: no element fades from the old theme's colours
+  root.classList.add('no-trans');
+  setTimeout(function () { root.classList.remove('no-trans'); }, 60);
+  root.setAttribute('data-theme', th.id);
+  loadFont(ui); loadFont(code);
+  root.style.setProperty('--font-mono', ui.css);
+  root.style.setProperty('--font-code', code.css);
+  root.style.setProperty('--font-display', th.display);
+  var m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute('content', th.meta);
+}
 function setTheme(mode) {
-  document.documentElement.setAttribute('data-theme', mode);
-  state._theme = mode;
-  $('#tb-theme').textContent = mode === 'light' ? '◐' : '◑';
-  $('#tb-theme').title = mode === 'light' ? 'Switch to dark' : 'Switch to light';
+  state._theme = byIdIn(THEMES, mode) ? mode : 'dark';
+  applyAppearance();
   save();
 }
+function appearanceHTML() {
+  var th = byIdIn(THEMES, state._theme) || THEMES[0];
+  return '<div class="ap-sec"><div class="ap-lbl">Theme</div><div class="ap-themes">' + THEMES.map(function (t) {
+    return '<button class="ap-theme' + (t.id === th.id ? ' on' : '') + '" data-ap-theme="' + t.id + '" aria-pressed="' + (t.id === th.id) + '">' +
+      '<span class="ap-swatch" style="background:' + t.sw[0] + '">' +
+      '<i style="width:38%;height:100%;background:' + t.sw[1] + '"></i><i style="width:14px;height:60%;background:' + t.sw[2] + '"></i>' +
+      '<i style="width:14px;height:40%;background:' + t.sw[3] + '"></i><i style="width:14px;height:25%;background:' + t.sw[4] + '"></i></span>' +
+      '<span class="ap-name">' + esc(t.name) + '</span><span class="ap-desc">' + esc(t.desc) + '</span></button>';
+  }).join('') + '</div></div>' +
+  '<div class="ap-sec"><div class="ap-lbl">Reading font</div><div class="ap-fonts">' +
+    '<button class="ap-font' + (!state._font ? ' on' : '') + '" data-ap-font=""><span>Theme default</span><small>' + esc(byIdIn(UI_FONTS, th.ui).name) + '</small></button>' +
+    UI_FONTS.map(function (f) {
+      return '<button class="ap-font' + (state._font === f.id ? ' on' : '') + '" data-ap-font="' + f.id + '" style="font-family:' + f.css.replace(/"/g, '&quot;') + '"><span>' + esc(f.name) + '</span><small>' + esc(f.note) + '</small></button>';
+    }).join('') + '</div></div>' +
+  '<div class="ap-sec"><div class="ap-lbl">Code font</div><div class="ap-fonts">' +
+    '<button class="ap-font' + (!state._codeFont ? ' on' : '') + '" data-ap-code=""><span>Theme default</span><small>' + esc(byIdIn(CODE_FONTS, th.code || 'jetbrains').name) + '</small></button>' +
+    CODE_FONTS.map(function (f) {
+      return '<button class="ap-font' + (state._codeFont === f.id ? ' on' : '') + '" data-ap-code="' + f.id + '" style="font-family:' + f.css.replace(/"/g, '&quot;') + '"><span>' + esc(f.name) + '</span><small>while (i &lt; 10) i++;</small></button>';
+    }).join('') + '</div></div>' +
+  '<div class="ap-note">Saved on this device. Fonts other than JetBrains Mono load from Google Fonts the first time you pick them.</div>';
+}
+function openAppearance() {
+  UI_FONTS.concat(CODE_FONTS).forEach(loadFont);   // so each option previews in its own face
+  fwOpen({ cls: 'fw--sheet', kicker: 'Appearance', title: 'Theme and fonts', html: appearanceHTML }, false);
+}
+document.addEventListener('click', function (e) {
+  var el = e.target.closest('[data-ap-theme], [data-ap-font], [data-ap-code], [data-appearance]');
+  if (!el || document.body.classList.contains('editing')) return;
+  e.stopPropagation();
+  if (el.hasAttribute('data-appearance')) { closeMenu(); openAppearance(); return; }
+  if (el.hasAttribute('data-ap-theme')) setTheme(el.dataset.apTheme);
+  else if (el.hasAttribute('data-ap-font')) { state._font = el.dataset.apFont || undefined; applyAppearance(); save(); }
+  else { state._codeFont = el.dataset.apCode || undefined; applyAppearance(); save(); }
+  var body = $('#fw-body'), top = body ? body.scrollTop : 0;
+  fwRender();
+  if (body) body.scrollTop = top;
+}, true);
 
 /* ─── EXPAND / COLLAPSE / SOLO ─── */
 function setAll(open) {
@@ -496,7 +582,7 @@ function buildIndex() {
 function actions() {
   return [
     { kind: 'action', title: 'Resume — jump to next unfinished task', where: '', run: resume },
-    { kind: 'action', title: 'Toggle light / dark', where: '', run: function () { setTheme(state._theme === 'light' ? 'dark' : 'light'); } },
+    { kind: 'action', title: 'Appearance: theme and fonts', where: '', run: openAppearance },
     { kind: 'action', title: 'Collapse all phases', where: '', run: function () { setAll(false); } },
     { kind: 'action', title: 'Expand all phases', where: '', run: function () { setAll(true); } },
     { kind: 'action', title: 'Export progress as JSON', where: '', run: exportState },
@@ -642,7 +728,7 @@ $('#tb-rail').addEventListener('click', function () {
   if (window.matchMedia('(max-width: 860px)').matches) document.body.classList.toggle('rail-open');
   else document.body.classList.toggle('rail-off');
 });
-$('#tb-theme').addEventListener('click', function () { setTheme(state._theme === 'light' ? 'dark' : 'light'); });
+$('#tb-theme').addEventListener('click', openAppearance);
 $('#tb-search').addEventListener('click', openPal);
 $('#rl-resume').addEventListener('click', resume);
 if ($('#m-solo')) $('#m-solo').addEventListener('click', function () {
@@ -653,7 +739,7 @@ if ($('#m-solo')) $('#m-solo').addEventListener('click', function () {
 });
 $('#m-export').addEventListener('click', function () { exportState(); closeMenu(); });
 $('#m-import-json').addEventListener('click', function () { $('#file-in').click(); closeMenu(); });
-$('#m-theme').addEventListener('click', function () { setTheme(state._theme === 'light' ? 'dark' : 'light'); closeMenu(); });
+$('#m-theme').addEventListener('click', function () { closeMenu(); openAppearance(); });
 $('#m-reset').addEventListener('click', function () { closeMenu(); resetState(); });
 $('#file-in').addEventListener('change', function (e) { if (e.target.files[0]) importState(e.target.files[0]); e.target.value = ''; });
 $('#toast-x').addEventListener('click', hideToast);
@@ -1631,7 +1717,7 @@ buildSegments();
 decorateHeaders();
 injectPerPhase();
 applyState();
-setTheme(state._theme === 'light' ? 'light' : 'dark');
+applyAppearance();
 sections.forEach(function (s) { if (s.isPhase) setOpen(s.el, true); });   // only the current section is shown
 renderAsk();
 showView(sectionFromHash(), { keepScroll: false });
@@ -1688,7 +1774,7 @@ updateTimeUI();
 window.RTS_app = {
   getState: function () { return state; },
   setState: function (s) {
-    var keep = { _edits: state._edits, _theme: state._theme, _phases: state._phases, _solo: state._solo, _session: state._session };
+    var keep = { _edits: state._edits, _theme: state._theme, _font: state._font, _codeFont: state._codeFont, _phases: state._phases, _solo: state._solo, _session: state._session };
     state = s; Object.keys(keep).forEach(function (k) { if (keep[k] !== undefined && !(k in s)) state[k] = keep[k]; });
     if (!state._notes) state._notes = {};
     if (!state._skills) state._skills = {};

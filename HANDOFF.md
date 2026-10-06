@@ -24,6 +24,7 @@ A C game-dev learning roadmap (13 phases, C → raylib prototype → Godot hando
 | Android app (Capacitor) | PR #5 open, **paused**: build needs JDK 21 (Android Studio ships Java 25; Gradle 8.14 needs ≤24). Next: install Temurin 21, build, test on emulator. Don't merge #5 until built: it also switches Pages to publish `www/` |
 | v14: cheat sheets, skill levels, time tracking, larger desktop | Done (see "How v14 works"). Migration `skills_and_admin_views` applied; file in `supabase/migrations/` |
 | v15: dashboard home, section pages, explainers, floating windows, Ask Claude | Done (see "How v15 works") |
+| v16: theme + font picker | Done. Six themes (dark, light, graphite, paper, dusk, blueprint) and reading/code font choices; per device |
 | Admin views | `admin.user_overview` (one row per user) and `admin.user_activity` (every row, newest first). Table Editor → schema dropdown → `admin` |
 | Supabase auth settings (confirm email off, min 8, sign-ups off) | Done by Sam |
 | Custom SMTP | Skipped on purpose (password sign-in doesn't need it) |
@@ -89,6 +90,13 @@ privacy.html, sw.js, manifest.webmanifest, icons/, setup.ps1, README.md
 - **Explainers:** glossary entries carry `def`, `model`, `game` (+ `gameCode`) for three tabs. The last tab used is remembered per device (`rts_explain_tab`). Skill dots live only on cheat-sheet lists now.
 - **Floating window** (`#fw`, `fwOpen/fwBack/fwClose`) is the one popup for explainers, whole cheat sheets and the time breakdown, on every screen size. ✕, Back and the scrim have their own listeners. The Stuck? help drawer is unchanged.
 - **Ask Claude** is off by default (menu → Ask Claude buttons; `rts_ask_claude` in localStorage). It links to `https://claude.ai/new?q=<prompt>`, so it uses the person's own Claude plan. An in-app chat would need an API key billed per use; a Claude Pro subscription can't power it.
+
+## Themes and fonts (v16)
+
+- Themes are `[data-theme="<id>"]` token blocks in `css/app.css`; the list, swatches and default fonts are `THEMES` in `js/app.js`. The calm themes map `--blue/--purple/--yellow/--orange` onto the accent or neutrals so labels stop being rainbow.
+- `--font-mono` is now the reading/UI font (the name is historical) and `--font-code` is for code (`pre`, `.cmd`, …). Fonts other than JetBrains Mono/Syne load from Google Fonts on demand.
+- `state._theme`, `_font`, `_codeFont` are device-only (not synced). An inline script in `index.html` applies the saved theme before first paint.
+- Design exploration canvas: https://claude.ai/artifact/1XxjpMqMMEmW1iDa9f5CgC
 
 ## Gotchas learned
 
