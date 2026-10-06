@@ -833,7 +833,10 @@ function stageSize(key, els) {
   }
   if (key === 'practice') {
     var t = $$(TASK, box).length, m = 0;
-    $$('.task-time', box).forEach(function (x) { var n = /(\d+)/.exec(x.textContent); if (n) m += +n[1]; });
+    $$('.task-time', box).forEach(function (x) {
+      var n = /(\d+(?:\.\d+)?)\s*(h|min)/i.exec(x.textContent);   // "~20 min", "~1.5 hrs"
+      if (n) m += /^h/i.test(n[2]) ? Math.round(+n[1] * 60) : +n[1];
+    });
     m = m || t * MIN_PER_TASK;
     return t ? plural(t, 'task') + ' · ~' + (m < 120 ? m + ' min' : fmtMins(m)) : plural($$('.quiz-item', box).length, 'exercise');
   }
@@ -977,6 +980,14 @@ function sameHTML(a, b) {
   return x.innerHTML.replace(/\s+/g, ' ').trim() === y.innerHTML.replace(/\s+/g, ' ').trim();
 }
 function restoreEdits() {
+  // v13 swapped Phases 3 and 3.5, so block positions in those two files moved and
+  // unpublished edits saved against the old layout would land on the wrong blocks.
+  if ((state._editsLayout || 0) < 13) {
+    var stale = Object.keys(state._edits).filter(function (k) { return /^phase3b?:/.test(k); });
+    stale.forEach(function (k) { delete state._edits[k]; });
+    state._editsLayout = 13;
+    if (stale.length) setTimeout(function () { toast(plural(stale.length, 'unpublished edit') + ' in Phase 3 / 3.5 cleared — those phases were reorganised'); }, 900);
+  }
   Object.keys(state._edits).forEach(function (k) {
     var el = document.querySelector('[data-ek="' + k.replace(/"/g, '') + '"]');
     if (!el) return;

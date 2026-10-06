@@ -105,7 +105,7 @@ frame 2:  A...#.......#.....  score 13   <span class="c-cm">← drawn straight o
                 <div class="task-cb">✓</div>
                 <div class="task-content">
                   <div class="task-text">Obstacles scroll toward you from an array, score climbs when one passes, and a hit ends the run</div>
-                  <div class="task-note">Phase 3.5's array walk, moving. The hit test is one comparison — that's collision detection with the geometry taken out. <span class="task-time">~1.5 hrs</span></div>
+                  <div class="task-note">Phase 3's array walk, moving. The hit test is one comparison — that's collision detection with the geometry taken out. <span class="task-time">~1.5 hrs</span></div>
                 </div>
               </div>
               <div class="task" data-id="p4b-state-restart">
@@ -157,7 +157,7 @@ frame 2:  A...#.......#.....  score 13   <span class="c-cm">← drawn straight o
 } <span class="c-type">GameState</span>;
 
 <span class="c-type">int</span> <span class="c-fn">main</span>(<span class="c-type">void</span>) {
-    <span class="c-type">char</span>      <span class="c-var">lane</span>[LANE_LEN + <span class="c-num">1</span>];   <span class="c-cm">// +1 for the '\0'. Phase 3.5 rule.</span>
+    <span class="c-type">char</span>      <span class="c-var">lane</span>[LANE_LEN + <span class="c-num">1</span>];   <span class="c-cm">// +1 for the '\0'. Phase 3 rule.</span>
     <span class="c-type">int</span>       <span class="c-var">obs</span>[MAX_OBS];         <span class="c-cm">// column of each obstacle, -1 = empty slot</span>
     <span class="c-type">GameState</span> <span class="c-var">state</span>   = <span class="c-var">STATE_MENU</span>;
     <span class="c-type">int</span>       <span class="c-var">running</span> = <span class="c-num">1</span>;
