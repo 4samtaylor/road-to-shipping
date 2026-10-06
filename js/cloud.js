@@ -84,7 +84,7 @@
     if (!sb) status('', '');
     else if (!user) status('this device only · sign in', '');
     else if (offline) status('offline · saved here', 'err');
-    else if ((lsGet(uk('outbox'), [])).length) status('saving…', '');
+    else if (lsGet(uk('outbox'), []).some(function (f) { return f.indexOf('s:_time:') !== 0; })) status('saving…', '');
     else status('● synced', 'ok');
   }
 
@@ -172,15 +172,19 @@
   C.onSave = function (state) {
     if (!sb || !user) { idleStatus(); return; }
     var f = flatten(state), snap = lsGet(uk('snap'), {}) || {}, meta = lsGet(uk('meta'), {}) || {};
-    var outbox = lsGet(uk('outbox'), []), set = {}, now = Date.now(), changed = false;
+    var outbox = lsGet(uk('outbox'), []), set = {}, now = Date.now(), changed = false, byUser = false;
     outbox.forEach(function (x) { set[x] = 1; });
     var all = {}; Object.keys(f).concat(Object.keys(snap)).forEach(function (k) { all[k] = 1; });
     Object.keys(all).forEach(function (k) {
-      if (J(f[k]) !== J(snap[k])) { meta[k] = now; set[k] = 1; changed = true; if (f[k] === undefined) delete snap[k]; else snap[k] = f[k]; }
+      if (J(f[k]) !== J(snap[k])) {
+        meta[k] = now; set[k] = 1; changed = true;
+        if (k.indexOf('s:_time:') !== 0) byUser = true;   // time-on-task saves in the background, silently
+        if (f[k] === undefined) delete snap[k]; else snap[k] = f[k];
+      }
     });
     if (!changed) return;
     lsSet(uk('snap'), snap); lsSet(uk('meta'), meta); lsSet(uk('outbox'), Object.keys(set));
-    status('saving…', '');
+    if (byUser) status('saving…', '');
     clearTimeout(pushTimer);
     pushTimer = setTimeout(push, PUSH_DELAY);
   };
