@@ -104,6 +104,14 @@ int n = (int)x; <span class="c-cm">// explicit cast — silences C4244, means "I
 printf("%d", n); <span class="c-cm">// 1</span></pre>
               </div>
 
+              <div class="callout callout--blue callout--bar" style="padding:14px">
+                <div class="eyebrow eyebrow--md t-blue mb-8">// Integer division &amp; casting — where the maths quietly goes wrong</div>
+                <div class="prose t-text mb-10"><strong class="t-blue">int / int is an int.</strong> The fraction is thrown away before you ever see it: <span class="cmd">7 / 2</span> is 3, and <span class="cmd">1 / 2</span> is 0. The type of an expression is decided by what goes <em>into</em> it, not by the variable you store it in — so <span class="cmd">float f = 7 / 2;</span> gives you 3.0, not 3.5.<br><br><strong class="t-blue">% is the leftover.</strong> <span class="cmd">7 % 2</span> is 1. You'll use it constantly: <span class="cmd">n % 2 == 0</span> means even, and <span class="cmd">(i + 1) % count</span> wraps back to 0 at the end of a list.<br><br><strong class="t-blue">Cast before you divide, not after:</strong></div>
+<pre class="code-panel p-12 fs-10 lh-17 c-str">float half = (float)7 / 2;     <span class="c-cm">// 3.5 — 7 becomes 7.0f first, so the division is float</span>
+float oops = (float)(7 / 2);   <span class="c-cm">// 3.0 — the int division already happened inside the brackets</span>
+int   pct  = hp * 100 / max_hp; <span class="c-cm">// multiply first: 30 * 100 / 120 = 25, but 30 / 120 * 100 = 0</span></pre>
+              </div>
+
               <div class="panel">
                 <div class="eyebrow eyebrow--md t-muted2 mb-8">// sizeof() — verify sizes on your machine</div>
 <pre class="code-panel p-12 fs-10 lh-17 c-str">printf("int:    %d bytes\n", sizeof(int));
@@ -402,7 +410,7 @@ printf("char:   %d bytes\n", sizeof(char));
 
         <div class="section-block acc-section">
           <div class="section-block-header">
-            <span class="badge badge-orange">Stuck?</span>&nbsp;&nbsp;Common errors at this stage
+            <span class="badge badge-orange">Stuck &amp; Curious</span>&nbsp;&nbsp;Common errors at this stage
             <span class="acc-toggle-icon">▼</span>
           </div>
           <div class="acc-body section-block-body">
@@ -422,6 +430,21 @@ printf("char:   %d bytes\n", sizeof(char));
               <div class="stuck-item">
                 <div class="stuck-q">I don't understand what &amp; does in scanf</div>
                 <div class="stuck-a">The &amp; gives scanf the memory address of your variable — where it lives — so it can write directly into it. Without &amp;, you pass the current value (useless to scanf). Think of it as giving someone your house address vs telling them what's inside. scanf needs the address to deliver the new value.</div>
+              </div>
+            </div>
+            <div class="eyebrow eyebrow--md t-blue curious-lbl">// Curious — the "why" questions</div>
+            <div class="stuck-items">
+              <div class="stuck-item">
+                <div class="stuck-q">Why does <span class="cmd">rand() % 100</span> pick small numbers slightly more often?</div>
+                <div class="stuck-a">On MSVC, <span class="cmd">rand()</span> returns 0 to 32767 — that's 32,768 possible values. 32,768 doesn't divide evenly by 100: it's 327 full rounds plus 68 left over. So 0–67 each come up 328 ways and 68–99 only 327 ways. For a guessing game nobody will ever notice. It's called <em>modulo bias</em>, and it's why real games use better random generators.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">Why does C have both for and while, if for can do everything?</div>
+                <div class="stuck-a">Because code is read more than it's written. <span class="cmd">for (;running;)</span> is exactly the same as <span class="cmd">while (running)</span>, but a <span class="cmd">for</span> tells the reader "this counts", and a <span class="cmd">while</span> tells them "this waits for something to change" before they read a single line inside. Choosing the right one is a message to your future self.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">Why does <span class="cmd">printf("%.10f", 0.1f + 0.2f)</span> not print 0.3000000000?</div>
+                <div class="stuck-a">Floats are stored in binary, and 0.1 has no exact binary form — the same way 1/3 has no exact decimal form (0.3333…). You get the closest value the float can hold, and the tiny errors add up. That's why you never write <span class="cmd">if (x == 0.3f)</span> for a float. For games it's fine: nobody can see a millionth of a pixel.</div>
               </div>
             </div>
           </div>
@@ -658,6 +681,117 @@ C 67
             <div class="cp-item" data-id="cp-p2-2"><span class="cp-cb">✓</span><span class="cp-text">Your guessing game gives correct high/low hints and detects the win</span></div>
             <div class="cp-item" data-id="cp-p2-3"><span class="cp-cb">✓</span><span class="cp-text">You can explain what scanf(" %c", &amp;input) does — including the space and the &amp;</span></div>
             <div class="cp-item" data-id="cp-p2-4"><span class="cp-cb">✓</span><span class="cp-text">Both programs committed to GitHub</span></div>
+          </div>
+        </div>
+
+        <!-- BUILD SPEC -->
+        <div class="section-block acc-section open" data-order="-1">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Build Spec</span>&nbsp;&nbsp;Write the requirements before you build
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="prose prose--sm t-muted2 mb-14">Three requirements per build, written <strong class="t-text">before</strong> you open the editor. Each line is something you can test: run the program and answer yes or no. This is the <span class="cmd">It should:</span> list from the Phase 07 "implement this" prompt — writing it for yourself now is practice for writing it for Claude later. Tick the build when all three pass.</div>
+            <div class="spec">
+              <div class="spec-item">
+                <h4><span>frame_loop.c</span> — it should:</h4>
+                <ul>
+                  <li>print <span class="cmd">Frame: N</span> once per pass through the loop, starting at 0</li>
+                  <li>stop when you type <span class="cmd">q</span>, or by itself after 100 frames — whichever comes first</li>
+                  <li>print the total frames run and the last character typed, then exit with 0</li>
+                </ul>
+              </div>
+              <div class="spec-item">
+                <h4><span>guess.c</span> — it should:</h4>
+                <ul>
+                  <li>pick a secret number from 1 to 100 that changes every time you run it</li>
+                  <li>answer every guess with exactly one of: Higher, Lower, Correct</li>
+                  <li>count your guesses and print the count when you win</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STRETCH -->
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Stretch Goal</span>&nbsp;&nbsp;guess.c v2 — difficulty, a guess limit, play again
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="prose prose--sm t-muted2 mb-14">Optional, and it doesn't count toward your progress. Do it while the base build is still fresh in your head — the second version is where it sticks.</div>
+            <div class="tasks">
+              <div class="task" data-id="p2-stretch-guess" data-optional>
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Stretch: guessing game v2 — difficulty menu, limited guesses, play again <span class="task-tag t-stretch">Stretch</span></div>
+                  <div class="task-note">Same file, new features. Commit the base version first so you can always get back to it. <span class="task-time">~1.5 hrs</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="spec mt-14">
+              <div class="spec-item">
+                <h4><span>Requirements</span> — it should:</h4>
+                <ul>
+                  <li>ask for a difficulty first: Easy (1–10, unlimited guesses), Normal (1–100, 10 guesses), Hard (1–1000, 10 guesses)</li>
+                  <li>end the round with <span class="cmd">Out of guesses — it was N</span> when the guesses run out</li>
+                  <li>ask <span class="cmd">Play again? (y/n)</span> and start a new round without restarting the program</li>
+                </ul>
+              </div>
+            </div>
+            <div class="callout callout--yellow mt-14">
+              <div class="eyebrow eyebrow--md t-yellow mb-8">// New tools you'll want</div>
+              <div class="stack gap-8 fs-11">
+                <div><span class="cmd">switch</span> <span class="t-muted2">— cleaner than a chain of <span class="cmd">if</span>s for a menu. Don't forget <span class="cmd">break;</span> at the end of each case, or it falls through into the next one. (King ch 5)</span></div>
+                <div><span class="cmd">do { ... } while (again == 'y');</span> <span class="t-muted2">— a loop that always runs at least once. Perfect for "play, then ask". (King ch 6)</span></div>
+                <div><span class="cmd">if (scanf("%d", &amp;guess) != 1)</span> <span class="t-muted2">— scanf returns how many things it read. Type "abc" and it returns 0 and leaves "abc" sitting in the input. Clear the rest of the line with <span class="cmd">while ((c = getchar()) != '\n' &amp;&amp; c != EOF) {}</span> (with <span class="cmd">int c;</span>) and ask again.</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MIXED REVIEW -->
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Mixed Review</span>&nbsp;&nbsp;two from Phase 01
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="prose prose--sm t-muted2 mb-14">Two questions from earlier phases. Remembering something after a gap is what makes it stay — answer out loud first.</div>
+            <div class="quiz-items">
+              <div class="quiz-item">
+                <div class="quiz-q">1. <span class="t-muted">[Phase 01]</span> What does <span class="cmd">printf("%d%%\n", 50);</span> print?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a"><span class="cmd">50%</span>. <span class="cmd">%d</span> is replaced by 50, and <span class="cmd">%%</span> is printf's way of printing one percent sign — a single <span class="cmd">%</span> would start another format specifier.</div>
+                </details>
+              </div>
+              <div class="quiz-item">
+                <div class="quiz-q">2. <span class="t-muted">[Phase 01]</span> build says <span class="cmd">BUILD FAILED</span>, you run <span class="cmd">game.exe</span> anyway and it works perfectly. What did you just run?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">The .exe from your <em>last successful</em> build. A failed compile doesn't delete the old file, it just doesn't replace it. That's why build.bat exits as soon as <span class="cmd">%ERRORLEVEL%</span> isn't 0 — so you notice before you test old code.</div>
+                </details>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAIR WITH KING -->
+        <div class="section-block acc-section" data-order="9">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Pair with King</span>&nbsp;&nbsp;C Programming: A Modern Approach — chapters 3–7
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <dl class="king">
+              <dt>Read</dt><dd>Ch 3 <em>Formatted Input/Output</em> · Ch 4 <em>Expressions</em> · Ch 5 <em>Selection Statements</em> · Ch 6 <em>Loops</em> · Ch 7 <em>Basic Types</em>.</dd>
+              <dt>Focus on</dt><dd>printf/scanf conversion specs (ch 3), integer division and % (ch 4), if/else and switch (ch 5), while/do/for plus break and continue (ch 6), and type conversion, casts and sizeof (ch 7).</dd>
+              <dt>Skip for now</dt><dd>The bitwise operators, the comma operator, and the detail on integer sizes like <span class="cmd">long long</span> and unsigned types. You won't need them for this game.</dd>
+              <dt>Try</dt><dd>The ch 4 and ch 6 programming projects are close cousins of the frame loop and the guessing game — good warm-ups for Sessions B and C.</dd>
+            </dl>
+            <div class="fs-11 t-muted mt-12">This is the biggest reading block in the roadmap. Spread it across all three sessions rather than doing it in one go.</div>
           </div>
         </div>
 

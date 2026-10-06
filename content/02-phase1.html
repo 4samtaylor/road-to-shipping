@@ -134,7 +134,7 @@
         <!-- STUCK -->
         <div class="section-block acc-section">
           <div class="section-block-header">
-            <span class="badge badge-orange">Stuck?</span>&nbsp;&nbsp;Errors from session 1 + common Phase 1 issues
+            <span class="badge badge-orange">Stuck &amp; Curious</span>&nbsp;&nbsp;Errors from session 1 + common Phase 1 issues
             <span class="acc-toggle-icon">▼</span>
           </div>
           <div class="acc-body section-block-body">
@@ -158,6 +158,25 @@
               <div class="stuck-item">
                 <div class="stuck-q">VS Code says "Do you want to install the C/C++ Extension Pack?"</div>
                 <div class="stuck-a">Click Install. Always. This gives you syntax highlighting, error detection, and autocomplete for C. Without it VS Code is just a plain text editor for C files.</div>
+              </div>
+            </div>
+            <div class="eyebrow eyebrow--md t-blue curious-lbl">// Curious — the "why" questions</div>
+            <div class="stuck-items">
+              <div class="stuck-item">
+                <div class="stuck-q">Why does C need a compile step when Python just runs?</div>
+                <div class="stuck-a">Python reads your file and works out what each line means <em>while</em> it runs. C does that work once, up front: <span class="cmd">cl</span> turns the whole file into machine code, and the .exe then runs with no translator in the way. That's a big part of why games are written in C and C++ — every frame gets the full speed of the CPU. The price is the wait and the strictness you're feeling now.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">Why does main return int and not void?</div>
+                <div class="stuck-a">Because something is waiting for the answer. When your program ends, the number from <span class="cmd">return</span> goes back to whatever started it — the terminal, a script, your build.bat. 0 means "fine", anything else means "something went wrong". It's the same value build.bat reads as <span class="cmd">%ERRORLEVEL%</span>.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">What's actually inside hello_world.exe?</div>
+                <div class="stuck-a">Machine code for your <span class="cmd">main</span>, plus startup code from the C runtime that sets things up before main runs and cleans up after. <span class="cmd">printf</span> itself isn't written in your file at all — <span class="cmd">cl</span> compiles your code to <span class="cmd">hello_world.obj</span>, then <em>links</em> it with the library that contains printf. That's why you see a .obj appear next to your .exe.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">Why is it stdio.h — what does the .h mean?</div>
+                <div class="stuck-a"><strong>Std</strong>andard <strong>i</strong>nput/<strong>o</strong>utput, and .h is a <em>header</em>. A header doesn't contain printf's code; it contains a promise — "a function called printf exists, and this is how you call it". The compiler checks your calls against that promise. The real code arrives at link time. In Phase 3 you'll write your own header.</div>
               </div>
             </div>
           </div>
@@ -539,6 +558,23 @@ DE</pre>
             <div class="cp-item" data-id="cp-p1-4"><span class="cp-cb">✓</span><span class="cp-text">You've read at least one compiler error and understood what it told you</span></div>
             <div class="cp-item" data-id="cp-p1-5"><span class="cp-cb">✓</span><span class="cp-text">build.bat exists in your repo, runs with a single word, and is committed to GitHub</span></div>
             <div class="cp-item" data-id="cp-p1-6"><span class="cp-cb">✓</span><span class="cp-text">Hello World is committed and visible on github.com</span></div>
+          </div>
+        </div>
+
+        <!-- PAIR WITH KING -->
+        <div class="section-block acc-section" data-order="9">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Pair with King</span>&nbsp;&nbsp;C Programming: A Modern Approach — chapters 1–2
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <dl class="king">
+              <dt>Read</dt><dd>Ch 1 <em>Introducing C</em> — skim it, it's history and context. Ch 2 <em>C Fundamentals</em> — read this one properly.</dd>
+              <dt>Focus on</dt><dd>The general shape of a program (directives, functions, statements), comments, variables and assignment, and printf. That's everything this phase uses.</dd>
+              <dt>Skip for now</dt><dd>The parts of ch 2 about reading input with scanf and defining constants — they come back in Phases 2 and 3 with more context.</dd>
+              <dt>Try</dt><dd>Two or three of the short end-of-chapter exercises for ch 2. Type them in, compile them with <span class="cmd">cl</span>, read any errors out loud.</dd>
+            </dl>
+            <div class="fs-11 t-muted mt-12">Chapter numbers are from the 2nd edition. If your copy is different, match by chapter title.</div>
           </div>
         </div>
 
