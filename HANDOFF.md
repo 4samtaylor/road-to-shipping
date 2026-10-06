@@ -20,8 +20,8 @@ A C game-dev learning roadmap (13 phases, C → raylib prototype → Godot hando
 | Supabase database (tables, RLS, newest-wins triggers, delete-account) | Done. Migrations `init_progress_sync` + `harden_functions` applied; security advisor clean except the intentional `delete_my_account` |
 | Supabase URL Configuration (Site URL + redirects) | Done |
 | v12: email + password sign-in and cloud sync | Done and live. Sam's account exists; 80 progress rows verified in Supabase |
-| v13: Step 2 "show less" + mobile layout | PR #1 (`v13-show-less`), not merged |
-| Step 3 curriculum | PRs #2 → #3 → #4, stacked on #1, not merged. Merge in order 1, 2, 3, 4 |
+| v13: Step 2 "show less", Step 3 curriculum, phone polish | Done and live (PRs #1–#4, #6 merged Oct 6 2026) |
+| Android app (Capacitor) | PR #5 open, **paused**: build needs JDK 21 (Android Studio ships Java 25; Gradle 8.14 needs ≤24). Next: install Temurin 21, build, test on emulator. Don't merge #5 until built: it also switches Pages to publish `www/` |
 | Skill levels (Not started / Practiced / Solid) | Not started: needs a storage decision (new `skills` table vs a `user_state` key) |
 | Supabase auth settings (confirm email off, min 8, sign-ups off) | Done by Sam |
 | Custom SMTP | Skipped on purpose (password sign-in doesn't need it) |
@@ -90,14 +90,14 @@ privacy.html, sw.js, manifest.webmanifest, icons/, setup.ps1, README.md
 
 **Step 1 (pilot):** account created and verified (Oct 6 2026). Now a two-week pilot on PC + iPhone: ticks match, offline edits survive, nothing gets lost.
 
-**Step 2: show less on screen at once** (done in PR #1)
+**Step 2: show less on screen at once** (done)
 - Focus mode by default: only the current phase open.
 - Progress indicators from 5 to 2 (keep top bar + rail; drop hero strip, per-phase bars, dock duplicate).
 - Every phase in one order: **Learn → Trace → Practice → Build → Review**, with size labels ("4 drills · ~10 min").
 - "Stuck?" and Claude prompts move into a help drawer.
 - "By the end you can…" goals at the top of each phase, built from its checkpoint list.
 
-**Step 3: curriculum** (done in PRs #2–#4, except skill levels)
+**Step 3: curriculum** (done, except skill levels)
 - *Khan:* move Predict the Output before tasks; add a stretch version to every build (guessing game, high-score table, ASCII runner, prototype); mixed review (two earlier-phase questions per quiz); skill levels Not started / Practiced / Solid saved to the account (this needs a new table, a good moment to adopt migration files); three requirement bullets before each Build, tied to Phase 07.
 - *K.N. King:* swap so Phase 03 = Functions, Arrays & Strings and Phase 3.5 = Pointers & Structs (Player struct moves to 3.5). Add integer division/casting (02), `#define` constants (03), save high score with `fopen`, a multi-file ASCII Runner + `build.bat` before Phase 06. "Stuck?" becomes "Stuck & Curious" with 3–4 Q&A items per phase. Add a "Pair with King" line per phase: 01 → ch 1–2, 02 → 3–7, 03 → 8–10, 13, 3.5 → 11, 12, 16, multi-file → 14–15 (check against Sam's copy). Leave out unions, advanced pointers, and bit work.
 
