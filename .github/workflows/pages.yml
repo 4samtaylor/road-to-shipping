@@ -5,7 +5,7 @@ name: Deploy site
 on:
   push:
     branches: [main]
-    paths-ignore: ['progress/**']
+    paths-ignore: ['progress/**', 'android/**', 'ios/**']
   workflow_dispatch:
 
 permissions:
@@ -27,9 +27,11 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check content before publishing
         run: python3 tools/validate.py
+      - name: Build the site folder (same files the app bundles)
+        run: node scripts/build-www.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: www
       - id: deployment
         uses: actions/deploy-pages@v4
