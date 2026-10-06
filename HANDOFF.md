@@ -22,7 +22,8 @@ A C game-dev learning roadmap (13 phases, C → raylib prototype → Godot hando
 | v12: email + password sign-in and cloud sync | Done and live. Sam's account exists; 80 progress rows verified in Supabase |
 | v13: Step 2 "show less", Step 3 curriculum, phone polish | Done and live (PRs #1–#4, #6 merged Oct 6 2026) |
 | Android app (Capacitor) | PR #5 open, **paused**: build needs JDK 21 (Android Studio ships Java 25; Gradle 8.14 needs ≤24). Next: install Temurin 21, build, test on emulator. Don't merge #5 until built: it also switches Pages to publish `www/` |
-| Skill levels (Not started / Practiced / Solid) | Not started: needs a storage decision (new `skills` table vs a `user_state` key) |
+| v14: cheat sheets, skill levels, time tracking, larger desktop | Done (see "How v14 works"). Migration `skills_and_admin_views` applied; file in `supabase/migrations/` |
+| Admin views | `admin.user_overview` (one row per user) and `admin.user_activity` (every row, newest first). Table Editor → schema dropdown → `admin` |
 | Supabase auth settings (confirm email off, min 8, sign-ups off) | Done by Sam |
 | Custom SMTP | Skipped on purpose (password sign-in doesn't need it) |
 | Supabase GitHub integration | Deliberately **off**; see Decisions |
@@ -73,6 +74,13 @@ privacy.html, sw.js, manifest.webmanifest, icons/, setup.ps1, README.md
 - **Optional tasks:** `data-optional` on a `.task` keeps it out of totals, phase counts and Resume. Its progress key still syncs.
 - **Focus mode** (`_solo`) is on by default and per device.
 - **Phase 3 / 3.5 swap:** Phase 03 = Functions, Arrays & Strings; 3.5 = Pointers & Structs. Task ids kept their old prefixes (`p3b-*` tasks now live in Phase 03 and vice versa); that's intentional, ids are progress keys.
+
+## How v14 works
+
+- **Cheat sheets** come from `content/glossary.json` (per phase: id, term, kind, what, example, gotcha, aliases, match). Inline `.cmd` text that matches an alias or regex becomes a link (once per section) to a pop-up card. Desktop ≥1200px: the dock shows the current phase's sheet. Narrower: "Cheat sheet" chip in each phase opens a drawer. **Entry ids are skill ids — never rename or reuse one.**
+- **Skill levels** (`state._skills`, 0–2) sync as `k:<id>` fields to the `skills` table.
+- **Time:** counted every 5 s while the tab is visible, input happened in the last 5 min, and a phase is open/in view. `state._time[phase]` syncs as `user_state` rows `_time:<phase>` (merge keeps the max, so time never goes backwards). `state._session` (device only) resets after a 30-min gap. Saved to the account about once a minute.
+- **Migrations:** new DB changes go in `supabase/migrations/` with the version the connector reports.
 
 ## Gotchas learned
 

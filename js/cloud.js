@@ -6,8 +6,9 @@
    its own timestamp, and the newest change wins, so two devices can
    both be used offline and still agree afterwards.
 
-   Tables: progress (tasks + checkpoints), notes, user_state
-   (scratchpad, session log). See supabase/setup.sql.
+   Tables: progress (tasks + checkpoints), notes, skills (cheat-sheet
+   levels), user_state (scratchpad, session log, time per phase).
+   See supabase/setup.sql.
    Sign-in is email + password. Google can be switched on later
    with "googleSignIn": true in content/config.json.
    ───────────────────────────────────────────────────────────── */
@@ -34,7 +35,9 @@
   /* ─── state ⇄ fields ───
      p:<item>  task/checkpoint done        → progress
      n:<item>  note text                   → notes
-     s:<key>   scratchpad, log, …          → user_state                */
+     k:<id>    skill level 0–2             → skills
+     s:<key>   scratchpad, log, …          → user_state
+     s:_time:<phase>  seconds on a phase   → user_state                */
   function flatten(s) {
     var f = {};
     Object.keys(s || {}).forEach(function (k) {
@@ -42,23 +45,33 @@
     });
     Object.keys((s && s._notes) || {}).forEach(function (id) { f['n:' + id] = s._notes[id]; });
     STATE_KEYS.forEach(function (k) { if (s && s[k] !== undefined) f['s:' + k] = s[k]; });
+    Object.keys((s && s._skills) || {}).forEach(function (id) { f['k:' + id] = +s._skills[id] || 0; });
+    Object.keys((s && s._time) || {}).forEach(function (p) { f['s:_time:' + p] = Math.round(+s._time[p] || 0); });
     return f;
   }
   function applyField(s, field, value) {
     var kind = field.slice(0, 2), id = field.slice(2);
     if (kind === 'p:') { if (value) s[id] = true; else delete s[id]; }
     else if (kind === 'n:') { s._notes = s._notes || {}; if (value) s._notes[id] = value; else delete s._notes[id]; }
+    else if (kind === 'k:') { s._skills = s._skills || {}; s._skills[id] = +value || 0; }
+    else if (kind === 's:' && id.indexOf('_time:') === 0) {
+      s._time = s._time || {};
+      // never move a phase's time backwards because another device saw less of it
+      s._time[id.slice(6)] = Math.max(+value || 0, +s._time[id.slice(6)] || 0);
+    }
     else if (kind === 's:') { if (value === null || value === undefined) delete s[id]; else s[id] = value; }
   }
   function rowToField(table, r) {
     if (table === 'progress') return ['p:' + r.item_id, !!r.done];
     if (table === 'notes') return ['n:' + r.item_id, r.body || ''];
+    if (table === 'skills') return ['k:' + r.skill_id, r.level];
     return ['s:' + r.key, r.value];
   }
   function fieldToRow(field, value, ts) {
     var kind = field.slice(0, 2), id = field.slice(2), at = new Date(ts).toISOString();
     if (kind === 'p:') return ['progress', { user_id: user.id, item_id: id, done: !!value, updated_at: at }];
     if (kind === 'n:') return ['notes', { user_id: user.id, item_id: id, body: value || '', updated_at: at }];
+    if (kind === 'k:') return ['skills', { user_id: user.id, skill_id: id, level: +value || 0, updated_at: at }];
     return ['user_state', { user_id: user.id, key: id, value: value === undefined ? null : value, updated_at: at }];
   }
 
@@ -114,8 +127,8 @@
   };
 
   function fetchAll() {
-    return Promise.all(['progress', 'notes', 'user_state'].map(function (t) {
-      var cols = t === 'progress' ? 'item_id,done,updated_at' : t === 'notes' ? 'item_id,body,updated_at' : 'key,value,updated_at';
+    return Promise.all(['progress', 'notes', 'skills', 'user_state'].map(function (t) {
+      var cols = { progress: 'item_id,done,updated_at', notes: 'item_id,body,updated_at', skills: 'skill_id,level,updated_at', user_state: 'key,value,updated_at' }[t];
       return sb.from(t).select(cols).then(function (r) {
         if (r.error) throw r.error;
         return r.data.map(function (row) { var f = rowToField(t, row); return { field: f[0], value: f[1], ts: Date.parse(row.updated_at) }; });
@@ -184,7 +197,7 @@
       (byTable[r[0]] = byTable[r[0]] || []).push(r[1]);
       sentAt[f] = meta[f];
     });
-    var conflict = { progress: 'user_id,item_id', notes: 'user_id,item_id', user_state: 'user_id,key' };
+    var conflict = { progress: 'user_id,item_id', notes: 'user_id,item_id', skills: 'user_id,skill_id', user_state: 'user_id,key' };
     Promise.all(Object.keys(byTable).map(function (t) {
       return sb.from(t).upsert(byTable[t], { onConflict: conflict[t] }).then(function (r) { if (r.error) throw r.error; });
     })).then(function () {

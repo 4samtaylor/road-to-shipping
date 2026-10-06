@@ -2022,3 +2022,113 @@ a.mi { text-decoration: none; }
   .cheat-row { grid-template-columns: 72px minmax(0, 1fr); }
   .loop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* ─── v14: cheat sheets, skill levels, time ─── */
+.cmd.term { cursor: pointer; text-decoration: underline dotted var(--blue); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.cmd.term:hover, .cmd.term:focus-visible { border-color: var(--blue); color: var(--blue); }
+
+.skill { display: inline-flex; gap: 4px; flex-wrap: wrap; }
+.skill button { font-family: var(--font-mono); font-size: 11px; padding: 6px 10px; border-radius: 3px; cursor: pointer;
+  background: none; border: 1px solid var(--border2); color: var(--muted2); transition: all .12s; }
+.skill button:hover { color: var(--text); }
+.skill button.lv1.on { color: var(--yellow); border-color: var(--yellow); background: var(--yellow-dim); }
+.skill button.lv2.on { color: var(--accent); border-color: var(--accent); background: var(--accent-dim); }
+.skill button.lv0.on { color: var(--text); border-color: var(--muted); }
+.skill--dots { gap: 3px; }
+.skill--dots button { width: 14px; height: 14px; padding: 0; border-radius: 50%; }
+.skill--dots button.lv0.on { background: var(--muted); border-color: var(--muted); }
+.skill--dots button.lv1.on { background: var(--yellow); }
+.skill--dots button.lv2.on { background: var(--accent); }
+
+.tp { position: fixed; z-index: 900; width: min(380px, calc(100vw - 24px)); background: var(--surface); border: 1px solid var(--border2);
+  border-top: 2px solid var(--blue); box-shadow: var(--shadow-modal); padding: 12px 14px 14px; font-family: var(--font-mono); }
+.tp[hidden] { display: none; }
+.tp.sheet { left: 0 !important; right: 0; bottom: 0; top: auto !important; width: 100%; max-height: 80dvh; overflow-y: auto;
+  padding-bottom: calc(18px + env(safe-area-inset-bottom)); border-left: 0; border-right: 0; }
+.tp-hd { display: flex; align-items: center; justify-content: space-between; }
+.tp-kind { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--blue); }
+.tp-term { font-size: 17px; color: var(--text); font-weight: 500; margin: 2px 0 8px; }
+.tp-what { font-size: 13.5px; line-height: 1.6; color: var(--text); }
+.tp-ex { margin: 10px 0 0; font-size: 12.5px; padding: 10px 12px; border: 1px solid var(--border); white-space: pre-wrap; }
+.tp-gotcha { margin-top: 10px; font-size: 12.5px; line-height: 1.55; color: var(--muted2); border-left: 2px solid var(--orange); padding-left: 10px; }
+.tp-gotcha b { color: var(--orange); font-weight: 500; }
+.tp-lbl { margin: 14px 0 6px; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted2); }
+.tp-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 14px; padding-top: 10px;
+  border-top: 1px solid var(--border); font-size: 11px; color: var(--muted); }
+.tp-all { font-family: var(--font-mono); font-size: 11px; padding: 6px 10px; cursor: pointer; background: none; color: var(--blue);
+  border: 1px solid var(--blue-line-strong); border-radius: 3px; white-space: nowrap; }
+
+.cs-count { font-size: 11px; color: var(--muted2); margin-bottom: 10px; }
+.cs-kind { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); margin: 14px 0 6px; }
+.cs-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.cs-term { justify-self: start; font-family: var(--font-mono); font-size: 12.5px; color: var(--accent); background: none; border: 0; padding: 0;
+  cursor: pointer; text-align: left; text-decoration: underline dotted var(--accent-line-strong); text-underline-offset: 3px; }
+.cs-what { grid-column: 1 / -1; font-size: 11.5px; line-height: 1.55; color: var(--muted2); }
+.cs-empty { font-size: 12px; color: var(--muted); }
+.dk-sheet .cs-item { padding: 7px 0; }
+
+.ph-time { margin: -12px 0 22px; font-size: 11.5px; color: var(--muted2); cursor: pointer; }
+.ph-time b { color: var(--text); font-weight: 500; }
+.ph-time.done { color: var(--accent); }
+.ph-time.done b { color: var(--accent); }
+.tb-time { background: none; border: 0; cursor: pointer; font-family: var(--font-mono); padding: 0 4px; }
+.tb-time:hover b { color: var(--accent); }
+.stage-nav .stage-sheet { color: var(--blue); border-color: var(--blue-line-strong); }
+.stage-nav .stage-sheet:hover { color: var(--blue); border-color: var(--blue); background: var(--blue-dim); }
+.stage-nav .stage-help { margin-left: 0; }
+.stage-nav .stage-sheet { margin-left: auto; }
+.dk-session { display: block; width: 100%; text-align: left; cursor: pointer; font-family: var(--font-mono); }
+.dk-session:hover { border-color: var(--border2); }
+
+.tm-sec { margin-bottom: 20px; }
+.tm-lbl { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted2); margin-bottom: 8px; }
+.tm-row { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 12.5px; color: var(--text); }
+.tm-row b { font-weight: 500; white-space: nowrap; }
+.tm-row.done { color: var(--accent); }
+.tm-total { border-bottom: 0; color: var(--muted2); }
+.tm-empty, .tm-note { font-size: 12px; line-height: 1.6; color: var(--muted); }
+
+/* desktop: the side panel with the cheat sheet shows from 1200px */
+@media (min-width: 1200px) and (max-width: 1420px) {
+  :root { --rail-w: 236px; --dock-w: 300px; }
+  body.has-dock .shell { grid-template-columns: var(--rail-w) minmax(0, 1fr) var(--dock-w); }
+  body.has-dock .dock { display: block; }
+}
+@media (max-width: 860px) {
+  .tb-time { display: none; }
+  .ph-time { font-size: 12.5px; margin-top: -14px; }
+  .cs-term { font-size: 14px; }
+  .cs-what, .tm-row { font-size: 13px; }
+  .tp-what { font-size: 14px; }
+}
+
+/* desktop: a size up from the original dense layout */
+@media (min-width: 861px) {
+  .prose, .stuck-a, .quiz-a, .goals li, .cp-item, .spec-item li { font-size: 14px; }
+  .task-text { font-size: 15px; }
+  .task-note, .stuck-q { font-size: 13px; }
+  .quiz-q { font-size: 14.5px; }
+  .prompt-text { font-size: 13.5px; }
+  .section-block-header { font-size: 11.5px; padding: 12px 18px; }
+  .badge, .task-tag { font-size: 10px; }
+  .eyebrow, .goals-lbl, .phase-tag, .sess-k, .prompt-label { font-size: 10.5px; }
+  .phase-title { font-size: 19px; }
+  .phase-week, .task-time, .stage-size, .ph-est { font-size: 11.5px; }
+  .stage-name { font-size: 18px; }
+  .stage-nav button { font-size: 12px; padding: 7px 12px; }
+  .fs-10 { font-size: 11.5px !important; }
+  .fs-11 { font-size: 12.5px !important; }
+  .fs-11-5, .fs-12 { font-size: 13px !important; }
+  .fs-12-5 { font-size: 14px !important; }
+  pre { font-size: 13.5px; }
+  .rl-item { font-size: 12.5px; }
+  .tb-brand { font-size: 14px; }
+  .tb-stat { font-size: 11px; }
+  .main { max-width: 1200px; }
+}
+.tp, .cs-item, .tm-row { font-variant-ligatures: none; }
+.sheet-drawer .help-kick { color: var(--blue); }
+@media (max-width: 860px) {
+  .skill--dots { gap: 6px; }
+  .skill--dots button { width: 22px; height: 22px; }
+}

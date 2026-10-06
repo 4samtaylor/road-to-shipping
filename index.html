@@ -15,10 +15,11 @@
 <body>
 <header class="tb">
   <button class="icb" id="tb-rail" title="Toggle navigation (Esc closes)">☰</button>
-  <div class="tb-brand">Road to Shipping <span>/ v13</span></div>
+  <div class="tb-brand">Road to Shipping <span>/ v14</span></div>
   <div class="tb-seg" id="tb-seg"></div>
   <div class="tb-stat" id="tb-count"></div>
   <div class="tb-stat est" id="tb-est"></div>
+  <button class="tb-stat tb-time" id="tb-time" data-time title="Where your time went"></button>
   <div class="tb-sync" id="tb-sync" title="GitHub sync status"></div>
   <button class="tb-btn" id="tb-edit" title="Edit text and tasks in place"><span class="lbl">Edit</span> <kbd>E</kbd></button>
   <button class="tb-btn" id="tb-search" aria-label="Search"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg><span class="lbl">Search</span> <kbd>⌘K</kbd></button>
@@ -31,6 +32,7 @@
       <button class="mi" id="m-collapse">Collapse all phases</button>
       <button class="mi" id="m-solo">Focus mode: one phase open <span>on</span></button>
       <button class="mi mobile-only" id="m-theme">Switch theme <span>◑</span></button>
+      <button class="mi" data-time>Time spent <span>by phase</span></button>
       <div class="hr-thin"></div>
       <div class="tb-menu-lbl">Content</div>
       <button class="mi" id="m-edit">Edit mode <span>e</span></button>
