@@ -23,6 +23,7 @@ A C game-dev learning roadmap (13 phases, C → raylib prototype → Godot hando
 | v13: Step 2 "show less", Step 3 curriculum, phone polish | Done and live (PRs #1–#4, #6 merged Oct 6 2026) |
 | Android app (Capacitor) | PR #5 open, **paused**: build needs JDK 21 (Android Studio ships Java 25; Gradle 8.14 needs ≤24). Next: install Temurin 21, build, test on emulator. Don't merge #5 until built: it also switches Pages to publish `www/` |
 | v14: cheat sheets, skill levels, time tracking, larger desktop | Done (see "How v14 works"). Migration `skills_and_admin_views` applied; file in `supabase/migrations/` |
+| v15: dashboard home, section pages, explainers, floating windows, Ask Claude | Done (see "How v15 works") |
 | Admin views | `admin.user_overview` (one row per user) and `admin.user_activity` (every row, newest first). Table Editor → schema dropdown → `admin` |
 | Supabase auth settings (confirm email off, min 8, sign-ups off) | Done by Sam |
 | Custom SMTP | Skipped on purpose (password sign-in doesn't need it) |
@@ -81,6 +82,13 @@ privacy.html, sw.js, manifest.webmanifest, icons/, setup.ps1, README.md
 - **Skill levels** (`state._skills`, 0–2) sync as `k:<id>` fields to the `skills` table.
 - **Time:** counted every 5 s while the tab is visible, input happened in the last 5 min, and a phase is open/in view. `state._time[phase]` syncs as `user_state` rows `_time:<phase>` (merge keeps the max, so time never goes backwards). `state._session` (device only) resets after a 30-min gap. Saved to the account about once a minute.
 - **Migrations:** new DB changes go in `supabase/migrations/` with the version the connector reports.
+
+## How v15 works
+
+- **Views:** the app opens on a dashboard (`#dash`, built by `renderDash()`); each section is its own page at `#/<id>` (`navigate()` / `showView()`, history-backed, so the browser Back button works). Only `.is-current` is shown; CSS keys off `body.view-dash` / `body.view-section`. `goTo()` and `revealTask()` route through `navigate()`/`ensureSection()`. Focus mode and expand/collapse are gone.
+- **Explainers:** glossary entries carry `def`, `model`, `game` (+ `gameCode`) for three tabs. The last tab used is remembered per device (`rts_explain_tab`). Skill dots live only on cheat-sheet lists now.
+- **Floating window** (`#fw`, `fwOpen/fwBack/fwClose`) is the one popup for explainers, whole cheat sheets and the time breakdown, on every screen size. ✕, Back and the scrim have their own listeners. The Stuck? help drawer is unchanged.
+- **Ask Claude** is off by default (menu → Ask Claude buttons; `rts_ask_claude` in localStorage). It links to `https://claude.ai/new?q=<prompt>`, so it uses the person's own Claude plan. An in-app chat would need an API key billed per use; a Claude Pro subscription can't power it.
 
 ## Gotchas learned
 

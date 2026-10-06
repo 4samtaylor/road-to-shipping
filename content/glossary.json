@@ -1,113 +1,1427 @@
 {
-  "_about": "Per-phase cheat sheet. Each entry's id is also its skill id in the skills table, so never change or reuse an id. aliases = exact inline-code texts that link to this entry; match = regex tested against inline code.",
-  "kinds": { "syntax": "Syntax", "function": "Functions", "type": "Types", "concept": "Concepts", "tool": "Tools & commands" },
+  "_about": "Per-phase cheat sheet. Each entry's id is also its skill id in the skills table, so never change or reuse an id. what = one-line summary; def / model / game (+gameCode) = the three explainer tabs; aliases = exact inline-code texts that link to this entry; match = regex tested against inline code.",
+  "kinds": {
+    "syntax": "Syntax",
+    "function": "Functions",
+    "type": "Types",
+    "concept": "Concepts",
+    "tool": "Tools & commands"
+  },
   "phases": {
     "phase1": [
-      { "id": "cl", "term": "cl", "kind": "tool", "what": "The MSVC compiler. Turns a .c file into an .exe, or stops and prints errors.", "example": "cl hello_world.c", "aliases": ["cl"], "match": "^cl\\s" },
-      { "id": "cd-dir", "term": "cd / dir", "kind": "tool", "what": "cd moves the terminal into a folder; dir lists what's in it. Be in your repo folder before compiling.", "example": "cd C:\\Users\\4samt\\Documents\\Dev\\game-dev-exercises", "aliases": ["cd", "dir"] },
-      { "id": "include", "term": "#include", "kind": "syntax", "what": "Pastes a header in before compiling, so you can use what it declares.", "example": "#include <stdio.h>   // printf, scanf", "aliases": ["#include"], "match": "^#include" },
-      { "id": "main", "term": "main()", "kind": "concept", "what": "Where every C program starts. Its return value goes back to whatever ran it.", "example": "int main(void) {\n    return 0;\n}", "aliases": ["main", "main()"] },
-      { "id": "printf", "term": "printf", "kind": "function", "what": "Prints text. % slots are filled, in order, by the values after the comma.", "example": "printf(\"Score: %d\\n\", score);", "gotcha": "Never adds a newline for you.", "aliases": ["printf"], "match": "^printf\\(" },
-      { "id": "escapes", "term": "\\n  \\r  \\t  \\\\", "kind": "syntax", "what": "Escape sequences inside strings: newline, back to start of line, tab, one backslash.", "example": "printf(\"a\\tb\\n\");", "gotcha": "Only work inside the quotes.", "aliases": ["\\n", "\\r", "\\t", "\\\\"] },
-      { "id": "fmt-d", "term": "%d  %%", "kind": "syntax", "what": "%d is a whole-number slot in printf. %% prints one percent sign.", "example": "printf(\"%d%%\\n\", 50);   // 50%", "aliases": ["%d", "%%", "%"] },
-      { "id": "return0", "term": "return 0;", "kind": "syntax", "what": "Ends main and tells the OS the program succeeded. Anything else means failure.", "example": "return 0;", "aliases": ["return 0;", "return 0", "return"] },
-      { "id": "semicolon", "term": ";", "kind": "syntax", "what": "Ends every statement. A missing one is the most common first error.", "example": "int x = 5;" },
-      { "id": "compile-error", "term": "Compiler error vs warning", "kind": "concept", "what": "An error stops the build. A warning (like C4244) builds anyway unless /WX turns it into an error.", "example": "C4244: possible loss of data", "aliases": ["C4244: possible loss of data"] },
-      { "id": "build-bat", "term": "build.bat", "kind": "tool", "what": "A batch file holding your compile command, flags and files. Type build to run it.", "example": "set FLAGS=/W4 /WX /Zi /Od\ncl %FLAGS% main.c /Fe:game.exe", "aliases": ["build.bat", "build", "set SOURCES="] },
-      { "id": "msvc-flags", "term": "/W4  /WX  /Zi  /Od", "kind": "tool", "what": "Most warnings · warnings are errors · debug info (PDB) · no optimisation while developing.", "example": "cl /W4 /WX /Zi /Od main.c", "aliases": ["/W4", "/WX", "/Zi", "/Od", "/W4 /WX"] },
-      { "id": "errorlevel", "term": "%ERRORLEVEL%", "kind": "tool", "what": "The exit code of the last command. 0 means it worked; build.bat checks it.", "example": "if %ERRORLEVEL% neq 0 exit /b 1", "aliases": ["%ERRORLEVEL%", "if %ERRORLEVEL% neq 0"] },
-      { "id": "git-basics", "term": "git add · commit · push", "kind": "tool", "what": "Stage changes, save a labelled snapshot, send it to GitHub.", "example": "git add .\ngit commit -m \"feat: hello world\"\ngit push", "aliases": ["git push", "git add .", "git add", "git commit"], "match": "^git (add|commit|push)" }
+      {
+        "id": "cl",
+        "term": "cl",
+        "kind": "tool",
+        "what": "The MSVC compiler. Turns a .c file into an .exe, or stops and prints errors.",
+        "example": "cl hello_world.c",
+        "aliases": [
+          "cl"
+        ],
+        "match": "^cl\\s",
+        "def": "cl.exe is Microsoft's C/C++ compiler driver. It preprocesses, compiles each source file to an object file (.obj), then invokes the linker to produce an executable.",
+        "model": "A strict translator at a passport desk: hand it your text, and it either stamps out a working program or hands it back with a list of everything wrong.",
+        "game": "Every version of the ASCII Runner goes through cl. When you add runner.c in Phase 4.5, cl compiles both files and links them into one runner.exe.",
+        "gameCode": "cl main.c runner.c /Fe:runner.exe"
+      },
+      {
+        "id": "cd-dir",
+        "term": "cd / dir",
+        "kind": "tool",
+        "what": "cd moves the terminal into a folder; dir lists what's in it. Be in your repo folder before compiling.",
+        "example": "cd C:\\Users\\4samt\\Documents\\Dev\\game-dev-exercises",
+        "aliases": [
+          "cd",
+          "dir"
+        ],
+        "def": "cd (change directory) sets the shell's current working directory; dir lists the files and folders in it. Commands like cl look for files relative to that directory.",
+        "model": "You're standing in one room of a house. cd walks you to another room; dir looks around the room you're in.",
+        "game": "If cl says it can't find guess.c, you're in the wrong room. dir shows what's here; cd into your game-dev-exercises folder first.",
+        "gameCode": "cd game-dev-exercises\ndir *.c"
+      },
+      {
+        "id": "include",
+        "term": "#include",
+        "kind": "syntax",
+        "what": "Pastes a header in before compiling, so you can use what it declares.",
+        "example": "#include <stdio.h>   // printf, scanf",
+        "aliases": [
+          "#include"
+        ],
+        "match": "^#include",
+        "def": "#include is a preprocessor directive that inserts the contents of another file — usually a header of declarations — at that point before compilation.",
+        "model": "Borrowing a toolbox. The toolbox (stdio.h) doesn't do any work itself; it tells the compiler which tools exist and how to hold them.",
+        "game": "The runner needs three toolboxes: stdio.h for printf, conio.h for keys and windows.h for Sleep. Leave one out and those names don't exist.",
+        "gameCode": "#include <stdio.h>\n#include <conio.h>\n#include <windows.h>"
+      },
+      {
+        "id": "main",
+        "term": "main()",
+        "kind": "concept",
+        "what": "Where every C program starts. Its return value goes back to whatever ran it.",
+        "example": "int main(void) {\n    return 0;\n}",
+        "aliases": [
+          "main",
+          "main()"
+        ],
+        "def": "main is the function where a hosted C program starts executing. It returns an int exit status to the environment that ran it.",
+        "model": "The front door. However big the program gets, every run walks in through main and leaves through its return.",
+        "game": "In the runner, main is just the frame loop. Everything else — reset, update, render — is a function main calls.",
+        "gameCode": "int main(void) {\n    for (;;) { /* input, update, render, wait */ }\n    return 0;\n}"
+      },
+      {
+        "id": "printf",
+        "term": "printf",
+        "kind": "function",
+        "what": "Prints text. % slots are filled, in order, by the values after the comma.",
+        "example": "printf(\"Score: %d\\n\", score);",
+        "gotcha": "Never adds a newline for you.",
+        "aliases": [
+          "printf"
+        ],
+        "match": "^printf\\(",
+        "def": "printf writes formatted output to standard output. Its first argument is a format string; each conversion specification (%d, %s…) consumes the next argument.",
+        "model": "A fill-in-the-blanks form. The quotes are the form, the % signs are the blanks, and the values after the comma fill them in order.",
+        "game": "The runner's whole renderer is one printf: the lane and the score, drawn over the previous frame.",
+        "gameCode": "printf(\"\\r%s  score %-4d\", lane, score);"
+      },
+      {
+        "id": "escapes",
+        "term": "\\n  \\r  \\t  \\\\",
+        "kind": "syntax",
+        "what": "Escape sequences inside strings: newline, back to start of line, tab, one backslash.",
+        "example": "printf(\"a\\tb\\n\");",
+        "gotcha": "Only work inside the quotes.",
+        "aliases": [
+          "\\n",
+          "\\r",
+          "\\t",
+          "\\\\"
+        ],
+        "def": "Escape sequences are backslash-prefixed character codes inside string and character literals that represent characters you can't type directly, like newline (\\n) or carriage return (\\r).",
+        "model": "A backslash means \"the next character is a control, not a letter\" — like a shift key for meanings.",
+        "game": "\\n moves down a line, which would make the runner scroll. \\r jumps back to the start of the same line so the next frame paints over the last one.",
+        "gameCode": "printf(\"\\r%s\", lane);   // redraw in place, no \\n"
+      },
+      {
+        "id": "fmt-d",
+        "term": "%d  %%",
+        "kind": "syntax",
+        "what": "%d is a whole-number slot in printf. %% prints one percent sign.",
+        "example": "printf(\"%d%%\\n\", 50);   // 50%",
+        "aliases": [
+          "%d",
+          "%%",
+          "%"
+        ],
+        "def": "%d is the printf conversion for a signed int in decimal. %% is the conversion that outputs a literal percent sign.",
+        "model": "%d is a slot shaped for whole numbers. %% is how you write a percent sign on a form where % already means \"blank goes here\".",
+        "game": "Score and frame count are ints, so they print with %d. A progress readout like 75% needs %d%%.",
+        "gameCode": "printf(\"Score: %d  (%d%% of best)\\n\", score, score * 100 / best);"
+      },
+      {
+        "id": "return0",
+        "term": "return 0;",
+        "kind": "syntax",
+        "what": "Ends main and tells the OS the program succeeded. Anything else means failure.",
+        "example": "return 0;",
+        "aliases": [
+          "return 0;",
+          "return 0",
+          "return"
+        ],
+        "def": "return ends the current function and hands a value back to its caller. Returning 0 from main reports successful termination to the host environment.",
+        "model": "Handing in your answer and leaving the room. From main, 0 means \"all good\", anything else means \"something went wrong\".",
+        "game": "When the player presses Q the runner leaves the loop, prints the final score, and returns 0 — and build.bat-style scripts can check that.",
+        "gameCode": "printf(\"Final score: %d\\n\", score);\nreturn 0;"
+      },
+      {
+        "id": "semicolon",
+        "term": ";",
+        "kind": "syntax",
+        "what": "Ends every statement. A missing one is the most common first error.",
+        "example": "int x = 5;",
+        "def": "In C a semicolon terminates an expression statement or declaration. Control structures like if and while are not followed by one unless you mean an empty statement.",
+        "model": "The full stop at the end of a sentence. The compiler reads until it finds one.",
+        "game": "while (_kbhit()); with a stray semicolon would loop on nothing forever, draining no keys. One character, frozen game.",
+        "gameCode": "while (_kbhit()) key = _getch();   // no ; after the )"
+      },
+      {
+        "id": "compile-error",
+        "term": "Compiler error vs warning",
+        "kind": "concept",
+        "what": "An error stops the build. A warning (like C4244) builds anyway unless /WX turns it into an error.",
+        "example": "C4244: possible loss of data",
+        "aliases": [
+          "C4244: possible loss of data"
+        ],
+        "def": "A compiler error is a diagnostic that prevents an object file from being produced. A warning is a diagnostic that still allows compilation, unless /WX treats warnings as errors.",
+        "model": "An error is a locked door. A warning is a sign on an open door saying \"are you sure?\" — /WX locks that door too.",
+        "game": "Storing a float position into an int lane column raises C4244. Under /WX the runner won't build until you cast on purpose.",
+        "gameCode": "int col = (int)x;   // the cast clears C4244"
+      },
+      {
+        "id": "build-bat",
+        "term": "build.bat",
+        "kind": "tool",
+        "what": "A batch file holding your compile command, flags and files. Type build to run it.",
+        "example": "set FLAGS=/W4 /WX /Zi /Od\ncl %FLAGS% main.c /Fe:game.exe",
+        "aliases": [
+          "build.bat",
+          "build",
+          "set SOURCES="
+        ],
+        "def": "A batch file (.bat) is a Windows script: a text file of shell commands run in order. build.bat holds the project's compiler flags and source list so one command builds everything.",
+        "model": "A recipe card for your game: ingredients (the .c files), oven settings (the flags), and one instruction — bake.",
+        "game": "Phase 4.5 adds runner.c to the SOURCES line. Nothing else changes; you still type build.",
+        "gameCode": "set SOURCES=main.c runner.c\ncl %FLAGS% %SOURCES% /Fe:runner.exe"
+      },
+      {
+        "id": "msvc-flags",
+        "term": "/W4  /WX  /Zi  /Od",
+        "kind": "tool",
+        "what": "Most warnings · warnings are errors · debug info (PDB) · no optimisation while developing.",
+        "example": "cl /W4 /WX /Zi /Od main.c",
+        "aliases": [
+          "/W4",
+          "/WX",
+          "/Zi",
+          "/Od",
+          "/W4 /WX"
+        ],
+        "def": "/W4 sets the warning level to 4, /WX treats warnings as errors, /Zi emits debug information to a PDB, and /Od disables optimisation.",
+        "model": "Turning the smoke detectors to maximum sensitivity, making every alarm stop the build, and leaving a map for the debugger.",
+        "game": "/Zi is what lets you set a breakpoint in runner_update and watch r->score change. /Od keeps the code matching your lines.",
+        "gameCode": "set FLAGS=/W4 /WX /Zi /Od"
+      },
+      {
+        "id": "errorlevel",
+        "term": "%ERRORLEVEL%",
+        "kind": "tool",
+        "what": "The exit code of the last command. 0 means it worked; build.bat checks it.",
+        "example": "if %ERRORLEVEL% neq 0 exit /b 1",
+        "aliases": [
+          "%ERRORLEVEL%",
+          "if %ERRORLEVEL% neq 0"
+        ],
+        "def": "%ERRORLEVEL% is a cmd.exe variable holding the exit code of the most recently run program. By convention, 0 means success.",
+        "model": "The thumbs up or thumbs down the last program gave as it left.",
+        "game": "build.bat checks it right after cl, so a failed build stops before you accidentally run last week's runner.exe.",
+        "gameCode": "if %ERRORLEVEL% neq 0 exit /b 1"
+      },
+      {
+        "id": "git-basics",
+        "term": "git add · commit · push",
+        "kind": "tool",
+        "what": "Stage changes, save a labelled snapshot, send it to GitHub.",
+        "example": "git add .\ngit commit -m \"feat: hello world\"\ngit push",
+        "aliases": [
+          "git push",
+          "git add .",
+          "git add",
+          "git commit"
+        ],
+        "match": "^git (add|commit|push)",
+        "def": "git add stages changes for the next commit, git commit records a snapshot of the staged changes with a message, and git push uploads local commits to a remote repository.",
+        "model": "Choose what goes in the photo, take the photo with a caption, then post it to the shared album.",
+        "game": "After the runner's restart works: add the files, commit \"feat: restart from game over\", push so your partner can play it.",
+        "gameCode": "git add .\ngit commit -m \"feat: restart from game over\"\ngit push"
+      }
     ],
     "phase2": [
-      { "id": "int", "term": "int", "kind": "type", "what": "Whole numbers, about ±2.1 billion. Health, score, frame count.", "example": "int score = 0;", "aliases": ["int"] },
-      { "id": "float", "term": "float", "kind": "type", "what": "Decimal numbers, ~7 digits. Positions, speed, timers. Write the f suffix.", "example": "float speed = 2.5f;", "gotcha": "2.5 without f is a double.", "aliases": ["float", "2.5f", "f"] },
-      { "id": "double", "term": "double", "kind": "type", "what": "Decimal with ~15 digits. Read with %lf in scanf.", "example": "double pi = 3.14159265358979;", "aliases": ["double", "%lf"] },
-      { "id": "char", "term": "char", "kind": "type", "what": "One byte holding a character's ASCII number. Single quotes.", "example": "char key = 'q';   // 113", "aliases": ["char", "'A'", "(char)"] },
-      { "id": "bool", "term": "bool", "kind": "type", "what": "true or false. Needs #include <stdbool.h>. Prints as 1 or 0 with %d.", "example": "bool alive = true;", "aliases": ["bool"] },
-      { "id": "fmt-specifiers", "term": "%f  %c  %.2f  %s", "kind": "syntax", "what": "printf/scanf slots: float, char, float to 2 places, string. Must match the type.", "example": "printf(\"%.2f\\n\", 2.5f);   // 2.50", "aliases": ["%f", "%c", "%s", "%.2f"] },
-      { "id": "scanf", "term": "scanf", "kind": "function", "what": "Reads typed input into variables. Waits for Enter.", "example": "scanf(\" %c\", &input);", "gotcha": "The space before %c skips the leftover Enter. Returns how many values it read.", "aliases": ["scanf"], "match": "^scanf\\(" },
-      { "id": "address-of", "term": "&variable", "kind": "syntax", "what": "The address of a variable, so a function can write into it.", "example": "scanf(\"%d\", &guess);", "aliases": ["&", "&x"] },
-      { "id": "if-else", "term": "if / else if / else", "kind": "syntax", "what": "Runs the first block whose condition is true; the rest are skipped.", "example": "if (hp <= 0) { alive = 0; }\nelse if (hp < 25) { warn(); }", "aliases": ["if"], "match": "^if \\(" },
-      { "id": "eq-assign", "term": "==  vs  =", "kind": "syntax", "what": "== compares and gives 1 or 0. = assigns and gives the assigned value.", "example": "if (input == 'q')   // not input = 'q'", "gotcha": "/W4 warns with C4706 inside a condition.", "aliases": ["==", "=", "C4706"] },
-      { "id": "while", "term": "while", "kind": "syntax", "what": "Repeat while the condition is true. For loops that wait for something to change.", "example": "while (input != 'q') { ... }", "aliases": ["while", "while (running)"], "match": "^while \\(" },
-      { "id": "for", "term": "for", "kind": "syntax", "what": "Repeat a known number of times: start; keep going while; step.", "example": "for (i = 0; i < 10; i++) { ... }", "gotcha": "<= runs one extra time.", "aliases": ["for"], "match": "^for \\(" },
-      { "id": "do-while", "term": "do { } while", "kind": "syntax", "what": "A loop that always runs at least once. Good for \"play, then ask again\".", "example": "do { play(); } while (again == 'y');", "match": "^do \\{" },
-      { "id": "switch", "term": "switch / case", "kind": "syntax", "what": "Picks a branch by value. Cleaner than many ifs for menus and states.", "example": "switch (choice) {\ncase 1: easy(); break;\ndefault: break;\n}", "gotcha": "Forget break and it falls into the next case.", "aliases": ["switch", "break;", "break"] },
-      { "id": "int-division", "term": "Integer division and %", "kind": "concept", "what": "int / int drops the fraction (7 / 2 is 3). % gives the remainder (7 % 2 is 1).", "example": "float half = (float)7 / 2;   // 3.5", "aliases": ["7 / 2", "7 % 2", "1 / 2", "health / max_health"] },
-      { "id": "cast", "term": "(type) cast", "kind": "syntax", "what": "Converts a value on purpose. float → int truncates toward zero.", "example": "int n = (int)1.8f;   // 1", "aliases": ["(int)", "(float)"] },
-      { "id": "rand", "term": "rand() / srand()", "kind": "function", "what": "rand() gives a pseudo-random number; seed it once with srand(time(NULL)).", "example": "srand((unsigned int)time(NULL));\nint n = rand() % 100 + 1;   // 1–100", "aliases": ["rand()", "srand", "srand(time(NULL))", "time(NULL)", "rand() % 100", "rand() % 100 + 1"], "match": "^s?rand" },
-      { "id": "sizeof", "term": "sizeof", "kind": "syntax", "what": "Size in bytes, worked out by the compiler. Returns size_t: cast before %d.", "example": "printf(\"%d\\n\", (int)sizeof(int));   // 4", "aliases": ["sizeof", "size_t"], "match": "^sizeof" }
+      {
+        "id": "int",
+        "term": "int",
+        "kind": "type",
+        "what": "Whole numbers, about ±2.1 billion. Health, score, frame count.",
+        "example": "int score = 0;",
+        "aliases": [
+          "int"
+        ],
+        "def": "int is the basic signed integer type. On MSVC for x86/x64 it is 32 bits, ranging from −2,147,483,648 to 2,147,483,647.",
+        "model": "A box that only holds whole numbers — no fractions get in.",
+        "game": "Score, frame count, guess count, lives: things you count are ints.",
+        "gameCode": "int score = 0;\nint frame = 0;"
+      },
+      {
+        "id": "float",
+        "term": "float",
+        "kind": "type",
+        "what": "Decimal numbers, ~7 digits. Positions, speed, timers. Write the f suffix.",
+        "example": "float speed = 2.5f;",
+        "gotcha": "2.5 without f is a double.",
+        "aliases": [
+          "float",
+          "2.5f",
+          "f"
+        ],
+        "def": "float is a single-precision binary floating-point type, about 7 significant decimal digits. A literal with an f suffix (2.5f) has type float.",
+        "model": "A box for measurements, not counts. Precise enough for positions on a screen, not for money.",
+        "game": "In the window version, the player's x and y and its speed are floats so it can move 2.7 pixels a frame without losing the .7.",
+        "gameCode": "float x = 100.0f;\nfloat speed = 2.5f;"
+      },
+      {
+        "id": "double",
+        "term": "double",
+        "kind": "type",
+        "what": "Decimal with ~15 digits. Read with %lf in scanf.",
+        "example": "double pi = 3.14159265358979;",
+        "aliases": [
+          "double",
+          "%lf"
+        ],
+        "def": "double is a double-precision floating-point type, about 15–16 significant digits. Unsuffixed decimal literals like 1.8 are doubles.",
+        "model": "A float with a longer ruler. More digits, twice the memory.",
+        "game": "You'll rarely need it in this game. It mostly shows up by accident: writing 1.8 instead of 1.8f makes a double and triggers C4305.",
+        "gameCode": "float jump = 1.8f;   // not 1.8"
+      },
+      {
+        "id": "char",
+        "term": "char",
+        "kind": "type",
+        "what": "One byte holding a character's ASCII number. Single quotes.",
+        "example": "char key = 'q';   // 113",
+        "aliases": [
+          "char",
+          "'A'",
+          "(char)"
+        ],
+        "def": "char is the smallest addressable integer type, one byte. A character literal like 'A' is that character's code (65 in ASCII).",
+        "model": "A number wearing a letter costume. %c shows the costume, %d shows the number.",
+        "game": "The runner's lane is a row of chars: '.' for road, '#' for an obstacle, 'A' for the player, 'c' when ducking.",
+        "gameCode": "lane[PLAYER_COL] = ducking ? 'c' : 'A';"
+      },
+      {
+        "id": "bool",
+        "term": "bool",
+        "kind": "type",
+        "what": "true or false. Needs #include <stdbool.h>. Prints as 1 or 0 with %d.",
+        "example": "bool alive = true;",
+        "aliases": [
+          "bool"
+        ],
+        "def": "bool, from <stdbool.h>, is a type whose values are true (1) and false (0). In C99+, it's a macro for the built-in _Bool type.",
+        "model": "A light switch: on or off, nothing in between.",
+        "game": "Player.alive is a bool. When health hits 0, alive becomes false and the game moves to GAME_OVER.",
+        "gameCode": "#include <stdbool.h>\nbool alive = true;"
+      },
+      {
+        "id": "fmt-specifiers",
+        "term": "%f  %c  %.2f  %s",
+        "kind": "syntax",
+        "what": "printf/scanf slots: float, char, float to 2 places, string. Must match the type.",
+        "example": "printf(\"%.2f\\n\", 2.5f);   // 2.50",
+        "aliases": [
+          "%f",
+          "%c",
+          "%s",
+          "%.2f"
+        ],
+        "def": "Conversion specifications tell printf/scanf the type of each argument: %f for float/double (printf), %c for a char, %s for a string, and precision like %.2f for decimal places.",
+        "model": "Differently shaped slots on the form. A string won't fit in a %d slot, and forcing it prints nonsense.",
+        "game": "The window debug readout shows position with %.1f and the player's name with %s.",
+        "gameCode": "printf(\"%s at x=%.1f\\n\", name, x);"
+      },
+      {
+        "id": "scanf",
+        "term": "scanf",
+        "kind": "function",
+        "what": "Reads typed input into variables. Waits for Enter.",
+        "example": "scanf(\" %c\", &input);",
+        "gotcha": "The space before %c skips the leftover Enter. Returns how many values it read.",
+        "aliases": [
+          "scanf"
+        ],
+        "match": "^scanf\\(",
+        "def": "scanf reads formatted input from standard input according to a format string, storing results through pointer arguments. It returns the number of items successfully assigned.",
+        "model": "A clerk who waits at the counter until you press Enter, then files what you typed into the boxes you pointed at.",
+        "game": "The guessing game reads each guess with scanf. Phase 4.5 replaces it, because a game can't stop and wait for Enter.",
+        "gameCode": "if (scanf(\"%d\", &guess) != 1) { /* not a number */ }"
+      },
+      {
+        "id": "address-of",
+        "term": "&variable",
+        "kind": "syntax",
+        "what": "The address of a variable, so a function can write into it.",
+        "example": "scanf(\"%d\", &guess);",
+        "aliases": [
+          "&",
+          "&x"
+        ],
+        "def": "The unary & operator yields the address of its operand — a pointer to it.",
+        "model": "Writing down where a box lives instead of what's in it, so someone else can come and fill it.",
+        "game": "scanf needs &guess because it has to put your number into the guess box in main, not into a copy.",
+        "gameCode": "scanf(\"%d\", &guess);"
+      },
+      {
+        "id": "if-else",
+        "term": "if / else if / else",
+        "kind": "syntax",
+        "what": "Runs the first block whose condition is true; the rest are skipped.",
+        "example": "if (hp <= 0) { alive = 0; }\nelse if (hp < 25) { warn(); }",
+        "aliases": [
+          "if"
+        ],
+        "match": "^if \\(",
+        "def": "if evaluates a controlling expression and executes its statement when the result is non-zero; else if and else chain alternatives that are tested in order.",
+        "model": "A row of gates. You go through the first one that's open and skip all the rest.",
+        "game": "The guessing game's whole personality: too high, too low, or correct — exactly one message per guess.",
+        "gameCode": "if (guess > secret)      printf(\"Lower\\n\");\nelse if (guess < secret) printf(\"Higher\\n\");\nelse                     won = 1;"
+      },
+      {
+        "id": "eq-assign",
+        "term": "==  vs  =",
+        "kind": "syntax",
+        "what": "== compares and gives 1 or 0. = assigns and gives the assigned value.",
+        "example": "if (input == 'q')   // not input = 'q'",
+        "gotcha": "/W4 warns with C4706 inside a condition.",
+        "aliases": [
+          "==",
+          "=",
+          "C4706"
+        ],
+        "def": "== is the equality operator and yields 1 or 0. = is the assignment operator; the expression's value is the value assigned.",
+        "model": "== asks a question. = gives an order. Mixing them up asks nothing and quietly changes your data.",
+        "game": "if (health = 0) sets health to zero and never runs the block — the player can't die and also has no health.",
+        "gameCode": "if (health == 0) alive = false;"
+      },
+      {
+        "id": "while",
+        "term": "while",
+        "kind": "syntax",
+        "what": "Repeat while the condition is true. For loops that wait for something to change.",
+        "example": "while (input != 'q') { ... }",
+        "aliases": [
+          "while",
+          "while (running)"
+        ],
+        "match": "^while \\(",
+        "def": "while repeatedly executes its body as long as its controlling expression evaluates to non-zero, testing before each iteration.",
+        "model": "\"Keep going until something changes.\" You don't know how many times; you know what makes it stop.",
+        "game": "The frame loop is a while: keep drawing frames until the player quits.",
+        "gameCode": "while (running) { update(); render(); }"
+      },
+      {
+        "id": "for",
+        "term": "for",
+        "kind": "syntax",
+        "what": "Repeat a known number of times: start; keep going while; step.",
+        "example": "for (i = 0; i < 10; i++) { ... }",
+        "gotcha": "<= runs one extra time.",
+        "aliases": [
+          "for"
+        ],
+        "match": "^for \\(",
+        "def": "for combines initialisation, a controlling expression tested before each iteration, and an expression evaluated after each iteration.",
+        "model": "\"Do this exactly N times\", with the counter's whole life written on one line.",
+        "game": "Every frame the runner walks all 8 obstacle slots with the same for header.",
+        "gameCode": "for (i = 0; i < MAX_OBS; i++) { /* move obs[i] */ }"
+      },
+      {
+        "id": "do-while",
+        "term": "do { } while",
+        "kind": "syntax",
+        "what": "A loop that always runs at least once. Good for \"play, then ask again\".",
+        "example": "do { play(); } while (again == 'y');",
+        "match": "^do \\{",
+        "def": "do-while executes its body, then tests the controlling expression, so the body always runs at least once.",
+        "model": "Try first, ask after. You always get one go.",
+        "game": "Guess v2's \"Play again? (y/n)\" — play one round, then ask whether to loop.",
+        "gameCode": "do {\n    play_round();\n    again = ask_again();\n} while (again == 'y');"
+      },
+      {
+        "id": "switch",
+        "term": "switch / case",
+        "kind": "syntax",
+        "what": "Picks a branch by value. Cleaner than many ifs for menus and states.",
+        "example": "switch (choice) {\ncase 1: easy(); break;\ndefault: break;\n}",
+        "gotcha": "Forget break and it falls into the next case.",
+        "aliases": [
+          "switch",
+          "break;",
+          "break"
+        ],
+        "def": "switch transfers control to the case label whose constant matches the controlling expression's value, or to default. Execution falls through to the next case unless a break intervenes.",
+        "model": "A railway junction: the value picks the track, and break is where you get off.",
+        "game": "The runner's state machine is one switch on state: MENU, PLAYING, GAME_OVER.",
+        "gameCode": "switch (state) {\ncase STATE_MENU:    /* wait for a key */ break;\ncase STATE_PLAYING: /* move, collide */ break;\n}"
+      },
+      {
+        "id": "int-division",
+        "term": "Integer division and %",
+        "kind": "concept",
+        "what": "int / int drops the fraction (7 / 2 is 3). % gives the remainder (7 % 2 is 1).",
+        "example": "float half = (float)7 / 2;   // 3.5",
+        "aliases": [
+          "7 / 2",
+          "7 % 2",
+          "1 / 2",
+          "health / max_health"
+        ],
+        "def": "Dividing two integer operands performs integer division, truncating toward zero. % yields the remainder, with (a/b)*b + a%b == a.",
+        "model": "Sharing sweets: 7 between 2 people is 3 each, 1 left over. / is the 3, % is the 1.",
+        "game": "A health bar drawn as hp / max_hp is 0 until full. Multiply first: hp * 100 / max_hp gives a real percentage.",
+        "gameCode": "int pct = hp * 100 / max_hp;   // not hp / max_hp * 100"
+      },
+      {
+        "id": "cast",
+        "term": "(type) cast",
+        "kind": "syntax",
+        "what": "Converts a value on purpose. float → int truncates toward zero.",
+        "example": "int n = (int)1.8f;   // 1",
+        "aliases": [
+          "(int)",
+          "(float)"
+        ],
+        "def": "A cast expression (type)expr converts a value to the named type. Converting a floating value to an integer type truncates toward zero.",
+        "model": "Telling the compiler \"I know this loses information, and I mean it\".",
+        "game": "To draw a float x position into the char lane, cast it to an int column — once, at draw time, never stored back.",
+        "gameCode": "lane[(int)p.x] = 'A';"
+      },
+      {
+        "id": "rand",
+        "term": "rand() / srand()",
+        "kind": "function",
+        "what": "rand() gives a pseudo-random number; seed it once with srand(time(NULL)).",
+        "example": "srand((unsigned int)time(NULL));\nint n = rand() % 100 + 1;   // 1–100",
+        "aliases": [
+          "rand()",
+          "srand",
+          "srand(time(NULL))",
+          "time(NULL)",
+          "rand() % 100",
+          "rand() % 100 + 1"
+        ],
+        "match": "^s?rand",
+        "def": "rand returns a pseudo-random int in [0, RAND_MAX]; srand seeds the sequence. Seeding with time(NULL) gives a different sequence each run.",
+        "model": "A recipe that turns one number into the next forever. srand picks where in the recipe you start.",
+        "game": "The guessing game's secret number, and later, how far apart the runner's obstacles spawn.",
+        "gameCode": "srand((unsigned int)time(NULL));\nint secret = rand() % 100 + 1;"
+      },
+      {
+        "id": "sizeof",
+        "term": "sizeof",
+        "kind": "syntax",
+        "what": "Size in bytes, worked out by the compiler. Returns size_t: cast before %d.",
+        "example": "printf(\"%d\\n\", (int)sizeof(int));   // 4",
+        "aliases": [
+          "sizeof",
+          "size_t"
+        ],
+        "match": "^sizeof",
+        "def": "sizeof yields the size in bytes of a type or object, as a value of type size_t, computed at compile time for non-VLA operands.",
+        "model": "Measuring the box, not looking inside it.",
+        "game": "count = sizeof(scores) / sizeof(scores[0]) tells the high-score table how many slots it has without typing 5 again.",
+        "gameCode": "int count = (int)(sizeof(scores) / sizeof(scores[0]));"
+      }
     ],
     "phase3": [
-      { "id": "function", "term": "Function", "kind": "concept", "what": "A named machine: inputs (parameters) in, one result (return value) out.", "example": "int add_scores(int a, int b) {\n    return a + b;\n}", "aliases": ["int add_scores(int a, int b)", "var", "var(1.8)"] },
-      { "id": "void", "term": "void", "kind": "type", "what": "\"Nothing\": a function that returns no value, or takes no parameters.", "example": "void print_banner(void);", "aliases": ["void", "void print_banner(void)"] },
-      { "id": "prototype", "term": "Prototype (declaration)", "kind": "concept", "what": "A one-line promise that a function exists, so it can be called before its body.", "example": "int clamp_health(int h);   // above main", "gotcha": "Missing one gives C4013.", "aliases": ["int clamp_health(int h);"] },
-      { "id": "define", "term": "#define", "kind": "syntax", "what": "Find-and-replace before compiling. Name your magic numbers.", "example": "#define MAX_SCORES 5", "gotcha": "No = and no semicolon.", "aliases": ["#define", "MAX_SCORES", "NAME_LEN"], "match": "^#define" },
-      { "id": "array", "term": "Array", "kind": "concept", "what": "A row of same-type boxes reached by index, starting at 0.", "example": "int scores[5] = {40, 95, 12, 78, 63};\nscores[0];   // 40", "gotcha": "Last index is size - 1; C won't stop you going past it.", "aliases": ["int scores[5];", "int scores[5]", "scores[5]", "scores[i]", "scores[0]"], "match": "^\\w+\\[[^\\]]*\\]( = .*)?;?$" },
-      { "id": "array-loop", "term": "i < count", "kind": "syntax", "what": "The one loop shape for arrays. Never <= count.", "example": "for (i = 0; i < count; i++) { ... }", "aliases": ["i < count", "i <= count", "i < 10"] },
-      { "id": "array-count", "term": "sizeof(a) / sizeof(a[0])", "kind": "syntax", "what": "How many elements an array has, where it was declared.", "example": "count = (int)(sizeof(scores) / sizeof(scores[0]));", "gotcha": "Inside a function the array is a pointer; pass the count." },
-      { "id": "string", "term": "C string", "kind": "concept", "what": "A char array that ends at the first '\\0'. %s prints up to it.", "example": "char name[32] = \"Sam\";", "gotcha": "char name[32] holds 31 characters.", "aliases": ["char name[32]", "char name[32];", "%s"] },
-      { "id": "nul", "term": "'\\0'", "kind": "syntax", "what": "The terminator byte, value 0. Not the digit '0' (48).", "example": "name[3] = '\\0';   // string now ends here", "aliases": ["'\\0'", "char input = '\\0';"] },
-      { "id": "fgets", "term": "fgets", "kind": "function", "what": "Reads a whole line safely: never writes past the size you give it.", "example": "fgets(name, NAME_LEN, stdin);\nname[strcspn(name, \"\\n\")] = '\\0';", "gotcha": "Keeps the Enter as '\\n' — strip it.", "aliases": ["fgets", "fgets(name, NAME_LEN, stdin)", "strcspn", "name[strcspn(name, \"\\n\")] = '\\0';"] },
-      { "id": "strlen", "term": "strlen", "kind": "function", "what": "Counts characters up to the '\\0', not including it. Returns size_t.", "example": "printf(\"%d\\n\", (int)strlen(name));", "aliases": ["strlen"], "match": "^strlen" },
-      { "id": "strcmp", "term": "strcmp", "kind": "function", "what": "Compares two strings. 0 means equal; only the sign of other results is guaranteed.", "example": "if (strcmp(a, b) == 0) { /* same */ }", "gotcha": "if (strcmp(a, b)) runs when they're different.", "aliases": ["strcmp", "== 0", "!= 0"], "match": "strcmp\\(" },
-      { "id": "array-2d", "term": "2D array", "kind": "concept", "what": "An array of arrays — e.g. five names of up to 31 characters.", "example": "char names[5][32];\nnames[0];   // first name", "aliases": ["names[5][32]"] },
-      { "id": "scope", "term": "Local variable & scope", "kind": "concept", "what": "A variable declared inside { } only exists inside them, and is gone when the function returns.", "example": "void f(void) { int x = 1; }   // x is gone after this" },
-      { "id": "fopen", "term": "fopen / fprintf / fscanf / fclose", "kind": "function", "what": "Open a file, write or read it like printf/scanf, then close it.", "example": "FILE* f = fopen(\"scores.txt\", \"w\");\nfprintf(f, \"%s %d\\n\", name, score);\nfclose(f);", "gotcha": "fopen returns NULL if it can't open. MSVC needs _CRT_SECURE_NO_WARNINGS.", "aliases": ["fopen", "fscanf", "C4996"], "match": "^f(open|printf|scanf|close)" }
+      {
+        "id": "function",
+        "term": "Function",
+        "kind": "concept",
+        "what": "A named machine: inputs (parameters) in, one result (return value) out.",
+        "example": "int add_scores(int a, int b) {\n    return a + b;\n}",
+        "aliases": [
+          "int add_scores(int a, int b)",
+          "var",
+          "var(1.8)"
+        ],
+        "def": "A function is a named block of code with parameters and an optional return value, defined once and called from elsewhere.",
+        "model": "A vending machine: put something in, it does one job, and something (or nothing) comes out.",
+        "game": "clamp_health keeps health between 0 and 100, so every place that changes health uses the same rule.",
+        "gameCode": "int clamp_health(int h) {\n    if (h < 0) return 0;\n    if (h > 100) return 100;\n    return h;\n}"
+      },
+      {
+        "id": "void",
+        "term": "void",
+        "kind": "type",
+        "what": "\"Nothing\": a function that returns no value, or takes no parameters.",
+        "example": "void print_banner(void);",
+        "aliases": [
+          "void",
+          "void print_banner(void)"
+        ],
+        "def": "void denotes the absence of a value: as a return type, the function returns nothing; as a parameter list (void), it takes no arguments.",
+        "model": "A machine with no output tray. It does something — prints, moves — but hands nothing back.",
+        "game": "print_banner draws the title screen and returns nothing.",
+        "gameCode": "void print_banner(void) { printf(\"ASCII RUNNER\\n\"); }"
+      },
+      {
+        "id": "prototype",
+        "term": "Prototype (declaration)",
+        "kind": "concept",
+        "what": "A one-line promise that a function exists, so it can be called before its body.",
+        "example": "int clamp_health(int h);   // above main",
+        "gotcha": "Missing one gives C4013.",
+        "aliases": [
+          "int clamp_health(int h);"
+        ],
+        "def": "A function prototype is a declaration giving a function's name, return type and parameter types, letting calls be checked before the definition appears.",
+        "model": "A promise on the first page of a book: \"chapter 9 explains this\", so you can mention it in chapter 2.",
+        "game": "With prototypes at the top, main can sit first in high_score.c and call insert_score defined further down.",
+        "gameCode": "void insert_score(int scores[], int count, int new_score);"
+      },
+      {
+        "id": "define",
+        "term": "#define",
+        "kind": "syntax",
+        "what": "Find-and-replace before compiling. Name your magic numbers.",
+        "example": "#define MAX_SCORES 5",
+        "gotcha": "No = and no semicolon.",
+        "aliases": [
+          "#define",
+          "MAX_SCORES",
+          "NAME_LEN"
+        ],
+        "match": "^#define",
+        "def": "#define creates a preprocessor macro: every later occurrence of the name is textually replaced before compilation.",
+        "model": "Find-and-replace on your file before the compiler reads it.",
+        "game": "MAX_SCORES, LANE_LEN, MAX_OBS — change one line and every array and loop that uses it follows.",
+        "gameCode": "#define MAX_OBS 8\nint obs[MAX_OBS];"
+      },
+      {
+        "id": "array",
+        "term": "Array",
+        "kind": "concept",
+        "what": "A row of same-type boxes reached by index, starting at 0.",
+        "example": "int scores[5] = {40, 95, 12, 78, 63};\nscores[0];   // 40",
+        "gotcha": "Last index is size - 1; C won't stop you going past it.",
+        "aliases": [
+          "int scores[5];",
+          "int scores[5]",
+          "scores[5]",
+          "scores[i]",
+          "scores[0]"
+        ],
+        "match": "^\\w+\\[[^\\]]*\\]( = .*)?;?$",
+        "def": "An array is a contiguous sequence of elements of one type, accessed by an integer index starting at 0. C performs no bounds checking.",
+        "model": "A row of numbered lockers, all the same size. Locker 0 is the first one.",
+        "game": "obs[8] holds the column of every obstacle; -1 means the slot is empty.",
+        "gameCode": "int obs[MAX_OBS];\nobs[0] = LANE_LEN - 1;   // spawn at the far right"
+      },
+      {
+        "id": "array-loop",
+        "term": "i < count",
+        "kind": "syntax",
+        "what": "The one loop shape for arrays. Never <= count.",
+        "example": "for (i = 0; i < count; i++) { ... }",
+        "aliases": [
+          "i < count",
+          "i <= count",
+          "i < 10"
+        ],
+        "def": "The canonical array traversal initialises the index to 0 and continues while it is less than the element count, so it visits indices 0 to count − 1.",
+        "model": "Visit every locker, starting at 0, and stop before the number that doesn't exist.",
+        "game": "The same header moves obstacles, draws them and checks collisions — three loops, one shape.",
+        "gameCode": "for (i = 0; i < MAX_OBS; i++)\n    if (obs[i] >= 0) obs[i]--;"
+      },
+      {
+        "id": "array-count",
+        "term": "sizeof(a) / sizeof(a[0])",
+        "kind": "syntax",
+        "what": "How many elements an array has, where it was declared.",
+        "example": "count = (int)(sizeof(scores) / sizeof(scores[0]));",
+        "gotcha": "Inside a function the array is a pointer; pass the count.",
+        "def": "Dividing the size of an array by the size of one element yields its element count, valid only where the array's declaration (not a pointer) is in scope.",
+        "model": "The length of the whole locker row divided by the width of one locker.",
+        "game": "Useful in main for the starting high-score table — but pass the count into functions, because they only get a pointer.",
+        "gameCode": "int count = (int)(sizeof(scores) / sizeof(scores[0]));"
+      },
+      {
+        "id": "string",
+        "term": "C string",
+        "kind": "concept",
+        "what": "A char array that ends at the first '\\0'. %s prints up to it.",
+        "example": "char name[32] = \"Sam\";",
+        "gotcha": "char name[32] holds 31 characters.",
+        "aliases": [
+          "char name[32]",
+          "char name[32];",
+          "%s"
+        ],
+        "def": "A C string is a contiguous sequence of chars terminated by the first null character ('\\0'). String functions and %s process characters up to that terminator.",
+        "model": "A row of letter tiles with a stop sign at the end. Everything after the stop sign is ignored.",
+        "game": "The runner's lane is a string: 50 tiles of road and obstacles, then a '\\0' so printf knows where the track ends.",
+        "gameCode": "char lane[LANE_LEN + 1];\nlane[LANE_LEN] = '\\0';"
+      },
+      {
+        "id": "nul",
+        "term": "'\\0'",
+        "kind": "syntax",
+        "what": "The terminator byte, value 0. Not the digit '0' (48).",
+        "example": "name[3] = '\\0';   // string now ends here",
+        "aliases": [
+          "'\\0'",
+          "char input = '\\0';"
+        ],
+        "def": "'\\0' is the null character, with value 0. It marks the end of a C string. It differs from the digit '0', which has value 48.",
+        "model": "The stop sign at the end of the word.",
+        "game": "Forget it at the end of the lane and printf keeps going into whatever memory comes next — a screen of junk after your track.",
+        "gameCode": "lane[LANE_LEN] = '\\0';"
+      },
+      {
+        "id": "fgets",
+        "term": "fgets",
+        "kind": "function",
+        "what": "Reads a whole line safely: never writes past the size you give it.",
+        "example": "fgets(name, NAME_LEN, stdin);\nname[strcspn(name, \"\\n\")] = '\\0';",
+        "gotcha": "Keeps the Enter as '\\n' — strip it.",
+        "aliases": [
+          "fgets",
+          "fgets(name, NAME_LEN, stdin)",
+          "strcspn",
+          "name[strcspn(name, \"\\n\")] = '\\0';"
+        ],
+        "def": "fgets reads at most n−1 characters from a stream into a buffer, stopping after a newline, and always null-terminates. It returns NULL on failure or end of file.",
+        "model": "A form with a fixed number of boxes. You can't write past the last box, and Enter gets written in too.",
+        "game": "Reading the player's name for the high-score table, then chopping off the Enter.",
+        "gameCode": "fgets(name, NAME_LEN, stdin);\nname[strcspn(name, \"\\n\")] = '\\0';"
+      },
+      {
+        "id": "strlen",
+        "term": "strlen",
+        "kind": "function",
+        "what": "Counts characters up to the '\\0', not including it. Returns size_t.",
+        "example": "printf(\"%d\\n\", (int)strlen(name));",
+        "aliases": [
+          "strlen"
+        ],
+        "match": "^strlen",
+        "def": "strlen returns the number of characters before the terminating null character, as a size_t.",
+        "model": "Counting tiles up to the stop sign, not counting the sign.",
+        "game": "Centering a name on the game-over screen needs its length.",
+        "gameCode": "int pad = (LANE_LEN - (int)strlen(name)) / 2;"
+      },
+      {
+        "id": "strcmp",
+        "term": "strcmp",
+        "kind": "function",
+        "what": "Compares two strings. 0 means equal; only the sign of other results is guaranteed.",
+        "example": "if (strcmp(a, b) == 0) { /* same */ }",
+        "gotcha": "if (strcmp(a, b)) runs when they're different.",
+        "aliases": [
+          "strcmp",
+          "== 0",
+          "!= 0"
+        ],
+        "match": "strcmp\\(",
+        "def": "strcmp compares two strings lexicographically, returning zero if equal, and a negative or positive value if the first sorts before or after the second.",
+        "model": "It answers \"how far apart are these?\", not \"are these the same?\" — and 0 apart means identical.",
+        "game": "Checking whether a new high score belongs to a name already on the table.",
+        "gameCode": "if (strcmp(names[i], name) == 0) { /* same player */ }"
+      },
+      {
+        "id": "array-2d",
+        "term": "2D array",
+        "kind": "concept",
+        "what": "An array of arrays — e.g. five names of up to 31 characters.",
+        "example": "char names[5][32];\nnames[0];   // first name",
+        "aliases": [
+          "names[5][32]"
+        ],
+        "def": "A two-dimensional array is an array of arrays; names[5][32] is five arrays of 32 chars, stored row after row.",
+        "model": "A shelf of five name tags, each with room for 31 letters.",
+        "game": "The high-score table keeps names[MAX_SCORES][NAME_LEN] in step with scores[MAX_SCORES].",
+        "gameCode": "char names[MAX_SCORES][NAME_LEN];\nstrcpy_s(names[0], NAME_LEN, \"SAM\");"
+      },
+      {
+        "id": "scope",
+        "term": "Local variable & scope",
+        "kind": "concept",
+        "what": "A variable declared inside { } only exists inside them, and is gone when the function returns.",
+        "example": "void f(void) { int x = 1; }   // x is gone after this",
+        "def": "A variable declared in a block has block scope and, unless static, automatic storage: it exists from its declaration until the block ends.",
+        "model": "Notes on a whiteboard in a meeting room. When the meeting ends, the board is wiped.",
+        "game": "The lane buffer in runner_render is local: rebuilt every frame, gone when the function returns. Score lives in the Runner struct because it must survive.",
+        "gameCode": "void runner_render(const Runner* r) {\n    char lane[LANE_LEN + 1];   // only exists here\n}"
+      },
+      {
+        "id": "fopen",
+        "term": "fopen / fprintf / fscanf / fclose",
+        "kind": "function",
+        "what": "Open a file, write or read it like printf/scanf, then close it.",
+        "example": "FILE* f = fopen(\"scores.txt\", \"w\");\nfprintf(f, \"%s %d\\n\", name, score);\nfclose(f);",
+        "gotcha": "fopen returns NULL if it can't open. MSVC needs _CRT_SECURE_NO_WARNINGS.",
+        "aliases": [
+          "fopen",
+          "fscanf",
+          "C4996"
+        ],
+        "match": "^f(open|printf|scanf|close)",
+        "def": "fopen opens a file and returns a FILE pointer (or NULL); fprintf and fscanf write and read formatted text through it; fclose flushes and closes it.",
+        "model": "Opening a notebook, writing in it like you'd print to the screen, and closing it so the ink dries.",
+        "game": "Saving the best score to best.txt so the runner's menu can show \"Best: 41\" next time.",
+        "gameCode": "FILE* f = fopen(\"best.txt\", \"w\");\nif (f) { fprintf(f, \"%d\\n\", best); fclose(f); }"
+      }
     ],
     "phase3b": [
-      { "id": "struct", "term": "struct + typedef", "kind": "syntax", "what": "Groups named fields of different types into one type.", "example": "typedef struct {\n    float x, y;\n    int health;\n} Player;", "aliases": ["typedef", "struct Player", "Player"] },
-      { "id": "dot", "term": "hero.health", "kind": "syntax", "what": "The dot reaches a field when you hold the struct itself.", "example": "Player hero;\nhero.health = 100;", "aliases": ["hero.health", "hero.x", "player.health", "p.x", "p.health", "a.health", "b.health"] },
-      { "id": "struct-copy", "term": "Structs are values", "kind": "concept", "what": "b = a copies every field. Passing a struct to a function copies it too.", "example": "Player b = a;   // two separate players", "aliases": ["b = a;", "b = a", "void move(Player p)", "player_move(Player p, ...)", "hurt_copy"] },
-      { "id": "pointer", "term": "Pointer (int* p)", "kind": "concept", "what": "A variable that holds an address — where a value lives, not the value.", "example": "int x = 5;\nint* p = &x;", "aliases": ["int* p = &x", "p", "Player*", "Player* p"] },
-      { "id": "deref", "term": "*p", "kind": "syntax", "what": "Dereference: go to the address in p and use what's there.", "example": "*p = 10;   // x is now 10", "aliases": ["*p", "*", "(*p).health"] },
-      { "id": "addr", "term": "&x", "kind": "syntax", "what": "Address-of: the location of x. Hand it to functions that should change x.", "example": "hurt_real(&hero);", "aliases": ["&x", "&hero", "&enemies[2]"] },
-      { "id": "arrow", "term": "p->health", "kind": "syntax", "what": "Field through a pointer. Shorthand for (*p).health.", "example": "void heal(Player* p) { p->health += 10; }", "gotcha": "Pointer → arrow. Struct → dot.", "aliases": ["p->health", "r->score"], "match": "->" },
-      { "id": "by-pointer", "term": "Pass by pointer", "kind": "concept", "what": "Functions that change an object take a pointer, so they change the real one.", "example": "void player_move(Player* p, float dx, float dy);", "aliases": ["void move(Player* p)", "player_move(Player* p, ...)", "hurt_real", "player_take_damage", "player_heal"] },
-      { "id": "null", "term": "NULL", "kind": "syntax", "what": "A pointer to nothing. Check for it before using a pointer.", "example": "if (p != NULL) { p->health = 0; }", "aliases": ["NULL", "if (p != NULL)"] },
-      { "id": "header-split", "term": ".h vs .c", "kind": "concept", "what": ".h declares what exists (types, prototypes). .c holds the bodies.", "example": "// player.h\nvoid player_heal(Player* p, int amount);", "aliases": ["player.h", "player.c", "game.h", "game.c", "main.c"] },
-      { "id": "pragma-once", "term": "#pragma once", "kind": "syntax", "what": "Top of a header: include this file only once per .c file.", "example": "#pragma once", "gotcha": "Without it, a double include gives C2011.", "aliases": ["#pragma once", "#ifndef", "#endif"] },
-      { "id": "linker", "term": "Linker error (LNK2019)", "kind": "concept", "what": "The compiler was happy but the body was never built — a .c file is missing from the build.", "example": "cl main.c player.c   // list every .c file", "aliases": ["LNK2019: unresolved external symbol", "unresolved external symbol player_move", "cl main.c player.c"] },
-      { "id": "debugger", "term": "Debugger: F9 F5 F10 F11", "kind": "tool", "what": "Breakpoint · run/continue · step over · step into. Watch panel shows live values.", "example": "F9 on a line, F5, then F10 to step", "gotcha": "Run build first — F5 launches the exe on disk.", "aliases": ["F9", "F5", "F10", "F11", "Shift+F5", "Shift+F11", "game.pdb", "/Zi"] },
-      { "id": "enum", "term": "enum", "kind": "syntax", "what": "Named integer constants — perfect for game states.", "example": "typedef enum { STATE_MENU, STATE_PLAYING } GameState;", "aliases": ["enum"] }
+      {
+        "id": "struct",
+        "term": "struct + typedef",
+        "kind": "syntax",
+        "what": "Groups named fields of different types into one type.",
+        "example": "typedef struct {\n    float x, y;\n    int health;\n} Player;",
+        "aliases": [
+          "typedef",
+          "struct Player",
+          "Player"
+        ],
+        "def": "A struct type groups named members, possibly of different types, into one object. typedef gives the type a single-word name.",
+        "model": "A form with labelled boxes: name, position, health — everything about one thing, kept together.",
+        "game": "The Runner struct holds the whole game's state, so functions take one pointer instead of six variables.",
+        "gameCode": "typedef struct {\n    int obs[MAX_OBS];\n    int score, frame, ducking;\n} Runner;"
+      },
+      {
+        "id": "dot",
+        "term": "hero.health",
+        "kind": "syntax",
+        "what": "The dot reaches a field when you hold the struct itself.",
+        "example": "Player hero;\nhero.health = 100;",
+        "aliases": [
+          "hero.health",
+          "hero.x",
+          "player.health",
+          "p.x",
+          "p.health",
+          "a.health",
+          "b.health"
+        ],
+        "def": "The . operator accesses a member of a struct object you hold directly.",
+        "model": "Reaching into a box you're holding and taking out one labelled item.",
+        "game": "In main you hold the Runner itself, so it's r.score.",
+        "gameCode": "printf(\"Final score: %d\\n\", r.score);"
+      },
+      {
+        "id": "struct-copy",
+        "term": "Structs are values",
+        "kind": "concept",
+        "what": "b = a copies every field. Passing a struct to a function copies it too.",
+        "example": "Player b = a;   // two separate players",
+        "aliases": [
+          "b = a;",
+          "b = a",
+          "void move(Player p)",
+          "player_move(Player p, ...)",
+          "hurt_copy"
+        ],
+        "def": "Structs have value semantics: assignment and pass-by-value copy every member into a separate object.",
+        "model": "Photocopying the whole form. Scribbling on the copy doesn't change the original.",
+        "game": "runner_update(Runner r, …) without the * updates a photocopy every frame. Nothing ever moves on screen.",
+        "gameCode": "void runner_update(Runner r, int key);   // copy — changes are lost"
+      },
+      {
+        "id": "pointer",
+        "term": "Pointer (int* p)",
+        "kind": "concept",
+        "what": "A variable that holds an address — where a value lives, not the value.",
+        "example": "int x = 5;\nint* p = &x;",
+        "aliases": [
+          "int* p = &x",
+          "p",
+          "Player*",
+          "Player* p"
+        ],
+        "def": "A pointer is an object whose value is the address of another object of a given type.",
+        "model": "A note with a house address written on it. It's not the house; it tells you where the house is.",
+        "game": "Runner* r inside runner_update points at the one real Runner in main.",
+        "gameCode": "Runner game;\nRunner* r = &game;"
+      },
+      {
+        "id": "deref",
+        "term": "*p",
+        "kind": "syntax",
+        "what": "Dereference: go to the address in p and use what's there.",
+        "example": "*p = 10;   // x is now 10",
+        "aliases": [
+          "*p",
+          "*",
+          "(*p).health"
+        ],
+        "def": "The unary * operator applied to a pointer yields the object it points to.",
+        "model": "Going to the address on the note and opening the front door.",
+        "game": "(*r).score is the real score in main's Runner — same as r->score.",
+        "gameCode": "(*r).score += 1;"
+      },
+      {
+        "id": "addr",
+        "term": "&x",
+        "kind": "syntax",
+        "what": "Address-of: the location of x. Hand it to functions that should change x.",
+        "example": "hurt_real(&hero);",
+        "aliases": [
+          "&x",
+          "&hero",
+          "&enemies[2]"
+        ],
+        "def": "The unary & operator yields the address of its operand.",
+        "model": "Writing down the address of a house so someone else can visit it.",
+        "game": "main hands runner_update the address of its Runner, so the update reaches the real game.",
+        "gameCode": "runner_update(&game, key);"
+      },
+      {
+        "id": "arrow",
+        "term": "p->health",
+        "kind": "syntax",
+        "what": "Field through a pointer. Shorthand for (*p).health.",
+        "example": "void heal(Player* p) { p->health += 10; }",
+        "gotcha": "Pointer → arrow. Struct → dot.",
+        "aliases": [
+          "p->health",
+          "r->score"
+        ],
+        "match": "->",
+        "def": "p->m is shorthand for (*p).m: the member m of the struct that pointer p points to.",
+        "model": "Follow the address, then grab the labelled item — in one move.",
+        "game": "Every line of runner.c that touches the game reads r->something.",
+        "gameCode": "r->score++;\nr->state = STATE_GAME_OVER;"
+      },
+      {
+        "id": "by-pointer",
+        "term": "Pass by pointer",
+        "kind": "concept",
+        "what": "Functions that change an object take a pointer, so they change the real one.",
+        "example": "void player_move(Player* p, float dx, float dy);",
+        "aliases": [
+          "void move(Player* p)",
+          "player_move(Player* p, ...)",
+          "hurt_real",
+          "player_take_damage",
+          "player_heal"
+        ],
+        "def": "Passing a pointer gives the called function access to the caller's object, so modifications persist after it returns.",
+        "model": "Giving someone your address instead of a photocopy of your house plans.",
+        "game": "player_take_damage(&hero, 10) lowers the real hero's health.",
+        "gameCode": "void player_take_damage(Player* p, int amount) {\n    p->health -= amount;\n}"
+      },
+      {
+        "id": "null",
+        "term": "NULL",
+        "kind": "syntax",
+        "what": "A pointer to nothing. Check for it before using a pointer.",
+        "example": "if (p != NULL) { p->health = 0; }",
+        "aliases": [
+          "NULL",
+          "if (p != NULL)"
+        ],
+        "def": "NULL is a null pointer constant: a pointer value guaranteed not to point to any object.",
+        "model": "A blank note — no address written on it. Going there gets you nowhere, fast.",
+        "game": "fopen returns NULL when best.txt doesn't exist yet. Check before reading, or the first run crashes.",
+        "gameCode": "FILE* f = fopen(\"best.txt\", \"r\");\nif (f == NULL) best = 0;"
+      },
+      {
+        "id": "header-split",
+        "term": ".h vs .c",
+        "kind": "concept",
+        "what": ".h declares what exists (types, prototypes). .c holds the bodies.",
+        "example": "// player.h\nvoid player_heal(Player* p, int amount);",
+        "aliases": [
+          "player.h",
+          "player.c",
+          "game.h",
+          "game.c",
+          "main.c"
+        ],
+        "def": "Headers (.h) hold declarations shared between translation units; source files (.c) hold definitions that are compiled once.",
+        "model": "The menu on the restaurant door (.h) versus the kitchen (.c).",
+        "game": "runner.h lists what the runner can do; runner.c does it; main.c only needs the menu.",
+        "gameCode": "// runner.h\nvoid runner_reset(Runner* r);\n// runner.c\nvoid runner_reset(Runner* r) { /* ... */ }"
+      },
+      {
+        "id": "pragma-once",
+        "term": "#pragma once",
+        "kind": "syntax",
+        "what": "Top of a header: include this file only once per .c file.",
+        "example": "#pragma once",
+        "gotcha": "Without it, a double include gives C2011.",
+        "aliases": [
+          "#pragma once",
+          "#ifndef",
+          "#endif"
+        ],
+        "def": "#pragma once is a widely supported directive asking the compiler to include the current file at most once per translation unit.",
+        "model": "A \"you've already read this page\" bookmark.",
+        "game": "main.c and runner.c can both include runner.h without the Runner struct being defined twice.",
+        "gameCode": "#pragma once"
+      },
+      {
+        "id": "linker",
+        "term": "Linker error (LNK2019)",
+        "kind": "concept",
+        "what": "The compiler was happy but the body was never built — a .c file is missing from the build.",
+        "example": "cl main.c player.c   // list every .c file",
+        "aliases": [
+          "LNK2019: unresolved external symbol",
+          "unresolved external symbol player_move",
+          "cl main.c player.c"
+        ],
+        "def": "The linker resolves each referenced symbol to exactly one definition across all object files. LNK2019 means a referenced symbol has no definition.",
+        "model": "The compiler checked every promise; the linker goes to collect, and one chapter is missing from the book.",
+        "game": "Take runner.c out of the SOURCES line: main.c still compiles, but runner_update has no body to link to.",
+        "gameCode": "set SOURCES=main.c runner.c"
+      },
+      {
+        "id": "debugger",
+        "term": "Debugger: F9 F5 F10 F11",
+        "kind": "tool",
+        "what": "Breakpoint · run/continue · step over · step into. Watch panel shows live values.",
+        "example": "F9 on a line, F5, then F10 to step",
+        "gotcha": "Run build first — F5 launches the exe on disk.",
+        "aliases": [
+          "F9",
+          "F5",
+          "F10",
+          "F11",
+          "Shift+F5",
+          "Shift+F11",
+          "game.pdb",
+          "/Zi"
+        ],
+        "def": "A debugger pauses a running program at breakpoints and lets you step line by line and inspect variables, using debug symbols from the PDB.",
+        "model": "A pause button for your program, plus X-ray vision into every box.",
+        "game": "Breakpoint on the hit test in runner_update, then watch r->obs and ducking to see exactly why you died."
+      },
+      {
+        "id": "enum",
+        "term": "enum",
+        "kind": "syntax",
+        "what": "Named integer constants — perfect for game states.",
+        "example": "typedef enum { STATE_MENU, STATE_PLAYING } GameState;",
+        "aliases": [
+          "enum"
+        ],
+        "def": "An enumeration defines a set of named integer constants; typedef enum gives the set a type name.",
+        "model": "Named positions on a dial instead of numbers you have to remember.",
+        "game": "GameState gives the runner three readable states, and the switch reads like a sentence.",
+        "gameCode": "typedef enum { STATE_MENU, STATE_PLAYING, STATE_GAME_OVER } GameState;"
+      }
     ],
     "phase4": [
-      { "id": "git-clone", "term": "git clone / pull", "kind": "tool", "what": "Copy a repo to your machine; bring down your partner's new commits.", "example": "git clone https://github.com/you/repo\ngit pull" },
-      { "id": "git-branch", "term": "Branch", "kind": "concept", "what": "A separate line of work. main stays buildable; features live on branches.", "example": "git switch -c feature/player-move" },
-      { "id": "pull-request", "term": "Pull request", "kind": "concept", "what": "Ask to merge a branch into main, with a review first.", "example": "gh pr create --fill" },
-      { "id": "merge-conflict", "term": "Merge conflict", "kind": "concept", "what": "Two changes to the same lines. Git marks both; you pick, delete the markers, commit.", "example": "<<<<<<< HEAD\nmine\n=======\ntheirs\n>>>>>>> branch" },
-      { "id": "gitignore", "term": ".gitignore", "kind": "tool", "what": "Files Git should never track: build output like .exe, .obj, .pdb.", "example": "*.exe\n*.obj\n*.pdb" },
-      { "id": "commit-msg", "term": "Commit message", "kind": "concept", "what": "type: short description — feat, fix, refactor, docs.", "example": "feat: add player_take_damage function", "aliases": ["type: short description", "feat: add player_take_damage function", "git reset --soft HEAD~1"] }
+      {
+        "id": "git-clone",
+        "term": "git clone / pull",
+        "kind": "tool",
+        "what": "Copy a repo to your machine; bring down your partner's new commits.",
+        "example": "git clone https://github.com/you/repo\ngit pull",
+        "def": "git clone copies a remote repository, with its full history, to your machine. git pull fetches new commits from the remote and merges them into your branch.",
+        "model": "Photocopying the shared notebook once, then regularly copying in the new pages your partner wrote.",
+        "game": "Your partner clones the game repo once, then pulls every session to get your latest runner changes.",
+        "gameCode": "git clone https://github.com/you/game\ngit pull"
+      },
+      {
+        "id": "git-branch",
+        "term": "Branch",
+        "kind": "concept",
+        "what": "A separate line of work. main stays buildable; features live on branches.",
+        "example": "git switch -c feature/player-move",
+        "def": "A branch is a movable pointer to a commit, letting a line of work evolve separately from main until it's merged.",
+        "model": "A parallel draft of the story. Write freely; main stays readable.",
+        "game": "feature/jump-obstacle lives on its own branch while main keeps a version of the runner that always builds.",
+        "gameCode": "git switch -c feature/jump-obstacle"
+      },
+      {
+        "id": "pull-request",
+        "term": "Pull request",
+        "kind": "concept",
+        "what": "Ask to merge a branch into main, with a review first.",
+        "example": "gh pr create --fill",
+        "def": "A pull request asks to merge one branch into another, with a diff and a place for review comments before merging.",
+        "model": "Handing your partner the draft and asking \"read this before it goes in the book\".",
+        "game": "Open a PR for the jump obstacle; your partner plays it, comments, and merges.",
+        "gameCode": "gh pr create --fill"
+      },
+      {
+        "id": "merge-conflict",
+        "term": "Merge conflict",
+        "kind": "concept",
+        "what": "Two changes to the same lines. Git marks both; you pick, delete the markers, commit.",
+        "example": "<<<<<<< HEAD\nmine\n=======\ntheirs\n>>>>>>> branch",
+        "def": "A merge conflict occurs when two branches changed the same lines differently; Git marks both versions in the file for a person to resolve.",
+        "model": "Two editors rewrote the same sentence. Someone has to pick the wording.",
+        "game": "You both changed FRAME_MS. Pick one value, delete the markers, commit.",
+        "gameCode": "<<<<<<< HEAD\n#define FRAME_MS 33\n=======\n#define FRAME_MS 16\n>>>>>>> partner"
+      },
+      {
+        "id": "gitignore",
+        "term": ".gitignore",
+        "kind": "tool",
+        "what": "Files Git should never track: build output like .exe, .obj, .pdb.",
+        "example": "*.exe\n*.obj\n*.pdb",
+        "def": ".gitignore lists file patterns Git should not track, typically generated files like build output.",
+        "model": "A \"don't photocopy these\" list taped to the notebook.",
+        "game": "runner.exe, *.obj and *.pdb are rebuilt every time — keep them out so they never conflict.",
+        "gameCode": "*.exe\n*.obj\n*.pdb"
+      },
+      {
+        "id": "commit-msg",
+        "term": "Commit message",
+        "kind": "concept",
+        "what": "type: short description — feat, fix, refactor, docs.",
+        "example": "feat: add player_take_damage function",
+        "aliases": [
+          "type: short description",
+          "feat: add player_take_damage function",
+          "git reset --soft HEAD~1"
+        ],
+        "def": "A commit message describes a change. A common convention is type: summary, with types such as feat, fix, refactor and docs.",
+        "model": "The caption on the photo — what changed and why, readable by someone who wasn't there.",
+        "game": "\"fix: obstacle at column 0 no longer kills a ducking player\" tells your partner exactly what to test.",
+        "gameCode": "git commit -m \"fix: ducking now dodges obstacles at column 0\""
+      }
     ],
     "phase4b": [
-      { "id": "kbhit", "term": "_kbhit() / _getch()", "kind": "function", "what": "Is a key waiting? (never waits) / take that key (no Enter, no echo).", "example": "while (_kbhit()) key = _getch();", "gotcha": "Windows-only, from <conio.h>.", "aliases": ["_kbhit()", "_getch()", "_kbhit", "_getch", "while (_kbhit())", "<conio.h>", "_getche"] },
-      { "id": "sleep", "term": "Sleep(ms)", "kind": "function", "what": "Gives the CPU back for at least ms milliseconds. From <windows.h>.", "example": "Sleep(33);   // ~30 fps", "gotcha": "At least, never exactly — about 15.6 ms granularity.", "aliases": ["Sleep", "Sleep(33)", "Sleep(16)", "Sleep(1)", "windows.h", "<windows.h>"] },
-      { "id": "redraw-r", "term": "\\r redraw", "kind": "concept", "what": "Print a whole frame starting with \\r and no \\n: it paints over the last one.", "example": "printf(\"\\r%s  score %d\", lane, score);", "aliases": ["system(\"cls\")"] },
-      { "id": "fflush", "term": "fflush(stdout)", "kind": "function", "what": "Push buffered output to the screen now. Needed when a line has no \\n.", "example": "fflush(stdout);", "aliases": ["fflush(stdout)", "stdout"] },
-      { "id": "frame-buffer", "term": "Frame buffer", "kind": "concept", "what": "Build the whole frame in memory, then show it in one go. No flicker.", "example": "memset(lane, '.', LANE_LEN);\nlane[LANE_LEN] = '\\0';", "aliases": ["char lane[LANE_LEN + 1]", "lane"] },
-      { "id": "state-machine", "term": "State machine", "kind": "concept", "what": "An enum for the current state and one switch that does that state's work.", "example": "switch (state) {\ncase STATE_MENU: ...; break;\ncase STATE_PLAYING: ...; break;\n}" },
-      { "id": "sentinel", "term": "Sentinel slot (-1)", "kind": "concept", "what": "A value meaning \"empty\", so a fixed array can be reused instead of allocating.", "example": "obs[i] = -1;   // free slot" },
-      { "id": "game-loop-4", "term": "Input → update → render → wait", "kind": "concept", "what": "The four steps every frame of every game.", "example": "for (;;) { input(); update(); render(); Sleep(FRAME_MS); }", "aliases": ["runner_update", "runner_render", "runner_reset"] },
-      { "id": "const-ptr", "term": "const Runner* r", "kind": "syntax", "what": "A read-only pointer: the function promises not to change what it points at.", "example": "void runner_render(const Runner* r);", "aliases": ["const Runner* r"] },
-      { "id": "lnk2005", "term": "LNK2005: already defined", "kind": "concept", "what": "A body or variable in a header got included into two .c files.", "example": "// runner.h: declarations only\nvoid runner_reset(Runner* r);" }
+      {
+        "id": "kbhit",
+        "term": "_kbhit() / _getch()",
+        "kind": "function",
+        "what": "Is a key waiting? (never waits) / take that key (no Enter, no echo).",
+        "example": "while (_kbhit()) key = _getch();",
+        "gotcha": "Windows-only, from <conio.h>.",
+        "aliases": [
+          "_kbhit()",
+          "_getch()",
+          "_kbhit",
+          "_getch",
+          "while (_kbhit())",
+          "<conio.h>",
+          "_getche"
+        ],
+        "def": "_kbhit (conio.h, Microsoft) returns non-zero if a keystroke is waiting in the console input buffer, without blocking. _getch reads one keystroke without echo or waiting for Enter.",
+        "model": "Glancing at the letterbox instead of waiting at the door. If there's post, take it; if not, carry on.",
+        "game": "The runner's input step: drain every key typed since last frame, keep the latest.",
+        "gameCode": "key = 0;\nwhile (_kbhit()) key = _getch();"
+      },
+      {
+        "id": "sleep",
+        "term": "Sleep(ms)",
+        "kind": "function",
+        "what": "Gives the CPU back for at least ms milliseconds. From <windows.h>.",
+        "example": "Sleep(33);   // ~30 fps",
+        "gotcha": "At least, never exactly — about 15.6 ms granularity.",
+        "aliases": [
+          "Sleep",
+          "Sleep(33)",
+          "Sleep(16)",
+          "Sleep(1)",
+          "windows.h",
+          "<windows.h>"
+        ],
+        "def": "Sleep (windows.h) suspends the calling thread for at least the given number of milliseconds; actual duration depends on the scheduler's timer resolution.",
+        "model": "Telling the CPU \"wake me in about 33 ms\" — about, not exactly.",
+        "game": "Sleep(FRAME_MS) holds the runner near 30 frames a second so obstacles don't fly past in a blur.",
+        "gameCode": "Sleep(FRAME_MS);   // ~33 ms"
+      },
+      {
+        "id": "redraw-r",
+        "term": "\\r redraw",
+        "kind": "concept",
+        "what": "Print a whole frame starting with \\r and no \\n: it paints over the last one.",
+        "example": "printf(\"\\r%s  score %d\", lane, score);",
+        "aliases": [
+          "system(\"cls\")"
+        ],
+        "def": "Printing a carriage return without a newline returns the cursor to the start of the current line, so the next output overwrites it.",
+        "model": "Rewinding the typewriter to the start of the line and typing over it.",
+        "game": "The runner's entire renderer: one line, repainted every frame, never scrolling.",
+        "gameCode": "printf(\"\\r%s  score %-4d\", lane, score);\nfflush(stdout);"
+      },
+      {
+        "id": "fflush",
+        "term": "fflush(stdout)",
+        "kind": "function",
+        "what": "Push buffered output to the screen now. Needed when a line has no \\n.",
+        "example": "fflush(stdout);",
+        "aliases": [
+          "fflush(stdout)",
+          "stdout"
+        ],
+        "def": "fflush(stdout) writes any buffered output for standard output to the console immediately.",
+        "model": "Pushing the letter through the slot instead of waiting until the bag is full.",
+        "game": "The runner's frame has no \\n, so without fflush it sits in the buffer and nothing appears.",
+        "gameCode": "fflush(stdout);"
+      },
+      {
+        "id": "frame-buffer",
+        "term": "Frame buffer",
+        "kind": "concept",
+        "what": "Build the whole frame in memory, then show it in one go. No flicker.",
+        "example": "memset(lane, '.', LANE_LEN);\nlane[LANE_LEN] = '\\0';",
+        "aliases": [
+          "char lane[LANE_LEN + 1]",
+          "lane"
+        ],
+        "def": "A frame buffer is memory holding a complete frame that's built first and then presented in one operation.",
+        "model": "Painting the whole picture backstage, then rolling it out — instead of painting live in front of the audience.",
+        "game": "lane[] is the runner's frame buffer: fill it with road, stamp obstacles and the player, then print it once.",
+        "gameCode": "memset(lane, '.', LANE_LEN);\nlane[PLAYER_COL] = 'A';\nprintf(\"\\r%s\", lane);"
+      },
+      {
+        "id": "state-machine",
+        "term": "State machine",
+        "kind": "concept",
+        "what": "An enum for the current state and one switch that does that state's work.",
+        "example": "switch (state) {\ncase STATE_MENU: ...; break;\ncase STATE_PLAYING: ...; break;\n}",
+        "def": "A finite-state machine has a current state and transitions between states triggered by events; in C, typically an enum plus a switch.",
+        "model": "A board game's phases: setup, your turn, game over. Each phase has its own rules.",
+        "game": "MENU waits for a key, PLAYING moves and collides, GAME_OVER waits for R.",
+        "gameCode": "case STATE_GAME_OVER:\n    if (key == 'r') { runner_reset(r); r->state = STATE_PLAYING; }\n    break;"
+      },
+      {
+        "id": "sentinel",
+        "term": "Sentinel slot (-1)",
+        "kind": "concept",
+        "what": "A value meaning \"empty\", so a fixed array can be reused instead of allocating.",
+        "example": "obs[i] = -1;   // free slot",
+        "def": "A sentinel value is a reserved value meaning \"empty\" or \"end\", letting fixed-size storage represent varying amounts of data.",
+        "model": "An empty parking space marked with a cone instead of tearing up the space.",
+        "game": "obs[i] == -1 means slot i is free. Spawning finds a -1; dodging sets one back.",
+        "gameCode": "for (i = 0; i < MAX_OBS; i++)\n    if (obs[i] == -1) { obs[i] = LANE_LEN - 1; break; }"
+      },
+      {
+        "id": "game-loop-4",
+        "term": "Input → update → render → wait",
+        "kind": "concept",
+        "what": "The four steps every frame of every game.",
+        "example": "for (;;) { input(); update(); render(); Sleep(FRAME_MS); }",
+        "aliases": [
+          "runner_update",
+          "runner_render",
+          "runner_reset"
+        ],
+        "def": "A game loop repeats every frame: gather input, update the simulation, render the result, then wait or measure until the next frame.",
+        "model": "The heartbeat of every game: look, think, draw, breathe.",
+        "game": "main.c after the split is exactly these four lines, forever.",
+        "gameCode": "for (;;) {\n    key = read_key();\n    runner_update(&r, key);\n    runner_render(&r);\n    Sleep(FRAME_MS);\n}"
+      },
+      {
+        "id": "const-ptr",
+        "term": "const Runner* r",
+        "kind": "syntax",
+        "what": "A read-only pointer: the function promises not to change what it points at.",
+        "example": "void runner_render(const Runner* r);",
+        "aliases": [
+          "const Runner* r"
+        ],
+        "def": "A pointer to const (const T* p) permits reading the pointed-to object but not modifying it through that pointer.",
+        "model": "A visitor's pass: you can look around the house, but you can't move the furniture.",
+        "game": "runner_render only draws. const Runner* r makes the compiler stop you if drawing accidentally changes the score.",
+        "gameCode": "void runner_render(const Runner* r);"
+      },
+      {
+        "id": "lnk2005",
+        "term": "LNK2005: already defined",
+        "kind": "concept",
+        "what": "A body or variable in a header got included into two .c files.",
+        "example": "// runner.h: declarations only\nvoid runner_reset(Runner* r);",
+        "def": "LNK2005 means a symbol was defined in more than one object file — often because a header contains a definition and is included by several .c files.",
+        "model": "Two kitchens both claim to cook the same dish. The waiter doesn't know which to serve.",
+        "game": "int score = 0; in runner.h gives main.obj and runner.obj a score each.",
+        "gameCode": "// runner.h — declarations only, no bodies, no variables"
+      }
     ],
     "phase5": [
-      { "id": "winmain", "term": "WinMain", "kind": "concept", "what": "The starting point of a Windows GUI program, instead of main.", "example": "int WINAPI WinMain(HINSTANCE h, HINSTANCE p, LPSTR cmd, int show)", "aliases": ["WinMain", "HINSTANCE", "LPSTR"] },
-      { "id": "hwnd", "term": "HWND", "kind": "type", "what": "A handle — an ID number — for one window.", "example": "HWND hwnd = CreateWindowEx(...);", "aliases": ["HWND", "LRESULT", "WPARAM"] },
-      { "id": "message-loop", "term": "Message loop", "kind": "concept", "what": "Collect Windows' messages (keys, clicks, close) and hand each to your WndProc.", "example": "while (GetMessage(&msg, NULL, 0, 0)) {\n    TranslateMessage(&msg);\n    DispatchMessage(&msg);\n}", "aliases": ["GetMessage", "while (GetMessage(...))", "DispatchMessage"] },
-      { "id": "peekmessage", "term": "PeekMessage", "kind": "function", "what": "Like GetMessage but never waits — lets a game loop keep running.", "example": "while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) { ... }", "aliases": ["PeekMessage"] },
-      { "id": "wndproc", "term": "WndProc", "kind": "concept", "what": "Your function Windows calls with each message: WM_KEYDOWN, WM_PAINT, WM_DESTROY…", "example": "case WM_DESTROY: PostQuitMessage(0); return 0;", "aliases": ["WndProc", "WM_PAINT", "WM_DESTROY", "WNDCLASS"] },
-      { "id": "invalidate", "term": "InvalidateRect", "kind": "function", "what": "Tells Windows part of the window needs repainting (sends WM_PAINT).", "example": "InvalidateRect(hwnd, NULL, TRUE);" },
-      { "id": "link-libs", "term": "user32.lib gdi32.lib", "kind": "tool", "what": "Windows libraries that hold the window and drawing functions. Link them.", "example": "cl win32_window.c user32.lib gdi32.lib", "aliases": ["cl win32_window.c user32.lib gdi32.lib"] },
-      { "id": "frame-time", "term": "Frame time (QueryPerformanceCounter)", "kind": "concept", "what": "Measure how long each frame really took, instead of trusting Sleep.", "example": "QueryPerformanceCounter(&now);\ndt = (float)(now.QuadPart - last.QuadPart) / freq.QuadPart;" },
-      { "id": "double-buffer", "term": "Double buffering", "kind": "concept", "what": "Draw to an off-screen bitmap, then copy it to the window in one go.", "example": "BitBlt(hdc, 0, 0, w, h, backDC, 0, 0, SRCCOPY);" }
+      {
+        "id": "winmain",
+        "term": "WinMain",
+        "kind": "concept",
+        "what": "The starting point of a Windows GUI program, instead of main.",
+        "example": "int WINAPI WinMain(HINSTANCE h, HINSTANCE p, LPSTR cmd, int show)",
+        "aliases": [
+          "WinMain",
+          "HINSTANCE",
+          "LPSTR"
+        ],
+        "def": "WinMain is the conventional entry point for a Windows GUI application, receiving the instance handle, command line and initial show state.",
+        "model": "main's Windows twin, with a few extra items handed over at the door.",
+        "game": "The window prototype starts in WinMain, registers its window class, then runs the message loop.",
+        "gameCode": "int WINAPI WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int show)"
+      },
+      {
+        "id": "hwnd",
+        "term": "HWND",
+        "kind": "type",
+        "what": "A handle — an ID number — for one window.",
+        "example": "HWND hwnd = CreateWindowEx(...);",
+        "aliases": [
+          "HWND",
+          "LRESULT",
+          "WPARAM"
+        ],
+        "def": "HWND is a handle — an opaque identifier — for a window managed by the operating system.",
+        "model": "A cloakroom ticket. You don't hold the coat; you hold the number that gets it back.",
+        "game": "Every drawing or redraw call for the prototype's window takes its HWND.",
+        "gameCode": "InvalidateRect(hwnd, NULL, TRUE);"
+      },
+      {
+        "id": "message-loop",
+        "term": "Message loop",
+        "kind": "concept",
+        "what": "Collect Windows' messages (keys, clicks, close) and hand each to your WndProc.",
+        "example": "while (GetMessage(&msg, NULL, 0, 0)) {\n    TranslateMessage(&msg);\n    DispatchMessage(&msg);\n}",
+        "aliases": [
+          "GetMessage",
+          "while (GetMessage(...))",
+          "DispatchMessage"
+        ],
+        "def": "A Win32 message loop retrieves messages from the thread's queue and dispatches them to the window procedure.",
+        "model": "Checking your post and handing each letter to the right person.",
+        "game": "The prototype's loop sends WM_KEYDOWN to WndProc, which moves the player rectangle.",
+        "gameCode": "while (GetMessage(&msg, NULL, 0, 0)) {\n    TranslateMessage(&msg);\n    DispatchMessage(&msg);\n}"
+      },
+      {
+        "id": "peekmessage",
+        "term": "PeekMessage",
+        "kind": "function",
+        "what": "Like GetMessage but never waits — lets a game loop keep running.",
+        "example": "while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) { ... }",
+        "aliases": [
+          "PeekMessage"
+        ],
+        "def": "PeekMessage checks the message queue and returns immediately whether or not a message is available, optionally removing it.",
+        "model": "_kbhit for windows: anything for me? No? Fine — run a frame.",
+        "game": "The prototype switches to PeekMessage so the game updates every frame even when you're not touching the keys.",
+        "gameCode": "while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) DispatchMessage(&msg);\nupdate(dt); render();"
+      },
+      {
+        "id": "wndproc",
+        "term": "WndProc",
+        "kind": "concept",
+        "what": "Your function Windows calls with each message: WM_KEYDOWN, WM_PAINT, WM_DESTROY…",
+        "example": "case WM_DESTROY: PostQuitMessage(0); return 0;",
+        "aliases": [
+          "WndProc",
+          "WM_PAINT",
+          "WM_DESTROY",
+          "WNDCLASS"
+        ],
+        "def": "A window procedure is a callback the system calls to process messages for a window, returning a result for each.",
+        "model": "Your window's receptionist: every event knocks on its door.",
+        "game": "WM_KEYDOWN sets which keys are held; WM_DESTROY ends the program when you click X.",
+        "gameCode": "case WM_DESTROY: PostQuitMessage(0); return 0;"
+      },
+      {
+        "id": "invalidate",
+        "term": "InvalidateRect",
+        "kind": "function",
+        "what": "Tells Windows part of the window needs repainting (sends WM_PAINT).",
+        "example": "InvalidateRect(hwnd, NULL, TRUE);",
+        "def": "InvalidateRect marks all or part of a window's client area as needing repainting, causing a WM_PAINT message.",
+        "model": "Putting up a \"wet paint, redo me\" sign.",
+        "game": "After moving the player, invalidate so WM_PAINT draws the rectangle in its new place.",
+        "gameCode": "InvalidateRect(hwnd, NULL, FALSE);"
+      },
+      {
+        "id": "link-libs",
+        "term": "user32.lib gdi32.lib",
+        "kind": "tool",
+        "what": "Windows libraries that hold the window and drawing functions. Link them.",
+        "example": "cl win32_window.c user32.lib gdi32.lib",
+        "aliases": [
+          "cl win32_window.c user32.lib gdi32.lib"
+        ],
+        "def": "user32.lib and gdi32.lib are import libraries that let the linker resolve calls into the Windows user-interface and graphics DLLs.",
+        "model": "Library cards for the Windows kitchens that actually make windows and draw shapes.",
+        "game": "Without them the prototype compiles but can't link CreateWindowEx or FillRect.",
+        "gameCode": "cl win32_window.c user32.lib gdi32.lib"
+      },
+      {
+        "id": "frame-time",
+        "term": "Frame time (QueryPerformanceCounter)",
+        "kind": "concept",
+        "what": "Measure how long each frame really took, instead of trusting Sleep.",
+        "example": "QueryPerformanceCounter(&now);\ndt = (float)(now.QuadPart - last.QuadPart) / freq.QuadPart;",
+        "def": "Frame time is the measured duration of one loop iteration, typically from a high-resolution counter such as QueryPerformanceCounter.",
+        "model": "A stopwatch on every lap instead of guessing how long a lap takes.",
+        "game": "Measure dt each frame and the player moves the same speed on every PC.",
+        "gameCode": "dt = (float)(now.QuadPart - last.QuadPart) / freq.QuadPart;"
+      },
+      {
+        "id": "double-buffer",
+        "term": "Double buffering",
+        "kind": "concept",
+        "what": "Draw to an off-screen bitmap, then copy it to the window in one go.",
+        "example": "BitBlt(hdc, 0, 0, w, h, backDC, 0, 0, SRCCOPY);",
+        "def": "Double buffering draws a frame to an off-screen surface, then copies it to the screen in one operation to avoid flicker.",
+        "model": "The runner's char frame buffer, made of pixels.",
+        "game": "The prototype draws player and obstacles into a back bitmap, then BitBlts it to the window.",
+        "gameCode": "BitBlt(hdc, 0, 0, w, h, back, 0, 0, SRCCOPY);"
+      }
     ],
     "phase6": [
-      { "id": "delta-time", "term": "dt (delta time)", "kind": "concept", "what": "Seconds since last frame. Multiply speeds by it so movement is the same at any fps.", "example": "x += speed * dt;   // speed in pixels/second", "aliases": ["dt", "speed * dt", "x += speed * dt;", "x += 300.0f * dt;", "x += 5;"] },
-      { "id": "aabb", "term": "AABB collision", "kind": "concept", "what": "Two axis-aligned boxes overlap if they overlap on x and on y.", "example": "a.x < b.x + b.w && a.x + a.w > b.x &&\na.y < b.y + b.h && a.y + a.h > b.y" },
-      { "id": "next-state", "term": "next_state", "kind": "concept", "what": "Change state once, at the end of the frame, so no code runs twice.", "example": "next_state = STATE_GAME_OVER;   // apply after update", "aliases": ["next_state", "state = STATE_GAME_OVER"] },
-      { "id": "update-render", "term": "update vs render", "kind": "concept", "what": "Update changes the game; render only draws it. Pause = skip update, keep render.", "example": "if (!paused) update(dt);\nrender();", "aliases": ["_process", "_physics_process"] },
-      { "id": "textout", "term": "TextOut / DrawText", "kind": "function", "what": "GDI functions that draw text in the window — for the score.", "example": "TextOut(hdc, 10, 10, buf, (int)strlen(buf));", "aliases": ["TextOut", "DrawText"] }
+      {
+        "id": "delta-time",
+        "term": "dt (delta time)",
+        "kind": "concept",
+        "what": "Seconds since last frame. Multiply speeds by it so movement is the same at any fps.",
+        "example": "x += speed * dt;   // speed in pixels/second",
+        "aliases": [
+          "dt",
+          "speed * dt",
+          "x += speed * dt;",
+          "x += 300.0f * dt;",
+          "x += 5;"
+        ],
+        "def": "Delta time is the elapsed time since the previous frame, used to scale per-frame changes into per-second rates.",
+        "model": "Paying by the hour, not by the visit. A fast PC visits more often but earns the same per hour.",
+        "game": "x += speed * dt moves the player 300 pixels a second at 60 fps or 144 fps.",
+        "gameCode": "x += 300.0f * dt;"
+      },
+      {
+        "id": "aabb",
+        "term": "AABB collision",
+        "kind": "concept",
+        "what": "Two axis-aligned boxes overlap if they overlap on x and on y.",
+        "example": "a.x < b.x + b.w && a.x + a.w > b.x &&\na.y < b.y + b.h && a.y + a.h > b.y",
+        "def": "An axis-aligned bounding box test detects overlap between two rectangles by comparing their extents on each axis.",
+        "model": "Two boxes touch only if their shadows overlap on the floor and on the wall.",
+        "game": "Player box versus obstacle box — overlap ends the run.",
+        "gameCode": "bool hit = a.x < b.x + b.w && a.x + a.w > b.x &&\n           a.y < b.y + b.h && a.y + a.h > b.y;"
+      },
+      {
+        "id": "next-state",
+        "term": "next_state",
+        "kind": "concept",
+        "what": "Change state once, at the end of the frame, so no code runs twice.",
+        "example": "next_state = STATE_GAME_OVER;   // apply after update",
+        "aliases": [
+          "next_state",
+          "state = STATE_GAME_OVER"
+        ],
+        "def": "Deferring a state change to the end of the frame ensures all of this frame's logic runs under one consistent state.",
+        "model": "Finish the current turn before switching to the next player.",
+        "game": "A hit sets next_state = GAME_OVER; the switch finishes the frame, then the change applies.",
+        "gameCode": "next_state = STATE_GAME_OVER;\n/* ...end of frame... */\nstate = next_state;"
+      },
+      {
+        "id": "update-render",
+        "term": "update vs render",
+        "kind": "concept",
+        "what": "Update changes the game; render only draws it. Pause = skip update, keep render.",
+        "example": "if (!paused) update(dt);\nrender();",
+        "aliases": [
+          "_process",
+          "_physics_process"
+        ],
+        "def": "Separating update (changing game state) from render (drawing it) lets each run at its own rate and keeps drawing free of side effects.",
+        "model": "The referee decides what happened; the camera only films it.",
+        "game": "Pause skips update but keeps render, so the paused screen still draws.",
+        "gameCode": "if (!paused) update(dt);\nrender();"
+      },
+      {
+        "id": "textout",
+        "term": "TextOut / DrawText",
+        "kind": "function",
+        "what": "GDI functions that draw text in the window — for the score.",
+        "example": "TextOut(hdc, 10, 10, buf, (int)strlen(buf));",
+        "aliases": [
+          "TextOut",
+          "DrawText"
+        ],
+        "def": "TextOut and DrawText are GDI functions that draw a string into a device context at a position or within a rectangle.",
+        "model": "A label printer for your window.",
+        "game": "Drawing \"Score: 12\" in the corner of the prototype's window instead of the console.",
+        "gameCode": "char buf[32];\nsprintf_s(buf, sizeof buf, \"Score: %d\", score);\nTextOut(hdc, 10, 10, buf, (int)strlen(buf));"
+      }
     ]
   }
 }
