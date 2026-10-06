@@ -115,11 +115,18 @@ frame 2:  A...#.......#.....  score 13   <span class="c-cm">← drawn straight o
                   <div class="task-note">Write the reset once as a function and call it from both the start and the restart. Phase 6 uses this exact shape. <span class="task-time">~1 hr</span></div>
                 </div>
               </div>
+              <div class="task" data-id="p4b-multifile">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Split the runner into main.c, runner.c and runner.h, built with build.bat <span class="task-tag t-industry">Industry</span></div>
+                  <div class="task-note">Same game, three files. Do it now, on code you understand, before Phase 6 makes it five. <span class="task-time">~1.5 hrs</span></div>
+                </div>
+              </div>
               <div class="task" data-id="p4b-commit-github">
                 <div class="task-cb">✓</div>
                 <div class="task-content">
-                  <div class="task-text">Commit ascii_runner.c and show it to your partner <span class="task-tag t-git">Git</span></div>
-                  <div class="task-note">git add ascii_runner.c → git commit -m "feat: ASCII runner with state machine and dodging" → git push. This is the first thing you've built that's actually playable — get eyes on it. <span class="task-time">~15 min</span></div>
+                  <div class="task-text">Commit the runner and show it to your partner <span class="task-tag t-git">Git</span></div>
+                  <div class="task-note">git add . → git commit -m "feat: ASCII runner with state machine and dodging" → git push. This is the first thing you've built that's actually playable — get eyes on it. <span class="task-time">~15 min</span></div>
                 </div>
               </div>
             </div>
@@ -256,7 +263,7 @@ frame 2:  A...#.......#.....  score 13   <span class="c-cm">← drawn straight o
         <!-- STUCK -->
         <div class="section-block acc-section">
           <div class="section-block-header">
-            <span class="badge badge-orange">Stuck?</span>&nbsp;&nbsp;Real-time terminal problems
+            <span class="badge badge-orange">Stuck &amp; Curious</span>&nbsp;&nbsp;Real-time terminal problems
             <span class="acc-toggle-icon">▼</span>
           </div>
           <div class="acc-body section-block-body">
@@ -274,8 +281,27 @@ frame 2:  A...#.......#.....  score 13   <span class="c-cm">← drawn straight o
                 <div class="stuck-a">Two separate causes. First, your reaction window is one frame long, so at <span class="cmd">Sleep(33)</span> a key can wait up to 33 ms before the loop even looks. Lower <span class="cmd">FRAME_MS</span> to 16 and it halves. Second, holding a key down makes Windows repeat it, which stuffs dozens of characters into the buffer — if you only call <span class="cmd">_getch()</span> once per frame you're working through a backlog that gets further behind every frame. That's what the <span class="cmd">while (_kbhit())</span> loop is for: drain the buffer completely each frame and keep only the last key.</div>
               </div>
               <div class="stuck-item">
+                <div class="stuck-q">After splitting into files: LNK2005 "already defined in main.obj"</div>
+                <div class="stuck-a">Something with a body ended up in runner.h — a function body, or a variable like <span class="cmd">int score = 0;</span>. Both .c files include the header, so both get a copy, and the linker finds two things with one name. Headers hold <em>declarations</em> only: prototypes, <span class="cmd">#define</span>s, the enum, the struct type. Bodies and variables live in exactly one .c file.</div>
+              </div>
+              <div class="stuck-item">
                 <div class="stuck-q">Sleep(16) doesn't give me 60 fps, and Sleep(1) doesn't give me 1000</div>
                 <div class="stuck-a">It never will. <span class="cmd">Sleep</span> promises "at least this long," and Windows only wakes sleeping threads on a scheduler tick — around 15.6 ms by default. So <span class="cmd">Sleep(1)</span> typically costs you 1 to 15 ms, and <span class="cmd">Sleep(16)</span> often lands nearer 31. It's fine for an ASCII game and completely inadequate for a real one. <strong class="t-text">The real fix is not to trust the sleep:</strong> measure how long the frame actually took and feed that elapsed time into your movement. That's Phase 5's frame timer task, and in Godot it arrives for free as the <span class="cmd">delta</span> parameter.</div>
+              </div>
+            </div>
+            <div class="eyebrow eyebrow--md t-blue curious-lbl">// Curious — the "why" questions</div>
+            <div class="stuck-items">
+              <div class="stuck-item">
+                <div class="stuck-q">Why do <span class="cmd">_kbhit</span> and <span class="cmd">_getch</span> start with an underscore?</div>
+                <div class="stuck-a">They aren't standard C. <span class="cmd">&lt;conio.h&gt;</span> is a Microsoft extension, and the underscore is how Microsoft marks names that aren't part of the C standard. This file won't compile on a Mac or Linux. That's fine here — and it's one of the reasons SDL2 and Godot exist: they hide the different keyboard APIs of every platform behind one.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">Why doesn't the key I press show up on screen?</div>
+                <div class="stuck-a"><span class="cmd">_getch</span> deliberately doesn't <em>echo</em> — print the character back — the way typing normally does. If it did, every D you pressed would land in the middle of your track and wreck the frame. <span class="cmd">_getche</span> is the echoing version, and you'll never want it in a game.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">Wouldn't it be simpler to read input on a separate thread?</div>
+                <div class="stuck-a">It sounds simpler and isn't. Two threads touching the same variables need locks, and getting those wrong produces bugs that only happen one run in a hundred. Games almost always do what you're doing: check the input once at the top of every frame. Godot works the same way — input is gathered, then your <span class="cmd">_process</span> runs.</div>
               </div>
             </div>
           </div>
@@ -368,6 +394,215 @@ frame 2:  A...#.......#.....  score 13   <span class="c-cm">← drawn straight o
             <div class="cp-item" data-id="cp-p4b-2"><span class="cp-cb">✓</span><span class="cp-text">The track repaints in place with \r — one line, no flicker, no system("cls")</span></div>
             <div class="cp-item" data-id="cp-p4b-3"><span class="cp-cb">✓</span><span class="cp-text">Obstacles scroll toward you, dodging scores a point, and a hit ends the run</span></div>
             <div class="cp-item" data-id="cp-p4b-4"><span class="cp-cb">✓</span><span class="cp-text">MENU → PLAYING → GAME_OVER → restart all work, and it's committed to GitHub</span></div>
+          </div>
+        </div>
+
+        <!-- MULTI-FILE SPLIT -->
+        <div class="section-block acc-section open">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Starter Code</span>&nbsp;&nbsp;Split it — runner.h, runner.c, main.c
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body">
+            <div class="code-island" style="border-top:1px solid var(--border);padding:14px 16px">
+              <div class="eyebrow eyebrow--md t-muted2 mb-10">// Why now</div>
+              <div class="prose t-text">
+                Your Phase 6 game will be five files or more, and you'll be learning a window at the same time. Splitting is much easier on a program you already understand completely. The game state moves into a <span class="cmd">Runner</span> struct, the switch and the render step become functions that take a <span class="cmd">Runner*</span>, and <span class="cmd">main</span> shrinks to the four-step loop. <strong class="t-accent">Same game, same output — only the shape changes.</strong>
+              </div>
+            </div>
+            <div class="code-wrap">
+              <div class="code-label">
+                <span>runner.h — what exists (no bodies, no variables)</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+<pre><span class="c-pp">#pragma once</span>
+
+<span class="c-pp">#define</span> LANE_LEN   <span class="c-num">50</span>
+<span class="c-pp">#define</span> PLAYER_COL <span class="c-num">4</span>
+<span class="c-pp">#define</span> MAX_OBS    <span class="c-num">8</span>
+
+<span class="c-kw">typedef enum</span> { <span class="c-var">STATE_MENU</span>, <span class="c-var">STATE_PLAYING</span>, <span class="c-var">STATE_GAME_OVER</span> } <span class="c-type">GameState</span>;
+
+<span class="c-kw">typedef struct</span> {
+    <span class="c-type">int</span>       <span class="c-var">obs</span>[MAX_OBS];   <span class="c-cm">// column of each obstacle, -1 = empty slot</span>
+    <span class="c-type">GameState</span> <span class="c-var">state</span>;
+    <span class="c-type">int</span>       <span class="c-var">ducking</span>;
+    <span class="c-type">int</span>       <span class="c-var">score</span>;
+    <span class="c-type">int</span>       <span class="c-var">frame</span>;
+} <span class="c-type">Runner</span>;
+
+<span class="c-type">void</span> <span class="c-fn">runner_reset</span>(<span class="c-type">Runner</span>* <span class="c-var">r</span>);            <span class="c-cm">// TODO 1 and TODO 6, written once</span>
+<span class="c-type">void</span> <span class="c-fn">runner_update</span>(<span class="c-type">Runner</span>* <span class="c-var">r</span>, <span class="c-type">int</span> <span class="c-var">key</span>);  <span class="c-cm">// the whole switch</span>
+<span class="c-type">void</span> <span class="c-fn">runner_render</span>(<span class="c-type">const</span> <span class="c-type">Runner</span>* <span class="c-var">r</span>);     <span class="c-cm">// builds the lane and prints it once</span></pre>
+            </div>
+            <div class="code-wrap mt-2">
+              <div class="code-label">
+                <span>main.c — just the loop</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+<pre><span class="c-pp">#define</span> WIN32_LEAN_AND_MEAN
+<span class="c-pp">#include</span> <span class="c-str">&lt;windows.h&gt;</span>   <span class="c-cm">// Sleep — only main.c needs Windows now</span>
+<span class="c-pp">#include</span> <span class="c-str">&lt;conio.h&gt;</span>
+<span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
+<span class="c-pp">#include</span> <span class="c-str">"runner.h"</span>
+
+<span class="c-pp">#define</span> FRAME_MS <span class="c-num">33</span>
+
+<span class="c-type">int</span> <span class="c-fn">main</span>(<span class="c-type">void</span>) {
+    <span class="c-type">Runner</span> <span class="c-var">r</span>;
+    <span class="c-type">int</span>    <span class="c-var">key</span>;
+
+    <span class="c-fn">runner_reset</span>(&amp;<span class="c-var">r</span>);
+    <span class="c-var">r</span>.state = <span class="c-var">STATE_MENU</span>;
+
+    <span class="c-kw">for</span> (;;) {
+        <span class="c-var">key</span> = <span class="c-num">0</span>;
+        <span class="c-kw">while</span> (<span class="c-fn">_kbhit</span>()) <span class="c-var">key</span> = <span class="c-fn">_getch</span>();   <span class="c-cm">// 1. input</span>
+        <span class="c-kw">if</span> (<span class="c-var">key</span> == <span class="c-str">'q'</span> || <span class="c-var">key</span> == <span class="c-str">'Q'</span>) <span class="c-kw">break</span>;
+
+        <span class="c-fn">runner_update</span>(&amp;<span class="c-var">r</span>, <span class="c-var">key</span>);              <span class="c-cm">// 2. update</span>
+        <span class="c-fn">runner_render</span>(&amp;<span class="c-var">r</span>);                   <span class="c-cm">// 3. render</span>
+        <span class="c-fn">Sleep</span>(FRAME_MS);                       <span class="c-cm">// 4. wait</span>
+    }
+
+    <span class="c-fn">printf</span>(<span class="c-str">"\n\nFinal score: %d\n"</span>, <span class="c-var">r</span>.score);
+    <span class="c-kw">return</span> <span class="c-num">0</span>;
+}</pre>
+            </div>
+            <div class="code-wrap mt-2">
+              <div class="code-label">
+                <span>build.bat — two source files, one word</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+<pre class="code-panel fs-11" style="overflow-x:auto"><span class="c-cm">@echo off</span>
+<span class="c-pp">set</span> FLAGS=<span class="c-num">/W4 /WX /Zi /Od /external:anglebrackets /external:W0</span>
+<span class="c-pp">set</span> SOURCES=<span class="c-str">main.c runner.c</span>
+
+<span class="c-str">cl</span> <span class="c-num">%FLAGS%</span> <span class="c-str">%SOURCES%</span> <span class="c-num">/Fe:runner.exe</span>
+<span class="c-kw">if</span> <span class="c-num">%ERRORLEVEL%</span> <span class="c-kw">neq</span> 0 (
+    <span class="c-str">echo  BUILD FAILED.</span>
+    <span class="c-kw">exit</span> /b 1
+)
+<span class="c-str">echo  BUILD OK — runner.exe</span></pre>
+            </div>
+            <div class="code-island" style="border-top:1px solid var(--border);padding:14px 16px">
+              <div class="eyebrow eyebrow--md t-muted2 mb-10">// runner.c is yours to write</div>
+              <div class="prose t-text">
+                Start it with <span class="cmd">#include "runner.h"</span>, <span class="cmd">&lt;stdio.h&gt;</span> and <span class="cmd">&lt;string.h&gt;</span>, then move code in from ascii_runner.c: the reset into <span class="cmd">runner_reset</span>, the switch into <span class="cmd">runner_update</span>, the render step into <span class="cmd">runner_render</span> (the <span class="cmd">lane</span> buffer becomes a local variable in there). Every <span class="cmd">score</span> becomes <span class="cmd">r-&gt;score</span>. Build after each function you move, not at the end.<br><br>
+                <span class="cmd">const Runner* r</span> in <span class="cmd">runner_render</span> is a promise: "I'll read through this pointer, never write". If you accidentally change <span class="cmd">r-&gt;score</span> while drawing, the compiler stops you.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BUILD SPEC -->
+        <div class="section-block acc-section open" data-order="-1">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Build Spec</span>&nbsp;&nbsp;Write the requirements before you build
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="prose prose--sm t-muted2 mb-14">Three requirements per build, written <strong class="t-text">before</strong> you open the editor. Each line is something you can test: run the program and answer yes or no. This is the <span class="cmd">It should:</span> list from the Phase 07 "implement this" prompt — writing it for yourself now is practice for writing it for Claude later. Tick the build when all three pass.</div>
+            <div class="spec">
+              <div class="spec-item">
+                <h4><span>ascii_runner.c</span> — it should:</h4>
+                <ul>
+                  <li>keep running and repainting at about 30 frames a second whether or not a key is pressed</li>
+                  <li>score a point for every obstacle that passes, and end the run when one reaches the player while not ducking</li>
+                  <li>go MENU → PLAYING → GAME_OVER, and restart with R without relaunching</li>
+                </ul>
+              </div>
+              <div class="spec-item">
+                <h4><span>the three-file split</span> — it should:</h4>
+                <ul>
+                  <li>build from <span class="cmd">main.c</span> and <span class="cmd">runner.c</span> with a single <span class="cmd">build</span>, zero warnings</li>
+                  <li>keep <span class="cmd">main</span> down to the loop: input, <span class="cmd">runner_update</span>, <span class="cmd">runner_render</span>, <span class="cmd">Sleep</span></li>
+                  <li>play exactly the same as the single-file version</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STRETCH -->
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Stretch Goal</span>&nbsp;&nbsp;ASCII Runner v2 — faster, a second obstacle, a best score
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="prose prose--sm t-muted2 mb-14">Optional, and it doesn't count toward your progress. Do it while the base build is still fresh in your head — the second version is where it sticks.</div>
+            <div class="tasks">
+              <div class="task" data-id="p4b-stretch-runner" data-optional>
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Stretch: ASCII Runner v2 — speeds up, a jump obstacle, best score saved <span class="task-tag t-stretch">Stretch</span></div>
+                  <div class="task-note">Do this on the three-file version — every change lands in runner.c, and main.c shouldn't need to change at all. <span class="task-time">~2 hrs</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="spec mt-14">
+              <div class="spec-item">
+                <h4><span>Requirements</span> — it should:</h4>
+                <ul>
+                  <li>get faster as the score climbs: the gap between new obstacles shrinks every 10 points, never below a floor you choose</li>
+                  <li>add a second obstacle, <span class="cmd">^</span>, that you jump over with J — ducking under it still ends the run</li>
+                  <li>save the best score to <span class="cmd">best.txt</span> and show <span class="cmd">Best: N</span> on the menu (reuse your Phase 3 save code)</li>
+                </ul>
+              </div>
+            </div>
+            <div class="callout callout--yellow mt-14">
+              <div class="eyebrow eyebrow--md t-yellow mb-8">// Hints, not answers</div>
+              <div class="stack gap-8 fs-11">
+                <div><span class="t-muted2">Two obstacle types means each slot needs a column <em>and</em> a type. An <span class="cmd">Obstacle</span> struct with <span class="cmd">int col; char type;</span> is cleaner than two parallel arrays — that's Phase 3.5 paying off.</span></div>
+                <div><span class="t-muted2">A jump has to last longer than one frame or you'll never clear anything. Keep a <span class="cmd">jump_frames</span> counter: set it to 6 on J, count it down every frame, and you're airborne while it's above 0.</span></div>
+                <div><span class="t-muted2">Draw the jumping player in a different character (<span class="cmd">'^'</span> clashes — try <span class="cmd">'Y'</span>) so you can see the state on screen.</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MIXED REVIEW -->
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Mixed Review</span>&nbsp;&nbsp;one from Phase 03, one from Phase 3.5
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="prose prose--sm t-muted2 mb-14">Two questions from earlier phases. Remembering something after a gap is what makes it stay — answer out loud first.</div>
+            <div class="quiz-items">
+              <div class="quiz-item">
+                <div class="quiz-q">1. <span class="t-muted">[Phase 03]</span> The lane is <span class="cmd">char lane[LANE_LEN + 1]</span>. What's the last valid index, and what is the +1 for?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">The last index is <span class="cmd">LANE_LEN</span> itself — the array has LANE_LEN + 1 boxes, numbered from 0. The extra box holds the <span class="cmd">'\0'</span>, so <span class="cmd">%s</span> knows where the track ends. Without it, printf would run on into whatever memory comes next.</div>
+                </details>
+              </div>
+              <div class="quiz-item">
+                <div class="quiz-q">2. <span class="t-muted">[Phase 3.5]</span> You write <span class="cmd">void runner_update(Runner r, int key)</span> — no asterisk — and it compiles. What does the game do?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">Nothing moves, ever. The function gets a copy of the Runner, updates the copy, and the copy is thrown away at the closing brace. Your real <span class="cmd">r</span> in main never changes. It's the photocopy problem again, which is why every function that changes the game takes a <span class="cmd">Runner*</span>.</div>
+                </details>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAIR WITH KING -->
+        <div class="section-block acc-section" data-order="9">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Pair with King</span>&nbsp;&nbsp;C Programming: A Modern Approach — chapters 14–15
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <dl class="king">
+              <dt>Read</dt><dd>Ch 14 <em>The Preprocessor</em> · Ch 15 <em>Writing Large Programs</em>.</dd>
+              <dt>Focus on</dt><dd><span class="cmd">#define</span> and <span class="cmd">#include</span>, and what conditional compilation is for (ch 14). Source files, header files, sharing macros, types and prototypes between files, and how to divide a program into files (ch 15) — that's exactly the runner split.</dd>
+              <dt>Note</dt><dd>King protects headers with <span class="cmd">#ifndef</span> / <span class="cmd">#define</span> / <span class="cmd">#endif</span> guards. <span class="cmd">#pragma once</span> does the same job in one line and every compiler you'll use supports it. Know both when you see them.</dd>
+              <dt>Skip</dt><dd>Macros with parameters beyond the basics, and the makefile section — build.bat is your makefile.</dd>
+            </dl>
+            <div class="fs-11 t-muted mt-12">Chapter numbers are from the 2nd edition.</div>
           </div>
         </div>
 

@@ -268,6 +268,127 @@ Frame ends → loop → next frame</pre>
           </div>
         </div>
 
+        <!-- STUCK & CURIOUS -->
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-orange">Stuck &amp; Curious</span>&nbsp;&nbsp;the prototype specifically
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="stuck-items">
+              <div class="stuck-item">
+                <div class="stuck-q">My player moves faster on my PC than on my partner's</div>
+                <div class="stuck-a">Your movement is per <em>frame</em>, not per <em>second</em>. <span class="cmd">x += 5;</span> moves 5 pixels every frame, so a machine running at 144 fps moves more than twice as far as one at 60. Use the frame time from Phase 5: <span class="cmd">x += speed * dt;</span> where <span class="cmd">speed</span> is pixels per second and <span class="cmd">dt</span> is the frame time in seconds. Now both machines move the same distance per second.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">The player sinks into walls before the collision stops them</div>
+                <div class="stuck-a">You're moving first and testing afterwards, then doing nothing about the overlap. The simplest fix: remember the old position, move, test, and if the boxes now overlap, put the player back where they were. It's not physics, but it's what plenty of shipped games do.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">Something happens twice when the state changes</div>
+                <div class="stuck-a">You changed <span class="cmd">state</span> halfway through the update, and later code in the same frame ran with the new state. Either <span class="cmd">break</span> straight out of the switch after changing state, or set a <span class="cmd">next_state</span> variable and apply it at the very end of the frame.</div>
+              </div>
+            </div>
+            <div class="eyebrow eyebrow--md t-blue curious-lbl">// Curious — the "why" questions</div>
+            <div class="stuck-items">
+              <div class="stuck-item">
+                <div class="stuck-q">Why test boxes (AABB) instead of the real shapes?</div>
+                <div class="stuck-a">Speed and simplicity. Two axis-aligned boxes overlap if and only if they overlap on x <em>and</em> on y — four comparisons. Exact shapes can cost hundreds. Most games, Godot included, test the boxes first and only bother with exact shapes when the boxes say "maybe". Players almost never notice the corners.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">Why keep update and render separate?</div>
+                <div class="stuck-a">Because they change for different reasons. Pause the game and you stop calling update but keep calling render, so the screen still draws. Run physics at a fixed rate and you call update a fixed number of times while render runs as fast as it can. Godot gives you exactly this split as <span class="cmd">_physics_process</span> and <span class="cmd">_process</span>.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">Why an enum for the state, not just an int?</div>
+                <div class="stuck-a">An int works — the compiler turns the enum into ints anyway. But <span class="cmd">state = STATE_GAME_OVER</span> says what it means and <span class="cmd">state = 2</span> doesn't, and the debugger's Watch panel shows the name too. When you add a PAUSED state in the middle of the list, nothing that uses the names breaks.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BUILD SPEC -->
+        <div class="section-block acc-section open" data-order="-1">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Build Spec</span>&nbsp;&nbsp;Write the requirements before you build
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="prose prose--sm t-muted2 mb-14">Three requirements per build, written <strong class="t-text">before</strong> you open the editor. Each line is something you can test: run the program and answer yes or no. This is the <span class="cmd">It should:</span> list from the Phase 07 "implement this" prompt — writing it for yourself now is practice for writing it for Claude later. Tick the build when all three pass.</div>
+            <div class="spec">
+              <div class="spec-item">
+                <h4><span>the prototype</span> — it should:</h4>
+                <ul>
+                  <li>run in a window with at least three states — MENU, PLAYING, GAME_OVER — and move between them with keys</li>
+                  <li>move your Player struct with the keyboard at the same speed whatever the frame rate (<span class="cmd">speed * dt</span>)</li>
+                  <li>end the run when the player's box overlaps an obstacle's box, and restart from GAME_OVER without relaunching</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STRETCH -->
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Stretch Goal</span>&nbsp;&nbsp;prototype v2 — something worth playing twice
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="prose prose--sm t-muted2 mb-14">Optional, and it doesn't count toward your progress. Do it while the base build is still fresh in your head — the second version is where it sticks.</div>
+            <div class="tasks">
+              <div class="task" data-id="p6-stretch-prototype" data-optional>
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Stretch: prototype v2 — moving enemies, a score on screen, a best score that survives <span class="task-tag t-stretch">Stretch</span></div>
+                  <div class="task-note">This is where it starts to feel like a game. Pick the order yourself. <span class="task-time">~3 hrs</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="spec mt-14">
+              <div class="spec-item">
+                <h4><span>Requirements</span> — it should:</h4>
+                <ul>
+                  <li>spawn enemies from an array of structs that move on their own, and are removed when they leave the screen</li>
+                  <li>draw the score on screen in the window (GDI's <span class="cmd">TextOut</span> or <span class="cmd">DrawText</span>), not in the console</li>
+                  <li>save the best score to a file and show it on the menu — your Phase 3 and 4.5 code, a third time</li>
+                </ul>
+              </div>
+            </div>
+            <div class="callout callout--yellow mt-14">
+              <div class="eyebrow eyebrow--md t-yellow mb-8">// Then play it with your partner</div>
+              <div class="prose prose--sm t-muted2">Watch them play without saying anything. Every time they hesitate or get it wrong, write it down. That list is your next week of work — and it's the most useful thing you'll learn before the Godot handoff.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MIXED REVIEW -->
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Mixed Review</span>&nbsp;&nbsp;one from Phase 4.5, one from Phase 05
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="prose prose--sm t-muted2 mb-14">Two questions from earlier phases. Remembering something after a gap is what makes it stay — answer out loud first.</div>
+            <div class="quiz-items">
+              <div class="quiz-item">
+                <div class="quiz-q">1. <span class="t-muted">[Phase 4.5]</span> Why write the reset as one function and call it from both the start and the restart?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">So there's exactly one place that defines "a fresh game". With two copies, you'll add a new variable, reset it in one place and forget the other — and the bug only shows up on the <em>second</em> run. One function, one source of truth.</div>
+                </details>
+              </div>
+              <div class="quiz-item">
+                <div class="quiz-q">2. <span class="t-muted">[Phase 05]</span> Your movement code is <span class="cmd">x += 5;</span> and the frame timer says 16 ms. How fast is the player moving, and what happens on a 144 Hz screen?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">About 300 pixels a second (5 × ~60 frames). On a machine running at 144 fps it's 720 pixels a second — more than twice as fast, from the same code. Multiply by the frame time instead: <span class="cmd">x += 300.0f * dt;</span> gives 300 pixels a second everywhere.</div>
+                </details>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>

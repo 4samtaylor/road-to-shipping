@@ -833,7 +833,7 @@ function stageSize(key, els) {
   }
   if (key === 'practice') {
     var t = $$(TASK, box).length, m = 0;
-    $$('.task-time', box).forEach(function (x) {
+    $$(TASK + ' .task-time', box).forEach(function (x) {
       var n = /(\d+(?:\.\d+)?)\s*(h|min)/i.exec(x.textContent);   // "~20 min", "~1.5 hrs"
       if (n) m += /^h/i.test(n[2]) ? Math.round(+n[1] * 60) : +n[1];
     });

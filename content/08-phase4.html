@@ -98,7 +98,7 @@ Release/
 
         <div class="section-block acc-section">
           <div class="section-block-header">
-            <span class="badge badge-orange">Stuck?</span>&nbsp;&nbsp;Git specifics
+            <span class="badge badge-orange">Stuck &amp; Curious</span>&nbsp;&nbsp;Git specifics
             <span class="acc-toggle-icon">▼</span>
           </div>
           <div class="acc-body section-block-body">
@@ -114,6 +114,21 @@ Release/
               <div class="stuck-item">
                 <div class="stuck-q">What should a commit message say?</div>
                 <div class="stuck-a">Format: <span class="cmd">type: short description</span>. Types: feat (new feature), fix (bug fix), refactor (restructuring), docs (readme changes). Example: <span class="cmd">feat: add player_take_damage function</span>. Future you will thank present you.</div>
+              </div>
+            </div>
+            <div class="eyebrow eyebrow--md t-blue curious-lbl">// Curious — the "why" questions</div>
+            <div class="stuck-items">
+              <div class="stuck-item">
+                <div class="stuck-q">Why does Git make me <span class="cmd">git add</span> before I commit?</div>
+                <div class="stuck-a">So you choose what goes into each snapshot. You might have fixed a bug and half-started a feature in the same sitting. Staging lets you commit just the fix, with a message that says exactly that, and leave the feature for its own commit. The staging area is the "this goes in the photo" pile.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">What actually is a commit?</div>
+                <div class="stuck-a">A full snapshot of every tracked file, plus a note saying which commit came before it, who made it and why. That long hex string (<span class="cmd">a3f9c2e…</span>) is a fingerprint of all of that together — change one byte anywhere and the fingerprint changes. That's why history can't be quietly edited, and why "which commit broke it?" always has an exact answer.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">Why keep .exe, .obj and .pdb out of the repo?</div>
+                <div class="stuck-a">They're generated: anyone can rebuild them from the source in seconds. They're also binary, so Git can't merge them — two people building at once means a conflict on a file neither of you wrote. And they're big, and every version is kept forever. Commit the recipe (your .c files and build.bat), not the cake.</div>
               </div>
             </div>
           </div>
