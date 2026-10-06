@@ -487,6 +487,10 @@ function buildIndex() {
       out.push({ kind: 'check', title: cpLabel(c), where: s.num + ' ' + s.title, run: function () { revealTask(c); } });
     });
   });
+  if (GLOSS) Object.keys(glossById).forEach(function (id) {
+    var e = glossById[id], s = byId[e.phase];
+    out.push({ kind: 'term', title: e.term + ' — ' + e.what, where: s ? s.num + ' ' + s.title : '', run: function () { openTerm(id, null); } });
+  });
   return out;
 }
 function actions() {
@@ -515,7 +519,7 @@ function renderPal(q) {
       return { kind: 'phase', title: s.num + '  ' + s.title, where: s.week || '', run: function () { goTo(s.id); } };
     }));
   } else {
-    var W = { phase: 0, action: 1, section: 2, help: 2, task: 3, check: 4 };
+    var W = { phase: 0, action: 1, term: 2, section: 2, help: 2, task: 3, check: 4 };
     res = index.concat(actions()).map(function (r) {
       var i = r.title.toLowerCase().indexOf(q);
       if (i < 0) return null;
@@ -577,6 +581,7 @@ function spy() {
     $$('.strip-cell').forEach(function (i) { i.classList.toggle('on', i.dataset.strip === cur.id); });
     updateDock();
     updateHelpFab();
+    renderDockSheet();
     state._lastId = cur.id;
   }
   var h = document.documentElement.scrollHeight - window.innerHeight;
@@ -679,9 +684,9 @@ function buildDock() {
   var shell = $('.shell');
   shell.insertAdjacentHTML('beforeend',
     '<aside class="dock" id="dock">' +
-    '<div class="dk-sec"><div class="dk-lbl"><span>Session</span><b id="dk-closed"></b></div>' +
-    '<div class="dk-card"><div class="dk-clock" id="dk-clock">0:00</div><div class="dk-sub" id="dk-sub">not started</div>' +
-    '<div class="dk-btns"><button class="dk-btn" id="dk-toggle">Start</button><button class="dk-btn" id="dk-reset">Reset</button></div></div></div>' +
+    '<div class="dk-sec"><div class="dk-lbl"><span>This session</span><b id="dk-closed"></b></div>' +
+    '<button class="dk-card dk-session" data-time title="Where your time went"><div class="dk-clock" id="dk-clock">0m</div><div class="dk-sub" id="dk-sub"></div></button></div>' +
+    '<div class="dk-sec"><div class="dk-lbl"><span>Cheat sheet</span><b id="dk-sheet-where"></b></div><div id="dk-sheet" class="dk-sheet"></div></div>' +
     '<div class="dk-sec"><div class="dk-lbl"><span>Session scratchpad</span></div>' +
     '<textarea id="dk-pad" placeholder="Loose thoughts, errors to chase, questions for next session."></textarea></div>' +
     '<div class="dk-sec"><div class="dk-lbl"><span>Next checkpoint</span></div><div class="dk-card dk-cp" id="dk-cp"></div></div>' +
@@ -690,27 +695,6 @@ function buildDock() {
   document.body.classList.add('has-dock');
   $('#dk-pad').value = state._scratch || '';
   $('#dk-pad').addEventListener('input', function (e) { state._scratch = e.target.value; save(); });
-  $('#dk-toggle').addEventListener('click', function () {
-    var s = state._timer || { acc: 0, at: 0 };
-    if (s.at) { s.acc += Date.now() - s.at; s.at = 0; } else { s.at = Date.now(); }
-    state._timer = s; save(); tickClock();
-  });
-  $('#dk-reset').addEventListener('click', function () { state._timer = { acc: 0, at: 0 }; state._closed = 0; save(); tickClock(); });
-  setInterval(tickClock, 1000);
-  tickClock();
-}
-function tickClock() {
-  var s = state._timer || { acc: 0, at: 0 };
-  var ms = s.acc + (s.at ? Date.now() - s.at : 0);
-  var mins = Math.floor(ms / 60000), secs = Math.floor(ms / 1000) % 60;
-  var el = $('#dk-clock');
-  if (!el) return;
-  el.textContent = Math.floor(mins / 60) + ':' + String(mins % 60).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
-  el.classList.toggle('run', !!s.at);
-  $('#dk-sub').textContent = s.at ? 'running' : (ms ? 'paused' : 'not started');
-  $('#dk-toggle').textContent = s.at ? 'Pause' : (ms ? 'Resume' : 'Start');
-  var today = new Date().toISOString().slice(0, 10);
-  $('#dk-closed').textContent = (state._logDay === today && +state._closed || 0) + ' closed today';
 }
 function promptsIn(o) { return o ? $$('.prompt-item', o.el).concat(o.help ? $$('.prompt-item', o.help) : []) : []; }
 function updateDock() {
@@ -874,7 +858,7 @@ function stagePhase(s) {
     if (bins[st[0]].length) html += '<button data-stage="' + s.id + '-' + st[0] + '"><b>' + (++n) + '</b> ' + st[1] + '</button>';
   });
   if (bins.help.length) html += '<button class="stage-help" data-help="' + s.id + '">Stuck? Help</button>';
-  inner.insertAdjacentHTML('afterbegin', html + '</nav>');
+  inner.insertAdjacentHTML('afterbegin', html + '</nav><div class="ph-time" data-time role="button" tabindex="0" title="Where your time went"></div>');
 
   n = 0;
   STAGES.forEach(function (st) {
@@ -926,12 +910,335 @@ document.addEventListener('click', function (e) {
   if (!$('#help').hidden && !e.target.closest('#help, [data-help], .pal-bd, .toast')) closeHelp();
 });
 
+/* ─── v14: CHEAT SHEETS, SKILL LEVELS, TIME ───────────────────
+   content/glossary.json lists the concepts each phase introduces.
+   Inline code in the content that matches an entry becomes a link to
+   a pop-up card; the dock (desktop) and a drawer (narrower screens)
+   show the current phase's whole sheet. Every entry can be rated
+   Not started / Practiced / Solid (state._skills → skills table).
+   Time on each phase is counted while you're active on it
+   (state._time → user_state rows "_time:<phase>"); the current
+   session lives on this device only (state._session).
+   ───────────────────────────────────────────────────────────── */
+var GLOSS = null, glossById = {}, glossAlias = {};
+var LEVELS = ['Not started', 'Practiced', 'Solid'];
+var KIND_ORDER = ['concept', 'syntax', 'type', 'function', 'tool'];
+if (!state._skills) state._skills = {};
+if (!state._time) state._time = {};
+
+function fmtDur(sec) {
+  sec = Math.round(sec || 0);
+  if (sec < 60) return sec ? '<1m' : '0m';
+  var m = Math.floor(sec / 60);
+  if (m < 60) return m + 'm';
+  return Math.floor(m / 60) + 'h ' + (m % 60 ? (m % 60) + 'm' : '').trim();
+}
+
+function loadGlossary() {
+  return fetch('content/glossary.json', { cache: 'no-cache' })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (g) {
+      if (!g || !g.phases) return;
+      GLOSS = g;
+      Object.keys(g.phases).forEach(function (pid) {
+        g.phases[pid].forEach(function (e) {
+          e.phase = pid;
+          glossById[e.id] = e;
+          (e.aliases || []).forEach(function (a) { (glossAlias[a] = glossAlias[a] || []).push(e); });
+          if (e.match) { try { e.re = new RegExp(e.match); } catch (x) {} }
+        });
+      });
+      linkTerms();
+      $$('.stage-nav').forEach(function (nav) {
+        var pid = nav.closest('.phase').id;
+        if (g.phases[pid]) nav.insertAdjacentHTML('beforeend', '<button class="stage-sheet" data-sheet="' + pid + '">Cheat sheet</button>');
+      });
+      renderDockSheet();
+      index = null;
+    })
+    .catch(function () {});
+}
+
+function findEntry(text, pid) {
+  var t = text.trim().replace(/\s+/g, ' ');
+  var tries = [t, t.replace(/;$/, ''), t.replace(/\(.*$/, ''), t.split(' ')[0]];
+  var pick = function (list) {
+    var same = list.filter(function (e) { return e.phase === pid; })[0];
+    return same || list[0];
+  };
+  for (var i = 0; i < tries.length; i++) if (glossAlias[tries[i]]) return pick(glossAlias[tries[i]]);
+  var hits = Object.keys(glossById).map(function (k) { return glossById[k]; })
+    .filter(function (e) { return e.re && e.re.test(t); });
+  return hits.length ? pick(hits) : null;
+}
+function linkTerms() {
+  sections.forEach(function (s) {
+    var scopes = [s.el].concat(s.help ? [s.help] : []);
+    scopes.forEach(function (root) {
+      $$('.cmd', root).forEach(function (el) {
+        if (el.closest('pre, .term') || el.dataset.term) return;
+        var e = findEntry(el.textContent || '', s.id);
+        if (!e) return;
+        // link a term once per section, so the page isn't a sea of underlines
+        var block = el.closest('.section-block, .checkpoint, .setup-guide') || root;
+        var seen = block._terms || (block._terms = {});
+        if (seen[e.id]) return;
+        seen[e.id] = 1;
+        el.classList.add('term');
+        el.dataset.term = e.id;
+        el.setAttribute('role', 'button');
+        el.tabIndex = 0;
+      });
+    });
+  });
+}
+
+function skillHTML(id, compact) {
+  var lv = +state._skills[id] || 0;
+  return '<div class="skill' + (compact ? ' skill--dots' : '') + '" data-skill="' + id + '" role="group" aria-label="How well do you know this?">' +
+    LEVELS.map(function (l, i) {
+      return '<button data-lv="' + i + '" class="lv' + i + (lv === i ? ' on' : '') + '" title="' + l + '" aria-pressed="' + (lv === i) + '">' + (compact ? '' : l) + '</button>';
+    }).join('') + '</div>';
+}
+function setSkill(id, lv) {
+  state._skills[id] = lv;
+  $$('.skill[data-skill="' + id + '"] button').forEach(function (b) {
+    var on = +b.dataset.lv === lv;
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-pressed', on);
+  });
+  $$('.cs-count').forEach(function (c) { c.textContent = sheetCount(c.dataset.phase); });
+  save();
+}
+function sheetCount(pid) {
+  var list = (GLOSS && GLOSS.phases[pid]) || [];
+  var solid = list.filter(function (e) { return +state._skills[e.id] === 2; }).length;
+  var practiced = list.filter(function (e) { return +state._skills[e.id] === 1; }).length;
+  return solid + ' solid · ' + practiced + ' practiced · ' + list.length + ' total';
+}
+function sheetHTML(pid) {
+  var list = (GLOSS && GLOSS.phases[pid]) || [];
+  if (!list.length) return '<div class="cs-empty">No cheat sheet for this section.</div>';
+  var h = '<div class="cs-count" data-phase="' + pid + '">' + sheetCount(pid) + '</div>';
+  KIND_ORDER.forEach(function (k) {
+    var items = list.filter(function (e) { return e.kind === k; });
+    if (!items.length) return;
+    h += '<div class="cs-kind">' + esc(GLOSS.kinds[k] || k) + '</div>';
+    items.forEach(function (e) {
+      h += '<div class="cs-item"><button class="cs-term" data-term="' + e.id + '">' + esc(e.term) + '</button>' +
+        skillHTML(e.id, true) + '<div class="cs-what">' + esc(e.what) + '</div></div>';
+    });
+  });
+  return h;
+}
+
+/* pop-up card for one entry */
+var tpFor = null;
+function openTerm(id, anchor) {
+  var e = glossById[id];
+  if (!e) return;
+  var tp = $('#tp');
+  if (!tp) {
+    document.body.insertAdjacentHTML('beforeend', '<div class="tp" id="tp" role="dialog" aria-labelledby="tp-term" hidden></div>');
+    tp = $('#tp');
+  }
+  var s = byId[e.phase];
+  tp.innerHTML = '<div class="tp-hd"><span class="tp-kind">' + esc((GLOSS.kinds[e.kind] || e.kind).replace(/s$/, '')) + '</span>' +
+    '<button class="icb tp-x" aria-label="Close">✕</button></div>' +
+    '<div class="tp-term" id="tp-term">' + esc(e.term) + '</div>' +
+    '<div class="tp-what">' + esc(e.what) + '</div>' +
+    (e.example ? '<pre class="tp-ex">' + esc(e.example) + '</pre>' : '') +
+    (e.gotcha ? '<div class="tp-gotcha"><b>Watch out:</b> ' + esc(e.gotcha) + '</div>' : '') +
+    '<div class="tp-lbl">How well do you know it?</div>' + skillHTML(e.id, false) +
+    '<div class="tp-foot"><span>From ' + esc(s ? s.num + ' · ' + s.title : e.phase) + '</span>' +
+    '<button class="tp-all" data-sheet="' + e.phase + '">Whole cheat sheet</button></div>';
+  tp.hidden = false;
+  tpFor = anchor || null;
+  placeTerm();
+  $('.tp-x', tp).focus({ preventScroll: true });
+}
+function placeTerm() {
+  var tp = $('#tp');
+  if (!tp || tp.hidden) return;
+  if (window.matchMedia('(max-width: 860px)').matches || !tpFor || !document.body.contains(tpFor)) {
+    tp.classList.add('sheet'); tp.style.left = tp.style.top = ''; return;
+  }
+  tp.classList.remove('sheet');
+  var r = tpFor.getBoundingClientRect(), w = tp.offsetWidth, hgt = tp.offsetHeight;
+  var left = Math.min(window.innerWidth - w - 12, Math.max(12, r.left));
+  var top = r.bottom + 8;
+  if (top + hgt > window.innerHeight - 12) top = Math.max(TOPBAR + 8, r.top - hgt - 8);
+  tp.style.left = left + 'px';
+  tp.style.top = top + 'px';
+}
+function closeTerm() { var tp = $('#tp'); if (tp && !tp.hidden) { tp.hidden = true; if (tpFor && tpFor.focus) tpFor.focus({ preventScroll: true }); tpFor = null; } }
+window.addEventListener('scroll', function () { if (tpFor && !window.matchMedia('(max-width: 860px)').matches) closeTerm(); }, { passive: true });
+window.addEventListener('resize', placeTerm);
+
+/* drawer: whole cheat sheet, or time breakdown, for narrower screens */
+function openDrawer(kind, pid) {
+  var d = $('#sheet');
+  if (!d) {
+    document.body.insertAdjacentHTML('beforeend', '<aside class="help sheet-drawer" id="sheet" role="dialog" aria-labelledby="sheet-title" hidden>' +
+      '<div class="help-hd"><div><div class="help-kick" id="sheet-kick"></div><h2 id="sheet-title"></h2></div>' +
+      '<button class="icb" id="sheet-x" aria-label="Close">✕</button></div><div class="help-body" id="sheet-body"></div></aside>');
+    d = $('#sheet');
+    $('#sheet-x').addEventListener('click', closeDrawer);
+  }
+  closeHelp();
+  var s = byId[pid];
+  if (kind === 'time') {
+    $('#sheet-kick').textContent = 'Time';
+    $('#sheet-title').textContent = 'Where your time went';
+    $('#sheet-body').innerHTML = timeHTML();
+  } else {
+    $('#sheet-kick').textContent = 'Cheat sheet';
+    $('#sheet-title').textContent = s ? s.num + ' · ' + s.title : '';
+    $('#sheet-body').innerHTML = sheetHTML(pid);
+  }
+  d.hidden = false;
+  document.body.classList.add('help-open');
+  $('#sheet-body').scrollTop = 0;
+  $('#sheet-x').focus({ preventScroll: true });
+}
+function closeDrawer() { var d = $('#sheet'); if (d && !d.hidden) { d.hidden = true; document.body.classList.remove('help-open'); } }
+function dockShowsSheet() { var d = $('#dock'); return !!(d && d.offsetParent); }
+
+/* ─── time on task ─── */
+var ACTIVE_MS = 5 * 60 * 1000, SESSION_GAP = 30 * 60 * 1000;
+var lastInput = Date.now(), lastTick = Date.now(), unsavedSecs = 0;
+['pointerdown', 'keydown', 'wheel', 'touchstart', 'scroll'].forEach(function (ev) {
+  window.addEventListener(ev, function () { lastInput = Date.now(); }, { passive: true });
+});
+function activePhase() {
+  var open = sections.filter(function (s) { return s.isPhase && s.el.classList.contains('open') && byId[s.id] && $('.tasks, .checkpoint', s.el); });
+  var spied = byId[lastSpy];
+  if (spied && spied.isPhase && spied.el.classList.contains('open')) return spied.id;
+  return open.length === 1 ? open[0].id : null;
+}
+function session() {
+  var now = Date.now(), ss = state._session;
+  if (!ss || now - ss.last > SESSION_GAP) ss = state._session = { start: now, last: now, by: {} };
+  return ss;
+}
+function tickTime() {
+  var now = Date.now(), dt = Math.min(now - lastTick, 15000);
+  lastTick = now;
+  if (document.hidden || now - lastInput > ACTIVE_MS) { updateTimeUI(); return; }
+  var pid = activePhase();
+  if (pid) {
+    var secs = dt / 1000, ss = session();
+    state._time[pid] = Math.round(((+state._time[pid] || 0) + secs) * 10) / 10;
+    ss.by[pid] = (ss.by[pid] || 0) + secs;
+    ss.last = now;
+    unsavedSecs += secs;
+    if (unsavedSecs >= 60) { unsavedSecs = 0; save(); }
+  }
+  updateTimeUI();
+}
+function phaseDone(s) {
+  var c = counts(s);
+  return (c.tasks + c.cps) > 0 && c.done === c.tasks && c.cpsDone === c.cps;
+}
+function sessionSecs() {
+  var ss = state._session;
+  if (!ss || Date.now() - ss.last > SESSION_GAP) return 0;
+  return Object.keys(ss.by).reduce(function (a, k) { return a + ss.by[k]; }, 0);
+}
+function updateTimeUI() {
+  var cur = sessionSecs();
+  var chip = $('#tb-time');
+  if (chip) chip.innerHTML = '<em>session</em> <b>' + fmtDur(cur) + '</b>';
+  sections.forEach(function (s) {
+    if (!s.isPhase) return;
+    var spent = +state._time[s.id] || 0, done = phaseDone(s);
+    var line = $('.ph-time', s.el);
+    if (line) {
+      line.classList.toggle('done', done);
+      line.innerHTML = done
+        ? '✓ Phase complete · <b>' + fmtDur(spent) + '</b> total'
+        : 'Time on this phase <b>' + fmtDur(spent) + '</b>' + (state._session && state._session.by[s.id] ? ' · this session <b>' + fmtDur(state._session.by[s.id]) + '</b>' : '');
+    }
+    var est = $('.ph-est', s.el);
+    if (est && spent >= 60) est.textContent = done ? '✓ ' + fmtDur(spent) : fmtDur(spent) + ' spent';
+  });
+  var dk = $('#dk-clock');
+  if (dk) {
+    dk.textContent = fmtDur(cur);
+    var pid = activePhase();
+    $('#dk-sub').textContent = pid ? 'on ' + byId[pid].num + ' · ' + fmtDur(+state._time[pid] || 0) + ' total' : 'open a phase to start counting';
+    var today = new Date().toISOString().slice(0, 10);
+    $('#dk-closed').textContent = (state._logDay === today && +state._closed || 0) + ' closed today';
+  }
+}
+function timeHTML() {
+  var ss = state._session, live = ss && Date.now() - ss.last <= SESSION_GAP;
+  var h = '<div class="tm-sec"><div class="tm-lbl">This session' + (live ? ' · since ' + new Date(ss.start).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }) : '') + '</div>';
+  if (live && sessionSecs() > 0) {
+    h += Object.keys(ss.by).sort(function (a, b) { return ss.by[b] - ss.by[a]; }).map(function (pid) {
+      var s = byId[pid];
+      return s ? '<div class="tm-row"><span>' + esc(s.num + ' · ' + s.title) + '</span><b>' + fmtDur(ss.by[pid]) + '</b></div>' : '';
+    }).join('') + '<div class="tm-row tm-total"><span>Total</span><b>' + fmtDur(sessionSecs()) + '</b></div>';
+  } else h += '<div class="tm-empty">Nothing yet. Time counts while you\'re active in an open phase.</div>';
+  h += '</div><div class="tm-sec"><div class="tm-lbl">All time, by phase</div>';
+  var all = 0;
+  sections.forEach(function (s) {
+    if (!s.isPhase || !$('.tasks, .checkpoint', s.el)) return;
+    var t = +state._time[s.id] || 0; all += t;
+    h += '<div class="tm-row' + (phaseDone(s) ? ' done' : '') + '"><span>' + (phaseDone(s) ? '✓ ' : '') + esc(s.num + ' · ' + s.title) + '</span><b>' + fmtDur(t) + '</b></div>';
+  });
+  h += '<div class="tm-row tm-total"><span>Total</span><b>' + fmtDur(all) + '</b></div></div>' +
+    '<div class="tm-note">Counted while this page is open and you\'ve used it in the last 5 minutes. A break of 30 minutes starts a new session.</div>';
+  return h;
+}
+document.addEventListener('visibilitychange', function () {
+  if (document.hidden) { unsavedSecs = 0; save(); } else { lastTick = Date.now(); }
+});
+setInterval(tickTime, 5000);
+
+/* clicks for terms, skills, sheets and the time drawer */
+document.addEventListener('click', function (e) {
+  if (document.body.classList.contains('editing')) return;
+  var el;
+  if ((el = e.target.closest('.skill [data-lv]'))) { e.stopPropagation(); setSkill(el.closest('.skill').dataset.skill, +el.dataset.lv); return; }
+  if ((el = e.target.closest('[data-term]'))) { e.preventDefault(); e.stopPropagation(); openTerm(el.dataset.term, el); return; }
+  if ((el = e.target.closest('[data-sheet]'))) {
+    e.stopPropagation(); closeTerm();
+    var pid = el.dataset.sheet;
+    if (dockShowsSheet()) { renderDockSheet(pid); var ds = $('#dk-sheet'); if (ds) { ds.scrollIntoView({ block: 'start' }); flash(ds); } }
+    else openDrawer('sheet', pid);
+    return;
+  }
+  if ((el = e.target.closest('[data-time]'))) { e.stopPropagation(); closeMenu(); openDrawer('time'); return; }
+  var tp = $('#tp');
+  if (tp && !tp.hidden && !e.target.closest('#tp')) closeTerm();
+  var d = $('#sheet');
+  if (d && !d.hidden && !e.target.closest('#sheet, .pal-bd, .toast')) closeDrawer();
+}, true);
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') { closeTerm(); closeDrawer(); }
+});
+
+var dockSheetFor = '';
+function renderDockSheet(pid) {
+  var box = $('#dk-sheet');
+  if (!box || !GLOSS) return;
+  if (!pid) {
+    var s = byId[lastSpy], act = activePhase();
+    pid = s && GLOSS.phases[s.id] ? s.id : (dockSheetFor || (act && GLOSS.phases[act] ? act : 'phase1'));
+  }
+  if (!pid || pid === dockSheetFor && box.innerHTML) return;
+  dockSheetFor = pid;
+  var sec = byId[pid];
+  $('#dk-sheet-where').textContent = sec ? sec.num : '';
+  box.innerHTML = sheetHTML(pid);
+}
 /* ─── CONTENT EDITING ─────────────────────────────────────────
    Anchors are stable containers; an edit stores that anchor's
    innerHTML (with runtime UI stripped) under state._edits.
    ───────────────────────────────────────────────────────────── */
 if (!state._edits) state._edits = {};
-var INJECTED = '.tn-btn, .tn-wrap, .ptoc, .ph-prog, .ph-est, .em-ctl, .em-add, .goals, .stage-nav, .stage-hd';
+var INJECTED = '.tn-btn, .tn-wrap, .ptoc, .ph-prog, .ph-est, .em-ctl, .em-add, .goals, .stage-nav, .stage-hd, .ph-time';
 
 function markAnchors() {
   sections.forEach(function (s) {
@@ -952,6 +1259,7 @@ function cleanHTML(el) {
   $$(INJECTED, c).forEach(function (n) { n.remove(); });
   $$('[contenteditable]', c).forEach(function (n) { n.removeAttribute('contenteditable'); });
   $$('.flash', c).forEach(function (n) { n.classList.remove('flash'); });
+  $$('.term', c).forEach(function (n) { n.classList.remove('term'); n.removeAttribute('data-term'); });
   $$('[role], [tabindex], [aria-checked], [aria-expanded], [aria-description]', c).forEach(function (n) {
     ['role', 'tabindex', 'aria-checked', 'aria-expanded', 'aria-description'].forEach(function (a) { n.removeAttribute(a); });
   });
@@ -1118,6 +1426,7 @@ function downloadHTML() {
   $$(INJECTED, doc).forEach(function (n) { n.remove(); });
   $$('[contenteditable]', doc).forEach(function (n) { n.removeAttribute('contenteditable'); });
   $$('.flash', doc).forEach(function (n) { n.classList.remove('flash'); });
+  $$('.term', doc).forEach(function (n) { n.classList.remove('term'); ['data-term', 'role', 'tabindex'].forEach(function (a) { n.removeAttribute(a); }); });
   var rail = $('#rail', doc);
   if (rail) rail.innerHTML = '<button class="rl-resume" id="rl-resume"><span class="rl-resume-txt"></span></button><div class="rl-lastvisit" id="rl-lastvisit"></div>';
   var seg = $('#tb-seg', doc); if (seg) seg.innerHTML = '';
@@ -1224,16 +1533,23 @@ document.addEventListener('keydown', function (e) {
   e.preventDefault(); t.click();
 });
 a11ySync();
+loadGlossary();
+updateTimeUI();
 
 
 /* ─── hooks for js/cloud.js and js/github.js ─── */
 window.RTS_app = {
   getState: function () { return state; },
   setState: function (s) {
-    var keep = { _edits: state._edits, _theme: state._theme, _phases: state._phases, _solo: state._solo, _timer: state._timer };
+    var keep = { _edits: state._edits, _theme: state._theme, _phases: state._phases, _solo: state._solo, _session: state._session };
     state = s; Object.keys(keep).forEach(function (k) { if (keep[k] !== undefined && !(k in s)) state[k] = keep[k]; });
     if (!state._notes) state._notes = {};
+    if (!state._skills) state._skills = {};
+    if (!state._time) state._time = {};
     applyState();
+    $$('.skill[data-skill]').forEach(function (g) { var lv = +state._skills[g.dataset.skill] || 0; $$('button', g).forEach(function (b) { b.classList.toggle('on', +b.dataset.lv === lv); }); });
+    $$('.cs-count').forEach(function (c) { c.textContent = sheetCount(c.dataset.phase); });
+    updateTimeUI();
     try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
   },
   toast: toast,
