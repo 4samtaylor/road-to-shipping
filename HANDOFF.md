@@ -1,6 +1,6 @@
 # Road to Shipping: session handoff
 
-Last updated: 6 October 2026 (v16). Owner: Sam (GitHub `4samtaylor`). Read this first in a new session.
+Last updated: 13 October 2026 (v17). Owner: Sam (GitHub `4samtaylor`). Read this first in a new session.
 
 ## What this is
 
@@ -22,6 +22,7 @@ A C game-dev learning roadmap (13 phases: C → terminal game → Win32 window �
 | Quiet sync indicator (background time saves don't flash "saving…") | Live (PR #8) |
 | v15: dashboard home, one section per page, three-tab explainers, floating window, optional Ask Claude links | Live (PR #9) |
 | v16: theme picker (6 themes) + reading/code font picker | Live (PR #10) |
+| v17: Weekly Practice page (self-study checklist that resets Mondays, 3 progress-based exercise picks from `content/exercises.json`) | Branch `v17-weekly-practice` |
 | Supabase | Tables `profiles`, `progress`, `notes`, `user_state`, `skills`; RLS on all; newest-wins triggers; `delete_my_account()`. Migrations: `init_progress_sync`, `harden_functions`, `skills_and_admin_views`. Security advisor: only the intentional `delete_my_account` and a "leaked password protection" suggestion |
 | Admin views | `admin.user_overview`, `admin.user_activity` (Table Editor → schema dropdown → `admin`). Not exposed to the API |
 | Auth settings | Confirm email off, min password 8, new sign-ups off (Sam did these) |
@@ -42,6 +43,7 @@ content/manifest.json      file order + rail/dashboard groups
 content/config.json        owner/repo/branch + Supabase URL + publishable key (public by design)
 content/NN-*.html          one fragment per phase/section
 content/glossary.json      cheat-sheet + explainer entries per phase (ids are skill ids)
+content/exercises.json     weekly practice exercise pool (ids are 'done' keys; never rename)
 supabase/setup.sql         readable summary of the first two migrations
 supabase/migrations/       migration files from 2026-10-06 on
 design/theme-workshop/     snapshot of the theme design canvas
@@ -60,6 +62,7 @@ privacy.html, sw.js, manifest.webmanifest, icons/, fonts/, setup.ps1, README.md
 - **Skill levels:** dots on cheat-sheet rows; `state._skills` → `skills` table.
 - **Time:** counted every 5 s while visible, active in the last 5 min, and on a phase page. `state._time[phase]` syncs as `user_state` rows `_time:<phase>` (merge keeps the max). `state._session` is device-only and resets after a 30-min gap. Background time saves don't show "saving…".
 - **Themes + fonts (v16):** `[data-theme]` token blocks in `css/app.css` plus the `THEMES` list in `js/app.js`. `--font-mono` is the reading/UI font (historical name); `--font-code` is for code. Non-default fonts load from Google Fonts on demand. Theme and fonts are per device.
+- **Weekly Practice (v17):** `#sync-agenda` (id kept so time/URLs survive). `renderWeekly()` fills `[data-weekly]` mounts. `state._week` = {wk (ISO week), check, picks, basis, swaps, target, lastTarget}; `state._exDone` = exercise id → ISO week. Both sync as `user_state` (`STATE_KEYS` in cloud.js). Picks: slot 0 = current phase (next task's phase if started, else furthest started, Phase 7 ignored), slot 1 = review from an earlier started phase, slot 2 = break/predict from any reached phase; seeded by week + swap count, prefer not-yet-done. A slot not done this week re-picks when the reached phases change.
 - **Ask Claude:** off by default (menu toggle; `rts_ask_claude`). Links to `https://claude.ai/new?q=<prompt>`, which uses Sam's own Pro plan. Not yet confirmed that the prefill works while signed in; ask Sam.
 
 ## How sync works (js/cloud.js)
@@ -90,6 +93,8 @@ privacy.html, sw.js, manifest.webmanifest, icons/, fonts/, setup.ps1, README.md
 - Inputs under 16px make iPhone zoom in.
 
 ## Next steps
+
+0. **Session notes (proposed, awaiting Sam's choice):** make S1/S2 addable in-app instead of PR-only. Options in chat: in-app journal stored in `user_state` (`_jnl:<id>` rows), auto-draft from the week's activity, or Ask Claude prefill.
 
 1. **Pilot (running):** two weeks on PC + iPhone. Check ticks, notes, skills and time match across devices, and offline edits survive.
 2. **Ask Claude:** confirm with Sam that the claude.ai prefill works while signed in.

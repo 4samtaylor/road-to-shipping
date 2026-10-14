@@ -2377,3 +2377,78 @@ pre, code, kbd, .cmd, .code-panel, .code-inset, .fw-code, .tp-ex, .keycap, .cs-t
 @media (max-width: 480px) { .ap-desc { display: none; } .ap-swatch { height: 40px; } .ap-theme { padding: 8px; } }
 
 .no-trans *, .no-trans *::before, .no-trans *::after { transition: none !important; }
+
+/* ─── v17: weekly practice ─── */
+.wk-live { display: flex; flex-direction: column; gap: 14px; }
+.wk-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 12px; color: var(--muted2); letter-spacing: .06em; }
+.wk-count { font-family: var(--font-display); font-size: 18px; font-weight: 800; color: var(--purple); letter-spacing: 0; }
+.wk-count.full { color: var(--accent); }
+.wk-bar { height: 4px; background: var(--surface2); border: 1px solid var(--border); }
+.wk-bar i { display: block; height: 100%; background: var(--purple); transition: width .25s; }
+.wk-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.wk-row { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); background: var(--surface); }
+.wk-item { display: flex; gap: 12px; align-items: flex-start; width: 100%; text-align: left; cursor: pointer; padding: 12px 14px;
+  background: none; border: 0; color: var(--text); font-family: var(--font-mono); }
+.wk-item:hover { background: var(--surface2); }
+.wk-item.done { background: var(--done-bg); }
+.wk-cb { flex: 0 0 18px; height: 18px; margin-top: 1px; border: 1.5px solid var(--border2); display: flex; align-items: center; justify-content: center;
+  font-size: 12px; line-height: 1; color: var(--bg); }
+.wk-item.done .wk-cb { background: var(--accent); border-color: var(--accent); }
+.wk-txt { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.wk-txt b { font-size: 13.5px; font-weight: 500; line-height: 1.45; }
+.wk-txt small { font-size: 12px; color: var(--muted2); line-height: 1.55; }
+.wk-item.done .wk-txt b { color: var(--muted2); text-decoration: line-through; }
+.wk-act { display: flex; gap: 10px; align-items: center; padding: 0 14px 10px 44px; font-size: 11.5px; color: var(--muted2); }
+.wk-link, .wk-ex-ph { background: none; border: 0; padding: 0; cursor: pointer; color: var(--purple); font: inherit; text-decoration: underline; text-underline-offset: 3px; text-align: left; }
+.wk-link:hover, .wk-ex-ph:hover { color: var(--accent); }
+.wk-target { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.wk-target label { font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--purple); }
+.wk-target input { font: inherit; font-family: var(--font-mono); font-size: 16px; padding: 10px 12px; background: var(--bg); color: var(--text);
+  border: 1px solid var(--border2); border-radius: 0; width: 100%; box-sizing: border-box; }
+.wk-target input:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 0 1px var(--purple); }
+.wk-target small { font-size: 12px; color: var(--muted2); line-height: 1.5; }
+.wk-target small b { color: var(--text); font-weight: 500; }
+
+.wk-basis { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--muted2); }
+.wk-basis b { color: var(--text); font-weight: 500; }
+.wk-exs { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; }
+.wk-ex { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; background: var(--purple-wash); border: 1px solid var(--purple-line); border-top: 2px solid var(--purple); min-width: 0; }
+.wk-ex.done { background: var(--done-bg); border-top-color: var(--accent); }
+.wk-ex-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted2); }
+.wk-slot { color: var(--purple); font-weight: 500; }
+.wk-ex.done .wk-slot { color: var(--accent); }
+.wk-mins { margin-left: auto; letter-spacing: .04em; text-transform: none; }
+.wk-ex-ph { font-size: 11.5px; color: var(--muted2); }
+.wk-ex-title { margin: 2px 0 0; font-size: 15px; font-weight: 500; line-height: 1.35; color: var(--text); }
+.wk-ex-what { margin: 0; font-size: 12.5px; line-height: 1.6; color: var(--text); }
+.wk-ex-steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 5px; font-size: 12.5px; line-height: 1.55; color: var(--muted2); }
+.wk-ex-done { font-size: 12px; line-height: 1.55; color: var(--muted2); border-top: 1px dashed var(--border2); padding-top: 8px; }
+.wk-ex-done b { color: var(--purple); font-weight: 500; margin-right: 4px; }
+.wk-ex .cmd { font-size: .92em; }
+.wk-ex-act { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: auto; padding-top: 4px; }
+.wk-tick, .wk-swap { font-family: var(--font-mono); font-size: 12px; padding: 7px 12px; cursor: pointer; border: 1px solid var(--border2); background: var(--surface); color: var(--text); }
+.wk-tick { border-color: var(--purple-line-strong); color: var(--purple); }
+.wk-tick:hover, .wk-swap:hover { border-color: var(--accent); color: var(--accent); }
+.wk-tick.on { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.wk-ask { font-size: 12px; color: var(--muted2); text-decoration: underline; text-underline-offset: 3px; }
+.wk-ask:hover { color: var(--accent); }
+@media (max-width: 600px) {
+  .wk-act { padding-left: 14px; }
+  .wk-exs { grid-template-columns: minmax(0, 1fr); }
+  .wk-ex { padding: 12px; }
+  .wk-tick, .wk-swap { font-size: 13px; padding: 9px 14px; }
+}
+
+/* ─── v17: ☰ fix ───
+   Hiding the rail with display:none took it out of the grid, so the page
+   slid into the rail's column (0px wide) and the side panel took the page's.
+   Pin each column, and collapse the rail column to 0 when it's off. */
+@media (min-width: 861px) {
+  .shell > .rl { grid-column: 1; }
+  .shell > .main { grid-column: 2; }
+  .shell > .dock { grid-column: 3; }
+  body.rail-off .shell { --rail-w: 0px; }
+}
+@media (min-width: 1200px) {
+  body.has-dock.rail-off .shell { grid-template-columns: 0 minmax(0, 1fr) var(--dock-w); }
+}

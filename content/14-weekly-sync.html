@@ -1,41 +1,41 @@
 <!-- WEEKLY LOOP -->
   <div class="weekly">
-    <div class="weekly-label">// Repeating practice pattern</div>
+    <div class="weekly-label">// Repeating practice pattern · on your own</div>
     <h2>The Weekly Cycle</h2>
     <div class="loop-grid">
       <div class="loop-step">
         <div class="loop-num">1</div>
-        <div class="loop-text">Learn one concept</div>
+        <div class="loop-text">Practice: this week's exercises</div>
       </div>
       <div class="loop-step">
         <div class="loop-num">2</div>
-        <div class="loop-text">Build something tiny</div>
+        <div class="loop-text">Rebuild one thing from memory</div>
       </div>
       <div class="loop-step">
         <div class="loop-num">3</div>
-        <div class="loop-text">Break it intentionally. Fix it.</div>
+        <div class="loop-text">Rate your skills honestly</div>
       </div>
       <div class="loop-step">
         <div class="loop-num">4</div>
-        <div class="loop-text">Commit to GitHub</div>
+        <div class="loop-text">Write down what confused you</div>
       </div>
       <div class="loop-step">
         <div class="loop-num">5</div>
-        <div class="loop-text">Repeat</div>
+        <div class="loop-text">Push, and set next week's target</div>
       </div>
     </div>
   </div>
 
-  <!-- WEEKEND SYNC AGENDA -->
+  <!-- WEEKLY PRACTICE -->
   <div class="phase mt-4" id="sync-agenda" style="border-top:2px solid var(--purple)">
     <div class="phase-header">
-      <div class="phase-n t-purple" style="font-size:30px">S/S</div>
+      <div class="phase-n t-purple" style="font-size:24px">WK</div>
       <div class="phase-meta">
-        <div class="phase-tag t-purple">Sat/Sun Sync</div>
-        <div class="phase-title">Weekend Sync Agenda — with Person A</div>
+        <div class="phase-tag t-purple">Self-study · reinforce what you know · resets Mondays</div>
+        <div class="phase-title">Weekly Practice</div>
       </div>
       <div class="phase-right">
-        <div class="phase-week t-purple">~45 min</div>
+        <div class="phase-week t-purple">~2–3 hrs / week</div>
         <div class="phase-chevron">▼</div>
       </div>
     </div>
@@ -43,46 +43,60 @@
       <div class="phase-inner">
 
         <div class="section-block">
-          <div class="section-block-header"><span class="badge badge-purple">Agenda Template</span>&nbsp;&nbsp;Run this every Sat/Sun sync, in order</div>
+          <div class="section-block-header"><span class="badge badge-purple">This Week</span>&nbsp;&nbsp;Five things that make the week's learning stick</div>
           <div class="section-block-body">
+            <div class="wk-mount" data-weekly="checklist">
+              <div class="prose t-muted">Loading this week's list…</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-header"><span class="badge badge-purple">Exercises</span>&nbsp;&nbsp;Picked from the phases you've reached</div>
+          <div class="section-block-body">
+            <div class="wk-mount" data-weekly="exercises">
+              <div class="prose t-muted">Loading exercises…</div>
+            </div>
+            <div class="cheat-note mt-14 italic">Three picks a week: one from where you are now, one review from an earlier phase, and one that breaks something on purpose. They change as you tick off tasks, and they skip ones you've already done. Swap any pick you don't fancy.</div>
+          </div>
+        </div>
+
+        <div class="section-block acc-section">
+          <div class="section-block-header">
+            <span class="badge badge-purple">When you meet up</span>&nbsp;&nbsp;Optional, if you sync with Person A this week
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
             <div class="sync-steps">
               <div class="sync-step">
                 <div class="sync-step-num">1</div>
                 <div>
-                  <div class="sync-step-title">Demo what you built this week</div>
-                  <div class="sync-step-detail">Run it live. Don't describe it from memory — pull it up and let Person A watch it work (or fail).</div>
+                  <div class="sync-step-title">Run one of this week's exercises live</div>
+                  <div class="sync-step-detail">Pull it up and let them watch it work, or fail. Don't describe it from memory.</div>
                 </div>
               </div>
               <div class="sync-step">
                 <div class="sync-step-num">2</div>
                 <div>
-                  <div class="sync-step-title">Show one thing that confused you, and what you learned</div>
-                  <div class="sync-step-detail">Pick the one bug or concept that actually cost you time. Walk through what you tried and what fixed it.</div>
+                  <div class="sync-step-title">Bring the thing that confused you</div>
+                  <div class="sync-step-detail">It's already written down from step 4. Walk through what you tried and what fixed it.</div>
                 </div>
               </div>
               <div class="sync-step">
                 <div class="sync-step-num">3</div>
                 <div>
-                  <div class="sync-step-title">Ask one code-review question about their code</div>
-                  <div class="sync-step-detail">Find one line in Person A's code you don't fully understand and ask them to explain it. This is how you build the habit of reading real code.</div>
+                  <div class="sync-step-title">Ask about one line of their code</div>
+                  <div class="sync-step-detail">Reading real code is a skill. One question a week builds it.</div>
                 </div>
               </div>
               <div class="sync-step">
                 <div class="sync-step-num">4</div>
                 <div>
-                  <div class="sync-step-title">Pair for 30 min on the next roadmap task</div>
-                  <div class="sync-step-detail">Work the next task together, live, instead of solo. One drives, one reads.</div>
-                </div>
-              </div>
-              <div class="sync-step">
-                <div class="sync-step-num">5</div>
-                <div>
-                  <div class="sync-step-title">Agree next session's target</div>
-                  <div class="sync-step-detail">Name the specific task or checkpoint you're both aiming to hit before the next sync — not "keep going."</div>
+                  <div class="sync-step-title">Check next week's target together</div>
+                  <div class="sync-step-detail">A specific task or checkpoint, not "keep going."</div>
                 </div>
               </div>
             </div>
-            <div class="cheat-note mt-14 italic">Person A reviewing your commits is the point of pushing to GitHub every session — not just backup.</div>
           </div>
         </div>
 

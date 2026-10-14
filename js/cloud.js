@@ -15,7 +15,7 @@
 (function () {
   'use strict';
 
-  var STATE_KEYS = ['_scratch', '_log', '_logDay', '_closed'];   // → user_state rows
+  var STATE_KEYS = ['_scratch', '_log', '_logDay', '_closed', '_week', '_exDone'];   // → user_state rows
   var PUSH_DELAY = 1500, PULL_THROTTLE = 20000, NET_TIMEOUT = 6000;
   var C = window.RTS_CLOUD = { ready: false };
   var sb = null, user = null;

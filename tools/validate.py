@@ -89,6 +89,29 @@ def main():
         for sid in g[1]:
             if sid not in all_ids:
                 errors.append(f'manifest group "{g[0]}" points at #{sid}, which no content file defines')
+    ex_path = ROOT / 'content' / 'exercises.json'
+    if ex_path.exists():
+        try:
+            ex = json.loads(ex_path.read_text(encoding='utf-8'))
+            kinds, seen = ex.get('kinds', {}), set()
+            for e in ex.get('exercises', []):
+                eid = e.get('id', '?')
+                for k in ('id', 'phase', 'kind', 'title', 'what', 'steps', 'done', 'mins'):
+                    if k not in e:
+                        errors.append(f'exercises.json: {eid} is missing "{k}"')
+                if eid in seen:
+                    errors.append(f'exercises.json: id "{eid}" is used twice')
+                seen.add(eid)
+                if e.get('phase') not in all_ids:
+                    errors.append(f'exercises.json: {eid} points at #{e.get("phase")}, which no content file defines')
+                if e.get('kind') not in kinds:
+                    errors.append(f'exercises.json: {eid} has kind "{e.get("kind")}", which isn\'t listed in "kinds"')
+                for field in [e.get('what', ''), e.get('done', '')] + list(e.get('steps', [])):
+                    if re.search(r'<\s*(script|iframe|style|img)|\son\w+\s*=|javascript:', field, re.I):
+                        errors.append(f'exercises.json: {eid} contains markup that isn\'t allowed')
+        except Exception as err:
+            errors.append(f'content/exercises.json: {err}')
+
     for p in (ROOT / 'progress').glob('*.json'):
         try:
             doc = json.loads(p.read_text(encoding='utf-8'))
