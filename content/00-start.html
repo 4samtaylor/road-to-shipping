@@ -89,5 +89,123 @@
           </div>
         </div>
       </div>
+      <div class="setup-step">
+        <div class="setup-step-num">7</div>
+        <div class="setup-step-content">
+          <div class="step-title">First launch: open your exercises folder, not a file</div>
+          <div class="step-detail">
+            Clone your repo once: open a terminal, <span class="cmd">cd C:\Users\4samt\Documents\Dev</span>, then <span class="cmd">git clone https://github.com/4samtaylor/game-dev-exercises.git</span>.<br><br>
+            In VS Code: <strong class="t-text">File → Open Folder…</strong> → pick <strong class="t-text">game-dev-exercises</strong> → click <strong class="t-text">Yes, I trust the authors</strong>. Always open the whole folder. Opening a single .c file gives you no terminal in the right place, no Git, and no search across files.<br><br>
+            <strong class="t-text">The layout, left to right:</strong><br>
+            <strong class="t-accent">Activity bar</strong> (thin icon strip on the far left): Explorer (files), Search, Source Control (Git), Run &amp; Debug, Extensions.<br>
+            <strong class="t-accent">Side bar</strong>: whatever the icon you clicked shows. Explorer is the one you'll live in.<br>
+            <strong class="t-accent">Editor</strong>: your open files, as tabs. Drag a tab to the side to see two files at once.<br>
+            <strong class="t-accent">Panel</strong> (bottom): the Terminal and the Problems list. Toggle it with <span class="cmd">Ctrl+`</span>.<br>
+            <strong class="t-accent">Status bar</strong> (very bottom): current Git branch, errors and warnings count, line and column.
+          </div>
+        </div>
+      </div>
+      <div class="setup-step">
+        <div class="setup-step-num">8</div>
+        <div class="setup-step-content">
+          <div class="step-title">Make VS Code's terminal able to compile</div>
+          <div class="step-detail">
+            <span class="cmd">cl</span> only works in a terminal that has run Visual Studio's setup script. Out of the box, VS Code's terminal hasn't, which is why you get <em>'cl' is not recognized</em>. Fix it once:<br><br>
+            Press <span class="cmd">Ctrl+Shift+P</span>, type <strong class="t-text">Open User Settings (JSON)</strong>, press Enter, and paste this inside the outer <span class="cmd">{ }</span>. If the file already has settings in it, add a comma after the last one first.
+          </div>
+          <div class="code-wrap mt-10">
+            <div class="code-label">
+              <span>settings.json</span>
+              <button class="copy-btn">Copy</button>
+            </div>
+<pre>"terminal.integrated.profiles.windows": {
+    "Developer Command Prompt": {
+        "path": "cmd.exe",
+        "args": ["/k", "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvars32.bat"]
+    }
+},
+"terminal.integrated.defaultProfile.windows": "Developer Command Prompt"</pre>
+          </div>
+          <div class="step-detail mt-10">
+            Save, then open a new terminal with <span class="cmd">Ctrl+Shift+`</span>. You should see a <strong class="t-text">Visual Studio Developer Command Prompt</strong> banner. Type <span class="cmd">cl</span>: version info means it worked.<br>
+            Still not found? Open <strong class="t-text">C:\Program Files\Microsoft Visual Studio</strong> in File Explorer and check the folder names. If yours says <strong class="t-text">18</strong> or <strong class="t-text">2026</strong> instead of <strong class="t-text">2022</strong>, change that part of the path. Backslashes in JSON have to be doubled, like above.
+          </div>
+        </div>
+      </div>
+      <div class="setup-step">
+        <div class="setup-step-num">9</div>
+        <div class="setup-step-content">
+          <div class="step-title">How every session starts</div>
+          <div class="step-detail">
+            Same five moves every time, so starting takes no thought:<br>
+            <strong class="t-accent">1.</strong> Open VS Code. It reopens your folder where you left it.<br>
+            <strong class="t-accent">2.</strong> <span class="cmd">Ctrl+`</span> for the terminal, then <span class="cmd">git pull</span> to get anything Person A pushed.<br>
+            <strong class="t-accent">3.</strong> Open this roadmap and press <strong class="t-text">Continue</strong> on the home page, or go to <strong class="t-text">Weekly Practice</strong> for this week's exercises.<br>
+            <strong class="t-accent">4.</strong> Read the Learn stage before touching code. Then do the task.<br>
+            <strong class="t-accent">5.</strong> When it works: tick the task here, then commit and push.
+          </div>
+        </div>
+      </div>
+      <div class="setup-step">
+        <div class="setup-step-num">10</div>
+        <div class="setup-step-content">
+          <div class="step-title">Start writing code: one folder per phase, one file per exercise</div>
+          <div class="step-detail">
+            Keep the repo tidy from day one, so you can find last month's code when an exercise says "rebuild it from memory":
+          </div>
+          <div class="code-inset fs-11 lh-18 t-accent mt-10">
+            game-dev-exercises\<br>
+            &nbsp;&nbsp;p01\hello_world.c &nbsp;&nbsp;build.bat<br>
+            &nbsp;&nbsp;p02\guess.c &nbsp;&nbsp;frame_counter.c<br>
+            &nbsp;&nbsp;weekly\2026-W42_predict_escapes.c &nbsp;<span class="t-muted2"># weekly exercises go here</span><br>
+            &nbsp;&nbsp;.gitignore
+          </div>
+          <div class="step-detail mt-10">
+            <strong class="t-text">New folder:</strong> hover the Explorer and click the folder-plus icon. <strong class="t-text">New file:</strong> click the page-plus icon, type the name with <span class="cmd">.c</span> on the end, Enter. The file opens ready to type.<br>
+            <strong class="t-text">Then:</strong> type the code (don't paste starter code you haven't read), <span class="cmd">Ctrl+S</span> to save. A white dot on the tab means unsaved, and the compiler only sees what's saved.<br>
+            <strong class="t-text">The terminal follows you:</strong> <span class="cmd">cd p02</span> before compiling a file in p02. Or right-click the folder in Explorer → <strong class="t-text">Open in Integrated Terminal</strong>.
+          </div>
+        </div>
+      </div>
+      <div class="setup-step">
+        <div class="setup-step-num">11</div>
+        <div class="setup-step-content">
+          <div class="step-title">Compile and run</div>
+          <div class="step-detail">
+            The quick version, from the folder your file is in:
+          </div>
+          <div class="code-inset fs-11 lh-18 t-accent mt-10">
+            cl /W4 guess.c &nbsp;<span class="t-muted2"># compile with all the useful warnings → guess.exe</span><br>
+            guess.exe &nbsp;<span class="t-muted2"># run it</span><br>
+            cl /W4 /Zi /Od guess.c &nbsp;<span class="t-muted2"># debug build, for stepping through with the debugger</span>
+          </div>
+          <div class="step-detail mt-10">
+            From Phase 1 on you'll use <strong class="t-text">build.bat</strong>, which holds the flags so you just type <span class="cmd">build</span>. Press <span class="cmd">↑</span> in the terminal to bring back the last command: compile and run becomes two keystrokes each.<br><br>
+            <strong class="t-text">Reading an error:</strong> <span class="cmd">guess.c(14): error C2143: syntax error: missing ';' before '}'</span> means file, line 14, error code, what's wrong. <span class="cmd">Ctrl+click</span> the file name in the terminal to jump to that line. Fix the <em>first</em> error first, because one missing <span class="cmd">;</span> can cause ten more. Warnings (C4xxx) still produce an .exe, but treat them as bugs you haven't met yet.
+          </div>
+        </div>
+      </div>
+      <div class="setup-step">
+        <div class="setup-step-num">12</div>
+        <div class="setup-step-content">
+          <div class="step-title">Shortcuts worth learning first</div>
+          <div class="step-detail">Learn three a week. By Phase 3 you won't reach for the mouse.</div>
+          <div class="kv kv--120 fs-12 mt-10">
+            <span class="t-accent">Ctrl+S</span><span class="t-muted2">Save. Do it before every compile.</span>
+            <span class="t-accent">Ctrl+`</span><span class="t-muted2">Show or hide the terminal</span>
+            <span class="t-accent">Ctrl+P</span><span class="t-muted2">Jump to any file by typing part of its name</span>
+            <span class="t-accent">Ctrl+Shift+P</span><span class="t-muted2">Command palette: every VS Code action, searchable</span>
+            <span class="t-accent">Ctrl+/</span><span class="t-muted2">Comment or uncomment the line (or selection)</span>
+            <span class="t-accent">Ctrl+D</span><span class="t-muted2">Select the next match of the current word. Rename in a few presses.</span>
+            <span class="t-accent">Alt+↑ / ↓</span><span class="t-muted2">Move the current line up or down</span>
+            <span class="t-accent">Shift+Alt+↓</span><span class="t-muted2">Duplicate the current line</span>
+            <span class="t-accent">Ctrl+G</span><span class="t-muted2">Go to a line number, straight from an error message</span>
+            <span class="t-accent">F12</span><span class="t-muted2">Go to where a function is defined</span>
+            <span class="t-accent">Ctrl+Z / Ctrl+Y</span><span class="t-muted2">Undo / redo</span>
+            <span class="t-accent">Ctrl+B</span><span class="t-muted2">Hide the side bar for more room</span>
+          </div>
+          <div class="step-detail mt-10">In the terminal: <span class="cmd">↑</span> repeats the last command, <span class="cmd">Tab</span> finishes file names, <span class="cmd">cls</span> clears the screen, <span class="cmd">Ctrl+C</span> stops a program that's stuck in a loop.</div>
+        </div>
+      </div>
     </div>
   </div>
