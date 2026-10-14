@@ -1043,6 +1043,7 @@ function loadGlossary() {
         if (g.phases[pid]) nav.insertAdjacentHTML('beforeend', '<button class="stage-sheet" data-sheet="' + pid + '">Cheat sheet</button>');
       });
       renderDockSheet();
+      renderWeekly();
       index = null;
     })
     .catch(function () {});
@@ -1344,6 +1345,7 @@ function showView(id, opts) {
   if (weekly) weekly.classList.toggle('is-current', currentView === 'sync-agenda');
   if (currentView && byId[currentView].isPhase) setOpen(byId[currentView].el, true);
   if (!currentView) renderDash();
+  if (currentView === 'sync-agenda') renderWeekly();
   renderSecbar();
   if (!opts.keepScroll) window.scrollTo(0, 0);
   closeRailMobile(); closeHelp(); fwClose();
@@ -1419,11 +1421,14 @@ function dashGroup(label, ids, nextSec) {
     var tag = (($('.phase-tag', s.el) || {}).textContent || '').trim();
     var meta = [s.week, c.tasks ? plural(c.tasks, 'task') : ''].filter(Boolean).join(' · ');
     var status = done ? '✓ Complete' : cur ? 'Up next' : c.done ? 'In progress' : (c.tasks ? 'Not started' : 'Reference');
+    var wkc = id === 'sync-agenda' ? weeklyCount() : null;
+    if (wkc) { status = wkc.done === wkc.total ? '✓ Week done' : 'This week ' + wkc.done + '/' + wkc.total; meta = 'Resets Mondays · 3 exercises'; }
     return '<button class="dcard' + (done ? ' done' : '') + (cur ? ' cur' : '') + (TINT[id] ? ' tint-' + TINT[id] : '') + '" data-go="' + id + '">' +
       '<span class="dc-top"><span class="dc-num">' + esc(s.num) + '</span><span class="dc-status">' + status + '</span></span>' +
       (tag ? '<span class="dc-tag">' + esc(tag) + '</span>' : '') +
       '<span class="dc-title">' + esc(s.title) + '</span>' +
       (meta ? '<span class="dc-meta">' + esc(meta) + '</span>' : '') +
+      (wkc ? '<span class="dc-bar"><i style="width:' + Math.round(wkc.done / wkc.total * 100) + '%"></i></span>' : '') +
       (c.tasks ? '<span class="dc-bar"><i style="width:' + Math.round(c.done / c.tasks * 100) + '%"></i></span>' +
         '<span class="dc-foot"><span>' + c.done + '/' + c.tasks + ' tasks</span><span>' + (spent >= 60 ? fmtDur(spent) : '') + '</span></span>' : '') +
       '</button>';
@@ -1492,7 +1497,7 @@ function renderDockSheet(pid) {
    innerHTML (with runtime UI stripped) under state._edits.
    ───────────────────────────────────────────────────────────── */
 if (!state._edits) state._edits = {};
-var INJECTED = '.tn-btn, .tn-wrap, .ptoc, .ph-prog, .ph-est, .em-ctl, .em-add, .goals, .stage-nav, .stage-hd, .ph-time, .dash, .secbar, .secfoot, .prompt-ask, .stage-ask';
+var INJECTED = '.wk-live, .tn-btn, .tn-wrap, .ptoc, .ph-prog, .ph-est, .em-ctl, .em-add, .goals, .stage-nav, .stage-hd, .ph-time, .dash, .secbar, .secfoot, .prompt-ask, .stage-ask';
 
 function markAnchors() {
   sections.forEach(function (s) {
@@ -1576,6 +1581,7 @@ function setEditing(on) {
   } else {
     $$('.em-ctl, .em-add').forEach(function (n) { n.remove(); });
     reindex();
+    renderWeekly();
   }
   state._editing = on;
   save();
@@ -1704,6 +1710,219 @@ $('#m-revert').addEventListener('click', function () { closeMenu(); revertEdits(
 $('#em-done').addEventListener('click', function () { setEditing(false); });
 $('#em-download').addEventListener('click', downloadHTML);
 
+/* ─── v17: WEEKLY PRACTICE ────────────────────────────────────
+   The Weekly Practice page (#sync-agenda) is a self-study checklist
+   that resets every Monday, plus three exercise picks from
+   content/exercises.json chosen from the phases you've reached:
+   one from where you are now, one review from an earlier phase,
+   one that breaks something on purpose. Picks are seeded by the week
+   so every device shows the same ones, and they skip exercises you've
+   already done. state._week (this week's ticks, picks, target) and
+   state._exDone (exercise id → week it was done) sync as user_state.
+   ───────────────────────────────────────────────────────────── */
+var EX = null, exById = {};
+var WK_ITEMS = [
+  ['ex', 'Do this week’s exercises', 'At least one of the three picks below. All three if you have the time.'],
+  ['rebuild', 'Rebuild one thing from memory', 'Pick a task you’ve finished, close the page, and write it again in a blank file. Compare when it works.'],
+  ['skills', 'Rate your skills honestly', 'Go down the cheat sheet for where you are and move the dots. Practiced means you’ve done it. Solid means you could do it cold.'],
+  ['confused', 'Write down what confused you', 'One thing that cost you time this week, what you tried, and what fixed it. A task note is a good home for it.'],
+  ['push', 'Commit and push the week’s work', 'Small commits, messages that say what changed. Then set next week’s target below.']
+];
+var WK_SLOTS = [['now', 'Now'], ['review', 'Review'], ['break', 'Break it']];
+if (!state._exDone) state._exDone = {};
+
+function isoWeek(d) {
+  var t = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  var day = (t.getDay() + 6) % 7;                // Monday = 0
+  t.setDate(t.getDate() - day + 3);              // Thursday decides the year
+  var y = t.getFullYear(), jan4 = new Date(y, 0, 4);
+  var n = 1 + Math.round(((t - jan4) / 864e5 - 3 + ((jan4.getDay() + 6) % 7)) / 7);
+  return y + '-W' + (n < 10 ? '0' : '') + n;
+}
+function weekStart() {
+  var d = new Date(); d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - (d.getDay() + 6) % 7);
+  return d;
+}
+function curWeek() {
+  var wk = isoWeek(new Date()), w = state._week;
+  if (!w || typeof w !== 'object' || w.wk !== wk) {
+    var last = w && typeof w === 'object' ? (w.wk ? w.target : w.lastTarget) : '';
+    state._week = { wk: wk, check: {}, picks: null, basis: '', swaps: [0, 0, 0], target: '', lastTarget: last || '' };
+  }
+  if (!state._exDone || typeof state._exDone !== 'object') state._exDone = {};
+  if (!state._week.check) state._week.check = {};
+  if (!state._week.swaps) state._week.swaps = [0, 0, 0];
+  return state._week;
+}
+function hashStr(s) { var h = 5381; for (var i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0; return h; }
+
+function loadExercises() {
+  return fetch('content/exercises.json', { cache: 'no-cache' })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (x) {
+      if (!x || !x.exercises) return;
+      EX = x;
+      x.exercises.forEach(function (e) { exById[e.id] = e; });
+      renderWeekly();
+      if (!currentView && $('#dash')) renderDash();
+    })
+    .catch(function () {});
+}
+
+/* where you are: the phase you're working in, and every phase you've started */
+function reachInfo() {
+  var g = GROUPS.filter(function (x) { return x[0] === 'Phases'; })[0];
+  var order = (g ? g[1] : []).filter(function (id) { return byId[id]; });
+  var started = order.filter(function (id) { var c = counts(byId[id]); return c.done + c.cpsDone > 0; });
+  var next = nextTask(), nextPh = next ? (next.closest('.phase') || {}).id : null;
+  // Phase 7 runs alongside everything from week 3, so it doesn't set "now" unless it's all you've touched
+  var main = started.filter(function (id) { return id !== 'phase7'; });
+  var now = nextPh && started.indexOf(nextPh) >= 0 ? nextPh : (main[main.length - 1] || started[0] || order[0]);
+  var reached = started.slice();
+  if (now && reached.indexOf(now) < 0) reached.push(now);
+  return { now: now, reached: reached, started: started, order: order };
+}
+function exPool(phases, kinds, avoid) {
+  return EX.exercises.filter(function (e) {
+    return phases.indexOf(e.phase) >= 0 && (!kinds || kinds.indexOf(e.kind) >= 0) && avoid.indexOf(e.id) < 0;
+  });
+}
+function pickOne(list, seed) {
+  if (!list.length) return null;
+  var fresh = list.filter(function (e) { return !state._exDone[e.id]; });
+  var from = fresh.length ? fresh : list;
+  return from[hashStr(seed) % from.length];
+}
+function pickSlot(i, info, w, avoid) {
+  var seed = w.wk + ':' + i + ':' + (w.swaps[i] || 0), e = null;
+  if (i === 0) e = pickOne(exPool([info.now], null, avoid), seed);
+  if (i === 1) {
+    var earlier = info.reached.filter(function (id) { return id !== info.now; });
+    e = pickOne(exPool(earlier.length ? earlier : [info.now], null, avoid), seed);
+  }
+  if (i === 2) e = pickOne(exPool(info.reached, ['break', 'predict'], avoid), seed) || pickOne(exPool(info.reached, null, avoid), seed);
+  return e || pickOne(exPool(info.reached, null, avoid), seed) || pickOne(exPool(info.reached, null, []), seed);
+}
+/* this week's three picks; kept for the week, but a slot you haven't done yet
+   moves with you when you start a new phase */
+function weekPicks() {
+  var w = curWeek(), info = reachInfo(), changed = false;
+  var picks = (w.picks || []).slice(0, 3);
+  var basis = info.now + '|' + info.reached.join(',');
+  for (var i = 0; i < 3; i++) {
+    var cur = exById[picks[i]], doneNow = cur && state._exDone[cur.id] === w.wk;
+    if (cur && (doneNow || w.basis === basis)) continue;
+    var avoid = picks.filter(function (p, j) { return j !== i && p; });
+    var e = pickSlot(i, info, w, avoid);
+    if (e && e.id !== picks[i]) { picks[i] = e.id; changed = true; }
+  }
+  if (changed || w.basis !== basis || !w.picks) { w.picks = picks; w.basis = basis; save(); }
+  return { picks: picks, info: info };
+}
+function weekExDone(w) {
+  return (w.picks || []).filter(function (id) { return id && state._exDone[id] === w.wk; }).length;
+}
+function weeklyCount() {
+  var w = curWeek(), n = 0;
+  WK_ITEMS.forEach(function (it) { if (it[0] === 'ex' ? (w.check.ex || weekExDone(w) > 0) : w.check[it[0]]) n++; });
+  return { done: n, total: WK_ITEMS.length };
+}
+function plainText(html) { var d = document.createElement('div'); d.innerHTML = html; return (d.textContent || '').replace(/\s+/g, ' ').trim(); }
+
+function renderWeekly() {
+  var boxC = $('[data-weekly="checklist"]'), boxE = $('[data-weekly="exercises"]');
+  if (!boxC || !boxE || document.body.classList.contains('editing')) return;
+  var w = curWeek(), wc = weeklyCount();
+  var info = EX ? weekPicks() : null, nowSec = info ? byId[info.info.now] : null;
+  var exDoneN = weekExDone(w);
+  var ws = weekStart(), we = new Date(ws); we.setDate(ws.getDate() + 6);
+  var fmt = function (d) { return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }); };
+
+  var h = '<div class="wk-live"><div class="wk-head"><span class="wk-when">' + fmt(ws) + ' – ' + fmt(we) + '</span>' +
+    '<span class="wk-count' + (wc.done === wc.total ? ' full' : '') + '">' + wc.done + ' / ' + wc.total + '</span></div>' +
+    '<div class="wk-bar"><i style="width:' + Math.round(wc.done / wc.total * 100) + '%"></i></div><ul class="wk-list">';
+  WK_ITEMS.forEach(function (it) {
+    var on = it[0] === 'ex' ? (w.check.ex || exDoneN > 0) : !!w.check[it[0]];
+    var act = '';
+    if (it[0] === 'ex') act = '<span class="wk-note">' + exDoneN + ' of 3 picks done</span>';
+    if (it[0] === 'skills' && nowSec && GLOSS && GLOSS.phases[nowSec.id]) act = '<button class="wk-link" data-sheet="' + nowSec.id + '">Open the ' + esc(nowSec.num) + ' cheat sheet</button>';
+    if (it[0] === 'confused' && byId.session2) act = '<button class="wk-link" data-go="session2">Session notes</button>';
+    h += '<li class="wk-row"><button class="wk-item' + (on ? ' done' : '') + '" data-wk="' + it[0] + '" role="checkbox" aria-checked="' + on + '">' +
+      '<span class="wk-cb" aria-hidden="true">' + (on ? '✓' : '') + '</span><span class="wk-txt"><b>' + esc(it[1]) + '</b><small>' + esc(it[2]) + '</small></span></button>' +
+      (act ? '<div class="wk-act">' + act + '</div>' : '') + '</li>';
+  });
+  h += '</ul><div class="wk-target"><label for="wk-target">Next week’s target</label>' +
+    '<input id="wk-target" type="text" maxlength="160" autocomplete="off" placeholder="A specific task or checkpoint, e.g. finish the 03 high-score build" value="' + esc(w.target || '') + '">' +
+    (w.lastTarget ? '<small>Last week you aimed for: <b>' + esc(w.lastTarget) + '</b></small>' : '') + '</div></div>';
+  boxC.innerHTML = h;
+
+  if (!EX) { boxE.innerHTML = '<div class="wk-live"><div class="prose t-muted">Loading exercises…</div></div>'; return; }
+  var reachedTxt = info.info.reached.map(function (id) { return byId[id] ? byId[id].num : id; }).join(', ');
+  var e = '<div class="wk-live"><div class="wk-basis">Picked for where you are: <b>' + esc(nowSec ? nowSec.num + ' · ' + nowSec.title : '') + '</b>' +
+    (info.info.reached.length > 1 ? '<span>Review from: ' + esc(reachedTxt) + '</span>' : '') + '</div><div class="wk-exs">';
+  info.picks.forEach(function (id, i) {
+    var x = exById[id];
+    if (!x) return;
+    var done = state._exDone[id] === w.wk, ps = byId[x.phase];
+    var ask = askOn() ? '<a class="wk-ask" target="_blank" rel="noopener" href="' + askURL('I’m learning C (MSVC on Windows). Give me a hint, not the answer, for this exercise.\n\n' +
+      x.title + '\n' + plainText(x.what) + '\nSteps:\n' + x.steps.map(function (s, k) { return (k + 1) + '. ' + plainText(s); }).join('\n') + '\nDone when: ' + plainText(x.done)) + '">Ask Claude for a hint</a>' : '';
+    e += '<article class="wk-ex' + (done ? ' done' : '') + '">' +
+      '<div class="wk-ex-top"><span class="wk-slot">' + WK_SLOTS[i][1] + '</span>' + (i === 2 && x.kind === 'break' ? '' : '<span class="wk-kind">' + esc(EX.kinds[x.kind] || x.kind) + '</span>') + '<span class="wk-mins">~' + x.mins + ' min</span></div>' +
+      (ps ? '<button class="wk-ex-ph" data-go="' + ps.id + '">' + esc(ps.num + ' · ' + ps.title) + '</button>' : '') +
+      '<h4 class="wk-ex-title">' + esc(x.title) + '</h4>' +
+      '<p class="wk-ex-what">' + x.what + '</p>' +
+      '<ol class="wk-ex-steps">' + x.steps.map(function (s) { return '<li>' + s + '</li>'; }).join('') + '</ol>' +
+      '<div class="wk-ex-done"><b>Done when</b> ' + x.done + '</div>' +
+      '<div class="wk-ex-act"><button class="wk-tick' + (done ? ' on' : '') + '" data-exdone="' + id + '" aria-pressed="' + done + '">' + (done ? '✓ Done this week' : 'Mark done') + '</button>' +
+      (done ? '' : '<button class="wk-swap" data-exswap="' + i + '">Swap</button>') + ask + '</div></article>';
+  });
+  boxE.innerHTML = e + '</div></div>';
+}
+
+document.addEventListener('click', function (e) {
+  if (document.body.classList.contains('editing')) return;
+  var el;
+  if ((el = e.target.closest('.wk-item[data-wk]'))) {
+    e.stopPropagation();
+    var w = curWeek(), k = el.dataset.wk;
+    if (k === 'ex' && weekExDone(w) > 0) { toast('This one ticks itself when you mark an exercise done'); return; }
+    w.check[k] = !w.check[k];
+    save(); renderWeekly();
+    if (!currentView && $('#dash')) renderDash();
+    return;
+  }
+  if ((el = e.target.closest('[data-exdone]'))) {
+    e.stopPropagation();
+    var wk = curWeek(), id = el.dataset.exdone;
+    if (state._exDone[id] === wk.wk) delete state._exDone[id];
+    else { state._exDone[id] = wk.wk; logDone(); }
+    state._exDone = Object.assign({}, state._exDone);   // new object, so sync sees the change
+    save(); renderWeekly();
+    return;
+  }
+  if ((el = e.target.closest('[data-exswap]'))) {
+    e.stopPropagation();
+    var ww = curWeek(), i = +el.dataset.exswap, before = (ww.picks || [])[i];
+    var info = reachInfo(), avoid = (ww.picks || []).filter(function (p, j) { return j !== i && p; }).concat(before ? [before] : []);
+    var pick = null;
+    for (var tries = 0; tries < 8 && !pick; tries++) {
+      ww.swaps[i] = (ww.swaps[i] || 0) + 1;
+      pick = pickSlot(i, info, ww, avoid);
+      if (pick && pick.id === before) pick = null;
+    }
+    if (!pick) { toast('No other exercise fits this slot yet'); return; }
+    ww.picks = ww.picks.slice(); ww.picks[i] = pick.id;
+    save(); renderWeekly();
+    return;
+  }
+}, true);
+document.addEventListener('input', function (e) {
+  if (e.target.id !== 'wk-target') return;
+  curWeek().target = e.target.value;
+  save();
+});
+
 /* ─── BOOT ─── */
 markAnchors();
 restoreEdits();
@@ -1767,6 +1986,8 @@ document.addEventListener('keydown', function (e) {
 });
 a11ySync();
 loadGlossary();
+loadExercises();
+renderWeekly();
 updateTimeUI();
 
 
@@ -1779,7 +2000,9 @@ window.RTS_app = {
     if (!state._notes) state._notes = {};
     if (!state._skills) state._skills = {};
     if (!state._time) state._time = {};
+    if (!state._exDone) state._exDone = {};
     applyState();
+    renderWeekly();
     $$('.skill[data-skill]').forEach(function (g) { var lv = +state._skills[g.dataset.skill] || 0; $$('button', g).forEach(function (b) { b.classList.toggle('on', +b.dataset.lv === lv); }); });
     $$('.cs-count').forEach(function (c) { c.textContent = sheetCount(c.dataset.phase); });
     updateTimeUI();
