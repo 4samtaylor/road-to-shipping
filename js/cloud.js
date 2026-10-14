@@ -18,6 +18,8 @@
   var STATE_KEYS = ['_scratch', '_log', '_logDay', '_closed', '_week', '_exDone'];   // → user_state rows
   var PUSH_DELAY = 1500, PULL_THROTTLE = 20000, NET_TIMEOUT = 6000;
   var C = window.RTS_CLOUD = { ready: false };
+  C.account = function () { return user ? (user.email || 'account') : null; };   // for the rail footer + Settings
+  C.enabled = function () { return !!sb; };
   var sb = null, user = null;
   var pushTimer = null, pushing = false, again = false, lastPull = 0, offline = false;
 

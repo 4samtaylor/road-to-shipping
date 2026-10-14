@@ -465,10 +465,6 @@ function appearanceHTML() {
     }).join('') + '</div></div>' +
   '<div class="ap-note">Saved on this device. Fonts other than JetBrains Mono load from Google Fonts the first time you pick them.</div>';
 }
-function openAppearance() {
-  UI_FONTS.concat(CODE_FONTS).forEach(loadFont);   // so each option previews in its own face
-  fwOpen({ cls: 'fw--sheet', kicker: 'Appearance', title: 'Theme and fonts', html: appearanceHTML }, false);
-}
 document.addEventListener('click', function (e) {
   var el = e.target.closest('[data-ap-theme], [data-ap-font], [data-ap-code], [data-appearance]');
   if (!el || document.body.classList.contains('editing')) return;
@@ -481,6 +477,116 @@ document.addEventListener('click', function (e) {
   fwRender();
   if (body) body.scrollTop = top;
 }, true);
+
+/* ─── v18: SETTINGS + RAIL FOOTER ─────────────────────────────
+   One Settings window (the floating window) with tabs. The action
+   buttons it shows are proxies for hidden buttons in #menu-src, which
+   cloud.js and github.js still wire up by id, so their behaviour and
+   visibility (signed in or not, GitHub connected or not) carry over.
+   The rail ends in an account footer: who's signed in, sync status,
+   and a Settings button.
+   ───────────────────────────────────────────────────────────── */
+var SET_TABS = [['appearance', 'Appearance'], ['account', 'Account'], ['editing', 'Editing'], ['data', 'Progress data'], ['keys', 'Shortcuts']];
+// [source id, what it does, keep the window open after clicking]
+var SET_ITEMS = {
+  account: [
+    ['m-account', 'Sync ticks, notes, skills and time between your PC and phone.'],
+    ['m-import', 'One-time copy of progress saved to GitHub before accounts existed.'],
+    ['m-signout', 'Progress stays in your account. This device goes back to local only.'],
+    ['m-delete', 'Removes your account and everything synced to it. Can\u2019t be undone.']
+  ],
+  editing: [
+    ['m-ask', 'Adds buttons that open claude.ai with your question already written. Uses your own Claude plan.', true],
+    ['m-edit', 'Edit text and tasks right on the page. Press E anywhere.'],
+    ['m-publish', 'Send your page edits to GitHub as a pull request.'],
+    ['m-connect', 'Needed once per device before you can publish edits.'],
+    ['m-download', 'Save the page with your edits as one HTML file.'],
+    ['m-revert', 'Throw away edits on this device that haven\u2019t been published.']
+  ],
+  data: [
+    ['m-export', 'Download all your progress as a JSON file.'],
+    ['m-import-json', 'Load a JSON file and merge it with what\u2019s here.'],
+    ['m-reset', 'Untick everything and clear notes on this device.']
+  ]
+};
+var KEYS = [['Search', '\u2318K or /'], ['Previous / next section', '[ ]'], ['Edit mode', 'E'], ['Close a window', 'Esc']];
+
+function acctInfo() {
+  var C = window.RTS_CLOUD || {};
+  var email = C.account ? C.account() : null;
+  return { on: !!(C.enabled && C.enabled()), email: email, status: (($('#tb-sync') || {}).textContent || '').trim() };
+}
+function proxyHTML(row) {
+  var src = document.getElementById(row[0]);
+  if (!src || src.hidden) return '';
+  var tag = $('span', src), label = (src.childNodes[0] && src.childNodes[0].nodeType === 3 ? src.childNodes[0].textContent : src.textContent).trim();
+  return '<button class="set-act' + (src.classList.contains('danger') ? ' danger' : '') + '" data-proxy="' + row[0] + '"' + (row[2] ? ' data-stay' : '') + '>' +
+    '<span class="set-act-l"><b>' + esc(label) + '</b><small>' + esc(row[1]) + '</small></span>' +
+    (tag ? '<span class="set-act-tag">' + esc(tag.textContent) + '</span>' : '') + '</button>';
+}
+function settingsHTML() {
+  var tab = lsGetv('rts_set_tab', 'appearance');
+  if (!SET_TABS.some(function (t) { return t[0] === tab; })) tab = 'appearance';
+  var h = '<div class="set-tabs" role="tablist">' + SET_TABS.map(function (t) {
+    return '<button role="tab" data-settab="' + t[0] + '" aria-selected="' + (t[0] === tab) + '"' + (t[0] === tab ? ' class="on"' : '') + '>' + t[1] + '</button>';
+  }).join('') + '</div><div class="set-panel" role="tabpanel">';
+  if (tab === 'appearance') h += appearanceHTML();
+  else if (tab === 'keys') {
+    h += '<div class="set-keys">' + KEYS.map(function (k) { return '<div><span>' + esc(k[0]) + '</span><kbd>' + esc(k[1]) + '</kbd></div>'; }).join('') + '</div>' +
+      '<div class="ap-note">Keys work when you\u2019re not typing in a box.</div>';
+  } else {
+    if (tab === 'account') {
+      var a = acctInfo();
+      h += '<div class="set-who"><span class="set-av">' + esc(a.email ? a.email[0].toUpperCase() : '\u2022') + '</span><span><b>' +
+        esc(a.email || (a.on ? 'Not signed in' : 'Accounts unavailable')) + '</b><small>' + esc(a.status || (a.email ? 'synced' : 'progress is saved on this device only')) + '</small></span></div>';
+    }
+    h += '<div class="set-acts">' + SET_ITEMS[tab].map(proxyHTML).join('') + '</div>';
+    if (tab === 'account') h += '<a class="set-link" href="privacy.html">Privacy: what\u2019s stored and where \u203a</a>';
+    if (tab === 'data') h += '<div class="ap-note">Theme, fonts, this tab and unpublished edits are saved per device. Ticks, notes, skills, time and the weekly checklist sync when you\u2019re signed in.</div>';
+  }
+  return h + '</div>';
+}
+function openSettings(tab) {
+  if (tab) lsSetv('rts_set_tab', tab);
+  closeMenu(); closeRailMobile();
+  UI_FONTS.concat(CODE_FONTS).forEach(loadFont);
+  fwOpen({ cls: 'fw--settings', kicker: 'Road to Shipping', title: 'Settings', html: settingsHTML }, false);
+}
+function openAppearance() { openSettings('appearance'); }
+document.addEventListener('click', function (e) {
+  var el;
+  if ((el = e.target.closest('[data-settings]'))) { e.preventDefault(); e.stopPropagation(); openSettings(el.dataset.settings || ''); return; }
+  if ((el = e.target.closest('[data-settab]'))) { e.stopPropagation(); lsSetv('rts_set_tab', el.dataset.settab); fwRender(); return; }
+  if ((el = e.target.closest('[data-proxy]'))) {
+    e.stopPropagation();
+    var src = document.getElementById(el.dataset.proxy), stay = el.hasAttribute('data-stay');
+    if (!src) return;
+    if (!stay) fwClose();
+    src.click();
+    if (stay) { var body = $('#fw-body'), top = body.scrollTop; fwRender(); body.scrollTop = top; }
+    return;
+  }
+  if ((el = e.target.closest('.rf-who'))) {
+    e.stopPropagation();
+    var a = acctInfo();
+    if (a.on && !a.email && $('#m-account')) { closeRailMobile(); $('#m-account').click(); } else openSettings('account');
+  }
+}, true);
+
+function renderRailFoot() {
+  var rail = $('#rail');
+  if (!rail) return;
+  var f = $('#rl-foot');
+  if (!f) { rail.insertAdjacentHTML('beforeend', '<div class="rl-foot" id="rl-foot"></div>'); f = $('#rl-foot'); }
+  var a = acctInfo(), cls = /synced/.test(a.status) ? ' ok' : /offline|expired/.test(a.status) ? ' err' : '';
+  f.innerHTML = '<button class="rf-who" title="' + (a.email ? 'Account' : 'Sign in to sync') + '"><span class="set-av">' + esc(a.email ? a.email[0].toUpperCase() : '\u2022') + '</span>' +
+    '<span class="rf-txt"><b>' + esc(a.email || (a.on ? 'Sign in to sync' : 'This device only')) + '</b><small class="' + cls.trim() + '">' + esc(a.status || (a.email ? 'synced' : 'saved on this device')) + '</small></span></button>' +
+    '<button class="rf-set" data-settings="" title="Settings" aria-label="Settings"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/></svg></button>';
+}
+(function () {
+  var sync = $('#tb-sync');
+  if (sync) new MutationObserver(function () { renderRailFoot(); }).observe(sync, { childList: true, characterData: true, subtree: true, attributes: true });
+})();
 
 /* ─── EXPAND / COLLAPSE / SOLO ─── */
 function setAll(open) {
@@ -728,7 +834,7 @@ $('#tb-rail').addEventListener('click', function () {
   if (window.matchMedia('(max-width: 860px)').matches) document.body.classList.toggle('rail-open');
   else document.body.classList.toggle('rail-off');
 });
-$('#tb-theme').addEventListener('click', openAppearance);
+$('#tb-theme').addEventListener('click', function () { openSettings('appearance'); });
 $('#tb-search').addEventListener('click', openPal);
 $('#rl-resume').addEventListener('click', resume);
 if ($('#m-solo')) $('#m-solo').addEventListener('click', function () {
@@ -739,7 +845,6 @@ if ($('#m-solo')) $('#m-solo').addEventListener('click', function () {
 });
 $('#m-export').addEventListener('click', function () { exportState(); closeMenu(); });
 $('#m-import-json').addEventListener('click', function () { $('#file-in').click(); closeMenu(); });
-$('#m-theme').addEventListener('click', function () { closeMenu(); openAppearance(); });
 $('#m-reset').addEventListener('click', function () { closeMenu(); resetState(); });
 $('#file-in').addEventListener('change', function (e) { if (e.target.files[0]) importState(e.target.files[0]); e.target.value = ''; });
 $('#toast-x').addEventListener('click', hideToast);
@@ -1929,6 +2034,7 @@ restoreEdits();
 stageAll();
 buildRail();
 $('#rail').insertAdjacentHTML('beforeend', '<div class="rl-log" id="rl-log"></div>');
+renderRailFoot();
 buildDock();
 buildNext();
 renderLog();
