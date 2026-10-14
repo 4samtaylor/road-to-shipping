@@ -236,6 +236,8 @@ function goTo(id, opts) {
   if (opts.flash) flash(byId[id].el);
 }
 function scrollToEl(el, offset) {
+  var nb = el.closest && el.closest('.lad-notes-body');   // v19: open a phase's full notes before jumping into them
+  if (nb && nb.hidden) toggleNotes(nb.parentNode, true);
   var y = window.pageYOffset + el.getBoundingClientRect().top - (offset || TOPBAR + 78);
   window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
 }
@@ -1037,9 +1039,9 @@ function stagePhase(s) {
       .map(function (x) { return x[0]; });
   });
 
-  var cps = $$('.cp-text', inner).map(function (c) { return c.textContent.trim(); });
+  var cps = $$('.cp-item', inner).map(function (c) { return [($('.cp-text', c) || c).textContent.trim(), c.dataset.id || '']; });
   var html = cps.length ? '<div class="goals"><div class="goals-lbl">By the end of this phase</div><ul>' +
-    cps.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul></div>' : '';
+    cps.map(function (t) { return '<li data-cp="' + esc(t[1]) + '"><span class="goal-t">' + esc(t[0]) + '</span></li>'; }).join('') + '</ul></div>' : '';
   html += '<nav class="stage-nav" aria-label="Stages in this phase">';
   var n = 0;
   STAGES.forEach(function (st) {
@@ -1055,9 +1057,15 @@ function stagePhase(s) {
     var sec = document.createElement('section');
     sec.className = 'stage';
     sec.id = s.id + '-' + st[0];
+    var lad = st[0] === 'learn' && s.el.dataset.ladder;
     sec.innerHTML = '<div class="stage-hd"><span class="stage-n">' + (++n) + '</span><span class="stage-name">' + st[1] +
-      '</span><span class="stage-size">' + esc(stageSize(st[0], els)) + '</span></div>';
-    els.forEach(function (e) { sec.appendChild(e); });
+      '</span><span class="stage-size">' + esc(lad ? 'Concept ladder' : stageSize(st[0], els)) + '</span></div>';
+    if (lad) {
+      // v19: the ladder teaches one concept at a time; the old long-form notes stay below, folded away
+      sec.insertAdjacentHTML('beforeend', '<div class="lad" data-ladder-mount="' + esc(lad) + '"><div class="lad-loading">Loading concepts…</div></div>' +
+        '<div class="lad-notes"><button class="lad-notes-btn" aria-expanded="false"><span>Full notes for this phase</span><small>The long-form version: every concept on one page, plus the session plan</small></button><div class="lad-notes-body" hidden></div></div>');
+      els.forEach(function (e) { $('.lad-notes-body', sec).appendChild(e); });
+    } else els.forEach(function (e) { sec.appendChild(e); });
     inner.appendChild(sec);
   });
 
@@ -1602,7 +1610,7 @@ function renderDockSheet(pid) {
    innerHTML (with runtime UI stripped) under state._edits.
    ───────────────────────────────────────────────────────────── */
 if (!state._edits) state._edits = {};
-var INJECTED = '.wk-live, .tn-btn, .tn-wrap, .ptoc, .ph-prog, .ph-est, .em-ctl, .em-add, .goals, .stage-nav, .stage-hd, .ph-time, .dash, .secbar, .secfoot, .prompt-ask, .stage-ask';
+var INJECTED = '.wk-live, .lad, .lad-pills, .tn-btn, .tn-wrap, .ptoc, .ph-prog, .ph-est, .em-ctl, .em-add, .goals, .stage-nav, .stage-hd, .ph-time, .dash, .secbar, .secfoot, .prompt-ask, .stage-ask';
 
 function markAnchors() {
   sections.forEach(function (s) {
@@ -2028,6 +2036,200 @@ document.addEventListener('input', function (e) {
   save();
 });
 
+/* ─── v19: CONCEPT LADDER ─────────────────────────────────────
+   A phase with data-ladder="<id>" teaches its Learn stage from
+   content/ladders/<id>.json: one concept (rung) at a time, each with
+   why → a program you step through → one check → a small try-it →
+   optional Q&A → a line pointing at the next rung. Passing a check
+   moves that rung's glossary skills to Practiced. Which rungs are done
+   and which one is open sync as user_state "_ladder"; walkthrough
+   position and answers stay on this page view.
+   ───────────────────────────────────────────────────────────── */
+var LADDERS = {}, LAD_UI = {};
+function ladState(pid) {
+  if (!state._ladder || typeof state._ladder !== 'object') state._ladder = {};
+  var l = state._ladder[pid];
+  if (!l || typeof l !== 'object') l = state._ladder[pid] = { done: {}, cur: 0 };
+  if (!l.done || typeof l.done !== 'object') l.done = {};
+  return l;
+}
+function ladUI(pid) { return LAD_UI[pid] || (LAD_UI[pid] = { step: {}, ans: {}, rev: {} }); }
+function toggleNotes(wrap, open) {
+  var body = $('.lad-notes-body', wrap), btn = $('.lad-notes-btn', wrap);
+  if (!body) return;
+  body.hidden = open === undefined ? !body.hidden : !open;
+  btn.setAttribute('aria-expanded', !body.hidden);
+}
+function loadLadders() {
+  $$('[data-ladder-mount]').forEach(function (m) {
+    var pid = m.dataset.ladderMount;
+    fetch('content/ladders/' + pid + '.json', { cache: 'no-cache' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (!d || !d.rungs || !d.rungs.length) throw new Error('no ladder');
+        LADDERS[pid] = d;
+        var sz = document.querySelector('#' + cssId(pid) + '-learn .stage-size');
+        if (sz) sz.textContent = plural(d.rungs.length, 'concept') + ' · ~' + d.rungs.reduce(function (a, r) { return a + (+r.mins || 0); }, 0) + ' min';
+        renderLadder(pid);
+      })
+      .catch(function () {
+        // no ladder: show the full notes as before
+        m.innerHTML = '';
+        toggleNotes(m.parentNode.querySelector('.lad-notes'), true);
+      });
+  });
+}
+var LAD_KW = /^(return|if|else|while|for|switch|case|break|default|do|true|false|sizeof)$/, LAD_TY = /^(int|float|char|bool|double|void|unsigned)$/;
+function ladHL(line) {
+  var out = '', m, last = 0, re = /(____)|(\/\/.*$)|(#\w+)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)')|\b(\d+(?:\.\d+)?f?)\b|\b([A-Za-z_]\w*)\b(?=\s*\()|\b([A-Za-z_]\w*)\b/g;
+  while ((m = re.exec(line))) {
+    out += esc(line.slice(last, m.index)); last = re.lastIndex;
+    var t = esc(m[0]);
+    if (m[1]) out += '<span class="lad-blank">____</span>';
+    else if (m[2]) out += '<span class="c-cm">' + t + '</span>';
+    else if (m[3]) out += '<span class="c-pp">' + t + '</span>';
+    else if (m[4]) out += '<span class="c-str">' + t.replace(/____/g, '<span class="lad-blank">____</span>') + '</span>';
+    else if (m[5]) out += '<span class="c-num">' + t + '</span>';
+    else if (m[6]) out += LAD_KW.test(m[6]) ? '<span class="c-kw">' + t + '</span>' : '<span class="c-fn">' + t + '</span>';
+    else if (m[7]) out += LAD_TY.test(m[7]) ? '<span class="c-type">' + t + '</span>' : LAD_KW.test(m[7]) ? '<span class="c-kw">' + t + '</span>' : t;
+  }
+  return out + esc(line.slice(last));
+}
+function ladCode(src, hi) {
+  return '<div class="lad-code">' + src.split('\n').map(function (l, i) {
+    var n = i + 1;
+    return '<div class="lad-ln' + (hi ? (n === hi ? ' hi' : ' dim') : '') + '"><i>' + n + '</i><span>' + (ladHL(l) || ' ') + '</span></div>';
+  }).join('') + '</div>';
+}
+function ladSkillNames(ids) {
+  return ids.map(function (id) { return glossById[id] ? glossById[id].term : id; }).join(', ');
+}
+function renderLadder(pid) {
+  var d = LADDERS[pid], m = document.querySelector('[data-ladder-mount="' + pid + '"]');
+  if (!d || !m || document.body.classList.contains('editing')) return;
+  var l = ladState(pid), ui = ladUI(pid), rungs = d.rungs;
+  var i = Math.max(0, Math.min(rungs.length - 1, +l.cur || 0)), r = rungs[i];
+  var doneN = rungs.filter(function (x) { return l.done[x.id]; }).length;
+
+  var h = '<div class="lad-live"><div class="lad-top"><span class="lad-count">' + doneN + ' of ' + rungs.length + ' concepts</span>' +
+    '<span class="lad-bar"><i style="width:' + Math.round(doneN / rungs.length * 100) + '%"></i></span></div><nav class="lad-rungs" aria-label="Concepts in order">' +
+    rungs.map(function (x, k) {
+      var cls = (k === i ? ' cur' : '') + (l.done[x.id] ? ' done' : '');
+      return '<button class="lad-chip' + cls + '" data-lad-go="' + k + '"' + (k === i ? ' aria-current="step"' : '') + ' title="' + esc(x.kick) + '"><b>' + (l.done[x.id] ? '✓' : k + 1) + '</b><span>' + esc(x.title) + '</span></button>';
+    }).join('') + '</nav>';
+
+  var step = ui.step[r.id] || 0, walkDone = step >= r.walk.length, ans = ui.ans[r.id], done = !!l.done[r.id];
+  var tries = (ans && ans.tries) || [], right = tries.indexOf(r.check.a) >= 0;
+  var hideWalk = ans && ans.skipped && right && tries.length === 1 && !ui.rev['walk' + r.id];
+  var showCheck = walkDone || done || ans;
+
+  h += '<article class="lad-rung"><header class="lad-hd"><div><div class="lad-kick">Concept ' + (i + 1) + ' of ' + rungs.length + ' · ' + esc(r.kick) + ' · ~' + r.mins + ' min</div>' +
+    '<h3 class="lad-title">' + esc(r.title) + '</h3><div class="lad-builds"><b>Builds on</b> ' + r.builds + '</div></div>' +
+    (done || right ? '' : '<button class="lad-quiz" data-lad-quiz>I know this: quiz me</button>') + '</header>';
+  h += '<section class="lad-part"><div class="lad-ph"><b>1</b>Why you need it</div><p class="lad-why">' + r.why + '</p></section>';
+
+  if (!hideWalk) {
+    var at = step > 0 ? r.walk[Math.min(step, r.walk.length) - 1] : null;
+    h += '<section class="lad-part"><div class="lad-ph"><b>2</b>See it, one line at a time</div>' + ladCode(r.code, at ? at[0] : 0) +
+      '<div class="lad-walk"><div class="lad-note">' + (at ? '<small>Line ' + at[0] + ' · stop ' + Math.min(step, r.walk.length) + ' of ' + r.walk.length + '</small>' + at[1]
+        : '<small>' + r.walk.length + ' stops</small>Read the whole program once. Then step through the lines that matter.') + '</div>' +
+      '<div class="lad-ctl"><button class="lad-btn" data-lad-walk="-1"' + (step === 0 ? ' disabled' : '') + '>Back</button>' +
+      (step < r.walk.length ? '<button class="lad-btn go" data-lad-walk="1">' + (step === 0 ? 'Start' : 'Next line') + '</button>' : '<button class="lad-btn" data-lad-walk="restart">From the top</button>') +
+      '</div></div>' + (walkDone ? '<p class="lad-model">' + r.model + '</p>' : '') + '</section>';
+  }
+
+  if (!showCheck) {
+    h += '<section class="lad-part lad-wait"><div class="lad-ph"><b>3</b>Check, try, curious</div><p>These open when you finish the walkthrough, or straight away with <b>I know this: quiz me</b>.</p></section>';
+  } else {
+    var c = r.check;
+    h += '<section class="lad-part" data-lad-check><div class="lad-ph"><b>3</b>Check: predict it</div><div class="lad-q">' + esc(c.q) + '</div><div class="lad-opts">' +
+      c.opts.map(function (o, k) {
+        var st = tries.indexOf(k) >= 0 ? (k === c.a ? ' right' : ' wrong') : (done && k === c.a && !tries.length ? ' right' : '');
+        return '<button class="lad-opt' + st + '" data-lad-opt="' + k + '"' + (right ? ' disabled' : '') + '>' + esc(o) + '</button>';
+      }).join('') + '</div>';
+    if (!right) {
+      var lastWrong = tries.length ? tries[tries.length - 1] : null;
+      if (lastWrong !== null) h += '<div class="lad-fb miss">' + esc((c.miss || {})[lastWrong] || 'Not quite. Try another.') + '</div>';
+      h += ans && ans.hint ? '<div class="lad-hint">Hint: ' + esc(c.hint) + '</div>' : '<button class="lad-link" data-lad-hint>Show a hint</button>';
+      if (done && !tries.length) h += '<div class="lad-note-done">You passed this one before. Answer again for practice, or move on.</div>';
+    } else {
+      h += '<div class="lad-fb"><b>' + (tries.length === 1 ? 'Right first time.' : 'Got it.') + '</b> ' + esc(c.why) + '</div>' +
+        (hideWalk ? '<button class="lad-link" data-lad-showwalk>Show the walkthrough anyway</button>' : '') +
+        (r.skills && r.skills.length ? '<div class="lad-skill"><i></i>' + esc(ladSkillNames(r.skills)) + ' → Practiced on your cheat sheet</div>' : '');
+    }
+    h += '</section>';
+    if (right || done) {
+      var rev = ui.rev[r.id];
+      h += '<section class="lad-part"><div class="lad-ph"><b>4</b>Try it in VS Code</div><p class="lad-p">' + esc(r.tryit.task) + '</p>' + ladCode(r.tryit.code, 0) +
+        (rev ? '<div class="lad-ans"><small>One answer</small><pre>' + esc(r.tryit.answer) + '</pre></div>' : '<button class="lad-link" data-lad-reveal>Show one answer</button>') + '</section>';
+      h += '<section class="lad-part"><div class="lad-ph"><b>5</b>Curious? (optional)</div><div class="lad-qas">' +
+        r.qa.map(function (q) { return '<details class="lad-qa"><summary>' + esc(q[0]) + '</summary><div>' + q[1] + '</div></details>'; }).join('') + '</div></section>';
+      h += '<div class="lad-bridge"><p>' + r.bridge + '</p>' + (i < rungs.length - 1
+        ? '<button class="lad-btn go" data-lad-go="' + (i + 1) + '">Concept ' + (i + 2) + ' ›</button>'
+        : '<button class="lad-btn go" data-stage="' + pid + '-trace">Go to Trace ›</button>') + '</div>';
+    }
+  }
+  m.innerHTML = h + '</article></div>';
+
+  // goals: show which concepts teach each one
+  var ph = document.getElementById(pid);
+  $$('.goals li[data-cp]', ph).forEach(function (li) {
+    var old = $('.lad-pills', li); if (old) old.remove();
+    var nums = (d.goals || {})[li.dataset.cp];
+    if (!nums || !nums.length) return;
+    li.insertAdjacentHTML('beforeend', '<span class="lad-pills">' + nums.map(function (n) {
+      var x = rungs[n - 1]; if (!x) return '';
+      return '<button class="lad-pill' + (l.done[x.id] ? ' done' : '') + '" data-lad-go="' + (n - 1) + '" title="' + esc(x.title) + '">' + n + '</button>';
+    }).join('') + '</span>');
+  });
+}
+function ladScrollTop(pid) {
+  var m = document.querySelector('[data-ladder-mount="' + pid + '"] .lad-rung');
+  if (m && m.getBoundingClientRect().top < TOPBAR + 40) scrollToEl(m, TOPBAR + 70);
+}
+document.addEventListener('click', function (e) {
+  if (document.body.classList.contains('editing')) return;
+  var el = e.target.closest('.lad-notes-btn');
+  if (el) { e.stopPropagation(); toggleNotes(el.parentNode); return; }
+  el = e.target.closest('[data-lad-go], [data-lad-walk], [data-lad-quiz], [data-lad-opt], [data-lad-hint], [data-lad-reveal], [data-lad-showwalk]');
+  if (!el) return;
+  var ph = el.closest('.phase'), pid = ph && ph.dataset.ladder, d = pid && LADDERS[pid];
+  if (!d) return;
+  e.stopPropagation();
+  var l = ladState(pid), ui = ladUI(pid), r = d.rungs[Math.max(0, Math.min(d.rungs.length - 1, +l.cur || 0))];
+  if (el.hasAttribute('data-lad-go')) {
+    l.cur = +el.dataset.ladGo; save(); renderLadder(pid);
+    var art = document.querySelector('[data-ladder-mount="' + pid + '"]');
+    if (art) scrollToEl(art, TOPBAR + 70);
+    return;
+  }
+  if (el.hasAttribute('data-lad-walk')) {
+    var v = el.dataset.ladWalk;
+    ui.step[r.id] = v === 'restart' ? 1 : Math.max(0, Math.min(r.walk.length, (ui.step[r.id] || 0) + (+v)));
+    renderLadder(pid); return;
+  }
+  if (el.hasAttribute('data-lad-quiz')) {
+    var a = ui.ans[r.id] = ui.ans[r.id] || { tries: [] }; a.skipped = true;
+    renderLadder(pid);
+    var ck = document.querySelector('[data-ladder-mount="' + pid + '"] [data-lad-check]');
+    if (ck) scrollToEl(ck, TOPBAR + 90);
+    return;
+  }
+  if (el.hasAttribute('data-lad-opt')) {
+    var an = ui.ans[r.id] = ui.ans[r.id] || { tries: [] }, k = +el.dataset.ladOpt;
+    if (an.tries.indexOf(k) < 0) an.tries.push(k);
+    if (k === r.check.a) {
+      if (!l.done[r.id]) { l.done[r.id] = true; logDone(); }
+      (r.skills || []).forEach(function (id) { if ((+state._skills[id] || 0) < 1) setSkill(id, 1); });
+      save();
+    }
+    renderLadder(pid); return;
+  }
+  if (el.hasAttribute('data-lad-hint')) { (ui.ans[r.id] = ui.ans[r.id] || { tries: [] }).hint = true; renderLadder(pid); return; }
+  if (el.hasAttribute('data-lad-reveal')) { ui.rev[r.id] = true; renderLadder(pid); return; }
+  if (el.hasAttribute('data-lad-showwalk')) { ui.rev['walk' + r.id] = true; renderLadder(pid); return; }
+}, true);
+
 /* ─── BOOT ─── */
 markAnchors();
 restoreEdits();
@@ -2093,6 +2295,7 @@ document.addEventListener('keydown', function (e) {
 a11ySync();
 loadGlossary();
 loadExercises();
+loadLadders();
 renderWeekly();
 updateTimeUI();
 
@@ -2109,6 +2312,7 @@ window.RTS_app = {
     if (!state._exDone) state._exDone = {};
     applyState();
     renderWeekly();
+    Object.keys(LADDERS).forEach(renderLadder);
     $$('.skill[data-skill]').forEach(function (g) { var lv = +state._skills[g.dataset.skill] || 0; $$('button', g).forEach(function (b) { b.classList.toggle('on', +b.dataset.lv === lv); }); });
     $$('.cs-count').forEach(function (c) { c.textContent = sheetCount(c.dataset.phase); });
     updateTimeUI();

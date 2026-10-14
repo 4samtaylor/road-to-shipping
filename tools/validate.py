@@ -112,6 +112,48 @@ def main():
         except Exception as err:
             errors.append(f'content/exercises.json: {err}')
 
+    gloss_ids = set()
+    try:
+        g = json.loads((ROOT / 'content' / 'glossary.json').read_text(encoding='utf-8'))
+        gloss_ids = {e['id'] for es in g.get('phases', {}).values() for e in es}
+    except Exception:
+        pass
+    for p in sorted((ROOT / 'content' / 'ladders').glob('*.json')):
+        name = f'content/ladders/{p.name}'
+        try:
+            lad = json.loads(p.read_text(encoding='utf-8'))
+        except Exception as err:
+            errors.append(f'{name}: {err}')
+            continue
+        if p.stem not in all_ids:
+            errors.append(f'{name}: no content file defines #{p.stem}')
+        seen = set()
+        rungs = lad.get('rungs', [])
+        for r in rungs:
+            rid = r.get('id', '?')
+            for k in ('id', 'title', 'kick', 'why', 'code', 'walk', 'model', 'check', 'tryit', 'qa', 'bridge'):
+                if k not in r:
+                    errors.append(f'{name}: rung {rid} is missing "{k}"')
+            if rid in seen:
+                errors.append(f'{name}: rung id "{rid}" is used twice')
+            seen.add(rid)
+            lines = len(r.get('code', '').split('\n'))
+            for w in r.get('walk', []):
+                if not (1 <= w[0] <= lines):
+                    errors.append(f'{name}: rung {rid} walkthrough points at line {w[0]}, but the code has {lines} lines')
+            c = r.get('check', {})
+            if not (0 <= c.get('a', -1) < len(c.get('opts', []))):
+                errors.append(f'{name}: rung {rid} check answer is out of range')
+            for s in r.get('skills', []):
+                if gloss_ids and s not in gloss_ids:
+                    errors.append(f'{name}: rung {rid} skill "{s}" is not in glossary.json')
+        for cp, nums in lad.get('goals', {}).items():
+            if cp not in all_data_ids:
+                errors.append(f'{name}: goal {cp} is not a checkpoint data-id')
+            for n in nums:
+                if not (1 <= n <= len(rungs)):
+                    errors.append(f'{name}: goal {cp} points at concept {n}, which does not exist')
+
     for p in (ROOT / 'progress').glob('*.json'):
         try:
             doc = json.loads(p.read_text(encoding='utf-8'))
