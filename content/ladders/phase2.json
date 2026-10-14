@@ -1,0 +1,630 @@
+{
+ "_about": "Concept ladder for the Learn stage. One concept per rung. Rung ids are progress keys: never rename. skills are glossary.json ids that move to Practiced when the check is passed. goals maps checkpoint data-ids to the rungs (1-based) that teach them.",
+ "phase": "phase2",
+ "goals": {
+  "cp-p2-1": [
+   3,
+   4,
+   5
+  ],
+  "cp-p2-2": [
+   3,
+   4,
+   5,
+   8
+  ],
+  "cp-p2-3": [
+   3
+  ]
+ },
+ "rungs": [
+  {
+   "id": "types",
+   "title": "Variables and types",
+   "kick": "int · float · char · bool",
+   "mins": 12,
+   "skills": [
+    "int",
+    "float",
+    "char",
+    "bool"
+   ],
+   "builds": "Phase 1: <code>int</code> and <code>%d</code>. Session 1: <code>var(1.8f)</code> printed 1.",
+   "why": "Your game has to remember things: a score, how fast the player moves, which key was pressed, whether they’re still alive. In C you say what kind of thing each variable holds before you use it, and it only accepts that kind.",
+   "code": "#include <stdio.h>\n#include <stdbool.h>\n\nint main() {\n    int score = 0;\n    float speed = 2.5f;\n    char key = 'q';\n    bool alive = true;\n\n    score = score + 10;\n    int lives = 2.9f;\n    printf(\"%d %d\\n\", score, lives);\n    return 0;\n}",
+   "walk": [
+    [
+     2,
+     "<b>stdbool.h</b> unlocks <code>bool</code>, <code>true</code> and <code>false</code>. Without it, C doesn’t know those words."
+    ],
+    [
+     5,
+     "<b>int</b>: whole numbers only. Things you count. Starts at 0 here."
+    ],
+    [
+     6,
+     "<b>float</b>: numbers with a decimal point. Things you measure. The <code>f</code> says “this number is a float”."
+    ],
+    [
+     7,
+     "<b>char</b>: one character, in single quotes. Under the hood it’s a small number (q is 113)."
+    ],
+    [
+     8,
+     "<b>bool</b>: true or false. Perfect for alive, paused, won."
+    ],
+    [
+     10,
+     "Read the right side first: take score (0), add 10, put 10 back in score."
+    ],
+    [
+     11,
+     "A float going into an int. An int can’t hold .9, so it gets cut off. Same thing that happened with <code>var(1.8f)</code> in Session 1."
+    ],
+    [
+     12,
+     "Two <code>%d</code> slots, filled left to right by score and lives."
+    ]
+   ],
+   "model": "<b>Mental model:</b> each variable is a box with a shape cut in the lid. A float squeezed through an int-shaped lid loses whatever doesn’t fit, and C doesn’t round. It chops.",
+   "check": {
+    "q": "What does this program print?",
+    "opts": [
+     "10 2",
+     "10 3",
+     "10 2.9",
+     "Nothing: it won’t compile"
+    ],
+    "a": 0,
+    "hint": "Look at line 11. What happens to the part after the decimal point?",
+    "why": "score becomes 10. lives gets 2.9 chopped to 2, never rounded up to 3. With /W4 you’ll also see warning C4244 on line 11: the compiler telling you something got chopped.",
+    "miss": {
+     "1": "Close, but C never rounds when it converts to int. It drops everything after the point.",
+     "2": "lives is an int, so it can’t hold .9. And %d prints whole numbers only.",
+     "3": "It compiles. Converting a float to an int is allowed; you just get a warning (C4244) and a chopped value."
+    }
+   },
+   "tryit": {
+    "task": "Pick the type for each variable. Write it in VS Code and build with /W4: zero warnings means you chose well.",
+    "code": "____ jump_height = 1.5f;\n____ lane = 'A';\n____ coins = 0;\n____ paused = false;",
+    "answer": "float, char, int, bool"
+   },
+   "qa": [
+    [
+     "Why 2.5f and not just 2.5?",
+     "A plain 2.5 is a <code>double</code>, a bigger kind of decimal. Putting it in a float squeezes it, and MSVC warns with C4305. The f makes it a float from the start."
+    ],
+    [
+     "How big can an int get?",
+     "On your compiler, about ±2.1 billion. Plenty for a score. Rung 7 shows how to check sizes yourself with <code>sizeof</code>."
+    ],
+    [
+     "Is a char really a number?",
+     "Yes. 'q' is stored as 113. Rung 2 prints it both ways."
+    ]
+   ],
+   "bridge": "You can store values. Next: <b>printing them with printf</b>, because %d only works for ints."
+  },
+  {
+   "id": "printf",
+   "title": "Printing values with printf",
+   "kick": "%d · %f · %.1f · %c",
+   "mins": 10,
+   "skills": [
+    "fmt-specifiers"
+   ],
+   "builds": "Rung 1: the four types. Phase 1: <code>%d</code> and <code>%%</code>.",
+   "why": "You can already print an int with %d. Every type gets its own slot in printf. Use the wrong slot and printf prints nonsense without stopping, so matching them is on you.",
+   "code": "#include <stdio.h>\n\nint main() {\n    int score = 120;\n    float speed = 2.5f;\n    char key = 'q';\n\n    printf(\"Score: %d\\n\", score);\n    printf(\"Speed: %f\\n\", speed);\n    printf(\"Speed: %.1f\\n\", speed);\n    printf(\"Key: %c\\n\", key);\n    printf(\"Key as a number: %d\\n\", key);\n    return 0;\n}",
+   "walk": [
+    [
+     8,
+     "<b>%d</b>: the int slot. You know this one."
+    ],
+    [
+     9,
+     "<b>%f</b>: the float slot. Prints six decimal places by default: 2.500000."
+    ],
+    [
+     10,
+     "<b>%.1f</b>: same slot, but “only 1 decimal place”. Prints 2.5. The number after the dot is how many places."
+    ],
+    [
+     11,
+     "<b>%c</b>: the char slot. Shows the character: q."
+    ],
+    [
+     12,
+     "Same char, int slot. %d shows the number hiding inside the char."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a form with differently shaped holes. printf fills them left to right. The shape of each hole has to match what you drop in.",
+   "check": {
+    "q": "What does line 12 print?",
+    "opts": [
+     "Key as a number: q",
+     "Key as a number: 113",
+     "Key as a number: 0",
+     "A compile error"
+    ],
+    "a": 1,
+    "hint": "Rung 1 said a char is a small number underneath. Which slot shows the letter, and which shows the number?",
+    "why": "%d asks for the number, so you see 113, the code for lowercase q. %c would show the letter.",
+    "miss": {
+     "0": "That’s what %c would print. %d shows the number underneath.",
+     "2": "The char isn’t empty. It holds q, which is 113.",
+     "3": "Printing a char with %d is fine. A char is a small int."
+    }
+   },
+   "tryit": {
+    "task": "Fill the blank so this prints HP: 72.5% (one decimal place, then a percent sign).",
+    "code": "float hp = 72.456f;\nprintf(\"HP: ____\\n\", hp);",
+    "answer": "%.1f%%   (the %% prints a literal %, from Session 1)"
+   },
+   "qa": [
+    [
+     "What if I use %d for a float?",
+     "You get a garbage number, and with /W4 MSVC warns C4477 that the slot and the value don’t match. Treat that warning as a bug."
+    ],
+    [
+     "Why does %f work for a double too?",
+     "printf turns every float into a double before it prints, so %f covers both. scanf is stricter: a double needs %lf there."
+    ]
+   ],
+   "bridge": "You can print anything you store. Next: <b>reading what the player types</b>, so the numbers come from them instead of you."
+  },
+  {
+   "id": "scanf",
+   "title": "Reading input with scanf",
+   "kick": "scanf · &variable · \" %c\"",
+   "mins": 15,
+   "skills": [
+    "scanf",
+    "address-of"
+   ],
+   "builds": "Rung 2: format slots. scanf uses the same slots, in the other direction.",
+   "why": "printf talks to the player. scanf listens. It waits for them to type something and press Enter, then puts what they typed into one of your variables. It’s how the guessing game reads a guess.",
+   "code": "#define _CRT_SECURE_NO_WARNINGS\n#include <stdio.h>\n\nint main() {\n    int guess;\n    char again;\n\n    printf(\"Guess a number: \");\n    scanf(\"%d\", &guess);\n    printf(\"You guessed %d\\n\", guess);\n\n    printf(\"Play again? (y/n) \");\n    scanf(\" %c\", &again);\n    return 0;\n}",
+   "walk": [
+    [
+     1,
+     "MSVC calls scanf “unsafe” and, with /WX, stops the build (C4996). This line turns that warning off. It must come before any #include."
+    ],
+    [
+     5,
+     "An int with no value yet. That’s fine, because scanf is about to fill it."
+    ],
+    [
+     6,
+     "A char for the y or n answer."
+    ],
+    [
+     8,
+     "No \\n at the end, so the cursor waits on the same line as the question."
+    ],
+    [
+     9,
+     "<b>%d</b> means “read a whole number”. <b>&amp;guess</b> means “put it in guess”. The &amp; gives scanf the variable’s location."
+    ],
+    [
+     10,
+     "Now guess holds whatever the player typed."
+    ],
+    [
+     13,
+     "<b>\" %c\"</b> reads one character. The space before %c skips the Enter still waiting from the last answer. Without it, again would grab that Enter and the question would seem to be skipped."
+    ]
+   ],
+   "model": "<b>Mental model:</b> printf needs the value to show it. scanf needs to know where the variable lives, so it can put something in it. The &amp; means “the address of this variable”. Phase 3.5 explains addresses properly; for now, scanf always needs &amp; before the name.",
+   "check": {
+    "q": "The player types 7 and presses Enter. What’s on screen after line 10?",
+    "opts": [
+     "Guess a number: 7\nYou guessed 7",
+     "Guess a number:\n7\nYou guessed 7",
+     "You guessed &guess",
+     "Guess a number: You guessed 0"
+    ],
+    "a": 0,
+    "hint": "Line 8 has no \\n. Where does the cursor sit while the player types?",
+    "why": "The 7 appears right after the question, on the same line, because line 8 didn’t end with \\n. Enter moves to the next line, and line 10 prints the result.",
+    "miss": {
+     "1": "That would need a \\n at the end of line 8.",
+     "2": "The & is code, not text. printf prints the value of guess.",
+     "3": "scanf waits for the player before line 10 runs, so guess holds 7 by then."
+    }
+   },
+   "tryit": {
+    "task": "Add a question that reads the player’s speed as a float and prints it with one decimal place.",
+    "code": "float speed;\nprintf(\"Speed? \");\nscanf(\"____\", ____);\nprintf(\"Speed set to %.1f\\n\", speed);",
+    "answer": "scanf(\"%f\", &speed);"
+   },
+   "qa": [
+    [
+     "What happens if I forget the &?",
+     "It compiles, maybe with a warning, then usually crashes when you type a number: scanf writes to a random place in memory. One of the most common C bugs, so break it on purpose once."
+    ],
+    [
+     "What if they type letters instead of a number?",
+     "scanf gives up and leaves the variable alone. Checking scanf’s return value fixes that. Not needed yet."
+    ],
+    [
+     "Why isn’t there a space before %d?",
+     "%d already skips spaces and Enters before a number. %c is the one that doesn’t, because a space or Enter is a character too."
+    ]
+   ],
+   "bridge": "Your program can ask and listen. Next: <b>doing something different depending on the answer</b>. That’s where it starts to feel like a game."
+  },
+  {
+   "id": "if",
+   "title": "Decisions with if / else",
+   "kick": "if · else if · else · ==",
+   "mins": 15,
+   "skills": [
+    "if-else",
+    "eq-assign"
+   ],
+   "builds": "Rung 3: you have the player’s guess in a variable. Now compare it.",
+   "why": "Games are mostly decisions. Did they guess right? Are they out of lives? An if runs its block only when its condition is true. else catches everything else.",
+   "code": "#define _CRT_SECURE_NO_WARNINGS\n#include <stdio.h>\n\nint main() {\n    int secret = 42;\n    int guess;\n    printf(\"Guess: \");\n    scanf(\"%d\", &guess);\n\n    if (guess == secret) {\n        printf(\"Got it!\\n\");\n    } else if (guess < secret) {\n        printf(\"Higher\\n\");\n    } else {\n        printf(\"Lower\\n\");\n    }\n    return 0;\n}",
+   "walk": [
+    [
+     10,
+     "<b>==</b> asks “are these equal?”. Two equals signs. One = would put secret into guess instead, which is a classic bug."
+    ],
+    [
+     11,
+     "Runs only if the guess was exactly 42. The braces mark the block."
+    ],
+    [
+     12,
+     "Checked only if the first test failed. <b>&lt;</b> is “less than”. The others: &gt;, &lt;=, &gt;=, and != for “not equal”."
+    ],
+    [
+     14,
+     "<b>else</b> has no condition. It runs when nothing above matched."
+    ],
+    [
+     16,
+     "Exactly one of the three blocks runs. Never two."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a row of doors checked top to bottom. You walk through the first one whose sign is true and skip the rest. else is the last door, always open.",
+   "check": {
+    "q": "The player types 50. What prints?",
+    "opts": [
+     "Got it!",
+     "Higher",
+     "Lower",
+     "Higher\nLower"
+    ],
+    "a": 2,
+    "hint": "Check the doors in order. Is 50 equal to 42? Is 50 less than 42?",
+    "why": "50 isn’t 42, and 50 isn’t less than 42, so both tests fail and the else runs: Lower. Only one block ever runs.",
+    "miss": {
+     "0": "50 == 42 is false, so the first block is skipped.",
+     "1": "50 < 42 is false, so Higher is skipped too.",
+     "3": "An if / else if / else chain runs exactly one block. It stops at the first true one."
+    }
+   },
+   "tryit": {
+    "task": "Fill the blanks: print “Game over” when lives hits 0, otherwise how many are left.",
+    "code": "if (lives ____ 0) {\n    printf(\"Game over\\n\");\n} ____ {\n    printf(\"Lives left: %d\\n\", lives);\n}",
+    "answer": "== (or <=), then else"
+   },
+   "qa": [
+    [
+     "Can I leave out the braces?",
+     "For a single line, yes. Don’t. Adding a second line later without noticing the missing braces is a bug that looks correct."
+    ],
+    [
+     "What does if (lives) mean?",
+     "C treats 0 as false and any other number as true. So if (lives) means “if lives isn’t 0”. Handy, but write it out in full until it’s second nature."
+    ],
+    [
+     "What if I write = instead of ==?",
+     "It compiles. With /W4 you get C4706, and the if is now always true (or always false). The weekly “= vs ==” exercise breaks this on purpose."
+    ]
+   ],
+   "bridge": "You can ask, listen and decide. Next: <b>doing it again and again</b> until they get it right. That’s a loop."
+  },
+  {
+   "id": "loops",
+   "title": "Loops: while and for",
+   "kick": "while · for · i++",
+   "mins": 15,
+   "skills": [
+    "while",
+    "for"
+   ],
+   "builds": "Rung 4: conditions. A loop is an if that keeps coming back.",
+   "why": "The guessing game has to keep asking until the player gets it. Writing scanf ten times won’t do. A loop runs the same block again and again while a condition stays true.",
+   "code": "#include <stdio.h>\n\nint main() {\n    int lives = 3;\n    while (lives > 0) {\n        printf(\"Lives: %d\\n\", lives);\n        lives = lives - 1;\n    }\n    printf(\"Game over\\n\");\n\n    for (int i = 1; i <= 3; i++) {\n        printf(\"Wave %d\\n\", i);\n    }\n    return 0;\n}",
+   "walk": [
+    [
+     5,
+     "<b>while</b> checks the condition first. If lives &gt; 0, the block runs, then it comes back and checks again."
+    ],
+    [
+     6,
+     "Prints the current lives."
+    ],
+    [
+     7,
+     "The line that makes the loop end. Without it lives stays 3 forever: an infinite loop. Ctrl+C in the terminal stops a stuck program."
+    ],
+    [
+     9,
+     "Runs once the condition is false and the loop is done."
+    ],
+    [
+     11,
+     "<b>for</b> puts the three parts of a counting loop on one line: start (i = 1), keep going while (i &lt;= 3), step (i++ adds 1)."
+    ],
+    [
+     12,
+     "Runs with i = 1, then 2, then 3."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a lap of a track. Check the sign at the start line, run the lap, come back to the sign. for is the same lap with a lap counter built in. Use for when you know how many times; while when you’re waiting for something to happen.",
+   "check": {
+    "q": "How many times does “Lives:” print, and what’s the last number?",
+    "opts": [
+     "3 times, last is 1",
+     "3 times, last is 0",
+     "4 times, last is 0",
+     "Forever"
+    ],
+    "a": 0,
+    "hint": "lives starts at 3 and drops by 1 each lap. When does lives > 0 become false?",
+    "why": "Lives: 3, 2, 1 print. Then lives is 0, the check fails before the next lap, and the loop ends without printing 0.",
+    "miss": {
+     "1": "When lives is 0, lives > 0 is false, so the block doesn’t run again.",
+     "2": "The check happens before each lap. At 0 it stops before printing.",
+     "3": "Line 7 lowers lives every lap, so it does reach 0 and stop."
+    }
+   },
+   "tryit": {
+    "task": "Turn the guessing game into a loop: keep asking until the guess is right.",
+    "code": "int secret = 42;\nint guess = 0;\nwhile (guess ____ secret) {\n    printf(\"Guess: \");\n    scanf(\"%d\", &guess);\n}\nprintf(\"Got it!\\n\");",
+    "answer": "!=   (keep looping while the guess is not equal to the secret)"
+   },
+   "qa": [
+    [
+     "What is do { } while?",
+     "A loop that checks at the end, so the block always runs at least once. Good for menus: show it, then decide whether to show it again."
+    ],
+    [
+     "What does i++ mean?",
+     "Add 1 to i. Same as i = i + 1. i-- subtracts 1."
+    ],
+    [
+     "My program is stuck printing forever",
+     "An infinite loop: the condition never becomes false. Press Ctrl+C in the terminal, then look for the line that should change the condition."
+    ]
+   ],
+   "bridge": "You can repeat things. Next: <b>switch</b>, a cleaner way to pick one of many options, like a menu."
+  },
+  {
+   "id": "switch",
+   "title": "switch statements",
+   "kick": "switch · case · break · default",
+   "mins": 12,
+   "skills": [
+    "switch"
+   ],
+   "builds": "Rung 4: else if chains. switch does the same job when you’re matching one value against fixed options.",
+   "why": "A menu with four options is four else ifs in a row. switch reads one value and jumps straight to the matching case. It’s also how the runner will react to different keys.",
+   "code": "#define _CRT_SECURE_NO_WARNINGS\n#include <stdio.h>\n\nint main() {\n    int choice;\n    printf(\"1 Play  2 Scores  3 Quit: \");\n    scanf(\"%d\", &choice);\n\n    switch (choice) {\n        case 1:\n            printf(\"Starting...\\n\");\n            break;\n        case 2:\n            printf(\"High scores\\n\");\n            break;\n        case 3:\n            printf(\"Bye\\n\");\n            break;\n        default:\n            printf(\"Not an option\\n\");\n    }\n    return 0;\n}",
+   "walk": [
+    [
+     9,
+     "<b>switch</b> looks at one value, choice, once."
+    ],
+    [
+     10,
+     "<b>case 1:</b> means “if choice is 1, start here”. The value after case must be a fixed number or character."
+    ],
+    [
+     12,
+     "<b>break</b> jumps out of the switch. Without it, C keeps running into the next case’s lines."
+    ],
+    [
+     19,
+     "<b>default</b> catches anything no case matched, like the else at the end of an if chain."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a row of labelled starting points on a slope. C jumps to the matching label and runs downhill until it hits a break. The breaks are the walls between options.",
+   "check": {
+    "q": "You delete the break on line 12 and the player types 1. What prints?",
+    "opts": [
+     "Starting...",
+     "Starting...\nHigh scores",
+     "Starting...\nHigh scores\nBye\nNot an option",
+     "Nothing"
+    ],
+    "a": 1,
+    "hint": "Without that break, where does C go after line 11? Where is the next break?",
+    "why": "With no break after case 1, C falls through into case 2’s line and prints High scores too, then stops at case 2’s break on line 15. This fall-through is the classic switch bug.",
+    "miss": {
+     "0": "That needs the break on line 12.",
+     "2": "It falls through only until the next break, on line 15.",
+     "3": "case 1 still matches and runs its line."
+    }
+   },
+   "tryit": {
+    "task": "Add an option so typing 4 prints “Settings”.",
+    "code": "____ 4:\n    printf(\"Settings\\n\");\n    ____;",
+    "answer": "case 4:   …   break;"
+   },
+   "qa": [
+    [
+     "Can I switch on a char?",
+     "Yes. <code>case 'q':</code> works, because a char is a small number. You’ll use that for keys in the runner."
+    ],
+    [
+     "Can a case be a range, like 1 to 10?",
+     "No. Each case is one exact value. Use if / else for ranges."
+    ],
+    [
+     "Is falling through ever on purpose?",
+     "Sometimes, to let several cases share code: <code>case 'q': case 'Q':</code> above one block. If you mean it, add a comment saying so."
+    ]
+   ],
+   "bridge": "You can branch and repeat. Next: <b>maths</b>, where C quietly gives answers you don’t expect."
+  },
+  {
+   "id": "math",
+   "title": "Integer maths and casting",
+   "kick": "int division · % · (float) · sizeof",
+   "mins": 15,
+   "skills": [
+    "int-division",
+    "cast",
+    "sizeof"
+   ],
+   "builds": "Rung 1: the float-to-int chop. The same chop hides inside division.",
+   "why": "Timers, averages and percentages all divide. C divides two ints as ints and throws the remainder away, with no warning. Knowing when that happens saves hours of “why is this 0?”.",
+   "code": "#include <stdio.h>\n\nint main() {\n    int a = 7, b = 2;\n    printf(\"%d\\n\", a / b);\n    printf(\"%d\\n\", a % b);\n    printf(\"%f\\n\", a / 2.0f);\n    printf(\"%f\\n\", (float)a / b);\n    printf(\"%f\\n\", (float)(a / b));\n    printf(\"%zu\\n\", sizeof(int));\n    return 0;\n}",
+   "walk": [
+    [
+     4,
+     "Two ints declared on one line. Same as writing them separately."
+    ],
+    [
+     5,
+     "int / int gives an int. 7 / 2 is 3. The .5 is thrown away, not rounded."
+    ],
+    [
+     6,
+     "<b>%</b> is the remainder: 7 / 2 is 3 remainder 1. Handy for “every 3rd frame”: <code>frame % 3 == 0</code>."
+    ],
+    [
+     7,
+     "If either side is a float, the maths is done in float: 3.500000."
+    ],
+    [
+     8,
+     "<b>(float)a</b> is a cast: “treat a as a float for this calculation”. Now it’s float / int, so 3.5."
+    ],
+    [
+     9,
+     "The brackets run first, so the cast happens after the division. 7 / 2 is already 3, and you get 3.000000."
+    ],
+    [
+     10,
+     "<b>sizeof</b> tells you how many bytes a type uses. <code>%zu</code> is its printf slot. An int is 4 bytes on your machine."
+    ]
+   ],
+   "model": "<b>Mental model:</b> the types going in decide the type coming out. int with int stays int. Bring one float in, with a float number or a cast, before the division happens, and the whole calculation becomes float.",
+   "check": {
+    "q": "What does line 9 print?",
+    "opts": [
+     "3.500000",
+     "3.000000",
+     "3",
+     "4.000000"
+    ],
+    "a": 1,
+    "hint": "Do the part in brackets first. What is 7 / 2 in int maths?",
+    "why": "(a / b) runs first as int maths and gives 3. Casting 3 to float gives 3.0, printed as 3.000000. The cast came too late to save the .5.",
+    "miss": {
+     "0": "That’s line 8, where the cast happens before the division.",
+     "2": "%f always prints decimals, so it’s 3.000000.",
+     "3": "Int division throws the remainder away. It never rounds up."
+    }
+   },
+   "tryit": {
+    "task": "Make this print the right percentage: 3 hits out of 4 should print 75.0.",
+    "code": "int hits = 3, shots = 4;\nfloat pct = ____hits / shots * 100;\nprintf(\"%.1f\\n\", pct);",
+    "answer": "(float)   so it reads (float)hits / shots * 100. Without it, 3 / 4 is 0 and you get 0.0."
+   },
+   "qa": [
+    [
+     "Why is 3 / 4 zero?",
+     "Int division: 4 goes into 3 zero times. The 0.75 is thrown away."
+    ],
+    [
+     "What about negative numbers?",
+     "-7 / 2 is -3 in C. It chops toward zero, not down."
+    ],
+    [
+     "Why %zu for sizeof?",
+     "sizeof gives a size_t, an unsigned type for sizes. %zu is its slot. %d often works by luck, but /W4 may warn."
+    ]
+   ],
+   "bridge": "You can trust your maths. Last: <b>random numbers</b>, so the guessing game has a secret you can’t predict."
+  },
+  {
+   "id": "rand",
+   "title": "Random numbers",
+   "kick": "rand() · srand(time(NULL))",
+   "mins": 12,
+   "skills": [
+    "rand"
+   ],
+   "builds": "Rung 7: % and casts, both used here.",
+   "why": "A guessing game where the secret is always 42 isn’t a game. rand() gives a number that looks random. srand() changes where the sequence starts, so it’s different every run.",
+   "code": "#include <stdio.h>\n#include <stdlib.h>\n#include <time.h>\n\nint main() {\n    srand((unsigned)time(NULL));\n    int secret = rand() % 100 + 1;\n    int roll = rand() % 6 + 1;\n    printf(\"Secret: %d  Dice: %d\\n\", secret, roll);\n    return 0;\n}",
+   "walk": [
+    [
+     2,
+     "<b>stdlib.h</b> has rand and srand."
+    ],
+    [
+     3,
+     "<b>time.h</b> has time(), the current time in seconds."
+    ],
+    [
+     6,
+     "<b>srand</b> picks the starting point of the random sequence. Seeding with the time gives a different start each run. Call it once, at the top. The (unsigned) cast from rung 7 stops warning C4244, which /WX would turn into an error."
+    ],
+    [
+     7,
+     "rand() gives a big number. % 100 gives 0 to 99. + 1 shifts it to 1 to 100."
+    ],
+    [
+     8,
+     "Same recipe for a dice roll: % 6 gives 0 to 5, + 1 gives 1 to 6."
+    ]
+   ],
+   "model": "<b>Mental model:</b> rand() reads from a long, fixed list of numbers that looks random. srand picks where in the list to start. Same start, same numbers. The clock gives a different start every second.",
+   "check": {
+    "q": "Before the + 1, what range can rand() % 100 give?",
+    "opts": [
+     "1 to 100",
+     "0 to 99",
+     "0 to 100",
+     "1 to 99"
+    ],
+    "a": 1,
+    "hint": "% 100 is the remainder after dividing by 100. What’s the biggest remainder you can get?",
+    "why": "Remainders by 100 run from 0 to 99. The + 1 shifts that to 1 to 100, which is why the guessing game adds it.",
+    "miss": {
+     "0": "That’s after the + 1.",
+     "2": "A remainder by 100 can’t be 100 itself.",
+     "3": "0 is possible, whenever rand() is a multiple of 100."
+    }
+   },
+   "tryit": {
+    "task": "Flip a coin: print Heads or Tails at random.",
+    "code": "int flip = rand() % ____;\nif (flip == 0) {\n    printf(\"Heads\\n\");\n} else {\n    printf(\"Tails\\n\");\n}",
+    "answer": "2   (rand() % 2 gives 0 or 1)"
+   },
+   "qa": [
+    [
+     "What happens without srand?",
+     "rand() starts from the same place every run, so the secret is the same number every time you play. Try it once."
+    ],
+    [
+     "Why not call srand inside the loop?",
+     "time() only changes once a second. Re-seeding in a fast loop restarts the same sequence, so you get the same number over and over."
+    ],
+    [
+     "Is it truly random?",
+     "No, it’s pseudo-random: a formula. Fine for games, never for passwords."
+    ]
+   ],
+   "bridge": "That’s every concept in Phase 2. Next: <b>Trace</b>, predicting what whole programs do, then the frame counter and guessing game builds."
+  }
+ ]
+}
