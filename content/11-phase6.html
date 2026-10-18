@@ -116,12 +116,13 @@
                 <button class="copy-btn">Copy</button>
               </div>
 <pre><span class="c-pp">#pragma once</span>
+<span class="c-pp">#include</span> <span class="c-str">"player.h"</span>  <span class="c-cm">// your Player struct from Phase 3.5</span>
 
 <span class="c-cm">// All possible game states</span>
 <span class="c-kw">typedef enum</span> {
     <span class="c-var">STATE_MENU</span>,
     <span class="c-var">STATE_PLAYING</span>,
-    <span class="c-var">STATE_PAUSED</span>,
+    <span class="c-var">STATE_PAUSED</span>,     <span class="c-cm">// optional fourth state</span>
     <span class="c-var">STATE_GAME_OVER</span>
 } <span class="c-type">GameState</span>;
 
@@ -134,6 +135,8 @@
 } <span class="c-type">Game</span>;
 
 <span class="c-cm">// AABB collision: do rectangles a and b overlap?</span>
+<span class="c-cm">// The same four comparisons as the AABB concept, written for float positions.</span>
+<span class="c-cm">// static inline lets it live in a header without the LNK2005 error from Phase 4.5.</span>
 <span class="c-kw">static inline</span> <span class="c-type">int</span> <span class="c-fn">aabb_overlap</span>(
     <span class="c-type">float</span> <span class="c-var">ax</span>, <span class="c-type">float</span> <span class="c-var">ay</span>, <span class="c-type">float</span> <span class="c-var">aw</span>, <span class="c-type">float</span> <span class="c-var">ah</span>,
     <span class="c-type">float</span> <span class="c-var">bx</span>, <span class="c-type">float</span> <span class="c-var">by</span>, <span class="c-type">float</span> <span class="c-var">bw</span>, <span class="c-type">float</span> <span class="c-var">bh</span>)
@@ -146,7 +149,7 @@
 <span class="c-type">void</span> <span class="c-fn">game_init</span>(<span class="c-type">Game</span>* <span class="c-var">g</span>);
 <span class="c-type">void</span> <span class="c-fn">game_handle_input</span>(<span class="c-type">Game</span>* <span class="c-var">g</span>);
 <span class="c-type">void</span> <span class="c-fn">game_update</span>(<span class="c-type">Game</span>* <span class="c-var">g</span>);
-<span class="c-type">void</span> <span class="c-fn">game_render</span>(<span class="c-type">Game</span>* <span class="c-var">g</span>);</pre>
+<span class="c-type">void</span> <span class="c-fn">game_render</span>(<span class="c-kw">const</span> <span class="c-type">Game</span>* <span class="c-var">g</span>);  <span class="c-cm">// render only reads</span></pre>
             </div>
           </div>
         </div>

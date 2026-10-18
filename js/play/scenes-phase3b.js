@@ -346,7 +346,7 @@ function popScale(k) { return 1 + .22 * Math.sin(Math.PI * clamp(k)); }
    p3b-debug
    ===================================================================== */
 (function () {
-  const CODE = [[7, 'void damage(Player* p, int amount) {'], [8, '  p->health = p->health - amount;'], [9, '}'], [10, ''], [11, 'int main() {'], [12, '  Player hero;'], [13, '  hero.health = 100;'],
+  const CODE = [[7, 'void damage(Player* p, int amount) {'], [8, '  p->health = p->health - amount;'], [9, '}'], [10, ''], [11, 'int main(void) {'], [12, '  Player hero;'], [13, '  hero.health = 100;'],
     [14, '  damage(&hero, 30);'], [15, '  damage(&hero, 30);'], [16, '  printf("health %d\\n", hero.health);'], [17, '  return 0;']];
   const PX = 6, PY = 24, PW = 232, PH = 158, RH = 13.2, TOP = PY + 9;
   const lineY = L => TOP + (L - 7) * RH + RH / 2;
@@ -437,7 +437,7 @@ function popScale(k) { return 1 + .22 * Math.sin(Math.PI * clamp(k)); }
   const SHEETS = {
     h: { x: 6, y: 8, w: 150, name: 'player.h', col: 'orange' },
     c: { x: 172, y: 8, w: 222, name: 'player.c', col: 'blue', pre: [], inc: '#include "player.h"', post: ['void player_heal(Player* p, int amount) {', '    p->health = p->health + amount;', '}'] },
-    m: { x: 172, y: 0, w: 222, name: 'main.c', col: 'accent', pre: ['#include <stdio.h>'], inc: '#include "player.h"', post: ['int main() {', '    player_heal(&hero, 25);', '}'] }
+    m: { x: 172, y: 0, w: 222, name: 'main.c', col: 'accent', pre: ['#include <stdio.h>'], inc: '#include "player.h"', post: ['int main(void) {', '    player_heal(&hero, 25);', '}'] }
   };
   const rk = (pk, i) => seg(pk, i / PASTE.length * .5, i / PASTE.length * .5 + .5);
   const rowsOf = id => {

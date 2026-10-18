@@ -504,7 +504,7 @@
     ],
     [
      "Why not allocate memory for each obstacle as it appears?",
-     "Not needed (that’s what malloc and free do, covered much later). A small fixed array is simpler, can’t leak, and is how most games handle bullets and enemies. Phase 7 shows the bigger version."
+     "Not needed (that’s what malloc and free do, covered much later). A small fixed array is simpler, can’t leak, and is how most games handle bullets and enemies. King ch 17 covers malloc when you want the bigger version."
     ]
    ],
    "bridge": "You can track a changing set of things in a fixed array. Next: <b>state machines</b>: MENU, PLAYING and GAME_OVER in one switch."

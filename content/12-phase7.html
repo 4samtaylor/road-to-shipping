@@ -204,10 +204,10 @@
                 <div class="prose t-muted2 mb-12">Target output: only the lines to ADD inside an existing WM_KEYDOWN block. Not a rewrite:</div>
 <pre class="code-panel"><span class="c-cm">// KEYWORD: "add WASD alongside existing arrow keys" → adds, doesn't replace</span>
 <span class="c-cm">// KEYWORD: "inside the WM_KEYDOWN case"  → exact location</span>
-<span class="c-kw">if</span> (<span class="c-var">wp</span> == <span class="c-str">'A'</span>) <span class="c-var">g_x</span> -= <span class="c-num">5</span>;   <span class="c-cm">// KEYWORD: "move left"</span>
-<span class="c-kw">if</span> (<span class="c-var">wp</span> == <span class="c-str">'D'</span>) <span class="c-var">g_x</span> += <span class="c-num">5</span>;   <span class="c-cm">// KEYWORD: "move right"</span>
-<span class="c-kw">if</span> (<span class="c-var">wp</span> == <span class="c-str">'W'</span>) <span class="c-var">g_y</span> -= <span class="c-num">5</span>;   <span class="c-cm">// KEYWORD: "move up"</span>
-<span class="c-kw">if</span> (<span class="c-var">wp</span> == <span class="c-str">'S'</span>) <span class="c-var">g_y</span> += <span class="c-num">5</span>;   <span class="c-cm">// KEYWORD: "move down"</span>
+<span class="c-kw">if</span> (<span class="c-var">wp</span> == <span class="c-str">'A'</span>) <span class="c-var">g_rect_x</span> -= <span class="c-num">5</span>;   <span class="c-cm">// KEYWORD: "move left"</span>
+<span class="c-kw">if</span> (<span class="c-var">wp</span> == <span class="c-str">'D'</span>) <span class="c-var">g_rect_x</span> += <span class="c-num">5</span>;   <span class="c-cm">// KEYWORD: "move right"</span>
+<span class="c-kw">if</span> (<span class="c-var">wp</span> == <span class="c-str">'W'</span>) <span class="c-var">g_rect_y</span> -= <span class="c-num">5</span>;   <span class="c-cm">// KEYWORD: "move up"</span>
+<span class="c-kw">if</span> (<span class="c-var">wp</span> == <span class="c-str">'S'</span>) <span class="c-var">g_rect_y</span> += <span class="c-num">5</span>;   <span class="c-cm">// KEYWORD: "move down"</span>
 <span class="c-cm">// KEYWORD: "don't rewrite my file, show only lines to add" → surgical scope</span></pre>
                 <div class="acc-section mt-12" style="border:1px solid var(--blue-line)">
                   <div class="section-block-header t-blue" style="background:var(--blue-dim)">
@@ -215,7 +215,7 @@
                     <span class="acc-toggle-icon">▼</span>
                   </div>
                   <div class="acc-body" style="padding:14px 16px">
-                    <div class="prompt-text fs-12-5">I have a working Win32 window in C that moves a rectangle with arrow keys using g_x and g_y, handled inside a WM_KEYDOWN case. Add WASD movement alongside the existing arrow keys. A/D move left/right by 5, W/S move up/down by 5. Show me ONLY the lines to add and where they go. Don't rewrite my file, don't add new functions, don't change the structure.</div>
+                    <div class="prompt-text fs-12-5">I have a working Win32 window in C that moves a rectangle with arrow keys using g_rect_x and g_rect_y, handled inside a WM_KEYDOWN case. Add WASD movement alongside the existing arrow keys. A/D move left/right by 5, W/S move up/down by 5. Show me ONLY the lines to add and where they go. Don't rewrite my file, don't add new functions, don't change the structure.</div>
                     <div class="prose prose--sm t-muted2 mt-10">The two critical phrases: "alongside the existing" (so it adds, not replaces) and "show me ONLY the lines to add, don't rewrite my file" (so you get a small reviewable diff instead of a regenerated file you have to re-read entirely). As systems grow, surgical scope is what keeps AI safe to use.</div>
                   </div>
                 </div>
@@ -246,7 +246,7 @@
                     <span class="acc-toggle-icon">▼</span>
                   </div>
                   <div class="acc-body" style="padding:14px 16px">
-                    <div class="prompt-text fs-12-5">Here is my game's context. Game struct: { GameState state; Player player; int input_dx; }. GameState enum: MENU, PLAYING, GAME_OVER. I already have a function player_move(Player* p, float dx, float dy) and player has a bool alive field. Write ONLY game_update(Game* g) that switches on the current state, and when PLAYING calls my existing player_move using input_dx, then transitions to GAME_OVER if the player is not alive. Match my snake_case style. No new dependencies, no new files.</div>
+                    <div class="prompt-text fs-12-5">Here is my game's context. Game struct: { GameState state; Player player; int input_dx; }. GameState enum: STATE_MENU, STATE_PLAYING, STATE_GAME_OVER. I already have a function player_move(Player* p, float dx, float dy) and player has a bool alive field. Write ONLY game_update(Game* g) that switches on the current state, and when STATE_PLAYING calls my existing player_move using input_dx, then transitions to STATE_GAME_OVER if the player is not alive. Match my snake_case style. No new dependencies, no new files.</div>
                     <div class="prose prose--sm t-muted2 mt-10">This is the Phase 6 lesson in one prompt: you paste the context (struct, enum, existing functions) <em>first</em>, then ask for the implementation. Without that context block the AI invents its own struct, its own move function, its own state names, and nothing connects to what you and your partner already built.</div>
                   </div>
                 </div>

@@ -40,15 +40,15 @@
    ],
    "builds": "Environment Setup: VS Code open on your exercises folder, and <code>cl</code> working.",
    "why": "Every C program you’ll write, the game included, has the same skeleton: pull in the tools you need, start at main, do the work, report that it finished. Learn the skeleton once and every file after this looks familiar.",
-   "code": "#include <stdio.h>\n\nint main() {\n    printf(\"Hello, World!\\n\");\n    printf(\"Ready to ship.\\n\");\n    return 0;\n}",
+   "code": "#include <stdio.h>\n\nint main(void) {\n    printf(\"Hello, World!\\n\");\n    printf(\"Ready to ship.\\n\");\n    return 0;\n}",
    "walk": [
     [
      1,
-     "<b>#include &lt;stdio.h&gt;</b> pulls in the standard input/output toolbox. printf lives there. Without this line, C doesn’t know what printf is."
+     "<b>#include &lt;stdio.h&gt;</b> pulls in the standard input/output toolbox. printf lives there. Leave it out and MSVC warns that printf is undeclared (C4013). With the warnings-as-errors flag you add in Concept 5, that stops the build."
     ],
     [
      3,
-     "<b>main</b> is where every C program starts. <code>int</code> means it hands back a whole number when it finishes. The { opens its body."
+     "<b>main</b> is where every C program starts. <code>int</code> means it hands back a whole number when it finishes. <code>(void)</code> means it takes nothing in. The { opens its body."
     ],
     [
      4,
@@ -87,17 +87,17 @@
    },
    "tryit": {
     "task": "Add a third line that prints your name. Compile and run it: the next concept shows exactly how.",
-    "code": "#include <stdio.h>\n\nint main() {\n    printf(\"Hello, World!\\n\");\n    printf(\"____\\n\");\n    return 0;\n}",
+    "code": "#include <stdio.h>\n\nint main(void) {\n    printf(\"Hello, World!\\n\");\n    printf(\"____\\n\");\n    return 0;\n}",
     "answer": "printf(\"Sam\\n\");   any text inside the quotes, ending with \\n"
    },
    "qa": [
     [
-     "Why int main() and not just main()?",
-     "main hands a number back to Windows when it ends: 0 for success. <code>int</code> says what kind of thing it returns. Phase 3 covers return values properly."
+     "Why int main(void)? What are the int and the void?",
+     "main hands a number back to Windows when it ends: 0 for success. <code>int</code> says what kind of thing it returns. <code>void</code> inside the brackets says it takes no inputs. You’ll see <code>int main()</code> in older code and it works, but <code>(void)</code> says exactly what you mean. Phase 3 covers inputs and return values properly."
     ],
     [
      "What happens if I forget the ;?",
-     "The compiler stops with an error that points at the line after the one missing it. Concept 4 is all about reading those."
+     "The compiler stops with an error that usually points at the line after the one missing it. Concept 4 is all about reading those."
     ],
     [
      "Does the spacing matter?",
@@ -204,7 +204,7 @@
    ],
    "builds": "Concept 1: printf and \\n. Session 1: the disappearing “Lets”.",
    "why": "Some characters can’t be typed straight into a string: a new line, a tab, a quote. C uses a backslash to say “the next character is special”. And %d drops a number into your text, which is how the game will show a score.",
-   "code": "#include <stdio.h>\n\nint main() {\n    printf(\"Score:\\t%d\\n\", 120);\n    printf(\"Path: C:\\\\Games\\\\runner\\n\");\n    printf(\"Progress: 50%%\\n\");\n    printf(\"Lets\\r party\\n\");\n    return 0;\n}",
+   "code": "#include <stdio.h>\n\nint main(void) {\n    printf(\"Score:\\t%d\\n\", 120);\n    printf(\"Path: C:\\\\Games\\\\runner\\n\");\n    printf(\"Progress: 50%%\\n\");\n    printf(\"Lets\\r party\\n\");\n    return 0;\n}",
    "walk": [
     [
      4,
@@ -281,7 +281,7 @@
    ],
    "builds": "Concepts 1 and 2: every statement ends with ;, and cl reports problems when you compile.",
    "why": "You will see compiler errors every day, for as long as you write code. They look scary but follow one pattern: file, line, code, message. Reading them calmly is a skill, and it’s the fastest way to fix your own code.",
-   "code": "#include <stdio.h>\n\nint main() {\n    printf(\"Hello\\n\");\n    printf(\"World\\n\")\n    return 0;\n}",
+   "code": "#include <stdio.h>\n\nint main(void) {\n    printf(\"Hello\\n\");\n    printf(\"World\\n\")\n    return 0;\n}",
    "walk": [
     [
      4,
@@ -316,13 +316,13 @@
    },
    "tryit": {
     "task": "This has two mistakes. Build it, read the first error, fix it, build again, then fix the next.",
-    "code": "#include <stdio.h>\n\nint main() {\n    printf(\"Score: %d\\n\", 10)\n    printf(\"Lives: 3\\n);\n    return 0;\n}",
+    "code": "#include <stdio.h>\n\nint main(void) {\n    printf(\"Score: %d\\n\", 10)\n    printf(\"Lives: 3\\n);\n    return 0;\n}",
     "answer": "Line 4 is missing the ; at the end. Line 5 is missing the closing \" before the ). Fix the first error first: one mistake can cause several messages."
    },
    "qa": [
     [
      "Error or warning: what’s the difference?",
-     "An error (C2xxx) means no .exe is made. A warning (C4xxx) still makes one, but something looks wrong. With /WX in Concept 5, warnings stop the build too."
+     "An error (C2xxx) means no .exe is made. A warning (C4xxx) means something looks wrong. On its own it still makes an .exe, but your build.bat (Concept 5) adds /WX, which turns every warning into an error, so no .exe either."
     ],
     [
      "Why do I get ten errors for one mistake?",
@@ -361,7 +361,7 @@
     ],
     [
      2,
-     "<b>set FLAGS=</b> saves the compiler flags in one place. /W4 turns on most warnings, /WX makes any warning stop the build, /Zi and /Od prepare the .exe for the debugger, which Phase 3.5 covers."
+     "<b>set FLAGS=</b> saves the compiler flags in one place. /W4 turns on most warnings, /WX makes any warning stop the build, /Zi writes debug information into a .pdb file and /Od turns off optimisation, so the debugger (Phase 3.5) can follow your code line by line."
     ],
     [
      3,
@@ -386,7 +386,7 @@
    ],
    "model": "<b>Mental model:</b> build.bat is a recipe card for the cook. You write the steps once, flags included, and every build follows them exactly.",
    "check": {
-    "q": "hello_world.c has one warning (C4244) and nothing else wrong. What does build print at the end?",
+    "q": "hello_world.c has a <code>printf(\"%d\\n\")</code> with no number after it, so cl gives one warning (C4473) and nothing else is wrong. What does build print at the end?",
     "opts": [
      "BUILD OK",
      "BUILD FAILED",

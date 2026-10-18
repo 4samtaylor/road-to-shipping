@@ -396,7 +396,7 @@
     "do": [
      {
       "a": "main",
-      "t": "int main() {"
+      "t": "int main(void) {"
      }
     ]
    },

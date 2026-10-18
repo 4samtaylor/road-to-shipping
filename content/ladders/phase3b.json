@@ -29,7 +29,7 @@
       ],
       "builds": "Phase 2: int and float variables. Phase 3: arrays, many boxes of the <i>same</i> type.",
       "why": "A player in your game has a position and health, and maybe more. Without a struct you’d carry loose variables around and hope you never mix up whose x is whose. A struct bundles them into one thing you can name, copy and pass around.",
-      "code": "#include <stdio.h>\n\ntypedef struct {\n    float x;\n    float y;\n    int health;\n} Player;\n\nint main() {\n    Player hero;\n    Player boss;\n    hero.health = 100;\n    boss.health = 500;\n    hero.x = 2.5f;\n    boss.health = boss.health - 30;\n    printf(\"hero %d, boss %d, x %.1f\\n\", hero.health, boss.health, hero.x);\n    return 0;\n}",
+      "code": "#include <stdio.h>\n\ntypedef struct {\n    float x;\n    float y;\n    int health;\n} Player;\n\nint main(void) {\n    Player hero;\n    Player boss;\n    hero.health = 100;\n    boss.health = 500;\n    hero.x = 2.5f;\n    boss.health = boss.health - 30;\n    printf(\"hero %d, boss %d, x %.1f\\n\", hero.health, boss.health, hero.x);\n    return 0;\n}",
       "walk": [
         [
           3,
@@ -114,7 +114,7 @@
       ],
       "builds": "Concept 1: structs and the dot. Phase 3, scope: functions get <i>copies</i>, so reset() couldn’t change main’s score.",
       "why": "In Phase 3, reset(score) couldn’t change main’s score. Structs follow the same rule, and it matters more here: a damage function that works on a copy of the player does nothing at all. Seeing the problem first is what makes the fix in concept 4 make sense.",
-      "code": "#include <stdio.h>\n\ntypedef struct {\n    int health;\n} Player;\n\nvoid hurt(Player p) {\n    p.health = p.health - 10;\n    printf(\"Inside hurt: %d\\n\", p.health);\n}\n\nint main() {\n    Player hero;\n    hero.health = 100;\n    Player backup = hero;\n    hurt(hero);\n    backup.health = 1;\n    printf(\"hero %d, backup %d\\n\", hero.health, backup.health);\n    return 0;\n}",
+      "code": "#include <stdio.h>\n\ntypedef struct {\n    int health;\n} Player;\n\nvoid hurt(Player p) {\n    p.health = p.health - 10;\n    printf(\"Inside hurt: %d\\n\", p.health);\n}\n\nint main(void) {\n    Player hero;\n    hero.health = 100;\n    Player backup = hero;\n    hurt(hero);\n    backup.health = 1;\n    printf(\"hero %d, backup %d\\n\", hero.health, backup.health);\n    return 0;\n}",
       "walk": [
         [
           7,
@@ -201,7 +201,7 @@
       ],
       "builds": "Phase 2: scanf(&x) handed scanf the address of x. Phase 3: the FILE * you were told to ignore.",
       "why": "A pointer is a variable that holds where something lives instead of the thing itself. Hand a function that address and it can reach back and change the original. Every game function that updates the player works this way.",
-      "code": "#include <stdio.h>\n\nint main() {\n    int score = 10;\n    int* p = &score;\n    int copy = score;\n\n    *p = 50;\n    printf(\"score %d, copy %d\\n\", score, copy);\n    printf(\"*p is %d\\n\", *p);\n    return 0;\n}",
+      "code": "#include <stdio.h>\n\nint main(void) {\n    int score = 10;\n    int* p = &score;\n    int copy = score;\n\n    *p = 50;\n    printf(\"score %d, copy %d\\n\", score, copy);\n    printf(\"*p is %d\\n\", *p);\n    return 0;\n}",
       "walk": [
         [
           4,
@@ -266,7 +266,7 @@
         ],
         [
           "GDScript has no pointers. Why does C make me deal with them?",
-          "GDScript has them, it just hides them: objects are passed by reference, which is a pointer with the asterisk filed off. C makes you choose between copying a whole struct every frame and handing over one address."
+          "GDScript has something similar, it just hides it: objects are passed by reference, which works much like a pointer with the asterisk filed off. C makes you choose between copying a whole struct every frame and handing over one address."
         ]
       ],
       "bridge": "You can hold an address and follow it. Next: <b>passing a pointer to a function</b>, and the <b>-></b> shortcut for structs."
@@ -283,7 +283,7 @@
       ],
       "builds": "Concepts 2 and 3: a copy can’t change the original, but an address can. Phase 3: scope and reset().",
       "why": "Time to fix Phase 3’s reset problem. If a function takes a pointer, the caller passes an address with &, and the function reaches back through it. This is why player_move takes a Player* and not a Player.",
-      "code": "#include <stdio.h>\n\ntypedef struct {\n    int health;\n    int score;\n} Player;\n\nvoid reset(int* score) {\n    *score = 0;\n}\n\nvoid heal(Player* p, int amount) {\n    p->health = p->health + amount;\n}\n\nint main() {\n    Player hero;\n    hero.health = 60;\n    hero.score = 99;\n    reset(&hero.score);\n    heal(&hero, 25);\n    printf(\"health %d, score %d\\n\", hero.health, hero.score);\n    return 0;\n}",
+      "code": "#include <stdio.h>\n\ntypedef struct {\n    int health;\n    int score;\n} Player;\n\nvoid reset(int* score) {\n    *score = 0;\n}\n\nvoid heal(Player* p, int amount) {\n    p->health = p->health + amount;\n}\n\nint main(void) {\n    Player hero;\n    hero.health = 60;\n    hero.score = 99;\n    reset(&hero.score);\n    heal(&hero, 25);\n    printf(\"health %d, score %d\\n\", hero.health, hero.score);\n    return 0;\n}",
       "walk": [
         [
           8,
@@ -367,8 +367,8 @@
         "null"
       ],
       "builds": "Concept 4: functions that take a Player*. Phase 3: fopen returns NULL when a file can’t be opened.",
-      "why": "A pointer can hold “no address at all”: NULL. Following it crashes the program. Functions use NULL to say “I couldn’t give you one”, like fopen did in Phase 3, so you check before you follow a pointer.",
-      "code": "#define _CRT_SECURE_NO_WARNINGS\n#include <stdio.h>\n\ntypedef struct { int health; } Player;\n\nvoid heal(Player* p, int amount) {\n    if (p == NULL) {\n        printf(\"No player to heal\\n\");\n        return;\n    }\n    p->health = p->health + amount;\n}\n\nint main() {\n    Player hero;\n    hero.health = 50;\n    Player* target = NULL;\n    heal(target, 10);\n    target = &hero;\n    heal(target, 10);\n    printf(\"hero %d\\n\", hero.health);\n\n    FILE* f = fopen(\"no_such_file.txt\", \"r\");\n    if (f == NULL) {\n        printf(\"No file\\n\");\n    }\n    return 0;\n}",
+      "why": "A pointer can hold “no address at all”: NULL. Following it is undefined behaviour, and on Windows that almost always means a crash. Functions use NULL to say “I couldn’t give you one”, like fopen did in Phase 3, so you check before you follow a pointer.",
+      "code": "#define _CRT_SECURE_NO_WARNINGS\n#include <stdio.h>\n\ntypedef struct { int health; } Player;\n\nvoid heal(Player* p, int amount) {\n    if (p == NULL) {\n        printf(\"No player to heal\\n\");\n        return;\n    }\n    p->health = p->health + amount;\n}\n\nint main(void) {\n    Player hero;\n    hero.health = 50;\n    Player* target = NULL;\n    heal(target, 10);\n    target = &hero;\n    heal(target, 10);\n    printf(\"hero %d\\n\", hero.health);\n\n    FILE* f = fopen(\"no_such_file.txt\", \"r\");\n    if (f == NULL) {\n        printf(\"No file\\n\");\n    }\n    return 0;\n}",
       "walk": [
         [
           7,
@@ -437,7 +437,7 @@
         ],
         [
           "Is NULL the same as 0?",
-          "It’s a zero address. Write NULL when you mean a pointer, so the code says what you mean."
+          "It compares equal to 0, and on Windows it really is address zero. Write NULL when you mean a pointer, so the code says what you mean."
         ]
       ],
       "bridge": "You can use pointers without crashing. Next: <b>enum</b>, readable names instead of magic numbers, for game states."
@@ -453,7 +453,7 @@
       ],
       "builds": "Phase 3: #define named constants. Phase 2: switch.",
       "why": "A game is always in one state: menu, playing, game over. You could use 0, 1 and 2, but then nobody (including you in a week) knows what 2 means. An enum gives each number a name, and the compiler counts for you.",
-      "code": "#include <stdio.h>\n\ntypedef enum { STATE_MENU, STATE_PLAYING, STATE_GAMEOVER } GameState;\n\nint main() {\n    GameState state = STATE_PLAYING;\n    int lives = 0;\n\n    printf(\"MENU=%d PLAYING=%d GAMEOVER=%d\\n\", STATE_MENU, STATE_PLAYING, STATE_GAMEOVER);\n    if (lives == 0) {\n        state = STATE_GAMEOVER;\n    }\n    switch (state) {\n        case STATE_MENU:     printf(\"show menu\\n\"); break;\n        case STATE_PLAYING:  printf(\"run game\\n\"); break;\n        case STATE_GAMEOVER: printf(\"show game over\\n\"); break;\n    }\n    return 0;\n}",
+      "code": "#include <stdio.h>\n\ntypedef enum { STATE_MENU, STATE_PLAYING, STATE_GAMEOVER } GameState;\n\nint main(void) {\n    GameState state = STATE_PLAYING;\n    int lives = 0;\n\n    printf(\"MENU=%d PLAYING=%d GAMEOVER=%d\\n\", STATE_MENU, STATE_PLAYING, STATE_GAMEOVER);\n    if (lives == 0) {\n        state = STATE_GAMEOVER;\n    }\n    switch (state) {\n        case STATE_MENU:     printf(\"show menu\\n\"); break;\n        case STATE_PLAYING:  printf(\"run game\\n\"); break;\n        case STATE_GAMEOVER: printf(\"show game over\\n\"); break;\n    }\n    return 0;\n}",
       "walk": [
         [
           3,
@@ -531,7 +531,7 @@
       ],
       "builds": "Phase 3: prototypes tell the compiler a function exists before its body. Concept 1: the Player struct.",
       "why": "One big file stops being readable. Splitting lets the functions live in player.c, while the struct and prototypes live in a header (.h). main.c only needs the header to know what exists, and every file that uses the player includes it.",
-      "code": "// ---- player.h ----\n#pragma once\n\ntypedef struct {\n    int health;\n} Player;\n\nvoid player_heal(Player* p, int amount);\n\n// ---- player.c ----\n#include \"player.h\"\n\nvoid player_heal(Player* p, int amount) {\n    p->health = p->health + amount;\n}\n\n// ---- main.c ----\n#include <stdio.h>\n#include \"player.h\"\n\nint main() {\n    Player hero;\n    hero.health = 50;\n    player_heal(&hero, 25);\n    printf(\"health %d\\n\", hero.health);\n    return 0;\n}",
+      "code": "// ---- player.h ----\n#pragma once\n\ntypedef struct {\n    int health;\n} Player;\n\nvoid player_heal(Player* p, int amount);\n\n// ---- player.c ----\n#include \"player.h\"\n\nvoid player_heal(Player* p, int amount) {\n    p->health = p->health + amount;\n}\n\n// ---- main.c ----\n#include <stdio.h>\n#include \"player.h\"\n\nint main(void) {\n    Player hero;\n    hero.health = 50;\n    player_heal(&hero, 25);\n    printf(\"health %d\\n\", hero.health);\n    return 0;\n}",
       "walk": [
         [
           2,
@@ -689,7 +689,7 @@
       ],
       "builds": "Concept 4: damage works through a pointer. Phase 1: /Zi in build.bat writes the symbol file the debugger reads.",
       "why": "printf debugging means edit, rebuild, run, read, repeat. A debugger freezes the program mid-run so you can look at everything at once. It’s also the best way to see a pointer: you can watch the real hero change from inside a function that never names it.",
-      "code": "#include <stdio.h>\n\ntypedef struct {\n    int health;\n} Player;\n\nvoid damage(Player* p, int amount) {\n    p->health = p->health - amount;\n}\n\nint main() {\n    Player hero;\n    hero.health = 100;\n    damage(&hero, 30);\n    damage(&hero, 30);\n    printf(\"health %d\\n\", hero.health);\n    return 0;\n}",
+      "code": "#include <stdio.h>\n\ntypedef struct {\n    int health;\n} Player;\n\nvoid damage(Player* p, int amount) {\n    p->health = p->health - amount;\n}\n\nint main(void) {\n    Player hero;\n    hero.health = 100;\n    damage(&hero, 30);\n    damage(&hero, 30);\n    printf(\"health %d\\n\", hero.health);\n    return 0;\n}",
       "walk": [
         [
           14,
