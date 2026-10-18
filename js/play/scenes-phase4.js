@@ -18,7 +18,7 @@
                                       col 0..7 is the x slot; lane 0/1 is the line.
      commit  { p, id, col, lane, par:[ids], hash, lab, kind:'merge'|'ghost', br:name|false }
                                       a new dot; moves the current branch flag onto it (br:false = flag stays)
-     branch  { p, n, at }             new branch flag on commit `at`
+     branch  { p, n, on }             new branch flag on commit `on`
      switch  { p, n }                 HEAD moves to branch n (its flag fills in)
      flag    { p, n, h, r }           move or create flag n on commit h (r:true = remote-tracking, dashed)
      drop    { p, n }                 delete flag n
@@ -125,7 +125,7 @@
         addC(pl, mk({ id: a.id, col: a.col, lane: a.lane || 0, par: a.par || [], lab: a.lab, hash: a.hash, kind: a.kind, rate: a.rate }));
         if (a.br !== false) setFlag(pl, a.br || pl.head, a.id);
         break;
-      case 'branch': setFlag(pl, a.n, a.at); break;
+      case 'branch': setFlag(pl, a.n, a.on); break;
       case 'switch': pl.head = a.n; break;
       case 'flag': setFlag(pl, a.n, a.h, a.r); break;
       case 'drop': pl.br = pl.br.filter(function (b) { return b.n !== a.n; }); break;

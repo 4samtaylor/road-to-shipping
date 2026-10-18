@@ -66,13 +66,13 @@
   /* ===================== p3-rooms ===================== */
   (function () {
     var RY = 22, RH = 190, RX = [10, 225], RW = 165;
-    var rowTop = function (r) { return RY + 50 + r * 36; };
+    var rowTop = function (r) { return RY + 50 + r * 34; };
     function anchor(S, p) {
       var i = p[0];
       if (p[1] === '@tray') return [RX[i] + RW / 2, RY + RH - 23];
       var R = S.rooms[i], r = p[2];
       if (r == null) { r = R.vars.findIndex(function (v) { return v.n === p[1]; }); if (r < 0) r = R.vars.length; }
-      return [RX[i] + RW / 2, rowTop(r) + 16];
+      return [RX[i] + RW / 2, rowTop(r) + 15];
     }
     function blank() { return { vis: false, name: '', sig: '', kind: 'room', vars: [], tray: null }; }
     RTSPlay.scene('p3-rooms', {
@@ -134,13 +134,13 @@
           }
           c.save(); if (R.varsA != null) c.globalAlpha *= Math.max(0, R.varsA);
           R.vars.forEach(function (v, r) {
-            var g = v.grow == null ? 1 : v.grow, pp = 1 + 0.12 * (v.pop || 0), x = RX[i] + 10, y = rowTop(r), w = RW - 20, h = 32;
+            var g = v.grow == null ? 1 : v.grow, pp = 1 + 0.12 * (v.pop || 0), x = RX[i] + 10, y = rowTop(r), w = RW - 20, h = 30;
             c.save(); c.translate(x + w / 2, y + h / 2); c.scale(Math.max(g, 0) * pp, Math.max(g, 0) * pp); c.translate(-w / 2, -h / 2);
             rrect(c, 0, 0, w, h, 5); c.fillStyle = rgba(C.accent, 0.13); c.fill(); c.strokeStyle = rgba(C.accent, 0.7); c.lineWidth = 1.5; c.stroke();
-            txt(c, v.t, 8, v.copy ? 10 : 16, { size: 8, col: C.muted, align: 'left' });
-            txt(c, v.n, 32, v.copy ? 10 : 16, { size: 11, w: 600, col: C.text, align: 'left' });
-            if (v.copy) txt(c, 'a copy', 8, 24, { size: 7, w: 700, col: C.orange, align: 'left' });
-            txt(c, v.v == null ? '?' : String(v.v), w - 10, 17, { size: 15, w: 700, col: v.v == null ? C.muted : C.text, align: 'right' });
+            txt(c, v.t, 8, v.copy ? 9 : 15, { size: 8, col: C.muted, align: 'left' });
+            txt(c, v.n, 32, v.copy ? 9 : 15, { size: 11, w: 600, col: C.text, align: 'left' });
+            if (v.copy) txt(c, 'a copy', 8, 21, { size: 7, w: 700, col: C.orange, align: 'left' });
+            txt(c, v.v == null ? '?' : String(v.v), w - 10, 16, { size: 15, w: 700, col: v.v == null ? C.muted : C.text, align: 'right' });
             c.restore();
           });
           c.restore(); c.restore();

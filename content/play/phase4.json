@@ -1,0 +1,1991 @@
+{
+ "clone-pull": {
+  "scene": "git-graph",
+  "steps": [
+   {
+    "line": 1,
+    "ms": 1700,
+    "note": "Person A has no copy of the game yet. GitHub and Sam's PC both hold the history so far.",
+    "do": [
+     {
+      "a": "show",
+      "vis": [
+       1,
+       1,
+       1
+      ],
+      "names": [
+       "This PC (Person A)",
+       "GitHub",
+       "Sam's PC"
+      ],
+      "at": 0,
+      "len": 0.2
+     },
+     {
+      "a": "world",
+      "p": 1,
+      "cs": [
+       [
+        "c1",
+        0,
+        0,
+        [],
+        {
+         "hash": "3a9f0d1"
+        }
+       ],
+       [
+        "c2",
+        1,
+        0,
+        [
+         "c1"
+        ],
+        {
+         "hash": "40bcc83"
+        }
+       ]
+      ],
+      "br": [
+       [
+        "main",
+        "c2"
+       ]
+      ],
+      "head": "main",
+      "files": [],
+      "at": 0.1,
+      "len": 0.4
+     },
+     {
+      "a": "world",
+      "p": 2,
+      "cs": [
+       [
+        "c1",
+        0,
+        0,
+        [],
+        {
+         "hash": "3a9f0d1"
+        }
+       ],
+       [
+        "c2",
+        1,
+        0,
+        [
+         "c1"
+        ],
+        {
+         "hash": "40bcc83"
+        }
+       ]
+      ],
+      "br": [
+       [
+        "main",
+        "c2"
+       ],
+       [
+        "origin/main",
+        "c2",
+        1
+       ]
+      ],
+      "head": "main",
+      "files": [],
+      "at": 0.3,
+      "len": 0.4
+     }
+    ]
+   },
+   {
+    "line": 2,
+    "ms": 1000,
+    "note": "Go to the folder where you keep your projects. Nothing is in Git yet.",
+    "out": "> cd %USERPROFILE%\\Documents\\Dev\n",
+    "do": [
+     {
+      "a": "say",
+      "p": 0,
+      "t": "Dev folder",
+      "x": 250
+     }
+    ]
+   },
+   {
+    "line": 3,
+    "ms": 2600,
+    "note": "Clone copies everything from GitHub, the whole history, onto this PC. Watch the dots fly down.",
+    "out": "> git clone https://github.com/4samtaylor/game-dev-exercises\nCloning into 'game-dev-exercises'...\ndone.\n",
+    "outAt": 0.15,
+    "do": [
+     {
+      "a": "fly",
+      "from": 1,
+      "to": 0,
+      "ids": "all",
+      "mv": [
+       [
+        "main",
+        "c2"
+       ],
+       [
+        "origin/main",
+        "c2",
+        1
+       ]
+      ],
+      "at": 0,
+      "len": 0.9
+     }
+    ]
+   },
+   {
+    "line": 4,
+    "ms": 1000,
+    "note": "Step inside the new folder. Git commands only work inside a repo folder.",
+    "out": "> cd game-dev-exercises\n",
+    "do": [
+     {
+      "a": "hl",
+      "p": 0,
+      "n": "main"
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 1500,
+    "note": "git log lists the commits, newest first. Your Phase 1 commit is in there.",
+    "out": "> git log --oneline\n40bcc83 Add hello world and build.bat\n3a9f0d1 Initial commit\n",
+    "outAt": 0.1,
+    "do": [
+     {
+      "a": "hl",
+      "p": 0,
+      "id": "c2",
+      "at": 0,
+      "len": 0.5
+     },
+     {
+      "a": "hl",
+      "p": 0,
+      "id": "c1",
+      "at": 0.45,
+      "len": 0.55
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 1000,
+    "note": "From now on, each work session starts with a pull.",
+    "do": [
+     {
+      "a": "say",
+      "p": 0,
+      "t": "start of session",
+      "x": 250
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 1800,
+    "note": "Pull asks GitHub: anything new since I last looked?",
+    "out": "> git pull\n",
+    "outAt": 0.1,
+    "do": [
+     {
+      "a": "ping",
+      "from": 0,
+      "to": 1,
+      "at": 0,
+      "len": 1
+     }
+    ]
+   },
+   {
+    "line": 8,
+    "ms": 1300,
+    "note": "Nothing new, so there is nothing to bring down. Your copy matches GitHub.",
+    "out": "Already up to date.\n",
+    "do": [
+     {
+      "a": "say",
+      "p": 0,
+      "t": "Already up to date.",
+      "x": 250,
+      "at": 0,
+      "len": 0.9
+     }
+    ]
+   },
+   {
+    "line": 9,
+    "ms": 1000,
+    "note": "git status checks where you stand compared with GitHub.",
+    "out": "> git status\n",
+    "do": [
+     {
+      "a": "hl",
+      "p": 0,
+      "n": "origin/main"
+     }
+    ]
+   },
+   {
+    "line": 10,
+    "ms": 1000,
+    "note": "You are on the main branch, the flag with the filled colour.",
+    "out": "On branch main\n",
+    "do": [
+     {
+      "a": "hl",
+      "p": 0,
+      "n": "main"
+     }
+    ]
+   },
+   {
+    "line": 11,
+    "ms": 1200,
+    "note": "Your main sits on the same dot as origin/main, GitHub's version. Nothing to catch up on.",
+    "out": "Your branch is up to date with 'origin/main'.\n",
+    "do": [
+     {
+      "a": "hl",
+      "p": 0,
+      "n": "origin/main"
+     }
+    ]
+   },
+   {
+    "line": 12,
+    "ms": 1200,
+    "note": "No changes on disk either. A clean place to start work from.",
+    "out": "\nnothing to commit, working tree clean\n",
+    "do": [
+     {
+      "a": "say",
+      "p": 0,
+      "t": "clean",
+      "x": 250
+     }
+    ]
+   }
+  ]
+ },
+ "commit-messages": {
+  "scene": "git-graph",
+  "steps": [
+   {
+    "line": 1,
+    "ms": 1400,
+    "note": "Short status: one line for each file you changed. Below is the commit history so far.",
+    "out": "> git status -s\n",
+    "do": [
+     {
+      "a": "show",
+      "vis": [
+       1,
+       0,
+       0
+      ],
+      "names": [
+       "Your commit history",
+       "",
+       ""
+      ],
+      "at": 0,
+      "len": 0.1
+     },
+     {
+      "a": "world",
+      "p": 0,
+      "cs": [
+       [
+        "c07a9e5",
+        0,
+        0,
+        [],
+        {
+         "hash": "c07a9e5",
+         "lab": "stuff"
+        }
+       ],
+       [
+        "8b1e4d2",
+        1,
+        0,
+        [
+         "c07a9e5"
+        ],
+        {
+         "hash": "8b1e4d2",
+         "lab": "update"
+        }
+       ]
+      ],
+      "br": [
+       [
+        "main",
+        "8b1e4d2"
+       ]
+      ],
+      "head": "main",
+      "files": [],
+      "log": true,
+      "at": 0,
+      "len": 0.5
+     }
+    ]
+   },
+   {
+    "line": 2,
+    "ms": 1100,
+    "note": "runner.c is modified (M) but not yet staged.",
+    "out": " M runner.c\n",
+    "do": [
+     {
+      "a": "files",
+      "p": 0,
+      "list": [
+       [
+        "runner.c",
+        "M"
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "line": 3,
+    "ms": 1100,
+    "note": "git add puts runner.c in the next snapshot.",
+    "out": "> git add runner.c\n",
+    "do": [
+     {
+      "a": "files",
+      "p": 0,
+      "list": [
+       [
+        "runner.c",
+        "S"
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "line": 4,
+    "ms": 1800,
+    "note": "Commit takes the snapshot. The message is the caption on it, and it lands on top of the history.",
+    "out": "> git commit -m \"fix: ducking now dodges obstacles at column 0\"\n[main 3f2a1c9] fix: ducking now dodges obstacles at column 0\n 1 file changed, 1 insertion(+)\n",
+    "outAt": 0.2,
+    "do": [
+     {
+      "a": "files",
+      "p": 0,
+      "list": [],
+      "at": 0,
+      "len": 0.4
+     },
+     {
+      "a": "commit",
+      "p": 0,
+      "id": "3f2a1c9",
+      "col": 2,
+      "par": [
+       "8b1e4d2"
+      ],
+      "hash": "3f2a1c9",
+      "lab": "fix: ducking now dodges obstacles at column 0",
+      "at": 0.3,
+      "len": 0.7
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 2000,
+    "note": "git log reads the captions back, newest first. This is what your partner sees.",
+    "out": "> git log --oneline\n",
+    "outAt": 0.1,
+    "do": [
+     {
+      "a": "hl",
+      "p": 0,
+      "id": "3f2a1c9",
+      "at": 0,
+      "len": 0.35
+     },
+     {
+      "a": "hl",
+      "p": 0,
+      "id": "8b1e4d2",
+      "at": 0.3,
+      "len": 0.35
+     },
+     {
+      "a": "hl",
+      "p": 0,
+      "id": "c07a9e5",
+      "at": 0.6,
+      "len": 0.35
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 1100,
+    "note": "A good one: type, then what changed. You know what to test without opening the code.",
+    "out": "3f2a1c9 fix: ducking now dodges obstacles at column 0\n",
+    "do": [
+     {
+      "a": "rate",
+      "p": 0,
+      "id": "3f2a1c9",
+      "v": "good"
+     },
+     {
+      "a": "hl",
+      "p": 0,
+      "id": "3f2a1c9",
+      "at": 0,
+      "len": 0.6
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 1100,
+    "note": "'update' could mean anything. What did it update?",
+    "out": "8b1e4d2 update\n",
+    "do": [
+     {
+      "a": "rate",
+      "p": 0,
+      "id": "8b1e4d2",
+      "v": "vague"
+     },
+     {
+      "a": "hl",
+      "p": 0,
+      "id": "8b1e4d2",
+      "at": 0,
+      "len": 0.6
+     }
+    ]
+   },
+   {
+    "line": 8,
+    "ms": 1100,
+    "note": "Same problem. In a month nobody can find which commit broke the jump.",
+    "out": "c07a9e5 stuff\n",
+    "do": [
+     {
+      "a": "rate",
+      "p": 0,
+      "id": "c07a9e5",
+      "v": "vague"
+     },
+     {
+      "a": "hl",
+      "p": 0,
+      "id": "c07a9e5",
+      "at": 0,
+      "len": 0.6
+     }
+    ]
+   }
+  ]
+ },
+ "branches": {
+  "scene": "git-graph",
+  "steps": [
+   {
+    "line": 1,
+    "ms": 2000,
+    "note": "Switch -c makes a new branch called feature/jump and moves you onto it. Both branches start on the same dot.",
+    "out": "> git switch -c feature/jump\nSwitched to a new branch 'feature/jump'\n",
+    "do": [
+     {
+      "a": "show",
+      "vis": [
+       1,
+       0,
+       0
+      ],
+      "names": [
+       "Your PC",
+       "",
+       ""
+      ],
+      "at": 0,
+      "len": 0.1
+     },
+     {
+      "a": "world",
+      "p": 0,
+      "cs": [
+       [
+        "c1",
+        0,
+        0,
+        []
+       ],
+       [
+        "c2",
+        1,
+        0,
+        [
+         "c1"
+        ]
+       ]
+      ],
+      "br": [
+       [
+        "main",
+        "c2"
+       ],
+       [
+        "origin/main",
+        "c2",
+        1
+       ]
+      ],
+      "head": "main",
+      "files": [
+       [
+        "runner.c",
+        "ok"
+       ]
+      ],
+      "big": true,
+      "fy": "bot",
+      "at": 0,
+      "len": 0.4
+     },
+     {
+      "a": "branch",
+      "p": 0,
+      "n": "feature/jump",
+      "on": "c2",
+      "at": 0.5,
+      "len": 0.3
+     },
+     {
+      "a": "switch",
+      "p": 0,
+      "n": "feature/jump",
+      "at": 0.6,
+      "len": 0.4
+     }
+    ]
+   },
+   {
+    "line": 2,
+    "ms": 1100,
+    "note": "You write jump.c. It is a new file in your folder, and Git has not seen it yet.",
+    "do": [
+     {
+      "a": "files",
+      "p": 0,
+      "list": [
+       [
+        "runner.c",
+        "ok"
+       ],
+       [
+        "jump.c",
+        "??"
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "line": 3,
+    "ms": 1100,
+    "note": "Staging jump.c, same as before.",
+    "out": "> git add jump.c\n",
+    "do": [
+     {
+      "a": "files",
+      "p": 0,
+      "list": [
+       [
+        "runner.c",
+        "ok"
+       ],
+       [
+        "jump.c",
+        "S"
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "line": 4,
+    "ms": 1700,
+    "note": "The new dot goes on the feature/jump line only. main has not moved.",
+    "out": "> git commit -m \"feat: add jump\"\n[feature/jump 0872ff3] feat: add jump\n 1 file changed, 1 insertion(+)\n create mode 100644 jump.c\n",
+    "outAt": 0.2,
+    "do": [
+     {
+      "a": "commit",
+      "p": 0,
+      "id": "j3",
+      "col": 2,
+      "lane": 1,
+      "par": [
+       "c2"
+      ],
+      "hash": "0872ff3",
+      "br": "feature/jump",
+      "at": 0,
+      "len": 0.7
+     },
+     {
+      "a": "files",
+      "p": 0,
+      "list": [
+       [
+        "runner.c",
+        "ok"
+       ],
+       [
+        "jump.c",
+        "ok"
+       ]
+      ],
+      "at": 0.4,
+      "len": 0.5
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 1100,
+    "note": "dir /b lists the files in your folder. We are on feature/jump.",
+    "out": "> dir /b\n",
+    "do": [
+     {
+      "a": "hl",
+      "p": 0,
+      "name": "runner.c",
+      "at": 0,
+      "len": 0.8
+     },
+     {
+      "a": "hl",
+      "p": 0,
+      "name": "jump.c",
+      "at": 0.1,
+      "len": 0.8
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 900,
+    "note": "jump.c is here.",
+    "out": "jump.c\n",
+    "do": [
+     {
+      "a": "hl",
+      "p": 0,
+      "name": "jump.c"
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 900,
+    "note": "So is runner.c.",
+    "out": "runner.c\n",
+    "do": [
+     {
+      "a": "hl",
+      "p": 0,
+      "name": "runner.c"
+     }
+    ]
+   },
+   {
+    "line": 8,
+    "ms": 1800,
+    "note": "Switch main moves you back. Git rewrites your folder to match main, so jump.c steps out of sight.",
+    "out": "> git switch main\nSwitched to branch 'main'\nYour branch is up to date with 'origin/main'.\n",
+    "outAt": 0.2,
+    "do": [
+     {
+      "a": "switch",
+      "p": 0,
+      "n": "main",
+      "at": 0,
+      "len": 0.5
+     },
+     {
+      "a": "files",
+      "p": 0,
+      "list": [
+       [
+        "runner.c",
+        "ok"
+       ],
+       [
+        "jump.c",
+        "gone"
+       ]
+      ],
+      "at": 0.4,
+      "len": 0.5
+     }
+    ]
+   },
+   {
+    "line": 9,
+    "ms": 900,
+    "note": "Look at the folder again.",
+    "out": "> dir /b\n",
+    "do": [
+     {
+      "a": "hl",
+      "p": 0,
+      "name": "runner.c"
+     }
+    ]
+   },
+   {
+    "line": 10,
+    "ms": 1100,
+    "note": "Only runner.c. jump.c is not deleted, it is safe in the feature/jump commit.",
+    "out": "runner.c\n",
+    "do": [
+     {
+      "a": "hl",
+      "p": 0,
+      "id": "j3"
+     }
+    ]
+   },
+   {
+    "line": 11,
+    "ms": 1000,
+    "note": "git branch lists your branches.",
+    "out": "> git branch\n",
+    "do": [
+     {
+      "a": "hl",
+      "p": 0,
+      "n": "feature/jump",
+      "at": 0,
+      "len": 0.8
+     },
+     {
+      "a": "hl",
+      "p": 0,
+      "n": "main",
+      "at": 0.1,
+      "len": 0.8
+     }
+    ]
+   },
+   {
+    "line": 12,
+    "ms": 900,
+    "note": "There is feature/jump.",
+    "out": "  feature/jump\n",
+    "do": [
+     {
+      "a": "hl",
+      "p": 0,
+      "n": "feature/jump"
+     }
+    ]
+   },
+   {
+    "line": 13,
+    "ms": 1100,
+    "note": "The star marks the branch you are on: main.",
+    "out": "* main\n",
+    "do": [
+     {
+      "a": "hl",
+      "p": 0,
+      "n": "main"
+     }
+    ]
+   }
+  ]
+ },
+ "pull-requests": {
+  "scene": "git-graph",
+  "steps": [
+   {
+    "line": 1,
+    "ms": 1800,
+    "note": "Move onto your feature branch. The filled flag shows where you are.",
+    "out": "> git switch feature/jump\nSwitched to branch 'feature/jump'\n",
+    "do": [
+     {
+      "a": "show",
+      "vis": [
+       1,
+       1,
+       1
+      ],
+      "names": [
+       "Your PC",
+       "GitHub",
+       "Person A's PC"
+      ],
+      "at": 0,
+      "len": 0.1
+     },
+     {
+      "a": "world",
+      "p": 0,
+      "cs": [
+       [
+        "c1",
+        0,
+        0,
+        []
+       ],
+       [
+        "c2",
+        1,
+        0,
+        [
+         "c1"
+        ]
+       ]
+      ],
+      "br": [
+       [
+        "main",
+        "c2"
+       ],
+       [
+        "origin/main",
+        "c2",
+        1
+       ],
+       [
+        "feature/jump",
+        "c2"
+       ]
+      ],
+      "head": "main",
+      "files": [],
+      "at": 0,
+      "len": 0.3
+     },
+     {
+      "a": "world",
+      "p": 1,
+      "cs": [
+       [
+        "c1",
+        0,
+        0,
+        []
+       ],
+       [
+        "c2",
+        1,
+        0,
+        [
+         "c1"
+        ]
+       ]
+      ],
+      "br": [
+       [
+        "main",
+        "c2"
+       ]
+      ],
+      "head": "main",
+      "files": [],
+      "at": 0.05,
+      "len": 0.3
+     },
+     {
+      "a": "world",
+      "p": 2,
+      "cs": [
+       [
+        "c1",
+        0,
+        0,
+        []
+       ],
+       [
+        "c2",
+        1,
+        0,
+        [
+         "c1"
+        ]
+       ]
+      ],
+      "br": [
+       [
+        "main",
+        "c2"
+       ],
+       [
+        "origin/main",
+        "c2",
+        1
+       ]
+      ],
+      "head": "main",
+      "files": [],
+      "at": 0.1,
+      "len": 0.3
+     },
+     {
+      "a": "switch",
+      "p": 0,
+      "n": "feature/jump",
+      "at": 0.5,
+      "len": 0.4
+     }
+    ]
+   },
+   {
+    "line": 2,
+    "ms": 1300,
+    "note": "You do the work and commit. The new dot sits on the feature line, on your PC only.",
+    "do": [
+     {
+      "a": "commit",
+      "p": 0,
+      "id": "j3",
+      "col": 2,
+      "lane": 1,
+      "par": [
+       "c2"
+      ],
+      "hash": "0872ff3",
+      "br": "feature/jump"
+     }
+    ]
+   },
+   {
+    "line": 3,
+    "ms": 2300,
+    "note": "Push sends the branch up to GitHub. origin is just the name for GitHub's copy.",
+    "out": "> git push -u origin feature/jump\nremote: Create a pull request for 'feature/jump' on GitHub by visiting:\nremote:      https://github.com/4samtaylor/game-dev-exercises/pull/new/feature/jump\nTo https://github.com/4samtaylor/game-dev-exercises\n * [new branch]      feature/jump -> feature/jump\nbranch 'feature/jump' set up to track 'origin/feature/jump'.\n",
+    "outAt": 0.7,
+    "do": [
+     {
+      "a": "fly",
+      "from": 0,
+      "to": 1,
+      "ids": [
+       "j3"
+      ],
+      "mv": [
+       [
+        "feature/jump",
+        "j3"
+       ]
+      ],
+      "at": 0,
+      "len": 0.8
+     },
+     {
+      "a": "flag",
+      "p": 0,
+      "n": "origin/feature/jump",
+      "h": "j3",
+      "r": 1,
+      "at": 0.85,
+      "len": 0.15
+     }
+    ]
+   },
+   {
+    "line": 4,
+    "ms": 1500,
+    "note": "On the GitHub website you open a pull request: a request to merge your branch into main.",
+    "do": [
+     {
+      "a": "tag",
+      "p": 1,
+      "t": "pull request open",
+      "at": 0,
+      "len": 0.3
+     },
+     {
+      "a": "say",
+      "p": 1,
+      "t": "Create pull request",
+      "x": 270,
+      "at": 0.1,
+      "len": 0.8
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 3000,
+    "note": "Person A plays your branch, then clicks Merge. GitHub joins the two lines with a merge dot on main.",
+    "do": [
+     {
+      "a": "fly",
+      "from": 1,
+      "to": 2,
+      "ids": [
+       "j3"
+      ],
+      "mv": [
+       [
+        "feature/jump",
+        "j3"
+       ]
+      ],
+      "at": 0,
+      "len": 0.4
+     },
+     {
+      "a": "commit",
+      "p": 1,
+      "id": "m4",
+      "col": 3,
+      "lane": 0,
+      "par": [
+       "c2",
+       "j3"
+      ],
+      "kind": "merge",
+      "hash": "9a0c7e3",
+      "br": "main",
+      "at": 0.5,
+      "len": 0.35
+     },
+     {
+      "a": "tag",
+      "p": 1,
+      "t": "",
+      "at": 0.85,
+      "len": 0.15
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 1300,
+    "note": "Back to main on your PC. Your main is still the old one, two dots behind GitHub's.",
+    "out": "> git switch main\nSwitched to branch 'main'\nYour branch is up to date with 'origin/main'.\n",
+    "do": [
+     {
+      "a": "switch",
+      "p": 0,
+      "n": "main"
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 2300,
+    "note": "Pull brings down the merge dot, so your main now has jump.c.",
+    "out": "> git pull\nFrom https://github.com/4samtaylor/game-dev-exercises\n   8b1e4d2..9a0c7e3  main       -> origin/main\nUpdating 8b1e4d2..9a0c7e3\nFast-forward\n jump.c | 1 +\n 1 file changed, 1 insertion(+)\n create mode 100644 jump.c\n",
+    "outAt": 0.2,
+    "do": [
+     {
+      "a": "fly",
+      "from": 1,
+      "to": 0,
+      "ids": [
+       "m4"
+      ],
+      "mv": [
+       [
+        "main",
+        "m4"
+       ],
+       [
+        "origin/main",
+        "m4",
+        1
+       ]
+      ],
+      "at": 0,
+      "len": 0.9
+     }
+    ]
+   },
+   {
+    "line": 8,
+    "ms": 1500,
+    "note": "The branch has done its job. -d removes the flag, but the commits stay safe in main's history.",
+    "out": "> git branch -d feature/jump\nDeleted branch feature/jump (was 0872ff3).\n",
+    "do": [
+     {
+      "a": "drop",
+      "p": 0,
+      "n": "feature/jump"
+     },
+     {
+      "a": "say",
+      "p": 0,
+      "t": "flag gone, work kept",
+      "x": 270,
+      "at": 0.2,
+      "len": 0.8
+     }
+    ]
+   }
+  ]
+ },
+ "merge-conflicts": {
+  "scene": "git-graph",
+  "steps": [
+   {
+    "line": 1,
+    "ms": 2000,
+    "note": "Setup so pull merges. Both of you have changed the same line in runner.c: your PC has a new commit, and GitHub has a different one.",
+    "out": "> git config --global pull.rebase false\n",
+    "do": [
+     {
+      "a": "show",
+      "vis": [
+       1,
+       1,
+       1
+      ],
+      "names": [
+       "Your PC",
+       "GitHub",
+       "Person A's PC"
+      ],
+      "at": 0,
+      "len": 0.1
+     },
+     {
+      "a": "world",
+      "p": 0,
+      "cs": [
+       [
+        "c1",
+        0,
+        0,
+        []
+       ],
+       [
+        "c2",
+        1,
+        0,
+        [
+         "c1"
+        ],
+        {
+         "hash": "e82f1b4"
+        }
+       ],
+       [
+        "y3",
+        2,
+        0,
+        [
+         "c2"
+        ],
+        {
+         "hash": "a41f7d9"
+        }
+       ]
+      ],
+      "br": [
+       [
+        "main",
+        "y3"
+       ],
+       [
+        "origin/main",
+        "c2",
+        1
+       ]
+      ],
+      "head": "main",
+      "files": [],
+      "at": 0,
+      "len": 0.3
+     },
+     {
+      "a": "world",
+      "p": 1,
+      "cs": [
+       [
+        "c1",
+        0,
+        0,
+        []
+       ],
+       [
+        "c2",
+        1,
+        0,
+        [
+         "c1"
+        ],
+        {
+         "hash": "e82f1b4"
+        }
+       ],
+       [
+        "r3",
+        2,
+        0,
+        [
+         "c2"
+        ],
+        {
+         "hash": "cb284f6"
+        }
+       ]
+      ],
+      "br": [
+       [
+        "main",
+        "r3"
+       ]
+      ],
+      "head": "main",
+      "files": [],
+      "at": 0.05,
+      "len": 0.3
+     },
+     {
+      "a": "world",
+      "p": 2,
+      "cs": [
+       [
+        "c1",
+        0,
+        0,
+        []
+       ],
+       [
+        "c2",
+        1,
+        0,
+        [
+         "c1"
+        ],
+        {
+         "hash": "e82f1b4"
+        }
+       ],
+       [
+        "r3",
+        2,
+        0,
+        [
+         "c2"
+        ],
+        {
+         "hash": "cb284f6"
+        }
+       ]
+      ],
+      "br": [
+       [
+        "main",
+        "r3"
+       ],
+       [
+        "origin/main",
+        "r3",
+        1
+       ]
+      ],
+      "head": "main",
+      "files": [],
+      "at": 0.1,
+      "len": 0.3
+     }
+    ]
+   },
+   {
+    "line": 2,
+    "ms": 2200,
+    "note": "Pull brings their commit down. It lands on its own line, because it does not follow yours.",
+    "out": "> git pull\nFrom https://github.com/4samtaylor/game-dev-exercises\n   e82f1b4..cb284f6  main       -> origin/main\nAuto-merging runner.c\n",
+    "outAt": 0.2,
+    "do": [
+     {
+      "a": "fly",
+      "from": 1,
+      "to": 0,
+      "ids": [
+       "r3"
+      ],
+      "ln": {
+       "r3": 1
+      },
+      "mv": [
+       [
+        "origin/main",
+        "r3",
+        1
+       ]
+      ],
+      "at": 0,
+      "len": 0.9
+     }
+    ]
+   },
+   {
+    "line": 3,
+    "ms": 3000,
+    "note": "Both commits changed the same line, so Git cannot pick a winner. It stops and says so.",
+    "out": "CONFLICT (content): Merge conflict in runner.c\n",
+    "outAt": 0.7,
+    "do": [
+     {
+      "a": "card",
+      "mode": "collide",
+      "at": 0,
+      "len": 0.95
+     },
+     {
+      "a": "tag",
+      "p": 0,
+      "t": "merge paused",
+      "at": 0.7,
+      "len": 0.3
+     }
+    ]
+   },
+   {
+    "line": 4,
+    "ms": 1500,
+    "note": "The merge is paused, not broken. Nothing is lost. You finish it by hand.",
+    "out": "Automatic merge failed; fix conflicts and then commit the result.\n",
+    "do": [
+     {
+      "a": "card",
+      "mode": "collide"
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 1200,
+    "note": "type shows the file. Git has written both versions into it.",
+    "out": "> type runner.c\n",
+    "do": [
+     {
+      "a": "card",
+      "mode": "markers",
+      "n": 0
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 1000,
+    "note": "This line starts your version, what you had committed locally.",
+    "out": "<<<<<<< HEAD\n",
+    "do": [
+     {
+      "a": "card",
+      "mode": "markers",
+      "n": 1,
+      "hl": 0
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 1000,
+    "note": "Your edit: 20.",
+    "out": "#define FRAME_MS 20\n",
+    "do": [
+     {
+      "a": "card",
+      "mode": "markers",
+      "n": 2,
+      "hl": 1
+     }
+    ]
+   },
+   {
+    "line": 8,
+    "ms": 1000,
+    "note": "The divider between the two versions.",
+    "out": "=======\n",
+    "do": [
+     {
+      "a": "card",
+      "mode": "markers",
+      "n": 3,
+      "hl": 2
+     }
+    ]
+   },
+   {
+    "line": 9,
+    "ms": 1000,
+    "note": "Their edit from GitHub: 16.",
+    "out": "#define FRAME_MS 16\n",
+    "do": [
+     {
+      "a": "card",
+      "mode": "markers",
+      "n": 4,
+      "hl": 3
+     }
+    ]
+   },
+   {
+    "line": 10,
+    "ms": 1000,
+    "note": "This line ends their version. After it, the id of their commit.",
+    "out": ">>>>>>> cb284f65b60eec7847a6ee9ebcc097c1b9354948\n",
+    "do": [
+     {
+      "a": "card",
+      "mode": "markers",
+      "n": 5,
+      "hl": 4
+     }
+    ]
+   },
+   {
+    "line": 11,
+    "ms": 2200,
+    "note": "You decide: keep 16. Delete the other line and all three marker lines, so one line is left.",
+    "do": [
+     {
+      "a": "card",
+      "mode": "fixed",
+      "at": 0,
+      "len": 0.9
+     }
+    ]
+   },
+   {
+    "line": 12,
+    "ms": 1200,
+    "note": "git add tells Git this file is resolved.",
+    "out": "> git add runner.c\n",
+    "do": [
+     {
+      "a": "card",
+      "mode": "fixed",
+      "st": true
+     }
+    ]
+   },
+   {
+    "line": 13,
+    "ms": 2200,
+    "note": "Commit finishes the merge. The new dot, ringed in yellow, joins both lines back into one.",
+    "out": "> git commit -m \"merge: keep 16ms frame time\"\n[main 7d41e0a] merge: keep 16ms frame time\n",
+    "outAt": 0.2,
+    "do": [
+     {
+      "a": "card",
+      "mode": "off",
+      "at": 0,
+      "len": 0.3
+     },
+     {
+      "a": "tag",
+      "p": 0,
+      "t": "",
+      "at": 0.2,
+      "len": 0.3
+     },
+     {
+      "a": "commit",
+      "p": 0,
+      "id": "m4",
+      "col": 3,
+      "lane": 0,
+      "par": [
+       "y3",
+       "r3"
+      ],
+      "kind": "merge",
+      "hash": "7d41e0a",
+      "br": "main",
+      "at": 0.4,
+      "len": 0.55
+     }
+    ]
+   },
+   {
+    "line": 14,
+    "ms": 2400,
+    "note": "Push shares the merged result. GitHub gets your commit and the merge, and everyone is back in step.",
+    "out": "> git push\nTo https://github.com/4samtaylor/game-dev-exercises.git\n   cb284f6..7d41e0a  main -> main\n",
+    "outAt": 0.6,
+    "do": [
+     {
+      "a": "fly",
+      "from": 0,
+      "to": 1,
+      "ids": [
+       "y3",
+       "m4"
+      ],
+      "ln": {
+       "y3": 1
+      },
+      "mv": [
+       [
+        "main",
+        "m4"
+       ]
+      ],
+      "at": 0,
+      "len": 0.8
+     },
+     {
+      "a": "flag",
+      "p": 0,
+      "n": "origin/main",
+      "h": "m4",
+      "r": 1,
+      "at": 0.85,
+      "len": 0.15
+     }
+    ]
+   }
+  ]
+ },
+ "gitignore": {
+  "scene": "git-graph",
+  "steps": [
+   {
+    "line": 1,
+    "ms": 2300,
+    "note": "Your folder has build output lying around. Echo starts a .gitignore file with one pattern: *.exe.",
+    "out": "> echo *.exe> .gitignore\n",
+    "do": [
+     {
+      "a": "show",
+      "vis": [
+       1.25,
+       0.9,
+       0
+      ],
+      "names": [
+       "Your folder (files on disk)",
+       "Git history (tracked)",
+       ""
+      ],
+      "at": 0,
+      "len": 0.1
+     },
+     {
+      "a": "world",
+      "p": 0,
+      "cs": [],
+      "br": [],
+      "head": "main",
+      "files": [
+       [
+        "runner.c",
+        "ok"
+       ],
+       [
+        "runner.exe",
+        "ok"
+       ],
+       [
+        "runner.obj",
+        "??"
+       ],
+       [
+        "runner.pdb",
+        "??"
+       ]
+      ],
+      "big": true,
+      "fy": "top",
+      "at": 0,
+      "len": 0.3
+     },
+     {
+      "a": "world",
+      "p": 1,
+      "cs": [
+       [
+        "c1",
+        0,
+        0,
+        [],
+        {
+         "hash": "3a9f0d1"
+        }
+       ]
+      ],
+      "br": [
+       [
+        "main",
+        "c1"
+       ]
+      ],
+      "head": "main",
+      "files": [
+       [
+        "runner.c",
+        "ok"
+       ],
+       [
+        "runner.exe",
+        "ok"
+       ]
+      ],
+      "at": 0.05,
+      "len": 0.3
+     },
+     {
+      "a": "files",
+      "p": 0,
+      "list": [
+       [
+        "runner.c",
+        "ok"
+       ],
+       [
+        "runner.exe",
+        "ok"
+       ],
+       [
+        "runner.obj",
+        "??"
+       ],
+       [
+        "runner.pdb",
+        "??"
+       ],
+       [
+        ".gitignore",
+        "??"
+       ]
+      ],
+      "at": 0.5,
+      "len": 0.3
+     },
+     {
+      "a": "rule",
+      "t": "*.exe",
+      "at": 0.6,
+      "len": 0.4
+     }
+    ]
+   },
+   {
+    "line": 2,
+    "ms": 1100,
+    "note": "Add a second pattern on a new line.",
+    "out": "> echo *.obj>> .gitignore\n",
+    "do": [
+     {
+      "a": "rule",
+      "t": "*.obj"
+     }
+    ]
+   },
+   {
+    "line": 3,
+    "ms": 1100,
+    "note": "And a third.",
+    "out": "> echo *.pdb>> .gitignore\n",
+    "do": [
+     {
+      "a": "rule",
+      "t": "*.pdb"
+     }
+    ]
+   },
+   {
+    "line": 4,
+    "ms": 1100,
+    "note": "type prints the file, so you can check what you wrote.",
+    "out": "> type .gitignore\n",
+    "do": [
+     {
+      "a": "hl",
+      "p": 0,
+      "name": ".gitignore"
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 1100,
+    "note": "*.exe means any file ending in .exe. It matches runner.exe.",
+    "out": "*.exe\n",
+    "do": [
+     {
+      "a": "hot",
+      "i": 0,
+      "at": 0,
+      "len": 0.1
+     },
+     {
+      "a": "hl",
+      "p": 0,
+      "name": "runner.exe",
+      "at": 0.1,
+      "len": 0.8
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 1600,
+    "note": "*.obj matches runner.obj. Git now treats it as not its business: it bounces off the filter.",
+    "out": "*.obj\n",
+    "do": [
+     {
+      "a": "hot",
+      "i": 1,
+      "at": 0,
+      "len": 0.1
+     },
+     {
+      "a": "bounce",
+      "p": 0,
+      "name": "runner.obj",
+      "to": "ign",
+      "msg": "matches *.obj",
+      "at": 0.1,
+      "len": 0.8
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 1600,
+    "note": "Same for *.pdb.",
+    "out": "*.pdb\n",
+    "do": [
+     {
+      "a": "hot",
+      "i": 2,
+      "at": 0,
+      "len": 0.1
+     },
+     {
+      "a": "bounce",
+      "p": 0,
+      "name": "runner.pdb",
+      "to": "ign",
+      "msg": "matches *.pdb",
+      "at": 0.1,
+      "len": 0.8
+     }
+    ]
+   },
+   {
+    "line": 8,
+    "ms": 1100,
+    "note": "The .gitignore file itself is worth sharing, so stage it.",
+    "out": "> git add .gitignore\n",
+    "do": [
+     {
+      "a": "files",
+      "p": 0,
+      "list": [
+       [
+        "runner.c",
+        "ok"
+       ],
+       [
+        "runner.exe",
+        "ok"
+       ],
+       [
+        "runner.obj",
+        "ign"
+       ],
+       [
+        "runner.pdb",
+        "ign"
+       ],
+       [
+        ".gitignore",
+        "S"
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "line": 9,
+    "ms": 1900,
+    "note": "Commit it. Now Person A gets the same rules when they pull.",
+    "out": "> git commit -m \"chore: ignore build output\"\n[main 5e1d7a0] chore: ignore build output\n 1 file changed, 3 insertions(+)\n create mode 100644 .gitignore\n",
+    "outAt": 0.2,
+    "do": [
+     {
+      "a": "commit",
+      "p": 1,
+      "id": "c2",
+      "col": 1,
+      "par": [
+       "c1"
+      ],
+      "hash": "5e1d7a0",
+      "at": 0,
+      "len": 0.6
+     },
+     {
+      "a": "files",
+      "p": 0,
+      "list": [
+       [
+        "runner.c",
+        "ok"
+       ],
+       [
+        "runner.exe",
+        "ok"
+       ],
+       [
+        "runner.obj",
+        "ign"
+       ],
+       [
+        "runner.pdb",
+        "ign"
+       ],
+       [
+        ".gitignore",
+        "ok"
+       ]
+      ],
+      "at": 0.4,
+      "len": 0.5
+     },
+     {
+      "a": "files",
+      "p": 1,
+      "list": [
+       [
+        "runner.c",
+        "ok"
+       ],
+       [
+        "runner.exe",
+        "ok"
+       ],
+       [
+        ".gitignore",
+        "ok"
+       ]
+      ],
+      "at": 0.5,
+      "len": 0.5
+     }
+    ]
+   },
+   {
+    "line": 10,
+    "ms": 2200,
+    "note": "The catch: runner.exe was committed before the filter existed. Git is already tracking it, so it slips straight through.",
+    "do": [
+     {
+      "a": "bounce",
+      "p": 0,
+      "name": "runner.exe",
+      "thru": true,
+      "msg": "still tracked",
+      "at": 0,
+      "len": 0.9
+     },
+     {
+      "a": "hl",
+      "p": 1,
+      "name": "runner.exe",
+      "at": 0.5,
+      "len": 0.4
+     }
+    ]
+   },
+   {
+    "line": 11,
+    "ms": 2000,
+    "note": "git rm --cached takes it out of Git's tracking but leaves the real file on your disk. Now the filter catches it.",
+    "out": "> git rm --cached runner.exe\nrm 'runner.exe'\n",
+    "outAt": 0.2,
+    "do": [
+     {
+      "a": "files",
+      "p": 1,
+      "list": [
+       [
+        "runner.c",
+        "ok"
+       ],
+       [
+        ".gitignore",
+        "ok"
+       ]
+      ],
+      "at": 0,
+      "len": 0.4
+     },
+     {
+      "a": "bounce",
+      "p": 0,
+      "name": "runner.exe",
+      "to": "ign",
+      "msg": "ignored now",
+      "at": 0.4,
+      "len": 0.6
+     }
+    ]
+   },
+   {
+    "line": 12,
+    "ms": 1600,
+    "note": "Commit the change, so Person A stops tracking it too.",
+    "out": "> git commit -m \"chore: stop tracking runner.exe\"\n[main 8c3f5b2] chore: stop tracking runner.exe\n 1 file changed, 0 insertions(+), 0 deletions(-)\n delete mode 100644 runner.exe\n",
+    "outAt": 0.2,
+    "do": [
+     {
+      "a": "commit",
+      "p": 1,
+      "id": "c3",
+      "col": 2,
+      "par": [
+       "c2"
+      ],
+      "hash": "8c3f5b2"
+     }
+    ]
+   },
+   {
+    "line": 13,
+    "ms": 1400,
+    "note": "The file is still in your folder. Git just stopped caring about it.",
+    "out": "> dir /b runner.exe\nrunner.exe\n",
+    "do": [
+     {
+      "a": "hl",
+      "p": 0,
+      "name": "runner.exe"
+     }
+    ]
+   }
+  ]
+ }
+}
