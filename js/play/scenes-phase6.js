@@ -151,7 +151,7 @@
         txt(c, ln.name + '  ' + fps + ' fps', 20, oy + 6, { size: 10, w: 700, col: col, align: 'left' });
         if (L.dt) txt(c, 'dt = 1/' + fps + ' s', 200, oy + 6, { size: 9, col: C.muted2, al: L.dtP != null ? L.dtP : 1 });
         c.save(); c.translate(380, oy + 6); var hk = 1 + (L.retP > 0 && L.retP < 1 ? .3 * Math.sin(Math.PI * L.retP) : 0); c.scale(hk, hk);
-        txt(c, 'x = ', -44, 0, { size: 9, col: C.muted2, align: 'right' }); txt(c, L.x.toFixed(1), 0, 0, { size: 11, w: 700, col: C.purple, align: 'right' }); c.restore();
+        txt(c, 'x = ', -37, 0, { size: 9, col: C.muted2, align: 'right' }); txt(c, L.x.toFixed(1), 0, 0, { size: 11, w: 700, col: C.purple, align: 'right' }); c.restore();
         /* frame slices (one second) */
         var sw = 360 / fps;
         for (var j = 0; j < fps; j++) { var done = j < Math.floor(L.k + 1e-6), cur = L.run && j === Math.floor(L.k);
