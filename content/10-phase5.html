@@ -36,7 +36,7 @@
               <div class="task" data-id="p5-message-loop">
                 <div class="task-cb">✓</div>
                 <div class="task-content">
-                  <div class="task-text">Understand the Windows message loop — this is your game loop at the OS level</div>
+                  <div class="task-text">Understand the Windows message loop: this is your game loop at the OS level</div>
                   <div class="task-note"><span class="task-time">~20 min</span></div>
                 </div>
               </div>
@@ -73,7 +73,7 @@
               <div class="task" data-id="p5-frame-timer">
                 <div class="task-cb">✓</div>
                 <div class="task-content">
-                  <div class="task-text">Add a frame timer — limit to 60fps, print frame time to console <span class="task-tag t-crucial">Crucial</span></div>
+                  <div class="task-text">Add a frame timer: limit to 60fps, print frame time to console <span class="task-tag t-crucial">Crucial</span></div>
                   <div class="task-note"><span class="task-time">~30 min</span></div>
                 </div>
               </div>
@@ -89,7 +89,7 @@
           <div class="acc-body">
             <div class="code-wrap">
               <div class="code-label">
-                <span>win32_window.c — compile: <span class="cmd">cl win32_window.c user32.lib gdi32.lib</span></span>
+                <span>win32_window.c, compile with: <span class="cmd">cl win32_window.c user32.lib gdi32.lib</span></span>
                 <button class="copy-btn">Copy</button>
               </div>
 <pre><span class="c-pp">#include</span> <span class="c-str">&lt;windows.h&gt;</span>
@@ -247,12 +247,12 @@
                 <div class="prompt-text">I have a working Win32 window in C with a message loop. I want to add WASD movement alongside the existing arrow key controls. Show me ONLY the 4 lines to add inside the WM_KEYDOWN case — don't rewrite my whole file, don't add new functions, don't change the structure.</div>
               </div>
               <div class="prompt-item">
-                <div class="prompt-label">Add a frame timer — surgical insertion</div>
+                <div class="prompt-label">Add a frame timer, surgical insertion</div>
                 <div class="prompt-text">I have a Win32 message loop in C. I want to cap it at 60fps using QueryPerformanceCounter and print the frame time in milliseconds. Show me: (1) where to declare the timer variables, (2) the exact code to add inside the loop. Don't touch anything else in my file. Here's my current loop: [paste loop]</div>
               </div>
               <div class="prompt-item">
                 <div class="prompt-label">Connect your Player struct to the window</div>
-                <div class="prompt-text">I have a Player struct in C (float x, float y, int health, bool alive) and a Win32 window that draws a green rectangle at g_x, g_y. I want to replace the global g_x/g_y with a Player instance and call player_move() on key input. Tell me exactly what to change — don't rewrite the whole file, just the 3-4 spots that need updating.</div>
+                <div class="prompt-text">I have a Player struct in C (float x, float y, int health, bool alive) and a Win32 window that draws a green rectangle at g_x, g_y. I want to replace the global g_x/g_y with a Player instance and call player_move() on key input. Tell me exactly what to change: don't rewrite the whole file, just the 3-4 spots that need updating.</div>
               </div>
             </div>
 
@@ -272,11 +272,11 @@
                 <div class="quiz-q">1. <span class="t-muted">[Phase 3.5]</span> Win32 has you write <span class="cmd">GetClientRect(hwnd, &amp;rect);</span>. Why the <span class="cmd">&amp;</span>?</div>
                 <details>
                   <summary>Reveal answer</summary>
-                  <div class="quiz-a">Because the function fills in your struct for you, and to change your struct it needs its address — exactly like <span class="cmd">player_move(&amp;hero, …)</span> and <span class="cmd">scanf("%d", &amp;n)</span>. Whenever a Win32 function "returns" a struct through a parameter, it's writing through a pointer you handed it.</div>
+                  <div class="quiz-a">Because the function fills in your struct for you, and to change your struct it needs its address, exactly like <span class="cmd">player_move(&amp;hero, …)</span> and <span class="cmd">scanf("%d", &amp;n)</span>. Whenever a Win32 function "returns" a struct through a parameter, it's writing through a pointer you handed it.</div>
                 </details>
               </div>
               <div class="quiz-item">
-                <div class="quiz-q">2. <span class="t-muted">[Phase 4.5]</span> Why did the runner build each frame in a <span class="cmd">char</span> array before printing it — and where does that idea show up in this phase?</div>
+                <div class="quiz-q">2. <span class="t-muted">[Phase 4.5]</span> Why did the runner build each frame in a <span class="cmd">char</span> array before printing it, and where does that idea show up in this phase?</div>
                 <details>
                   <summary>Reveal answer</summary>
                   <div class="quiz-a">So the whole frame appears at once instead of being drawn piece by piece, which is what flicker is. In a window it's called double buffering: draw everything to an off-screen bitmap, then copy it to the window in one go. Same idea, pixels instead of characters.</div>
@@ -294,9 +294,9 @@
           </div>
           <div class="checkpoint-items">
             <div class="cp-item" data-id="cp-p5-1"><span class="cp-cb">✓</span><span class="cp-text">A window opens, a colored rectangle is visible on screen</span></div>
-            <div class="cp-item" data-id="cp-p5-2"><span class="cp-cb">✓</span><span class="cp-text">Arrow keys move the rectangle — it responds to input</span></div>
+            <div class="cp-item" data-id="cp-p5-2"><span class="cp-cb">✓</span><span class="cp-text">Arrow keys move the rectangle: it responds to input</span></div>
             <div class="cp-item" data-id="cp-p5-3"><span class="cp-cb">✓</span><span class="cp-text">You can explain what the message loop is doing and why it exists</span></div>
-            <div class="cp-item" data-id="cp-p5-4"><span class="cp-cb">✓</span><span class="cp-text">Frame time is printed — you know how fast your loop runs</span></div>
+            <div class="cp-item" data-id="cp-p5-4"><span class="cp-cb">✓</span><span class="cp-text">Frame time is printed, so you know how fast your loop runs</span></div>
           </div>
         </div>
 
