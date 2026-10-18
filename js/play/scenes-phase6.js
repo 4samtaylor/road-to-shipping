@@ -198,7 +198,7 @@
         case 'nx': V.nxPop = Math.sin(Math.PI * lp); if (lp >= .4) V.nx = a.to; break;
         case 'spot': V.spotA = a.i == null ? 1 - lp : lp; if (lp > 0) V.spot = a.i == null ? S.spot : a.i; if (a.i == null && lp >= 1) V.spot = null; break;
         case 'say': V.say = { t: a.t, lp: lp }; break;
-        case 'swap': V.swapP = lp; V.swapFrom = S.cur; if (lp >= .5) V.cur = a.to; break;
+        case 'swap': V.swapP = lp; V.swapDest = a.to; V.swapFrom = S.cur; if (lp >= .5) V.cur = a.to; break;
         case 'ban': V.banP = lp; if (lp > 0) V.ban = a.t; break;
       }
     },
@@ -239,8 +239,6 @@
       if (V.ban) txt(c, V.ban, 200, 228, { size: 10, w: 700, col: C.orange, al: V.banP != null ? V.banP : 1 });
     }
   });
-  /* the swap needs the destination while tweening */
-  (function () { var d = RTSPlay.SCENES['p6-states'], t0 = d.tween; d.tween = function (V, a, lp, S, C) { if (a.a === 'swap') V.swapDest = a.to; t0(V, a, lp, S, C); }; })();
 
   /* =====================================================================
      p6-aabb
@@ -288,11 +286,13 @@
         c.restore();
       });
       V.shown.forEach(function (b) { var bx = BOX[b]; if (V.focus && b !== V.focus && b !== 'player') return;
-        if (b === 'inside' || b === 'far_away') txt(c, b === 'inside' ? 'inside' : 'far_away', PX0 + (bx[0] + bx[2] / 2) * s, PY0 + (bx[1] + bx[3]) * s + 8, { size: 7, col: C[BCOL[b]] });
+        if (b === 'inside') txt(c, 'inside', PX0 + (bx[0] + bx[2]) * s + 4, PY0 + (bx[1] + bx[3] / 2) * s, { size: 7, w: 700, col: C[BCOL[b]], align: 'left' });
+        else if (b === 'far_away') txt(c, 'far_away', PX0 + (bx[0] + bx[2] / 2) * s, PY0 + (bx[1] + bx[3]) * s + 8, { size: 7, col: C[BCOL[b]] });
+        else if (b === 'player') txt(c, b, PX0 + (bx[0] + bx[2] / 2) * s, PY0 + (bx[1] + bx[3]) * s - 8, { size: 8, w: 700, col: C.text });
         else txt(c, b, PX0 + (bx[0] + bx[2] / 2) * s, PY0 + (bx[1] + bx[3] / 2) * s, { size: 8, w: 700, col: C.text }); });
       /* shadows */
       var f = V.focus, A = BOX.player, B = f ? BOX[f] : null;
-      [['x', 'x shadows (on the floor)', 20, 0, 2], ['y', 'y shadows (on the wall)', 76, 1, 3]].forEach(function (st) {
+      [['x', 'x shadows (on the floor)', 20, 0, 2], ['y', 'y shadows (on the wall)', 70, 1, 3]].forEach(function (st) {
         var ax = st[3], y0 = st[2], i0 = ax === 0 ? 0 : 1, len = ax === 0 ? 2 : 3;
         txt(c, st[1], RX0, y0 - 2, { size: 8, col: C.muted2, align: 'left' });
         c.fillStyle = C.border2; c.fillRect(RX0, y0 + 30, 60 * s, 1.5);
@@ -307,7 +307,7 @@
       });
       /* conditions */
       for (var k = 0; k < 4; k++) {
-        var y = 114 + k * 25, ch = V.ch[k], col = !ch ? C.border2 : ch.r === 'yes' ? C.accent : ch.r === 'no' ? C.orange : C.muted;
+        var y = 122 + k * 24, ch = V.ch[k], col = !ch ? C.border2 : ch.r === 'yes' ? C.accent : ch.r === 'no' ? C.orange : C.muted;
         var pp = V.condP && V.condP[k] != null && V.condP[k] < 1 && ch ? EZ.back(V.condP[k]) : 1;
         c.save(); c.translate(RX0 + 87, y + 10); c.scale(pp, pp);
         rrect(c, -87, -10, 174, 20, 3); c.fillStyle = ch ? rgba(col, ch.r === 'skip' ? .05 : .15) : rgba(C.text, .03); c.fill(); c.lineWidth = 1.2; c.strokeStyle = col; c.stroke();
@@ -317,8 +317,8 @@
       txt(c, '&& stops at the first "no"', RX0 + 87, 224, { size: 8, col: C.muted });
       /* verdict */
       if (f) txt(c, 'overlap(player, ' + f + ')', PX0, 224, { size: 9, col: C.muted2, align: 'left' });
-      if (V.v != null) { var vk = V.vP != null && V.vP < 1 ? EZ.back(V.vP) : 1; c.save(); c.translate(PX0 + 130, 240); c.scale(vk, vk);
-        txt(c, '= ' + V.v, 0, 0, { size: 14, w: 800, col: V.v ? C.accent : C.orange }); c.restore(); }
+      if (V.v != null) { var vk = V.vP != null && V.vP < 1 ? EZ.back(V.vP) : 1; c.save(); c.translate(PX0 + 148, 224); c.scale(vk, vk);
+        txt(c, '= ' + V.v, 0, 0, { size: 14, w: 800, col: V.v ? C.accent : C.orange, align: 'left' }); c.restore(); }
     }
   });
 

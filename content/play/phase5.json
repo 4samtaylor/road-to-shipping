@@ -187,7 +187,8 @@
      }
     ]
    }
-  ]
+  ],
+  "prompt": ""
  },
  "wndproc": {
   "scene": "p5-desk-wndproc",
@@ -411,7 +412,8 @@
      }
     ]
    }
-  ]
+  ],
+  "prompt": ""
  },
  "message-loop": {
   "scene": "p5-desk-loop",
@@ -698,6 +700,31 @@
     ]
    },
    {
+    "line": 38,
+    "ms": 800,
+    "note": "The title bar says Frame 3.",
+    "do": [
+     {
+      "a": "title",
+      "t": "Frame 3"
+     }
+    ]
+   },
+   {
+    "line": 39,
+    "ms": 1000,
+    "note": "One last Sleep(16).",
+    "do": [
+     {
+      "a": "sleep"
+     },
+     {
+      "a": "stat",
+      "t": "sleeping..."
+     }
+    ]
+   },
+   {
     "line": 30,
     "ms": 1300,
     "note": "Back at the top, running is 0, so the loop ends.",
@@ -724,7 +751,8 @@
      }
     ]
    }
-  ]
+  ],
+  "prompt": ""
  },
  "gdi-invalidate": {
   "scene": "p5-desk-paint",
@@ -1004,7 +1032,8 @@
      }
     ]
    }
-  ]
+  ],
+  "prompt": ""
  },
  "link-libs": {
   "scene": "p5-libs",
@@ -1642,6 +1671,7 @@
      }
     ]
    }
-  ]
+  ],
+  "prompt": ""
  }
 }

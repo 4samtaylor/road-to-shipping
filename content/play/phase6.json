@@ -1181,6 +1181,7 @@
     "note": "Back to GetMessage, waiting for the next message. The window shows Score: 12. The loop runs until the window is closed; we stop the film here.",
     "do": []
    }
-  ]
+  ],
+  "prompt": ""
  }
 }
