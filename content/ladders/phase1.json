@@ -71,22 +71,22 @@
    "check": {
     "q": "What does this program print?",
     "opts": [
-     "Hello, World!\nReady to ship.",
-     "Hello, World! Ready to ship.",
      "Hello, World!\\nReady to ship.",
+     "Hello, World! Ready to ship.",
+     "Hello, World!\nReady to ship.",
      "Nothing until you add a third printf"
     ],
-    "a": 0,
+    "a": 2,
     "hint": "Each \\n is a press of Enter. How many lines does that make?",
     "why": "Two lines. Each \\n ends a line, so “Ready to ship.” starts on the next one. The backslash and n are never printed themselves.",
     "miss": {
+     "0": "\\n is an instruction to start a new line, not text to print.",
      "1": "That would need the \\n removed from the first printf.",
-     "2": "\\n is an instruction to start a new line, not text to print.",
      "3": "Two printf calls are enough. Each one runs and prints."
     }
    },
    "tryit": {
-    "task": "Add a third line that prints your name. Build it with cl and run it.",
+    "task": "Add a third line that prints your name. Compile and run it: the next concept shows exactly how.",
     "code": "#include <stdio.h>\n\nint main() {\n    printf(\"Hello, World!\\n\");\n    printf(\"____\\n\");\n    return 0;\n}",
     "answer": "printf(\"Sam\\n\");   any text inside the quotes, ending with \\n"
    },
@@ -97,7 +97,7 @@
     ],
     [
      "What happens if I forget the ;?",
-     "The compiler stops with an error, usually C2143, pointing at the line after the one missing it. Concept 4 is all about reading those."
+     "The compiler stops with an error that points at the line after the one missing it. Concept 4 is all about reading those."
     ],
     [
      "Does the spacing matter?",
@@ -141,16 +141,16 @@
    "check": {
     "q": "You change “Hello” to “Hi” in hello_world.c, save, and run hello_world.exe again without running cl. What prints?",
     "opts": [
-     "Hi, World!",
      "Hello, World!",
+     "Hi, World!",
      "An error: the .exe is out of date",
      "Nothing"
     ],
-    "a": 1,
+    "a": 0,
     "hint": "Which file did you change, and which file did you run?",
     "why": "The .exe is still the old build. It only changes when cl rebuilds it, so you see Hello, World! until you compile again. Forgetting to rebuild is the classic “my change didn’t work” moment.",
     "miss": {
-     "0": "The .c file says Hi, but the .exe was built before the change.",
+     "1": "The .c file says Hi, but the .exe was built before the change.",
      "2": "Windows doesn’t know or care that the .c changed. It just runs the old .exe.",
      "3": "The old .exe still works. It just has the old text."
     }
@@ -167,11 +167,11 @@
     ],
     [
      "What is the .obj file?",
-     "A halfway step: your code compiled but not yet linked into a program. Phase 3.5 explains linking. You can ignore it, and a .gitignore keeps it out of Git."
+     "A halfway step: your code compiled but not yet linked into a program. Phase 3.5 explains linking. You can ignore it for now."
     ],
     [
      "Can I name the .exe something else?",
-     "Yes: <code>cl hello_world.c /Fe:game.exe</code>. Concept 5 puts that in build.bat."
+     "Yes. Concept 5 shows the option for that and puts it in build.bat, so you never have to type it."
     ]
    ],
    "bridge": "You can build and run. Next: <b>controlling exactly what printf shows</b>: new lines, special characters and numbers."
@@ -211,18 +211,18 @@
    "check": {
     "q": "What does line 7 show on screen?",
     "opts": [
-     " party",
+     "Lets\n party",
      "Lets party",
-     "Lets\\r party",
-     "Lets\n party"
+     "  party",
+     " party"
     ],
-    "a": 0,
+    "a": 3,
     "hint": "\\r moves the cursor back to the start of the same line. What happens to “Lets”?",
     "why": "“Lets” prints, \\r sends the cursor back to the start of the line, and “ party” is written over it. It’s six characters long, so it covers all four letters of Lets.",
     "miss": {
+     "0": "\\r goes back to the start of the same line. \\n is the one that moves down.",
      "1": "\\r doesn’t print anything. It moves the cursor back, and the next text overwrites.",
-     "2": "\\r is an escape, so it’s never shown as text.",
-     "3": "\\r goes back to the start of the same line. \\n is the one that moves down."
+     "2": "Close, but there’s only one space before party in the code, so only one space is printed before it."
     }
    },
    "tryit": {
@@ -269,7 +269,7 @@
     ],
     [
      6,
-     "It complains here, on reaching <code>return</code> without having seen a ;. cl prints <code>hello.c(6): error C2143: syntax error: missing ';' before 'return'</code>. That’s file, line, error code, message."
+     "It complains here, on reaching <code>return</code> without having seen a ;. cl prints <code>hello_world.c(6): error C2143: syntax error: missing ';' before 'return'</code>. That’s file, line, error code, message."
     ]
    ],
    "model": "<b>Mental model:</b> the compiler reads like you do, top to bottom. It reports a problem at the first place it can’t make sense of things, which is often one line after the actual mistake.",
@@ -282,7 +282,7 @@
      "Rename the file"
     ],
     "a": 1,
-    "hint": "The message says “missing ; before return”. Which line ends just before return?",
+    "hint": "What does the message say is missing, and which statement should have ended with it?",
     "why": "The mistake is on line 5, the line before the one reported. The compiler only noticed when it reached return on line 6. When an error points at a line that looks fine, check the line above it.",
     "miss": {
      "0": "return 0; already has its ;. The message says the ; is missing before return.",
@@ -309,7 +309,8 @@
      "Search “MSVC C2143”. Microsoft’s page for each code explains it with examples."
     ]
    ],
-   "bridge": "You can read the compiler’s complaints. Next: <b>build.bat</b>, one word that compiles with the right warnings switched on."
+   "bridge": "You can read the compiler’s complaints. Next: <b>build.bat</b>, one word that compiles with the right warnings switched on.",
+   "expect_compile_error": true
   },
   {
    "id": "buildbat",
@@ -332,7 +333,7 @@
     ],
     [
      2,
-     "<b>set FLAGS=</b> saves the compiler flags in one place. /W4 turns on most warnings, /WX makes any warning stop the build, /Zi and /Od set it up for the debugger."
+     "<b>set FLAGS=</b> saves the compiler flags in one place. /W4 turns on most warnings, /WX makes any warning stop the build, /Zi and /Od prepare the .exe for the debugger, which Phase 3.5 covers."
     ],
     [
      3,
@@ -392,7 +393,7 @@
      "From Phase 3.5. You’ll list them in a SOURCES variable and pass them all to cl."
     ]
    ],
-   "bridge": "You can build with one word. Last: <b>saving your work to GitHub</b>, so it’s backed up and Person A can see it."
+   "bridge": "You can build with one word. Last: <b>saving your work to GitHub</b>, so it’s backed up and your partner can see it."
   },
   {
    "id": "git",
@@ -404,7 +405,7 @@
     "git-basics"
    ],
    "builds": "Environment Setup: Git installed and your game-dev-exercises repo cloned.",
-   "why": "Right now your code lives on one hard drive. Git takes snapshots of it, and GitHub keeps a copy online that Person A can read. Small snapshots, often, mean you can always get back to a version that worked.",
+   "why": "Right now your code lives on one hard drive. Git takes snapshots of it, and GitHub keeps a copy online that Person A, your programming partner, can read. Small snapshots, often, mean you can always get back to a version that worked.",
    "code": "git status\ngit add hello_world.c build.bat\ngit commit -m \"Add hello world and build.bat\"\ngit push",
    "walk": [
     [
@@ -429,17 +430,17 @@
     "q": "You run git add and git commit, then your laptop dies. Is your work on GitHub?",
     "opts": [
      "Yes, commit saves to GitHub",
-     "No, it was never pushed",
+     "Only the commit message",
      "Only the files you added",
-     "Only the commit message"
+     "No, it was never pushed"
     ],
-    "a": 1,
+    "a": 3,
     "hint": "Which of the three commands actually talks to GitHub?",
     "why": "commit saves the snapshot on your machine. Only push sends it to GitHub. Commit, then push, every session.",
     "miss": {
      "0": "commit is local. It’s push that uploads.",
-     "2": "add only picks files for a snapshot. Nothing goes online until push.",
-     "3": "Nothing goes to GitHub until push, message included."
+     "1": "Nothing goes to GitHub until push, message included.",
+     "2": "add only picks files for a snapshot. Nothing goes online until push."
     }
    },
    "tryit": {

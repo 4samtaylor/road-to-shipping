@@ -66,16 +66,16 @@
     "q": "What would print if line 11 were add_score(score, 5); with no score = in front?",
     "opts": [
      "Score: 15",
-     "Score: 10",
      "Score: 5",
+     "Score: 10",
      "Score: 0"
     ],
-    "a": 1,
+    "a": 2,
     "hint": "The function returns a value. If nobody catches it, where does it go?",
     "why": "The function still returns 15, but nothing stores it, so score stays 10. A return value you don’t assign is thrown away.",
     "miss": {
      "0": "The function can’t change score by itself. Only the score = on the left does that.",
-     "2": "5 is the points, not the total.",
+     "1": "5 is the points, not the total.",
      "3": "Line 10 still set score to 10."
     }
    },
@@ -143,16 +143,16 @@
    "check": {
     "q": "You delete line 4 (the square prototype) and run build.bat (/W4 /WX). What happens?",
     "opts": [
-     "It builds and prints 16",
-     "The build fails: square is used at line 8 before the compiler has seen it",
-     "An error at line 16",
-     "It prints 0"
+     "The build fails at line 8: square isn’t known yet",
+     "It builds fine and prints 16 as before",
+     "The build fails at line 16, where square is defined",
+     "It builds, runs, and prints 0 instead of 16"
     ],
-    "a": 1,
+    "a": 0,
     "hint": "When the compiler reaches line 8, has it seen square yet?",
     "why": "At line 8 the compiler hasn’t met square, so MSVC warns C4013 (“square undefined; assuming extern returning int”). /WX turns that into a failed build. Prototypes at the top prevent it.",
     "miss": {
-     "0": "Without /WX it might build, with warning C4013. With your flags it fails.",
+     "1": "Without /WX it might build, with warning C4013. With your flags it fails.",
      "2": "Line 16 is fine by itself. The problem is using square before the compiler knows about it.",
      "3": "With /WX it never gets as far as running."
     }
@@ -217,17 +217,17 @@
     "q": "What is the second line of output?",
     "opts": [
      "Back in main: 0",
-     "Back in main: 99",
+     "A compile error: score is defined twice",
      "Back in main: a garbage number",
-     "A compile error: score is defined twice"
+     "Back in main: 99"
     ],
-    "a": 1,
+    "a": 3,
     "hint": "Did reset get main’s variable, or a copy of its value?",
     "why": "reset changed its own copy to 0. main’s score is a separate variable and stays 99. To change a caller’s variable you need a return value or, in Phase 3.5, a pointer.",
     "miss": {
      "0": "reset only had a copy. main’s score never changed.",
-     "2": "main’s score was set to 99 and nothing touched it.",
-     "3": "Each function has its own score. Same name, different rooms, no clash."
+     "1": "Each function has its own score. Same name, different rooms, no clash.",
+     "2": "main’s score was set to 99 and nothing touched it."
     }
    },
    "tryit": {
@@ -285,16 +285,16 @@
    "check": {
     "q": "How many “Slot” lines print, and what is the last one?",
     "opts": [
-     "5 lines, last is Slot 4",
      "5 lines, last is Slot 5",
+     "5 lines, last is Slot 4",
      "4 lines, last is Slot 4",
      "6 lines, last is Slot 5"
     ],
-    "a": 0,
-    "hint": "i starts at 0 and the loop runs while i < 5.",
+    "a": 1,
+    "hint": "Count the values i takes before i < MAX_SCORES stops the loop.",
     "why": "i goes 0, 1, 2, 3, 4: five lines, and the last is Slot 4. When i reaches 5, i < 5 fails. Counting from 0 is how arrays work too, which is next.",
     "miss": {
-     "1": "i stops before reaching 5, because the loop needs i < 5.",
+     "0": "i stops before reaching 5, because the loop needs i < 5.",
      "2": "Counting 0 to 4 is five numbers.",
      "3": "The loop stops when i reaches 5, so 5 never prints."
     }
@@ -337,7 +337,7 @@
    "walk": [
     [
      6,
-     "<b>int scores[5]</b> makes five int boxes in a row. The braces fill them in order."
+     "<b>int scores[MAX_SCORES]</b> makes five int boxes in a row. The braces fill them in order."
     ],
     [
      7,
@@ -364,16 +364,16 @@
    "check": {
     "q": "What is the last line printed?",
     "opts": [
-     "5: 25",
      "5: 10",
+     "5: 25",
      "4: 25",
      "5: 40"
     ],
-    "a": 0,
+    "a": 1,
     "hint": "Line 10 changed one box before the loop runs. Which one, and what does the loop print for it?",
     "why": "The loop prints i + 1 as the position, so the last line is position 5, which is scores[4]. Line 10 changed it from 10 to 25 before the loop ran.",
     "miss": {
-     "1": "scores[4] was changed to 25 on line 10, before the loop.",
+     "0": "scores[4] was changed to 25 on line 10, before the loop.",
      "2": "The loop prints i + 1, so the last position is 5.",
      "3": "40 is scores[3]. The last element is scores[4]."
     }
@@ -443,18 +443,18 @@
    "check": {
     "q": "What does the last printf show?",
     "opts": [
-     "Now: Sum",
+     "Now: Sam",
      "Now: Suam",
      "Now: uam",
-     "Now: Sam"
+     "Now: Sum"
     ],
-    "a": 0,
+    "a": 3,
     "hint": "Which box is name[1]? Arrays count from 0.",
     "why": "name[0] is S, name[1] is a, name[2] is m. Line 9 replaces the a with u, giving Sum.",
     "miss": {
+     "0": "Line 9 changed one character before the last printf.",
      "1": "Assigning replaces a box. It doesn’t insert one.",
-     "2": "name[1] is the second box, not the first.",
-     "3": "Line 9 changed one character before the last printf."
+     "2": "name[1] is the second box, not the first."
     }
    },
    "tryit": {
@@ -465,7 +465,7 @@
    "qa": [
     [
      "Why can’t I write name = \"Alex\"; later?",
-     "Arrays can’t be assigned with = after they’re made. Use <code>strcpy(name, \"Alex\")</code>, or fill it from the keyboard with fgets, next."
+     "Arrays can’t be assigned with = after they’re made. <code>strcpy(name, \"Alex\")</code> copies text into an array (it’s in string.h), or fill it from the keyboard with fgets, next."
     ],
     [
      "What’s the difference between 'a' and \"a\"?",
@@ -516,18 +516,18 @@
    "check": {
     "q": "The player types Sam and presses Enter. What does line 8 print?",
     "opts": [
-     "[Sam]",
      "[Sam\n]",
+     "[Sam]",
      "[Sam ]",
-     "[]"
+     "[\nSam]"
     ],
-    "a": 1,
-    "hint": "fgets keeps everything typed, including the Enter key.",
+    "a": 0,
+    "hint": "What is in name before line 9 runs?",
     "why": "fgets stores S, a, m and the \\n from Enter, so the ] prints on the next line. Line 9 removes that \\n, which is why line 10 prints [Sam].",
     "miss": {
-     "0": "That’s line 10, after the newline is stripped.",
+     "1": "That’s line 10, after the newline is stripped.",
      "2": "Enter is stored as \\n, a new line, not a space.",
-     "3": "fgets did read the name. It’s in there, plus the Enter."
+     "3": "The Enter comes after the letters you typed, not before them."
     }
    },
    "tryit": {
@@ -546,7 +546,7 @@
     ],
     [
      "Mixing scanf(\"%d\") and fgets?",
-     "scanf leaves the Enter behind, and the next fgets reads it as an empty line. Read numbers with fgets too, or clear the leftover line first. The Stuck section covers it."
+     "scanf leaves the Enter behind, and the next fgets reads it as an empty line. Read numbers with fgets too, or clear the leftover line first. The Phase 3 help drawer (Stuck? Help) covers it."
     ]
    ],
    "bridge": "You can read a name safely. Next: <b>comparing strings</b>, because == doesn’t do what you’d expect."
@@ -582,16 +582,16 @@
     "q": "What does if (strcmp(cmd, \"quit\")) { … } do when cmd is \"quit\"?",
     "opts": [
      "Runs the block",
-     "Skips the block",
      "A compile error",
+     "Skips the block",
      "Runs it twice"
     ],
-    "a": 1,
+    "a": 2,
     "hint": "What number does strcmp return for a match, and how does if treat that number?",
     "why": "A match returns 0, and if treats 0 as false, so the block is skipped. It runs for every string except \"quit\". Always write == 0 for “equal”.",
     "miss": {
      "0": "strcmp gives 0 for a match, and if (0) is false.",
-     "2": "It compiles. It’s a logic bug, not a syntax error.",
+     "1": "It compiles. It’s a logic bug, not a syntax error.",
      "3": "An if runs its block at most once."
     }
    },
@@ -631,7 +631,7 @@
    "walk": [
     [
      7,
-     "<b>map[3][5]</b>: 3 rows of 5 chars. The first number is the row."
+     "<b>map[ROWS][COLS]</b>: 3 rows of 5 chars. The first number is the row."
     ],
     [
      9,
@@ -658,18 +658,18 @@
    "check": {
     "q": "What is the middle line of output?",
     "opts": [
-     "#.PE#",
+     "#.EP#",
      "#EP.#",
      "#.P.#",
-     "#.EP#"
+     "#.PE#"
     ],
-    "a": 0,
+    "a": 3,
     "hint": "map[1][3] is row 1, column 3. Count columns from 0 along the middle row.",
     "why": "The middle row is # . P . # at columns 0 to 4. Column 3 is the second dot, so it becomes E: #.PE#.",
     "miss": {
+     "0": "P is at column 2 and stays there. Column 3 is the one that changes.",
      "1": "Column 3 is to the right of P, not the left.",
-     "2": "Line 12 changed one cell before printing.",
-     "3": "P is at column 2 and stays there. Column 3 is the one that changes."
+     "2": "Line 12 changed one cell before printing."
     }
    },
    "tryit": {
@@ -745,7 +745,7 @@
      "It crashes"
     ],
     "a": 1,
-    "hint": "\"r\" only opens a file that already exists. What does fopen give back when it can’t?",
+    "hint": "What does the check on line 6 do when f is NULL?",
     "why": "\"r\" won’t create a file. fopen returns NULL, the check on line 6 catches it, prints Could not save and returns 1. That check is what stops a crash.",
     "miss": {
      "0": "Only \"w\" (or \"a\") creates a file.",
