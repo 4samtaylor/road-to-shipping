@@ -84,6 +84,10 @@
     [
      "Does Godot do this too?",
      "Yes. <code>_process</code> and <code>_physics_process</code> are where you update; the engine draws for you (or in <code>_draw</code> for custom drawing). Same split, different names."
+    ],
+    [
+     "What does one whole frame look like?",
+     "Input, then update, then render. <code>handle_input()</code> notes what the player pressed, <code>update()</code> moves things and checks hits, <code>render()</code> draws the result. Then the loop starts the next frame, about 60 times a second."
     ]
    ],
    "bridge": "You can keep logic and drawing apart. Next: <b>Delta time</b>, so update moves things the same distance on a slow PC and a fast one."
@@ -319,6 +323,10 @@
     [
      "Why pass Box by value here?",
      "It’s four ints, so copying is cheap and overlap can’t change the originals. Larger structs usually go by pointer."
+    ],
+    [
+     "Why test boxes instead of the real shapes?",
+     "Speed and simplicity: four comparisons instead of hundreds. Most games, Godot included, test boxes first and only check exact shapes when the boxes say maybe. Players almost never notice the corners."
     ]
    ],
    "bridge": "You can detect hits. Next: <b>Text on screen</b>, drawing the score in your Win32 window instead of the console."
