@@ -96,6 +96,14 @@
     [
      "How long should a function be?",
      "Short enough to describe in one sentence. If you need “and” to describe it, it’s probably two functions."
+    ],
+    [
+     "Is return 0 in main the same as return in my function?",
+     "Separate things. <code>return total;</code> in your function hands a result to the line that called it. <code>return 0;</code> in main tells the operating system the program finished without errors."
+    ],
+    [
+     "Does defining a function run it?",
+     "No. Writing a function only describes it. Nothing happens until a line calls it, and the program always starts at <code>main</code>."
     ]
    ],
    "bridge": "You can write a function. Next: <b>void and prototypes</b>: functions that return nothing, and telling the compiler a function exists before you use it."
@@ -174,6 +182,10 @@
     [
      "Can a void function use return?",
      "Yes, a bare <code>return;</code> to leave early. It just can’t return a value."
+    ],
+    [
+     "Why does C need prototypes at all?",
+     "C was built to compile in one pass, top to bottom, on machines with very little memory, so a call can only be checked against what it has already read. Newer languages read the whole file first, so they don’t need this. GDScript is one."
     ]
    ],
    "bridge": "Your functions can live anywhere in the file. Next: <b>scope</b>: which variables a function can see."
@@ -316,6 +328,14 @@
     [
      "What else does the preprocessor do?",
      "#include is one too: it pastes a whole file in. Phase 3.5 adds #pragma once."
+    ],
+    [
+     "What goes wrong with #define WIDTH 80 + 2?",
+     "It’s find-and-replace, so <code>WIDTH * 2</code> becomes <code>80 + 2 * 2</code>, which is 84, not 164. Put brackets around anything with an operator: <code>#define WIDTH (80 + 2)</code>."
+    ],
+    [
+     "Why are #define names in capitals?",
+     "It’s a convention, not a rule. Capitals tell you at a glance that it’s a fixed value, not a variable that changes while the game runs."
     ]
    ],
    "bridge": "Your numbers have names. Next: <b>arrays</b>, many values under one name."
@@ -395,6 +415,18 @@
     [
      "Can the size be a variable?",
      "Use a #define or a fixed number for array sizes in this roadmap. Some compilers allow variable sizes, but MSVC doesn’t."
+    ],
+    [
+     "Will the compiler warn me about scores[5]?",
+     "Sometimes. With a literal index like <code>scores[5]</code>, MSVC usually warns (C6201 or C4789) and <code>/WX</code> stops the build. With a variable index it can’t know, so it stays quiet. The bounds are your job."
+    ],
+    [
+     "Where do games use arrays?",
+     "Anywhere there are many of something: <code>Enemy enemies[10]</code>, <code>Bullet bullets[64]</code>, <code>int scores[5]</code>, <code>bool keys[256]</code>, <code>char name[32]</code>. Each is walked with the same for loop."
+    ],
+    [
+     "Why can’t I copy an array with a = b;?",
+     "An array name isn’t a box you can assign to (MSVC says C2106). Copy element by element with a loop. A whole struct can be assigned with <code>=</code>, which you’ll meet in Phase 3.5."
     ]
    ],
    "bridge": "You can store a row of numbers. Next: <b>strings</b>, which are arrays of characters with one twist."
@@ -474,6 +506,10 @@
     [
      "What if a string has no '\\0'?",
      "%s and strlen keep reading past the end until they happen to find a zero byte. You get garbage or a crash. The weekly “string with no end” exercise shows it."
+    ],
+    [
+     "Is '\\0' the same as the character '0'?",
+     "No. <code>'\\0'</code> has the value 0. <code>'0'</code> is the printable digit, with the value 48. <code>printf(\"%d %d\\n\", '\\0', '0');</code> prints <code>0 48</code>."
     ]
    ],
    "bridge": "You know what a string really is. Next: <b>reading a whole line of text</b> from the player with fgets."
