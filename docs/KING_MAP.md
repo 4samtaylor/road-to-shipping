@@ -297,7 +297,7 @@ Housekeeping when built: `content/NN-phase0.html` in the manifest (new "Foundati
 
 ## 6. Errors to fix now (independent of the flow)
 
-Small and safe; these can go in one PR before the rewrite.
+**Status:** fixed in PRs #21 and #22 (17 Oct 2026), except the 32-bit linker names (waits for D5) and the Phase 4.5/5 timer-tick wording, which on review was already accurate. The build.bat check now uses C4473 (a `%d` with no number), which Phase 1 can produce.
 
 **Code consistency**
 - Use `int main(void)` everywhere. `int main()` appears in about 37 rung code samples across Phases 1, 2, 3, 3.5 and 6, while traces and quizzes use `(void)`.
