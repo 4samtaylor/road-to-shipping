@@ -92,17 +92,20 @@
 
         <div class="section-block acc-section" data-page="overview">
           <div class="section-block-header">
-            <span class="badge badge-purple">Pair with King</span>&nbsp;&nbsp;C Programming: A Modern Approach, chapters 5, 8, 11, 14 to 16
+            <span class="badge badge-purple">Pair with King</span>&nbsp;&nbsp;C Programming: A Modern Approach, chapters 14, 15, 18, 22 and 23
             <span class="acc-toggle-icon">▼</span>
           </div>
           <div class="acc-body section-block-body">
             <dl class="king">
-              <dt>Concepts 1 to 5</dt><dd>No King chapter. <span class="cmd">conio.h</span>, <span class="cmd">Sleep</span> and <span class="cmd">\r</span> tricks are Windows terminal extras, so the concept pages are your reading.</dd>
-              <dt>Concept 6</dt><dd>Sentinel values: arrays, ch 8.</dd>
-              <dt>Concept 7</dt><dd>State machines: switch, ch 5, and enum, ch 16.</dd>
-              <dt>Concept 8</dt><dd>const pointers: ch 11.</dd>
-              <dt>Concept 9</dt><dd>Multiple files: ch 14 <em>The Preprocessor</em> and ch 15 <em>Writing Large Programs</em>. That is exactly the runner split.</dd>
-              <dt>Note</dt><dd>King guards headers with <span class="cmd">#ifndef</span> / <span class="cmd">#define</span> / <span class="cmd">#endif</span>. <span class="cmd">#pragma once</span> does the same in one line. Know both when you see them. Skip parameterised macros and the makefile section; build.bat is your makefile.</dd>
+              <dt>Input without waiting</dt><dd>Not in King: standard C has no way to read one key at a time. The ch 22 Q&amp;A explains why, and why <span class="cmd">conio.h</span> is a Windows extra.</dd>
+              <dt>Frame timing with Sleep</dt><dd>§14.3 (simple macros) and §14.4 (conditional compilation), which is how <span class="cmd">WIN32_LEAN_AND_MEAN</span> works.</dd>
+              <dt>Redrawing in place</dt><dd>§22.2, “File Buffering”, explains what <span class="cmd">fflush</span> does.</dd>
+              <dt>The frame buffer</dt><dd>§23.6 for <span class="cmd">memset</span> and the other memory functions.</dd>
+              <dt>Sentinel values and state machines</dt><dd>Arrays §8.1, <span class="cmd">break</span> §6.4, <span class="cmd">switch</span> §5.3, <span class="cmd">enum</span> §16.5.</dd>
+              <dt>const pointers</dt><dd>§11.4, “Using const to Protect Arguments”, and §18.3.</dd>
+              <dt>Multiple files</dt><dd>§15.1–15.4, plus §18.2 for <span class="cmd">static</span> and <span class="cmd">extern</span>. That is exactly the runner split.</dd>
+              <dt>Note</dt><dd>King guards headers with <span class="cmd">#ifndef</span> / <span class="cmd">#define</span> / <span class="cmd">#endif</span> (§15.2, “Protecting Header Files”). <span class="cmd">#pragma once</span> does the same in one line. Know both when you see them.</dd>
+              <dt>Skip</dt><dd>Parameterised macros (back in Phase 5) and makefiles; build.bat is your makefile.</dd>
             </dl>
           </div>
         </div>
