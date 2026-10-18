@@ -55,12 +55,12 @@
      ],
      [
       "Mistakes MSVC catches",
-      "<p>Same rules as before: declare a variable before you use it, or you get C2065 (undeclared identifier), and give it a value before you read it, or you get C4700. <code>float x, y = 0.0f;</code> still sets only <code>y</code>.</p><p class=\"warn\">Two warnings are new with decimals. <code>float speed = 2.5;</code> squeezes a double into a float: C4305. <code>int lives = 2.9f;</code> chops a float into an int: C4244. Under <code>/WX</code> both stop the build. Add the <code>f</code>, or a cast if you really mean it.</p>"
+      "<p>Same rules as before: declare a variable before you use it, or you get C2065 (undeclared identifier), and give it a value before you read it, or you get C4700. <code>float x, y = 0.0f;</code> still sets only <code>y</code>.</p><p class=\"warn\">Two warnings are new with decimals. <code>float speed = 2.5;</code> squeezes a double into a float: C4305. <code>int lives = 2.9f;</code> chops a float into an int: C4244. Under <code>/WX</code> both stop the build. Add the <code>f</code>, or a cast (Division, remainder and casts) if you really mean it.</p>"
      ]
     ],
     "king": "§2.4–2.7, §7.1–7.3 (short)"
    },
-   "code": "#include <stdio.h>\n#include <stdbool.h>\n\nint main(void) {\n    int score = 0;\n    float speed = 2.5f;\n    char key = 'q';\n    bool alive = true;\n\n    score = score + 10;\n    int lives = 2.9f;\n    printf(\"%d %d\\n\", score, lives);\n    return 0;\n}",
+   "code": "#include <stdio.h>\n#include <stdbool.h>\n\nint main(void) {\n    int score = 0;\n    float speed = 2.5f;\n    char key = 'q';\n    bool alive = true;\n\n    score = score + 10;\n    int lives = (int)2.9f;\n    printf(\"%d %d\\n\", score, lives);\n    printf(\"%.1f %c %d\\n\", speed, key, alive);\n    return 0;\n}",
    "walk": [
     [
      2,
@@ -88,16 +88,20 @@
     ],
     [
      11,
-     "A float going into an int. An int can’t hold .9, so it gets cut off. Same thing that happened with <code>var(1.8f)</code> in Session 1."
+     "A float going into an int. An int can’t hold .9, so it gets cut off. <b>(int)</b> is a cast: it tells the compiler you meant it. Leave it out and MSVC warns C4244, which /WX turns into a failed build. Casts get their own concept in Division, remainder and casts. Same chop as <code>var(1.8f)</code> in Session 1."
     ],
     [
      12,
      "Two <code>%d</code> slots, filled left to right by score and lives."
+    ],
+    [
+     13,
+     "The other three boxes, each in its own slot: 2.5, q, and 1 for true."
     ]
    ],
    "model": "<b>Mental model:</b> each variable is a box with a shape cut in the lid. C will push a value through the wrong lid without stopping you: a float squeezed into an int-shaped box loses whatever doesn’t fit, and C doesn’t round. It chops.",
    "check": {
-    "q": "What does this program print?",
+    "q": "What does line 12 print?",
     "opts": [
      "10 2.9",
      "10 3",
@@ -106,15 +110,15 @@
     ],
     "a": 2,
     "hint": "Look at line 11. What happens to the part after the decimal point?",
-    "why": "score becomes 10. lives gets 2.9 chopped to 2, never rounded up to 3. With /W4 you’ll also see warning C4244 on line 11: the compiler telling you something got chopped.",
+    "why": "score becomes 10. lives gets 2.9 chopped to 2, never rounded up to 3. The (int) cast is you saying you meant it; without it, /W4 warns C4244 on line 11 and /WX stops the build.",
     "miss": {
      "0": "lives is an int, so it can’t hold .9. And %d prints whole numbers only.",
      "1": "Close, but C never rounds when it converts to int. It drops everything after the point.",
-     "3": "It compiles. Converting a float to an int is allowed; you just get a warning (C4244) and a chopped value."
+     "3": "It compiles: the (int) cast tells MSVC the chop is on purpose, so there’s no C4244."
     }
    },
    "tryit": {
-    "task": "Pick the type for each variable. Then print all four in one program (<code>%f %c %d %d</code>) and check each value comes out the way you put it in.",
+    "task": "Pick the type for each variable. Then print all four in one program (%f %c %d %d) and check each value comes out the way you put it in.",
     "code": "____ jump_height = 1.5f;\n____ lane = 'A';\n____ coins = 0;\n____ paused = false;",
     "answer": "float, char, int, bool"
    },
@@ -161,7 +165,7 @@
      ],
      [
       "One letter per type",
-      "<ul><li><code>%d</code>: an <code>int</code>.</li><li><code>%f</code>: a <code>float</code> or <code>double</code>, six decimals by default.</li><li><code>%c</code>: a <code>char</code>, shown as its character.</li><li><code>%e</code>: a decimal in scientific style: 1234.5 prints as <code>1.234500e+03</code>.</li><li><code>%g</code>: picks whichever of <code>%f</code> and <code>%e</code> is shorter and drops trailing zeros, so 2.5 prints as <code>2.5</code>.</li></ul>"
+      "<ul><li><code>%d</code>: an <code>int</code>.</li><li><code>%f</code>: a <code>float</code> or <code>double</code>, six decimals by default.</li><li><code>%c</code>: a <code>char</code>, shown as its character.</li><li><code>%e</code>: a decimal in scientific style: 1234.5 prints as <code>1.234500e+03</code>.</li><li><code>%g</code>: 6 significant digits, trailing zeros dropped, switching to %e style for very big or very small numbers: 2.5 prints as <code>2.5</code>, 1234567.0 as <code>1.23457e+06</code>.</li></ul>"
      ],
      [
       "Width: lining things up",
@@ -251,7 +255,7 @@
     "address-of"
    ],
    "builds": "Printing values with printf: format slots. scanf uses the same slots, in the other direction.",
-   "why": "printf talks to the player. scanf listens. It waits for them to type something and press Enter, then puts what they typed into one of your variables. It’s how the guessing game reads a guess.",
+   "why": "printf talks to the player. scanf listens. It waits for them to type something and press Enter, then puts what they typed into one of your variables. It’s how the guessing game in Decisions &amp; Loops will read a guess.",
    "learn": {
     "parts": [
      [
@@ -276,7 +280,7 @@
      ],
      [
       "MSVC and Windows notes",
-      "<p class=\"warn\">MSVC calls scanf unsafe (C4996), and <code>/WX</code> turns that into a stopped build. The <code>#define _CRT_SECURE_NO_WARNINGS</code> line at the top, before any include, switches that warning off.</p><p>The warning suggests <code>scanf_s</code>. Don't just add <code>_s</code> to existing calls: for <code>%c</code> and strings, scanf_s needs an extra size number after each address, and code that skips it can crash. It also only exists on Microsoft's compiler.</p><p>Forget the <code>&amp;</code> and MSVC warns C4477, so the build stops. To end input on purpose, press Ctrl+Z and then Enter: scanf returns <code>EOF</code>. On Mac and Linux it's Ctrl+D.</p>"
+      "<p class=\"warn\">MSVC calls scanf unsafe (C4996), and <code>/WX</code> turns that into a stopped build. The <code>#define _CRT_SECURE_NO_WARNINGS</code> line at the top, before any include, switches that warning off.</p><p>The warning suggests <code>scanf_s</code>. Don't just add <code>_s</code> to existing calls: for <code>%c</code> and strings, scanf_s needs an extra size number after each address, and code that skips it can crash. It also comes from an optional part of the C standard that almost only Microsoft ships.</p><p>Forget the <code>&amp;</code> and MSVC warns C4477, so the build stops. To end input on purpose, press Ctrl+Z and then Enter: scanf returns <code>EOF</code>. On Mac and Linux it's Ctrl+D.</p>"
      ]
     ],
     "king": "§2.5, §3.2, §7.2; the return value is in §22.3"
@@ -373,7 +377,7 @@
     "parts": [
      [
       "The rule",
-      "<p>The types going in decide the type coming out. Divide an int by an int and you get an int: the fraction is thrown away, toward zero, with no warning. <code>7 / 2</code> is 3 and <code>60 / 100</code> is 0. Bring a float in on either side, before the division happens, and the maths is done in float.</p>"
+      "<p>The types going in decide the type coming out. Divide an int by an int and you get an int: the fraction is thrown away, toward zero, with no warning. <code>7 / 2</code> is 3 and <code>60 / 100</code> is 0. Bring a float in on either side, before the division happens, and the maths is done in float.</p><p>A <b>cast</b>, a type name in brackets like <code>(float)hits</code>, converts one value for this calculation: <code>(float)7 / 2</code> is 3.5.</p>"
      ],
      [
       "Which operator goes first",
@@ -502,7 +506,7 @@
      ],
      [
       "++ and --",
-      "<p><code>lives++</code> adds 1 to lives and <code>lives--</code> takes 1 away. Each comes in two forms, and they differ in the value they hand back:</p><ul><li><b>Prefix</b>, <code>++hits</code>: change first, then hand over the new value.</li><li><b>Postfix</b>, <code>hits++</code>: hand over the old value, then change.</li></ul><p>With hits at 4, <code>combo = hits++;</code> gives combo 4 and hits 5. <code>combo = ++hits;</code> then gives both 6. On a line of their own, <code>hits++;</code> and <code>++hits;</code> do exactly the same thing, because nobody uses the value handed back. <code>++</code> and <code>--</code> also bind tighter than <code>*</code>, so <code>2 * lives++</code> doubles the old lives.</p>"
+      "<p><code>lives++</code> adds 1 to lives and <code>lives--</code> takes 1 away. Each comes in two forms, and they differ in the value they hand back:</p><ul><li><b>Prefix</b>, <code>++hits</code>: change first, then hand over the new value.</li><li><b>Postfix</b>, <code>hits++</code>: hand over the old value, then change.</li></ul><p>With hits at 4, <code>combo = hits++;</code> gives combo 4 and hits 5. <code>combo = ++hits;</code> then gives both 6. On a line of their own, <code>hits++;</code> and <code>++hits;</code> do exactly the same thing, because nobody uses the value handed back. <code>++</code> and <code>--</code> also bind tighter than <code>*</code> (they go first), so <code>2 * lives++</code> doubles the old lives.</p>"
      ],
      [
       "Read it or change it, not both",
@@ -569,7 +573,7 @@
     }
    },
    "tryit": {
-    "task": "Rewrite each line using compound assignment or <code>++</code>/<code>--</code>. Then predict: if kills, ammo and damage start at 0, 30 and 5, what are they afterwards? Print them to check.",
+    "task": "Rewrite each line using compound assignment or ++/--. Then predict: if kills, ammo and damage start at 0, 30 and 5, what are they afterwards? Print them to check.",
     "code": "kills = kills + 1;\nammo = ammo - 3;\ndamage = damage * 2;",
     "answer": "kills++;   ammo -= 3;   damage *= 2;   They end at 1, 27 and 10."
    },

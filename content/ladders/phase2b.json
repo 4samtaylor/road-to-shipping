@@ -29,7 +29,7 @@
      ],
      [
       "Short-circuit: the right side may never run",
-      "<p>C works out the left side of &amp;&amp; first. If it's false, the whole thing is false whatever the right side says, so C skips the right side completely. || does the same when its left side is true. This is <b>short-circuit</b> evaluation, and it makes a handy guard:</p><pre>if (enemies &gt; 0 &amp;&amp; kills / enemies &gt; 2)</pre><p>When enemies is 0 the division never happens, so it can't crash. The guard always goes on the left.</p><p class=\"warn\">The flip side: a side effect on the right may quietly not happen. In <code>if (paused || frame++ &gt; 60)</code>, frame only goes up while the game isn't paused. Keep ++ and assignments out of tests.</p>"
+      "<p>The examples from here on put a test inside <code>if ( )</code>. An if runs the block in braces after it only when its test isn't 0. Decisions with if / else, the next concept, covers it properly; for now, watch the test.</p><p>C works out the left side of &amp;&amp; first. If it's false, the whole thing is false whatever the right side says, so C skips the right side completely. || does the same when its left side is true. This is <b>short-circuit</b> evaluation, and it makes a handy guard:</p><pre>if (enemies &gt; 0 &amp;&amp; kills / enemies &gt; 2)</pre><p>When enemies is 0 the division never happens, so it can't crash. The guard always goes on the left.</p><p class=\"warn\">The flip side: a side effect on the right may quietly not happen. In <code>if (paused || frame++ &gt; 60)</code>, frame only goes up while the game isn't paused. Keep ++ and assignments out of tests.</p>"
      ],
      [
       "Mixing && and ||",
@@ -41,7 +41,7 @@
      ],
      [
       "MSVC notes",
-      "<p class=\"warn\">Writing <code>=</code> where you meant <code>==</code> inside a test makes MSVC warn (C4706), and /WX stops the build. A single <code>&amp;</code> or <code>|</code> where you meant two, and <code>0 &lt; x &lt; 10</code>, can compile without a word. Those you catch by reading your tests out loud.</p>"
+      "<p class=\"warn\">Writing <code>=</code> where you meant <code>==</code> inside a test makes MSVC warn (C4706), and /WX stops the build. A single <code>&amp;</code> or <code>|</code> where you meant two, and <code>0 &lt; x &lt; 10</code>, can compile without a word. Those you catch by reading your tests out loud.</p><p>Comparing a signed int with an unsigned one using &lt; &gt; &lt;= or &gt;= is C4018 (signed/unsigned mismatch), the trap from How big a number can be. Keep game values signed.</p>"
      ]
     ],
     "king": "§5.1, plus Boolean values at the end of §5.2"
@@ -66,7 +66,7 @@
     ],
     [
      15,
-     "Short-circuit: enemies &gt; 0 is false, so C never works out the right side. Good thing, because 12 / 0 would crash the program. The left test is a guard."
+     "<b>if</b> runs the block in braces only when its test isn't 0 (Decisions with if / else, next, has the full story). Short-circuit: enemies &gt; 0 is false, so C never works out the right side. Good thing, because 12 / 0 would crash the program. The left test is a guard."
     ],
     [
      18,
@@ -137,7 +137,7 @@
     "parts": [
      [
       "One test, one block",
-      "<p>An if works out its test, and if the value isn't 0 it runs the statement after it. That statement is usually a <b>compound statement</b>: a pair of braces holding any number of statements, which C treats as one. The else part is optional and runs when the test came out 0.</p><p>Write <code>if (alive)</code>, not <code>if (alive == true)</code>. The first is true for any value that isn't 0. The second only matches exactly 1, so a flag that somehow holds 2 fails it.</p>"
+      "<p>An if works out its test, and if the value isn't 0 it runs the statement after it. That statement is usually a <b>compound statement</b>: a pair of braces holding any number of statements, which C treats as one. The else part is optional and runs when the test came out 0.</p><p>Write <code>if (alive)</code>, not <code>if (alive == true)</code>. The first is true for any value that isn't 0. The second only matches exactly 1, so an int flag that somehow holds 2 fails it.</p>"
      ],
      [
       "An else-if chain is nested ifs",
@@ -153,7 +153,7 @@
      ],
      [
       "?: picks a value",
-      "<p>The conditional operator chooses between two values rather than two blocks. <code>test ? a : b</code> gives a when the test is true and b when it isn't:</p><pre>int dmg = crit ? 20 : 10;\nprintf(\"%d %s\\n\", lives, lives == 1 ? \"life\" : \"lives\");</pre><p>Use it when both sides are short values. If either side does real work, use an if. One ?: nested inside another is legal and nearly always hard to read. It also binds very loosely, so wrap it in brackets when it's part of a bigger sum.</p>"
+      "<p>The conditional operator chooses between two values rather than two blocks. <code>test ? a : b</code> gives a when the test is true and b when it isn't:</p><pre>int dmg = crit ? 20 : 10;\nprintf(\"Lives: %d\\n\", lives &gt; 0 ? lives : 0);</pre><p>Use it when both sides are short values. If either side does real work, use an if. One ?: nested inside another is legal and nearly always hard to read. It also binds very loosely, so wrap it in brackets when it's part of a bigger sum.</p>"
      ],
      [
       "MSVC notes",
@@ -215,7 +215,7 @@
     ],
     [
      "What if I write = instead of ==?",
-     "It compiles. With /W4 you get C4706, and the if is now always true (or always false). The weekly “= vs ==” exercise breaks this on purpose."
+     "With your build.bat it won't build: MSVC warns C4706 (assignment within conditional expression) and /WX stops it. Without /WX it compiles, and the if is now always true (or always false). The weekly “= vs ==” exercise breaks this on purpose."
     ],
     [
      "Which test goes first in an else if chain?",
@@ -255,7 +255,7 @@
      ],
      [
       "The misspelled default",
-      "<p class=\"warn\">Type <code>defualt:</code> and C sees an ordinary label (the kind goto jumps to), not a default. The switch quietly has no default at all. MSVC warns that the label is never used (C4102), and /WX stops the build, which is how you'll spot it.</p>"
+      "<p class=\"warn\">Type <code>defualt:</code> and C sees an ordinary label (the kind goto jumps to, covered in do, break, continue and the endless loop), not a default. The switch quietly has no default at all. MSVC warns that the label is never used (C4102), and /WX stops the build, which is how you'll spot it.</p>"
      ],
      [
       "A variable inside a case",
@@ -264,7 +264,7 @@
     ],
     "king": "§5.3"
    },
-   "code": "#define _CRT_SECURE_NO_WARNINGS\n#include <stdio.h>\n\nint main(void) {\n    int choice;\n    printf(\"1 Play  2 Scores  3 Quit: \");\n    scanf(\"%d\", &choice);\n\n    switch (choice) {\n        case 1:\n            printf(\"Starting...\\n\");\n            break;\n        case 2:\n            printf(\"High scores\\n\");\n            break;\n        case 3:\n            printf(\"Bye\\n\");\n            break;\n        default:\n            printf(\"Not an option\\n\");\n    }\n    return 0;\n}",
+   "code": "#define _CRT_SECURE_NO_WARNINGS\n#include <stdio.h>\n\nint main(void) {\n    int choice;\n    printf(\"1 Play  2 Scores  3 Quit: \");\n    scanf(\"%d\", &choice);\n\n    switch (choice) {\n        case 1:\n            printf(\"Starting...\\n\");\n            break;\n        case 2:\n            printf(\"High scores\\n\");\n            break;\n        case 3:\n            printf(\"Bye\\n\");\n            break;\n        default:\n            printf(\"Not an option\\n\");\n            break;\n    }\n    return 0;\n}",
    "walk": [
     [
      9,
@@ -358,7 +358,7 @@
      ],
      [
       "When a loop hangs",
-      "<p class=\"warn\">A <code>;</code> straight after <code>while (lives &gt; 0)</code> becomes the whole loop body, so the block below never repeats and lives never changes. Don't rely on a warning for this one. If a program hangs, press Ctrl+C, then check the line that should change the condition.</p>"
+      "<p class=\"warn\">A <code>;</code> straight after <code>while (lives &gt; 0)</code> becomes the whole loop body, so the program hangs on that line and the block below never runs. Don't rely on a warning for this one. If a program hangs, press Ctrl+C, then check the line that should change the condition.</p>"
      ]
     ],
     "king": "§6.1, §6.3, and nested loops from §8.2"
@@ -474,11 +474,11 @@
      ],
      [
       "The scanf retry loop",
-      "<p>Put the pieces together and you get the input loop Reading input with scanf promised. scanf's return value says whether a number arrived. A number in range breaks out. A number out of range uses continue to skip the junk handling and ask again. Anything else gets flushed; if the flush ran into EOF the program returns, because asking again could never work, and otherwise it prints a message and goes round. Trace the program above with 2, then 7, then abc.</p>"
+      "<p>Put the pieces together and you get the input loop Reading input with scanf promised. scanf's return value says whether a number arrived. A number in range breaks out. A number out of range uses continue to skip the junk handling and ask again. Anything else gets flushed; if the flush ran into EOF the program returns, because asking again could never work, and otherwise it prints a message and goes round. Trace the program below three times: typing 2; typing 7, then 2; typing abc, then 2.</p>"
      ],
      [
       "MSVC notes",
-      "<p class=\"warn\">MSVC can warn about <code>while (1)</code> at /W4 (C4127, conditional expression is constant), which /WX turns into a failed build. <code>for (;;)</code> means the same and doesn't trigger it. In a Windows console, Ctrl+Z then Enter sends EOF, and Ctrl+C kills a stuck program.</p>"
+      "<p class=\"warn\">Older MSVC versions warned about <code>while (1)</code> (C4127, conditional expression is constant). Since Visual Studio 2015 Update 3 it doesn't, but you'll still see <code>for (;;)</code> in code written to avoid it. Both loop forever; this course uses <code>for (;;)</code>. In a Windows console, Ctrl+Z then Enter sends EOF, and Ctrl+C kills a stuck program.</p>"
      ]
     ],
     "king": "§6.2, §6.4–6.5 (getchar is in §7.3)"
@@ -544,7 +544,7 @@
     ],
     [
      "Is while (1) the same as for (;;)?",
-     "Yes, both loop forever. MSVC can warn on <code>while (1)</code> at /W4 (C4127, conditional expression is constant), and /WX makes that fatal. <code>for (;;)</code> doesn't trigger it, so this course uses it."
+     "Yes, both loop forever. Old versions of MSVC warned on <code>while (1)</code> (C4127); current ones (Visual Studio 2015 Update 3 and later) don't. <code>for (;;)</code> is the traditional spelling, so this course uses it."
     ],
     [
      "What about goto?",
@@ -584,7 +584,7 @@
      ],
      [
       "A drop chance",
-      "<p>For a chance like 25%, make a float in [0, 1): 0 can come up, 1 never does.</p><pre>float r = (float)rand() / (RAND_MAX + 1.0f);\nif (r &lt; 0.25f) { /* drop a potion */ }</pre><p>The <code>1.0f</code> makes it a float division. Plain <code>RAND_MAX + 1</code> would be int divided by int, which gives 0 every time. Adding 1 before dividing is what keeps r below 1.</p>"
+      "<p>For a chance like 25%, make a float in [0, 1): 0 can come up, 1 never does.</p><pre>float r = (float)rand() / (RAND_MAX + 1.0f);\nif (r &lt; 0.25f) { /* drop a potion */ }</pre><p>The (float) cast makes it a float division; without it, rand() / (RAND_MAX + 1) is int divided by int, which gives 0 every time. Dividing by RAND_MAX + 1, not RAND_MAX, is what keeps r below 1, and writing 1.0f keeps that sum from overflowing on compilers where RAND_MAX is huge.</p>"
      ]
     ],
     "king": "§26.2 (first used in §8.2, seeded with the clock in §10.2)"

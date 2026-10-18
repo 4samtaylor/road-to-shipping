@@ -130,7 +130,7 @@
    "skills": [
     "wndproc"
    ],
-   "builds": "Rung 1 (the callback address you handed Windows) and Phase 2 (<code>switch</code>).",
+   "builds": "Rung 1 (the callback address you handed Windows) and Phase 2.5 (<code>switch</code>).",
    "why": "Everything that happens to your window arrives here as a numbered message: a key, a click, a repaint request, the close button. Your whole game’s reaction to the outside world is a <code>switch</code> inside this one function.",
    "code": "#include <windows.h>\n\nstatic HWND g_hwnd = NULL;\n\nLRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {\n    switch (msg) {\n        case WM_KEYDOWN:\n            if (wp == VK_ESCAPE) DestroyWindow(hwnd);\n            break;\n        case WM_DESTROY:\n            PostQuitMessage(0);\n            break;\n        default:\n            return DefWindowProc(hwnd, msg, wp, lp);\n    }\n    return 0;\n}\n\nint WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmd, int nShow) {\n    (void)hPrev; (void)lpCmd;\n    WNDCLASS wc = {0};\n    wc.lpfnWndProc   = WindowProc;\n    wc.hInstance     = hInst;\n    wc.lpszClassName = \"GameWindow\";\n    RegisterClass(&wc);\n\n    g_hwnd = CreateWindowEx(0, \"GameWindow\", \"My First Window\",\n                   WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,\n                   800, 600, NULL, NULL, hInst, NULL);\n    ShowWindow(g_hwnd, nShow);\n\n    MSG msg;\n    while (GetMessage(&msg, NULL, 0, 0)) {\n        TranslateMessage(&msg);\n        DispatchMessage(&msg);\n    }\n    return (int)msg.wParam;\n}",
    "walk": [
@@ -140,7 +140,7 @@
     ],
     [
      6,
-     "A plain Phase 2 <code>switch</code>, choosing by message number. WM_ names are just constants for those numbers."
+     "A plain Phase 2.5 <code>switch</code>, choosing by message number. WM_ names are just constants for those numbers."
     ],
     [
      7,
@@ -298,7 +298,7 @@
      "If you stop pulling messages for a few seconds, Windows assumes you’ve frozen. A slow frame or a missing loop causes it."
     ],
     [
-     "How does this compare to my Phase 2 and 4.5 loops?",
+     "How does this compare to my Phase 2.5 and 4.5 loops?",
      "It is the same shape. <code>GetMessage</code> is waiting like <code>scanf</code>, <code>PeekMessage</code> is checking without waiting like <code>_kbhit</code>, and WndProc is the “react to it” step. The job is still read input, update, draw."
     ]
    ],

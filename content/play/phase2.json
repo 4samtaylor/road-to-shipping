@@ -87,7 +87,7 @@
       {
         "line": 11,
         "ms": 2600,
-        "note": "A float into an int box: the .9 does not fit and is chopped off. C does not round.",
+        "note": "(int) pushes the float into an int box: the .9 does not fit and is chopped off. C does not round.",
         "do": [
           {
             "a": "appear",
@@ -123,6 +123,20 @@
             ]
           }
         ]
+      },
+      {
+        "line": 13,
+        "ms": 1400,
+        "out": "2.5 q 1\n",
+        "outAt": 0.4,
+        "note": "%.1f, %c and %d print speed, key and alive: 2.5, q, and 1 for true.",
+        "do": []
+      },
+      {
+        "line": 14,
+        "ms": 800,
+        "note": "return 0 means the program finished fine.",
+        "do": []
       }
     ]
   },
@@ -439,7 +453,9 @@
             "at": 0.25,
             "len": 0.75
           }
-        ]
+        ],
+        "out": "42\n",
+        "outAt": 0.95
       },
       {
         "line": 9,
@@ -498,7 +514,9 @@
             "at": 0.25,
             "len": 0.75
           }
-        ]
+        ],
+        "out": "y\n",
+        "outAt": 0.95
       },
       {
         "line": 13,

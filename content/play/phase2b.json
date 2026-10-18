@@ -44,7 +44,9 @@
             "val": 30,
             "a": "set"
           }
-        ]
+        ],
+        "out": "30\n",
+        "outAt": 0.3
       },
       {
         "line": 10,
@@ -154,7 +156,9 @@
             "val": 2,
             "a": "choice"
           }
-        ]
+        ],
+        "out": "2\n",
+        "outAt": 0.3
       },
       {
         "line": 9,
@@ -240,7 +244,7 @@
         ]
       },
       {
-        "line": 22,
+        "line": 23,
         "ms": 800,
         "note": "return 0 means the program finished fine.",
         "do": []
@@ -1003,7 +1007,9 @@
             "v": "typed abc: 0 == 1",
             "r": false
           }
-        ]
+        ],
+        "out": "abc\n",
+        "outAt": 0.2
       },
       {
         "line": 14,
@@ -1094,7 +1100,9 @@
             "val": 2,
             "at": 0.4
           }
-        ]
+        ],
+        "out": "2\n",
+        "outAt": 0.2
       },
       {
         "line": 9,

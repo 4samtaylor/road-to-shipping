@@ -275,7 +275,7 @@ C 67
                 <div class="quiz-q">1. Why is there a space in <span class="cmd">scanf(" %c", &amp;input)</span>?</div>
                 <details>
                   <summary>Reveal answer</summary>
-                  <div class="quiz-a">The space tells scanf to skip over any leftover whitespace first, including the Enter key still sitting in the input buffer from the previous read. Without it, scanf grabs that newline as your character and the loop appears to skip a turn. And the <span class="cmd">&amp;</span> hands scanf the address of your variable so it can write into it, rather than a copy of its value.</div>
+                  <div class="quiz-a">The space tells scanf to skip over any leftover whitespace first, including the Enter key still sitting in the input buffer from the previous read. Without it, scanf grabs that newline as your character and the question appears to be skipped. And the <span class="cmd">&amp;</span> hands scanf the address of your variable so it can write into it, rather than a copy of its value.</div>
                 </details>
               </div>
               <div class="quiz-item">
@@ -363,7 +363,7 @@ C 67
           <div class="acc-body section-block-body">
             <div class="callout callout--purple callout--bar mb-16">
               <div class="eyebrow eyebrow--md t-purple mb-8">// The habit for this phase</div>
-              <div class="prose t-muted2">Never ask AI to "build the feature". Ask for the structure without the implementation: the skeleton with comments, not the filled-in version. You write the logic, which is where the learning happens. The game loop (input, update, draw) is yours to design.</div>
+              <div class="prose t-muted2">Never ask AI to "build the feature". Ask for the structure without the implementation: the skeleton with comments, not the filled-in version. You write the logic, which is where the learning happens. The maths in damage.c is yours to work out.</div>
             </div>
 
             <div class="prompt-items">

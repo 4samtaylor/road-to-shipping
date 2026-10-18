@@ -381,7 +381,7 @@
      ],
      [
       "Two tools, two times",
-      "<p>Escapes and slots look alike, but different tools handle them at different times.</p><ul><li><code>\\n</code>, <code>\\t</code>, <code>\\\\</code> and <code>\\\"</code> are swapped for single characters by the <b>compiler</b>, while it builds the .exe. By the time the program runs, the backslash is long gone.</li><li><code>%d</code> and <code>%%</code> are read by <b>printf</b> each time it runs, when it has the actual values.</li></ul><p>That's why <code>\\%</code> doesn't print a percent sign. Only printf understands <code>%%</code>, so that's the one you need.</p>"
+      "<p>Escapes and slots look alike, but different tools handle them at different times.</p><ul><li><code>\\n</code>, <code>\\t</code>, <code>\\\\</code> and <code>\\\"</code> are swapped for single characters by the <b>compiler</b>, while it builds the .exe. By the time the program runs, the backslash is long gone.</li><li><code>%d</code> and <code>%%</code> are read by <b>printf</b> each time it runs, when it has the actual values.</li></ul><p>That's why <code>\\%</code> doesn't print a percent sign: it isn't an escape C knows (C4129), so only printf's <code>%%</code> works.</p>"
      ],
      [
       "A few more escapes",
@@ -488,7 +488,7 @@
      ],
      [
       "Printing values",
-      "<p>Now <code>%d</code> earns its place. Each <code>%d</code> in the format string is filled by the next value after it, and that value can be a variable or a sum:</p><pre>printf(\"Lives: %d\\n\", lives);\nprintf(\"%d of %d\\n\", score, 1000);\nprintf(\"Next: %d\\n\", level + 1);</pre><p>The last line works out <code>level + 1</code> and prints the answer. level doesn't change: only <code>=</code> changes a variable.</p>"
+      "<p>Now <code>%d</code> earns its place. Each <code>%d</code> in the format string is filled by the next value after it, and that value can be a variable or a sum:</p><pre>printf(\"Lives: %d\\n\", lives);\nprintf(\"%d of %d\\n\", score, 1000);\nprintf(\"Next: %d\\n\", level + 1);</pre><p>Anything that works out to a value, like <code>level + 1</code>, is called an <b>expression</b>. The last line works out <code>level + 1</code> and prints the answer. level doesn't change: only <code>=</code> changes a variable.</p>"
      ],
      [
       "Naming rules",
@@ -543,7 +543,7 @@
     ],
     "a": 0,
     "hint": "Does line 13 store anything in level, or only read it?",
-    "why": "Only <code>=</code> changes a variable. <code>level + 1</code> reads level, works out 2 and hands that to printf. The box still holds 1.",
+    "why": "Only = changes a variable. level + 1 reads level, works out 2 and hands that to printf. The box still holds 1.",
     "miss": {
      "1": "printf shows 2, but that's the value of the expression. Nothing stored it back in level.",
      "2": "level was initialised to 1 on line 6, and nothing has stored anything else in it since.",
@@ -695,7 +695,7 @@
      ],
      [
       "Sticking to the standard",
-      "<p>C has an official rulebook, and its versions are named by year: C99, C11, C17. Adding <code>/std:c17</code> to FLAGS tells cl to follow C17 rather than its own default.</p>"
+      "<p>C has an official rulebook, and its versions are named by year: C99, C11, C17. The flag <code>/std:c17</code> tells cl to follow C17 rather than its own default. It isn't in FLAGS yet: your build.bat gets it once the test build on your PC confirms it works.</p>"
      ],
      [
       "ERRORLEVEL is main's return value",
@@ -737,7 +737,7 @@
    ],
    "model": "<b>Mental model:</b> build.bat is a recipe card for the cook. You write the steps once, flags included, and every build follows them exactly.",
    "check": {
-    "q": "hello_world.c has a <code>printf(\"%d\\n\")</code> with no number after it, so cl gives one warning (C4473) and nothing else is wrong. What does build print at the end?",
+    "q": "hello_world.c has a printf(\"%d\\n\") with no number after it, so cl gives one warning (C4473) and nothing else is wrong. What does build print at the end?",
     "opts": [
      "BUILD OK",
      "BUILD FAILED",

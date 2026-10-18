@@ -66,7 +66,7 @@
         ],
         "def": "main is the function where a hosted C program starts executing. It returns an int exit status to the environment that ran it.",
         "model": "The front door. However big the program gets, every run walks in through main and leaves through its return.",
-        "game": "In the runner, main is just the frame loop. Everything else — reset, update, render — is a function main calls.",
+        "game": "In the runner, main is just the frame loop. Everything else (reset, update, render) is a function main calls.",
         "gameCode": "int main(void) {\n    for (;;) { /* input, update, render, wait */ }\n    return 0;\n}"
       },
       {
@@ -281,7 +281,7 @@
           "int"
         ],
         "def": "int is the basic signed integer type. On MSVC for x86/x64 it is 32 bits, ranging from −2,147,483,648 to 2,147,483,647.",
-        "model": "A box that only holds whole numbers — no fractions get in.",
+        "model": "A box that only holds whole numbers. No fractions get in.",
         "game": "Score, frame count, guess count, lives: things you count are ints.",
         "gameCode": "int score = 0;\nint frame = 0;"
       },
@@ -424,14 +424,14 @@
         ],
         "def": "A cast expression (type)expr converts a value to the named type. Converting a floating value to an integer type truncates toward zero.",
         "model": "Telling the compiler \"I know this loses information, and I mean it\".",
-        "game": "To draw a float x position into the char lane, cast it to an int column — once, at draw time, never stored back.",
+        "game": "To draw a float x position into the char lane, cast it to an int column. Do it once, at draw time, and never store it back.",
         "gameCode": "lane[(int)p.x] = 'A';"
       },
       {
         "id": "sizeof",
         "term": "sizeof",
         "kind": "syntax",
-        "what": "Size in bytes, worked out by the compiler. Returns size_t: cast before %d.",
+        "what": "Size in bytes, worked out by the compiler. Returns size_t: print with %zu (or cast to int for %d).",
         "example": "printf(\"%d\\n\", (int)sizeof(int));   // 4",
         "aliases": [
           "sizeof",
@@ -755,7 +755,7 @@
           "continue;",
           "for (;;)"
         ],
-        "def": "break ends the innermost enclosing while, do, for or switch. continue ends the current iteration of the innermost loop; in a for, the step expression runs next. for (;;) has no controlling expression and loops until something inside leaves it.",
+        "def": "break jumps out of the nearest loop or switch it sits in, and only that one. continue ends the current iteration of the innermost loop; in a for, the step expression runs next. for (;;) has no controlling expression and loops until something inside leaves it.",
         "model": "Side doors on a lap: continue goes back to the start line, break leaves the track.",
         "game": "The runner's obstacle spawner walks the slots and breaks out at the first free one.",
         "gameCode": "for (i = 0; i < MAX_OBS; i++)\n    if (obs[i] == -1) { obs[i] = LANE_LEN - 1; break; }"

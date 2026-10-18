@@ -32,7 +32,7 @@
    "skills": [
     "function"
    ],
-   "builds": "Phase 2: variables, if and loops. Everything so far has lived inside main.",
+   "builds": "Phase 2 and 2.5: variables, if and loops. Everything so far has lived inside main.",
    "why": "Your guessing game is one long main. As programs grow that becomes impossible to read. A function packs one job into a named block you can call whenever you need it: inputs go in, one result comes out.",
    "code": "#include <stdio.h>\n\nint add_score(int score, int points) {\n    int total = score + points;\n    return total;\n}\n\nint main(void) {\n    int score = 0;\n    score = add_score(score, 10);\n    score = add_score(score, 5);\n    printf(\"Score: %d\\n\", score);\n    return 0;\n}",
    "walk": [
@@ -272,7 +272,7 @@
    "skills": [
     "define"
    ],
-   "builds": "Phase 2: for loops. Concept 3: values with clear meaning.",
+   "builds": "Phase 2.5: for loops. Concept 3: values with clear meaning.",
    "why": "A 5 in the middle of your code could mean five scores, five lives or five pixels. #define gives a fixed number a name, so the code says what it means, and you change it in one place.",
    "code": "#include <stdio.h>\n\n#define MAX_SCORES 5\n#define START_LIVES 3\n\nint main(void) {\n    int lives = START_LIVES;\n    for (int i = 0; i < MAX_SCORES; i++) {\n        printf(\"Slot %d\\n\", i);\n    }\n    printf(\"Lives: %d\\n\", lives);\n    return 0;\n}",
    "walk": [
@@ -351,7 +351,7 @@
     "array-loop",
     "array-count"
    ],
-   "builds": "Concept 4: #define for sizes. Phase 2: for loops and casts.",
+   "builds": "Concept 4: #define for sizes. Phase 2.5: for loops. Phase 2: casts.",
    "why": "Five high scores in five variables is clumsy, and fifty is impossible. An array is a row of boxes under one name, numbered from 0. Pair it with a for loop and the same few lines handle any number of values.",
    "code": "#include <stdio.h>\n\n#define MAX_SCORES 5\n\nint main(void) {\n    int scores[MAX_SCORES] = {90, 75, 60, 40, 10};\n    int count = (int)(sizeof(scores) / sizeof(scores[0]));\n\n    printf(\"Top score: %d\\n\", scores[0]);\n    scores[4] = 25;\n\n    for (int i = 0; i < count; i++) {\n        printf(\"%d: %d\\n\", i + 1, scores[i]);\n    }\n    return 0;\n}",
    "walk": [
@@ -665,7 +665,7 @@
    "skills": [
     "array-2d"
    ],
-   "builds": "Concept 5: arrays. Phase 2: loops inside loops.",
+   "builds": "Concept 5: arrays. Phase 2.5: loops inside loops.",
    "why": "A level map, a tile grid or a board is rows and columns. A 2D array is an array of rows. Two loops, one inside the other, visit every cell.",
    "code": "#include <stdio.h>\n\n#define ROWS 3\n#define COLS 5\n\nint main(void) {\n    char map[ROWS][COLS] = {\n        {'#', '#', '#', '#', '#'},\n        {'#', '.', 'P', '.', '#'},\n        {'#', '#', '#', '#', '#'}\n    };\n    map[1][3] = 'E';\n\n    for (int r = 0; r < ROWS; r++) {\n        for (int c = 0; c < COLS; c++) {\n            printf(\"%c\", map[r][c]);\n        }\n        printf(\"\\n\");\n    }\n    return 0;\n}",
    "walk": [
