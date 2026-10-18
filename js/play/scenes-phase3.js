@@ -20,7 +20,7 @@
 
    p3-lockers   (arrays, strings, fgets)  a row of numbered lockers with a cursor
      make { name, kind:'int'|'char', cells:[..], tail? }   set { i, v }   cur { i, from?, name, mark? }
-     span { s0, b, t }  (s0:null clears)   tag { k, v }   read { i }   stdin { t:[chars] }   scoop { vals:[..] }   cap { t }
+     span { s0, b, t }  (s0:null clears)   tag { k, v }   read { i }   stdin { t:[chars] }   scoop { vals:[..], n:chars taken from stdin }   cap { t }
 
    p3-cmp       (strcmp)  two words as letter tiles with a comparing cursor
      words { a1, b, la, lb }  cmp { to }  res { v, w, col }  ans { t, r }
@@ -29,7 +29,7 @@
      frame {}  row { r, s }  set { r, c, ch }  cur { r, c, from?, mark? }  fm { t }
 
    p3-save      (files)  a notebook in a drawer: open, write, close, read it back
-     f { v }  open { mode:'w'|'r' }  chk { t, r }  write { t }  close {}  fread { t }  best { v }
+     nocur {}  |  f { v }  open { mode:'w'|'r' }  chk { t, r }  write { t }  close {}  fread { t }  best { v }
    ===================================================================== */
 (function () {
   'use strict';
@@ -338,7 +338,7 @@
             a.vals.forEach(function (v, j) {
               var q = seg(lp, j * 0.13, j * 0.13 + 0.45);
               if (q >= 1) V.cells[j] = v;
-              if (q > 0 && j < S.stdin.length) { V.gone[j] = 1; if (q < 1) V.fly.push({ j: j, q: EZ.io(q), v: S.stdin[j] }); }
+              if (q > 0 && j < (a.n || 0)) { V.gone[j] = 1; if (q < 1) V.fly.push({ j: j, q: EZ.io(q), v: v }); }
             });
             break; }
           case 'cap': if (inst(lp)) { V.cap = a.t; V.capA = seg(lp, 0.05, 0.4); } break;
@@ -423,7 +423,7 @@
         switch (a.a) {
           case 'words': V.A = chars(a.a1); V.B = chars(a.b); V.la = a.la; V.lb = a.lb; V.col = -1; V.res = null; V.ans = null;
             V.grow = V.A.map(function (_, i) { return EZ.back(seg(lp, i * 0.06, i * 0.06 + 0.4)); }); V.growB = V.B.map(function (_, i) { return EZ.back(seg(lp, i * 0.06 + 0.1, i * 0.06 + 0.5)); }); break;
-          case 'cmp': V.col = lerp(S.col, a.to, a.to === S.col ? 1 : EZ.io(lp)); if (lp > 0) V.cmpMoving = lp < 1; break;
+          case 'cmp': { var f0 = a.from != null ? a.from : S.col; V.col = lerp(f0, a.to, f0 === a.to ? 1 : EZ.io(lp)); break; }
           case 'res': V.resK = EZ.back(seg(lp, 0.1, 0.6)); if (lp > 0) V.res = { v: a.v, w: a.w, col: a.col }; break;
           case 'ans': V.ansK = EZ.back(seg(lp, 0.1, 0.6)); if (lp > 0) V.ans = { t: a.t, r: a.r }; break;
         }
@@ -475,6 +475,7 @@
           case 'set': S.cells[a.r][a.c] = a.ch; break;
           case 'cur': S.cur = { r: a.r, c: a.c }; S.fm = null; if (a.mark) { var f = a.from == null ? a.c : a.from; for (var q = Math.min(f, a.c); q <= Math.max(f, a.c); q++) S.pr[a.r][q] = 1; } break;
           case 'fm': S.fm = a.t; break;
+          case 'nocur': S.cur = null; S.fm = null; break;
         }
       },
       tween: function (V, a, lp, S) {
@@ -483,11 +484,12 @@
           case 'row': V.rowK = V.rowK || {}; for (var k = 0; k < NC; k++) { V.cells[a.r][k] = lp > 0 ? a.s[k] : null; V.rowK[a.r + ',' + k] = EZ.back(seg(lp, k * 0.12, k * 0.12 + 0.4)); } break;
           case 'set': if (lp >= 0.5) V.cells[a.r][a.c] = a.ch; V.setPop = { r: a.r, c: a.c, k: Math.sin(Math.PI * seg(lp, 0.4, 1)) }; break;
           case 'cur': {
-            var from = a.from != null ? a.from : (S.cur && S.cur.r === a.r ? S.cur.c : a.c), sweep = a.from != null, e = sweep ? lp : EZ.io(lp);
+            var from = a.from != null ? a.from : (S.cur ? S.cur.c : a.c), sweep = a.from != null, e = sweep ? lp : EZ.io(lp);
             var cc = lerp(from, a.c, e), rr = (S.cur && !sweep && S.cur.r !== a.r) ? lerp(S.cur.r, a.r, e) : a.r;
             V.cur = { r: rr, c: cc }; V.curA = S.cur || sweep ? 1 : seg(lp, 0, 0.4); V.fm = null;
             if (a.mark) { for (var q = Math.min(from, a.c); q <= Math.max(from, a.c); q++) if (q <= cc + 0.45 || lp >= 1) V.pr[a.r][q] = 1; } break; }
           case 'fm': if (inst(lp)) V.fm = a.t; break;
+          case 'nocur': if (S.cur) { V.cur = { r: S.cur.r, c: S.cur.c }; V.curA = 1 - lp; V.fm = null; } break;
         }
       },
       draw: function (c, V, T, C) {
@@ -540,7 +542,7 @@
     var NX = 170, NW = 220;
     RTSPlay.scene('p3-save', {
       W: W, H: H,
-      init: function () { return { f: '?', open: null, exists: false, lines: [], best: 0, chk: null, leash: false }; },
+      init: function () { return { f: '?', open: null, exists: false, lines: [], best: '?', chk: null, leash: false }; },
       apply: function (S, a) {
         switch (a.a) {
           case 'f': S.f = a.v; break;

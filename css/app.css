@@ -2732,3 +2732,20 @@ body.editing .pg[hidden] { display: block; margin-top: 26px; }
   .pg-top .stage-nav button { padding: 8px 12px; }
   .pg-top { margin-bottom: 14px; }
 }
+
+/* v22 polish: tighter strip/tools gap; phones get a one-row scrolling strip and a small tools row */
+.pg-top { gap: 6px; }
+@media (max-width: 600px) {
+  .phase-inner > .ph-time { margin: 0 0 6px; font-size: 11.5px; }
+  .pg-top { gap: 6px; margin-bottom: 12px; }
+  .pg-strip { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; gap: 5px;
+    margin: 0 -2px; padding: 0 28px 2px 2px;
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); }
+  .pg-strip::-webkit-scrollbar { display: none; }
+  .pg-b { flex: none; min-height: 34px; padding: 5px 10px; font-size: 12px; }
+  .pg-b.pg-n { min-width: 34px; padding: 5px 6px; }
+  .pg-sep { flex: none; margin: 0 2px; }
+  .pg-top .stage-nav { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 5px; }
+  .pg-top .stage-nav::-webkit-scrollbar { display: none; }
+  .pg-top .stage-nav button, .pg-top .stage-nav a { flex: none; font-size: 11px; padding: 6px 10px; min-height: 32px; margin-left: 0; white-space: nowrap; }
+}

@@ -1272,6 +1272,8 @@ function renderStrip(s) {
       (isC ? (done ? '✓' : (p.rung + 1)) : esc(p.label)) + '</button>';
   });
   strip.innerHTML = h;
+  var cb = $('.pg-b.cur', strip);   // phones: the strip is one scrolling row, keep the current pill in view
+  if (cb && strip.scrollWidth > strip.clientWidth) strip.scrollLeft = Math.max(0, cb.offsetLeft - (strip.clientWidth - cb.offsetWidth) / 2);
 }
 function renderFoot(s) {
   var foot = $('.pg-foot', s.el);
@@ -2155,6 +2157,7 @@ function captureEdit(anchor) {
 }
 function setEditing(on) {
   document.body.classList.toggle('editing', on);
+  if (on) closePlay(document);
   $('#tb-edit').classList.toggle('editing-on', on);
   $$('[data-ek]').forEach(function (a) {
     if (on) a.setAttribute('contenteditable', 'true');
@@ -2583,7 +2586,10 @@ function renderLadder(pid) {
     if (x.innerHTML) { closePlay(x); x.innerHTML = ''; }   // only the concept you're on is drawn
   });
   if (!m) return;
-  closePlay(m);   // the player goes away before this page re-renders
+  // an open See It Run player survives a redraw of the same concept: lift its host out, put it back after
+  var keep = $('.lad-play-host', m);
+  if (keep && !keep.firstChild) keep = null;
+  if (keep && keep.parentNode) keep.parentNode.removeChild(keep);
 
   var h = '<div class="lad-live">';
   var step = ui.step[r.id] || 0, walkDone = step >= r.walk.length, ans = ui.ans[r.id], done = !!l.done[r.id];
@@ -2605,7 +2611,7 @@ function renderLadder(pid) {
       '<div class="lad-ctl"><button class="lad-btn" data-lad-walk="-1"' + (step === 0 ? ' disabled' : '') + '>Back</button>' +
       (step < r.walk.length ? '<button class="lad-btn go" data-lad-walk="1">' + (step === 0 ? 'Start' : 'Next line') + '</button>' : '<button class="lad-btn" data-lad-walk="restart">From the top</button>') +
       '</div></div>' +
-      (canPlay ? '<div class="lad-play"><button class="lad-btn lad-playbtn" data-lad-play>▶ See it run</button></div><div class="lad-play-host"></div>' : '') +
+      (canPlay ? '<div class="lad-play"><button class="lad-btn lad-playbtn" data-lad-play>' + (keep ? 'Hide' : '▶ See it run') + '</button></div><div class="lad-play-host"></div>' : '') +
       (walkDone ? '<p class="lad-model">' + r.model + '</p>' : '') + '</section>';
   }
 
@@ -2641,6 +2647,11 @@ function renderLadder(pid) {
     }
   }
   m.innerHTML = h + '</article></div>';
+  if (keep) {
+    var nh = $('.lad-play-host', m);
+    if (nh) nh.parentNode.replaceChild(keep, nh);
+    else if (window.RTSPlay) RTSPlay.close(keep);   // the walkthrough part is gone, so the player goes too
+  }
   renderOverview(pid);   // done ticks, pills and Start / Continue follow the ladder state
   renderStrip(s);
 }
@@ -2671,7 +2682,8 @@ document.addEventListener('click', function (e) {
   if (el.hasAttribute('data-lad-play')) {
     var host = $('.lad-play-host', el.closest('.lad-part'));
     if (!host || !window.RTSPlay) return;
-    if (host.firstChild) RTSPlay.close(host); else RTSPlay.open(host, pid, r.id);
+    if (host.firstChild) { RTSPlay.close(host); el.textContent = '▶ See it run'; }
+    else { RTSPlay.open(host, pid, r.id); if (host.firstChild) el.textContent = 'Hide'; }
     return;
   }
   if (el.hasAttribute('data-lad-opt')) {

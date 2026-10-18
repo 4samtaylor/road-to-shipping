@@ -57,7 +57,8 @@
   }
   function badge(c, C, x, y, w, h, t, col, k) {
     if (k <= 0) return;
-    c.save(); c.translate(x, y); c.scale(k, k); rrect(c, -w / 2, -h / 2, w, h, 3); c.fillStyle = rgba(col, .16); c.fill(); c.lineWidth = 1; c.strokeStyle = rgba(col, .7); c.stroke();
+    c.save(); c.font = '700 9.5px ' + U.FONT; w = Math.max(w, c.measureText(t).width + 18);
+    c.translate(x, y); c.scale(k, k); rrect(c, -w / 2, -h / 2, w, h, 3); c.fillStyle = rgba(col, .16); c.fill(); c.lineWidth = 1; c.strokeStyle = rgba(col, .7); c.stroke();
     txt(c, t, 0, 1, { size: 9.5, w: 700, col: col }); c.restore();
   }
   function arrow(c, col, x1, y1, x2, y2, w, dash) {
@@ -132,7 +133,7 @@
       var sx = KB.slot[0], sy = KB.slot[1];
       rrect(c, 24, 98, 120, 46, 4); c.fillStyle = rgba(C.accent, .08); c.fill(); c.lineWidth = 1.5; c.strokeStyle = rgba(C.accent, .6); c.stroke();
       c.fillStyle = C.ink; c.fillRect(40, 103, 88, 4);
-      var mail = V.mail != null ? V.mail : S0(V, 'mail');
+      var mail = V.mail;
       if (mail) { var mp = 1 + .25 * (V.mailPop || 0); tile(c, C, sx, sy + 6, 24 * mp, mail, C.accent); }
       txt(c, 'keyboard buffer', 84, 156, { size: 8, col: C.muted2 });
       /* eye + badge */
@@ -156,7 +157,6 @@
       if (V.fly) tile(c, C, V.fly.x, V.fly.y, 24, V.fly.k, C.accent);
     }
   });
-  function S0(V, k) { return V[k]; }
 
   /* ====================================================================
      p4b-clock
@@ -410,11 +410,11 @@
       switch (a.a) {
         case 'show': V.keysK = lp; V.keys = lp > 0; break;
         case 'beat': V.node = lp >= .3 ? a.n : S.node; V.from = S.node; V.nt = EZ.io(seg(lp, 0, .35)); V.nk = pulse(seg(lp, .3, 1)); break;
-        case 'set': V.pop = a.k; V.popK = pulse(seg(lp, .3, 1)); V[a.k] = lp >= .3 ? a.v : S[a.k]; if (a.k === 'frame') V.cur = lp >= .3 ? a.v : S.cur; break;
+        case 'set': V.pops = Object.assign({}, V.pops); V.pops[a.k] = pulse(seg(lp, .3, 1)); V[a.k] = lp >= .3 ? a.v : S[a.k]; if (a.k === 'frame') V.cur = lp >= .3 ? a.v : S.cur; break;
         case 'ff': {
-          var h = lp >= .5;
-          V.frame = h ? a.frame : S.frame; V.cur = h ? a.frame : S.cur; V.key = h ? a.key : S.key; V.duck = h ? a.duck : S.duck; V.pos = h ? a.pos : S.pos;
-          V.node = Math.floor(lp * 8) % 4; V.nk = .6; V.ffNow = lp > 0 && lp < 1 ? 1 : 0; if (lp >= 1) V.node = 3; break;
+          if (lp <= 0) break;
+          if (lp >= .5) { V.frame = a.frame; V.cur = a.frame; V.key = a.key; V.duck = a.duck; V.pos = a.pos; V.pops = Object.assign({}, V.pops, { frame: 1, pos: 1 }); }
+          V.node = lp < 1 ? Math.floor(lp * 4) % 4 : 3; V.nk = .6; V.ffNow = lp < 1 ? 1 : 0; break;
         }
       }
     },
@@ -436,11 +436,11 @@
       });
       if (V.ffNow && !rm) txt(c, 'again and again', ecx, ecy + 56, { size: 8.5, col: C.muted2 });
       /* cards */
-      var P = V.pop;
-      card(c, C, 222, 10, 166, 24, 'frame', V.frame, C.purple, P === 'frame' ? V.popK : 0);
-      card(c, C, 222, 38, 166, 24, 'key', V.key === '?' ? '?' : "'" + V.key + "'", C.yellow, P === 'key' ? V.popK : 0);
-      card(c, C, 222, 66, 166, 24, 'ducking', V.duck, C.orange, P === 'duck' ? V.popK : 0);
-      card(c, C, 222, 94, 166, 24, 'pos', V.pos, C.accent, P === 'pos' ? V.popK : 0);
+      var P = V.pops || {};
+      card(c, C, 222, 10, 166, 24, 'frame', V.frame, C.purple, P.frame);
+      card(c, C, 222, 38, 166, 24, 'key', V.key === '?' ? '?' : "'" + V.key + "'", C.yellow, P.key);
+      card(c, C, 222, 66, 166, 24, 'ducking', V.duck, C.orange, P.duck);
+      card(c, C, 222, 94, 166, 24, 'pos', V.pos, C.accent, P.pos);
       /* keys strip */
       if (V.keys) {
         txt(c, 'keys[]', 222, 134, { size: 8.5, col: C.muted2, align: 'left' });
@@ -479,7 +479,7 @@
         case 'bays': S.vis = true; break;
         case 'cones': S.v = [-1, -1, -1, -1]; break;
         case 'frame': S.frame = a.n; S.ptr = -1; break;
-        case 'ptr': S.ptr = a.i; break;
+        case 'ptr': S.ptr = a.to != null ? a.to : a.i; break;
         case 'set': S.v[a.i] = a.v; break;
         case 'score': S.score = a.v; break;
       }
@@ -489,7 +489,7 @@
         case 'bays': V.visK = EZ.back(lp); V.vis = lp > 0; break;
         case 'cones': V.v = V.v.slice(); V.v.forEach(function (x, i) { if (lp >= (i + 1) / 5) V.v[i] = -1; }); V.pops = V.pops || {}; for (var i = 0; i < 4; i++) V.pops[i] = pulse(seg(lp, (i + .4) / 5, (i + 1.6) / 5)); break;
         case 'frame': V.frame = lp >= .3 ? a.n : S.frame; V.fPop = pulse(seg(lp, .2, 1)); V.ptr = -1; break;
-        case 'ptr': V.ptr = a.i; V.ptrK = EZ.back(seg(lp, 0, .5)); break;
+        case 'ptr': V.ptrX = lerp(a.i, a.to != null ? a.to : a.i, EZ.io(seg(lp, .1, 1))); V.ptr = Math.round(V.ptrX); V.ptrK = EZ.back(seg(lp, 0, .5)); break;
         case 'set': {
           var from = S.v[a.i], i = a.i; V.v = V.v.slice(); V.v[i] = lp >= .5 ? a.v : from; V.pops = V.pops || {}; V.pops[i] = pulse(seg(lp, .4, 1));
           if (from === -1 && a.v !== -1) V.drop = { i: i, y: lerp(-40, 0, EZ.bounce(seg(lp, 0, .6))) };
@@ -532,7 +532,7 @@
           c.restore();
         }
         txt(c, '< the player is this way', 14, 196, { size: 8.5, col: C.muted, align: 'left' });
-        if (V.ptr >= 0) { var px = BAYX[V.ptr], k = V.ptrK == null ? 1 : V.ptrK; c.save(); c.translate(px, 70 + 0); c.scale(k, k); c.fillStyle = C.accent; c.beginPath(); c.moveTo(-5, -9); c.lineTo(5, -9); c.lineTo(0, -2); c.fill(); c.restore(); txt(c, 'i = ' + V.ptr, px, 56, { size: 9, w: 700, col: C.accent, al: k }); }
+        if (V.ptr >= 0) { var fx = V.ptrX != null ? V.ptrX : V.ptr, px = lerp(BAYX[Math.floor(fx)], BAYX[Math.min(3, Math.ceil(fx))], fx - Math.floor(fx)), k = V.ptrK == null ? 1 : V.ptrK; c.save(); c.translate(px, 70 + 0); c.scale(k, k); c.fillStyle = C.accent; c.beginPath(); c.moveTo(-5, -9); c.lineTo(5, -9); c.lineTo(0, -2); c.fill(); c.restore(); txt(c, 'i = ' + V.ptr, px, 56, { size: 9, w: 700, col: C.accent, al: k }); }
         txt(c, 'car = a column number    cone = -1 = free', 200, 226, { size: 8.5, col: C.muted2 });
       }
     }

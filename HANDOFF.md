@@ -1,6 +1,6 @@
 # Road to Shipping: session handoff
 
-Last updated: 13 October 2026 (v21). Owner: Sam (GitHub `4samtaylor`). Read this first in a new session.
+Last updated: v22 (pages inside phases). Owner: Sam (GitHub `4samtaylor`). Read this first in a new session.
 
 ## What this is
 
@@ -75,6 +75,15 @@ privacy.html, sw.js, manifest.webmanifest, icons/, fonts/, setup.ps1, README.md
 - **Settings (v18):** `openSettings(tab)` renders `settingsHTML()` in the floating window; tab in `rts_set_tab`. Action rows are proxies (`data-proxy`) for hidden buttons in `#menu-src` (index.html), which cloud.js/github.js still wire by id, so their hidden state carries over. ◑ opens the Appearance tab. Rail footer `#rl-foot` (`renderRailFoot()`) re-renders when `#tb-sync` text changes; `RTS_CLOUD.account()` / `.enabled()` expose the signed-in email.
 - **☰ on desktop:** rail/main/dock are pinned to grid columns 1/2/3; `rail-off` sets `--rail-w: 0px` on `.shell`. Don't hide a grid child without pinning columns.
 - **Ask Claude:** off by default (menu toggle; `rts_ask_claude`). Links to `https://claude.ai/new?q=<prompt>`, which uses Sam's own Pro plan. Not yet confirmed that the prefill works while signed in; ask Sam.
+
+## v22: pages inside phases
+
+- **Page model:** a phase with `data-ladder` is a list of pages: Overview, Concept 1..N, Trace, Build, Practice, Review (pages with no blocks are skipped; Build comes before Practice because practice uses the starter code). Overview is the table of contents (goals, concept list, later pages, King reading, one Start / Continue button). A concept page is one ladder rung plus its attached blocks. Phases without a ladder (or if the ladder fails to load) get Learn / Trace / Build / Practice / Review.
+- **`data-page` values** on each top-level child of `.phase-inner`: `overview`, `concept:<rungId>`, `trace`, `build`, `practice`, `review`, `notes`, `help`. No `data-page` falls back to `stageOf()` (learn becomes notes). `data-order="-1"` still puts a block first on its page; the checkpoint always ends Review. Page containers have ids `<pid>-overview`, `<pid>-c<k>`, `<pid>-trace` etc. All blocks stay in the DOM (non-current pages are `hidden`), so counts, search and sync are unchanged. Code: `stagePhase`, `buildPages`, `showPage`, `revealPage` (anything that scrolls to an element calls it first), `renderOverview`, `renderStrip`, `renderFoot`.
+- **State and URL:** `state._pages[pid]` = saved page key (synced as user_state `_pages`). Hash is `#/<pid>/<key>` (`overview`, `1`..`N`, `trace`...). `#/<pid>` resumes the saved page. Opening a concept sets `state._ladder[pid].cur`. Left/Right arrows move Back/Next.
+- **Drawers:** `help` blocks go to the Stuck? drawer, `notes` blocks to the **Section notes** drawer (`#notes`, built in JS next to `#help`; button hidden when a phase has none). Tasks inside drawers are not counted in progress.
+- **See It Run hook:** on a concept page, if `RTSPlay.has(pid, rungId)`, part 2 shows a ▶ button and an empty `.lad-play-host`; it calls `RTSPlay.open(host, pid, rungId)`. The player survives re-renders of the same concept (the host node is lifted out and put back) and closes when the rung or page changes or edit mode starts. `window.RTS_LADDERS` exposes the ladders; the `rtsplay:loaded` event redraws the concept so the button appears; theme changes call `RTSPlay.refresh()`.
+- **Phones:** the page strip is one horizontally scrolling row (current pill scrolled into view) with a small tools row (Section notes, Stuck? Help, Cheat sheet) below.
 
 ## How sync works (js/cloud.js)
 
