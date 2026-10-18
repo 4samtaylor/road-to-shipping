@@ -8,10 +8,12 @@
   ],
   "cp-p1-2": [
    "program",
-   "escapes"
+   "escapes",
+   "variables"
   ],
   "cp-p1-3": [
-   "escapes"
+   "escapes",
+   "variables"
   ],
   "cp-p1-4": [
    "errors"
@@ -30,7 +32,6 @@
    "title": "Your first C program",
    "kick": "#include · main() · printf · ; · return 0",
    "mins": 10,
-   "lang": "c",
    "skills": [
     "include",
     "main",
@@ -40,11 +41,40 @@
    ],
    "builds": "Environment Setup: VS Code open on your exercises folder, and <code>cl</code> working.",
    "why": "Every C program you’ll write, the game included, has the same skeleton: pull in the tools you need, start at main, do the work, report that it finished. Learn the skeleton once and every file after this looks familiar.",
+   "learn": {
+    "parts": [
+     [
+      "Three kinds of line",
+      "<p>Every line in this program is one of three things, and knowing which is half of reading C.</p><ul><li><b>A directive</b> starts with <code>#</code>. It isn't really C: it's a note to a tool that runs before the compiler. <code>#include &lt;stdio.h&gt;</code> means “paste in the description of the input/output tools here”. A directive takes up one line and never ends with <code>;</code>.</li><li><b>A function</b> is a named block of code. <code>main</code> is the one every program must have, because Windows starts your program by running it.</li><li><b>A statement</b> is one instruction inside a function, like <code>printf(...);</code> or <code>return 0;</code>. Statements run top to bottom and each one ends with <code>;</code>.</li></ul>"
+     ],
+     [
+      "Why the semicolon?",
+      "<p>C doesn't care about line breaks, so you could spread one statement over three lines or put two on one line. The <code>;</code> is how the compiler knows where each instruction stops. Directives don't need one because a directive always ends at the end of its line.</p><p class=\"warn\">Put a <code>;</code> after <code>#include &lt;stdio.h&gt;</code> and MSVC warns about unexpected tokens (C4067). With the warnings-as-errors flag you add in build.bat and compiler flags, that stops the build.</p>"
+     ],
+     [
+      "Calling a function",
+      "<p><code>printf(\"Hello\\n\");</code> <b>calls</b> printf: it asks a function someone else wrote to do its job. The brackets hold what you hand over, here a piece of text. Text in double quotes is called a <b>string literal</b>. The quotes mark where it starts and ends; they aren't printed.</p><p>printf prints exactly what you give it and nothing more. It never moves to a new line by itself, so <code>printf(\"Game \"); printf(\"over\\n\");</code> prints one line: <code>Game over</code>.</p>"
+     ],
+     [
+      "Spelling matters",
+      "<p>C is case-sensitive. <code>main</code>, <code>Main</code> and <code>MAIN</code> are three different names, and only the first one starts your program. <code>Printf</code> is not <code>printf</code> either.</p>"
+     ],
+     [
+      "What return 0 does",
+      "<p><code>return 0;</code> does two jobs at once: it ends main, which ends the program, and it hands Windows the number 0, meaning “finished fine”. Since C99 a program that reaches the closing <code>}</code> of main returns 0 anyway, but writing it says what you mean. You'll see that number again when build.bat checks it.</p>"
+     ],
+     [
+      "Why int main(void)?",
+      "<p><code>int</code> is the kind of value main hands back (a whole number). <code>(void)</code> says it takes nothing in. Older code writes <code>int main()</code>, which works too; from C23 the two mean the same thing.</p>"
+     ]
+    ],
+    "king": "§2.1–2.2, plus §2.7 for case-sensitivity"
+   },
    "code": "#include <stdio.h>\n\nint main(void) {\n    printf(\"Hello, World!\\n\");\n    printf(\"Ready to ship.\\n\");\n    return 0;\n}",
    "walk": [
     [
      1,
-     "<b>#include &lt;stdio.h&gt;</b> pulls in the standard input/output toolbox. printf lives there. Leave it out and MSVC warns that printf is undeclared (C4013). With the warnings-as-errors flag you add in Concept 5, that stops the build."
+     "<b>#include &lt;stdio.h&gt;</b> pulls in the standard input/output toolbox. printf lives there. Leave it out and MSVC warns that printf is undeclared (C4013). With the warnings-as-errors flag you add in build.bat and compiler flags, that stops the build."
     ],
     [
      3,
@@ -97,11 +127,11 @@
     ],
     [
      "What happens if I forget the ;?",
-     "The compiler stops with an error that usually points at the line after the one missing it. Concept 4 is all about reading those."
+     "The compiler stops with an error that usually points at the line after the one missing it. Reading compiler errors is all about reading those."
     ],
     [
      "Does the spacing matter?",
-     "Not to the compiler. Indenting the lines inside { } is for you: it shows what belongs to main at a glance."
+     "Mostly not. Indenting the lines inside { } is for you: it shows what belongs to main at a glance. Comments and layout covers the few places where a space does matter."
     ],
     [
      "What does the .h in stdio.h mean?",
@@ -113,48 +143,44 @@
     ]
    ],
    "bridge": "You can write a program. Next: <b>turning it into something Windows can run</b>, with cl.",
-   "learn": {
-    "parts": [
-     [
-      "Three kinds of line",
-      "<p>Every line in this program is one of three things, and knowing which is half of reading C.</p><ul><li><b>A directive</b> starts with <code>#</code>. It isn't really C: it's a note to a tool that runs before the compiler. <code>#include &lt;stdio.h&gt;</code> means “paste in the description of the input/output tools here”. A directive takes up one line and never ends with <code>;</code>.</li><li><b>A function</b> is a named block of code. <code>main</code> is the one every program must have, because Windows starts your program by running it.</li><li><b>A statement</b> is one instruction inside a function, like <code>printf(...);</code> or <code>return 0;</code>. Statements run top to bottom and each one ends with <code>;</code>.</li></ul>"
-     ],
-     [
-      "Why the semicolon?",
-      "<p>C doesn't care about line breaks, so you could spread one statement over three lines or put two on one line. The <code>;</code> is how the compiler knows where each instruction stops. Directives don't need one because a directive always ends at the end of its line.</p><p class=\"warn\">Put a <code>;</code> after <code>#include &lt;stdio.h&gt;</code> and MSVC warns about unexpected tokens (C4067). With the warnings-as-errors flag you add in Concept 5, that stops the build.</p>"
-     ],
-     [
-      "Calling a function",
-      "<p><code>printf(\"Hello\\n\");</code> <b>calls</b> printf: it asks a function someone else wrote to do its job. The brackets hold what you hand over, here a piece of text. Text in double quotes is called a <b>string literal</b>. The quotes mark where it starts and ends; they aren't printed.</p><p>printf prints exactly what you give it and nothing more. It never moves to a new line by itself, so <code>printf(\"Game \"); printf(\"over\\n\");</code> prints one line: <code>Game over</code>.</p>"
-     ],
-     [
-      "Spelling matters",
-      "<p>C is case-sensitive. <code>main</code>, <code>Main</code> and <code>MAIN</code> are three different names, and only the first one starts your program. <code>Printf</code> is not <code>printf</code> either.</p>"
-     ],
-     [
-      "What return 0 does",
-      "<p><code>return 0;</code> does two jobs at once: it ends main, which ends the program, and it hands Windows the number 0, meaning “finished fine”. Since C99 a program that reaches the closing <code>}</code> of main returns 0 anyway, but writing it says what you mean. You'll see that number again in Concept 5, where build.bat checks it.</p>"
-     ],
-     [
-      "Why int main(void)?",
-      "<p><code>int</code> is the kind of value main hands back (a whole number). <code>(void)</code> says it takes nothing in. Older code writes <code>int main()</code>, which works too; from C23 the two mean the same thing.</p>"
-     ]
-    ],
-    "king": "§2.1–2.2, plus §2.7 for case-sensitivity"
-   }
+   "lang": "c"
   },
   {
    "id": "compile",
    "title": "Compiling and running with cl",
    "kick": "cd · dir · cl · .exe",
    "mins": 10,
-   "lang": "shell",
    "skills": [
     "cl",
     "cd-dir"
    ],
-   "builds": "Concept 1: hello_world.c, saved in your p01 folder.",
+   "builds": "Your first C program: hello_world.c, saved in your p01 folder.",
    "why": "Windows can’t run hello_world.c. It’s text for humans. The compiler, cl, translates it into hello_world.exe, which Windows can run. Every change needs a fresh compile before you see it.",
+   "learn": {
+    "parts": [
+     [
+      "Three jobs in one command",
+      "<p><code>cl hello_world.c</code> looks like one step, but it runs three in a row.</p><ol><li><b>Preprocess.</b> Every <code>#</code> line is handled first. <code>#include &lt;stdio.h&gt;</code> is replaced by the whole text of stdio.h.</li><li><b>Compile.</b> Your C is translated into machine code and saved as <code>hello_world.obj</code>. Each call to printf is left as a gap marked “printf goes here”.</li><li><b>Link.</b> The linker joins your .obj to the C library that holds the real printf, fills the gaps and writes <code>hello_world.exe</code>.</li></ol>"
+     ],
+     [
+      "Reading what cl prints",
+      "<p>The output follows the same steps. A line with just <code>hello_world.c</code> means preprocessing and compiling ran. Then a <code>Microsoft (R) Incremental Linker</code> banner and <code>/out:hello_world.exe</code> mean linking ran. If an error stops the compile step, you never see the linker lines, and no new .exe is made.</p>"
+     ],
+     [
+      "See the pasted-in header",
+      "<p>Run <code>cl /P hello_world.c</code> and cl stops after preprocessing. It writes <code>hello_world.i</code>: your program with stdio.h pasted in above it, hundreds of lines long. Your main is at the very bottom. Delete the .i when you're done looking.</p>"
+     ],
+     [
+      "Naming the .exe",
+      "<p>The .exe is named after the first .c file on the line. <code>/Fe:runner.exe</code> picks a different name, and build.bat and compiler flags puts that in a script for you.</p>"
+     ],
+     [
+      "Why the command line?",
+      "<p>Visual Studio's Build button runs the same cl underneath, hidden behind project settings. Typing it yourself means you see every step and every flag. When something breaks, you know which step broke, and the same commands drop straight into build.bat.</p>"
+     ]
+    ],
+    "king": "§2.1"
+   },
    "code": "cd C:\\Users\\4samt\\Documents\\Dev\\game-dev-exercises\\p01\ndir\ncl hello_world.c\nhello_world.exe",
    "walk": [
     [
@@ -208,7 +234,7 @@
     ],
     [
      "Can I name the .exe something else?",
-     "Yes. Concept 5 shows the option for that and puts it in build.bat, so you never have to type it."
+     "Yes. Add <code>/Fe:name.exe</code> to the cl line. build.bat and compiler flags puts it in a script, so you never have to type it."
     ],
     [
      "Why does C need a compile step when Python just runs?",
@@ -219,20 +245,155 @@
      "Machine code for your main, plus startup code from the C runtime. printf itself is not in your file: cl compiles your code to a .obj, then links it with the library that contains printf."
     ]
    ],
-   "bridge": "You can build and run. Next: <b>controlling exactly what printf shows</b>: new lines, special characters and numbers."
+   "bridge": "You can build and run. Next: <b>comments and layout</b>: notes the compiler skips, and where spaces matter.",
+   "lang": "shell"
+  },
+  {
+   "id": "comments",
+   "title": "Comments and layout",
+   "kick": "// · /* */ · tokens · indentation",
+   "mins": 10,
+   "skills": [
+    "comments"
+   ],
+   "builds": "Your first C program: the shape of a .c file. Compiling and running with cl: what happens before your code is translated.",
+   "why": "Code gets read far more often than it gets written, mostly by future you. Comments let you leave notes in the file that the compiler skips, and layout makes the shape of the program obvious at a glance. The starter code is full of <code>// TODO</code> notes: this is what they are.",
+   "learn": {
+    "parts": [
+     [
+      "Notes the compiler skips",
+      "<p>A <b>comment</b> is text in your .c file that's for people, not the compiler. It's removed before your code is translated, so it can say anything. C has two kinds:</p><ul><li><code>// note</code> runs from the two slashes to the end of that line.</li><li><code>/* note */</code> runs from <code>/*</code> to the next <code>*/</code>, however many lines that takes.</li></ul><p>Comments have three everyday jobs: a header at the top saying what the file is, a note on a line explaining <i>why</i> it's there, and switching code off for a while without deleting it. That last one is called <b>commenting out</b>.</p>"
+     ],
+     [
+      "Block comments don't nest",
+      "<p>A <code>/*</code> comment ends at the very first <code>*/</code> the compiler meets. Wrap a block that already holds a <code>/* */</code> note, and your outer comment stops early, at the inner <code>*/</code>. The rest of the code you meant to switch off is live again, followed by a stray <code>*/</code> that won't compile. To switch off code that contains block comments, put <code>//</code> on each line instead.</p>"
+     ],
+     [
+      "The comment that never closes",
+      "<p>Forget the <code>*/</code> and the comment swallows everything after it: every printf, the <code>return 0;</code>, the closing brace. The compiler reaches the end of the file still inside the comment.</p><p class=\"warn\">MSVC reports this as C1071: unexpected end of file found in comment. If an error points at the last line of the file, look upwards for a <code>/*</code> with no partner.</p>"
+     ],
+     [
+      "Where spaces matter",
+      "<p>Before compiling, C splits your code into <b>tokens</b>: the smallest pieces that mean something, like <code>int</code>, <code>main</code>, <code>(</code>, <code>3</code>, <code>;</code> or a whole string literal. Between tokens you can add spaces, tabs and blank lines freely. Inside one you can't: <code>re turn</code> is two unknown names, not <code>return</code>.</p><p>A string literal is one token, and it must close on the line it opened. To spread long text over two lines, close the quotes and start a fresh string on the next line. C glues neighbouring strings into one.</p><p class=\"warn\">A string with no closing quote before the end of its line is MSVC C2001: newline in constant.</p>"
+     ],
+     [
+      "Layout is for you",
+      "<p>Since spacing between tokens is free, use it to show structure. Indent everything inside <code>{ }</code> by four spaces, put one statement on each line, and leave a blank line between groups of steps. The compiler won't notice, but you'll spot a missing brace in seconds.</p><p>In VS Code, <b>Ctrl+/</b> adds or removes <code>//</code> on every selected line, and <b>Shift+Alt+A</b> wraps the selection in <code>/* */</code>.</p>"
+     ]
+    ],
+    "king": "§2.3, §2.8"
+   },
+   "code": "#include <stdio.h>\n\n/* runner.c: shows the start screen.\n   Phase 1 practice. */\n\nint main(void) {\n    // Title first, so the player knows what this is.\n    printf(\"RUNNER\\n\");\n\n    printf(\"Lives: 3\\n\");   // three, so one mistake isn't game over\n    /* printf(\"Cheat mode on\\n\"); */\n\n    printf(\"Press any key\"\n           \" to start\\n\");\n    return 0;\n}",
+   "walk": [
+    [
+     3,
+     "<b>/*</b> starts a block comment and <b>*/</b> ends it. Everything between is skipped, even across several lines. A note at the top saying what the file does is a good habit."
+    ],
+    [
+     7,
+     "<b>//</b> starts a line comment. The compiler skips from there to the end of the line."
+    ],
+    [
+     8,
+     "Everything inside main is indented four spaces, so you can see at a glance what belongs to it. The compiler doesn't care; you do."
+    ],
+    [
+     10,
+     "Code first, note after. The printf runs; the text after <code>//</code> doesn't. A good note says <i>why</i>, not what."
+    ],
+    [
+     11,
+     "<b>Commenting out</b>: wrapping real code in a comment switches it off without deleting it. This printf never runs."
+    ],
+    [
+     13,
+     "A string can't run past the end of its line. So close the quotes here..."
+    ],
+    [
+     14,
+     "...and open new ones on the next line. Two strings side by side join into one, so this prints <code>Press any key to start</code>."
+    ]
+   ],
+   "model": "<b>Mental model:</b> comments are sticky notes on a recipe card. The cook reads round them. Layout is the handwriting: neat or messy, the recipe is the same, but only neat is easy to follow.",
+   "check": {
+    "q": "What does this program print?",
+    "opts": [
+     "RUNNER\nLives: 3\nPress any key to start",
+     "RUNNER\nLives: 3\nCheat mode on\nPress any key to start",
+     "RUNNER\nLives: 3   three, so one mistake isn't game over\nPress any key to start",
+     "Nothing: the string split over lines 13 and 14 is an error"
+    ],
+    "a": 0,
+    "hint": "Which lines does the compiler actually see once the comments are gone?",
+    "why": "Comments are removed before your code is translated, so the cheat line and the note on line 10 never reach the program. Lines 13 and 14 are two complete strings side by side, and C joins them into one.",
+    "miss": {
+     "1": "Line 11 is inside /* */, so it's switched off.",
+     "2": "Everything after // is a note for you. printf never sees it.",
+     "3": "Each line has its own complete string, both quotes included. Splitting is only an error when one string has no closing quote before its line ends."
+    }
+   },
+   "tryit": {
+    "task": "This won't compile, because the note on line 4 isn't marked as a comment. Fix it two ways: once with //, once with /* */.",
+    "code": "#include <stdio.h>\n\nint main(void) {\n    ____ show the starting score ____\n    printf(\"Score: 0\\n\");\n    return 0;\n}",
+    "answer": "// show the starting score   or   /* show the starting score */"
+   },
+   "qa": [
+    [
+     "Do comments make the .exe bigger or slower?",
+     "No. They're stripped out before your code is translated, so the .exe is identical with or without them. Comment as much as helps you."
+    ],
+    [
+     "Which should I use, // or /* */?",
+     "<code>//</code> for short notes, <code>/* */</code> for a file header or a longer explanation. Very old C (C89) only had <code>/* */</code>, which is why older code uses it everywhere."
+    ],
+    [
+     "What's worth writing in a comment?",
+     "Why, not what. <code>printf(\"Lives: 3\\n\"); // print lives</code> tells you nothing the code doesn't. <code>// three, so one mistake isn't game over</code> records a decision you'd otherwise forget."
+    ],
+    [
+     "Is // inside a string a comment?",
+     "No. Inside double quotes it's just text: <code>printf(\"a // b\\n\");</code> prints <code>a // b</code>."
+    ]
+   ],
+   "bridge": "You can make code readable. Next: <b>escape sequences and %d</b>, controlling exactly what printf shows.",
+   "lang": "c"
   },
   {
    "id": "escapes",
    "title": "Escape sequences and %d",
    "kick": "\\n · \\t · \\\\ · %% · %d",
    "mins": 12,
-   "lang": "c",
    "skills": [
     "escapes",
     "fmt-d"
    ],
-   "builds": "Concept 1: printf and \\n. Session 1: the disappearing “Lets”.",
+   "builds": "Your first C program: printf and \\n. Comments and layout: a string literal is one token. Session 1: the disappearing “Lets”.",
    "why": "Some characters can’t be typed straight into a string: a new line, a tab, a quote. C uses a backslash to say “the next character is special”. And %d drops a number into your text, which is how the game will show a score.",
+   "learn": {
+    "parts": [
+     [
+      "The format string",
+      "<p>The first thing you hand printf is the <b>format string</b>: the text in quotes that says what to print. Most of it is printed exactly as written. Two characters are special. <code>\\</code> starts an <b>escape sequence</b>, and <code>%</code> starts a <b>conversion specification</b>, a slot like <code>%d</code> that a value will fill.</p><p>It's called a conversion because the value isn't stored as text. The number 120 sits in memory as binary, and <code>%d</code> tells printf to turn it into the characters <code>1</code>, <code>2</code> and <code>0</code>.</p>"
+     ],
+     [
+      "Slots fill in order",
+      "<p>Each value after the format string goes into the next slot, left to right. <code>printf(\"Wave %d of %d\\n\", 2, 5);</code> prints <code>Wave 2 of 5</code>. Swap the 2 and the 5 and you get <code>Wave 5 of 2</code>. printf can't know what you meant, only the order you gave.</p>"
+     ],
+     [
+      "Two tools, two times",
+      "<p>Escapes and slots look alike, but different tools handle them at different times.</p><ul><li><code>\\n</code>, <code>\\t</code>, <code>\\\\</code> and <code>\\\"</code> are swapped for single characters by the <b>compiler</b>, while it builds the .exe. By the time the program runs, the backslash is long gone.</li><li><code>%d</code> and <code>%%</code> are read by <b>printf</b> each time it runs, when it has the actual values.</li></ul><p>That's why <code>\\%</code> doesn't print a percent sign. Only printf understands <code>%%</code>, so that's the one you need.</p>"
+     ],
+     [
+      "A few more escapes",
+      "<p><code>\\a</code> asks the terminal to beep, though many stay silent. <code>\\b</code> moves the cursor back one place, so the next character overwrites the last one. <code>\\t</code> jumps to the next tab stop, but where the stops are is up to the terminal, usually every 8 columns. Line up a scoreboard with tabs and it may look different on another machine.</p>"
+     ],
+     [
+      "Mistakes MSVC catches",
+      "<p>Count your slots and your values. In plain C a mismatch compiles and prints garbage. Under our <code>/W4 /WX</code> build, MSVC checks every printf whose format string is written in the call, and stops the build instead:</p><ul><li>more slots than values: C4473</li><li>more values than slots: C4474</li><li>a value of the wrong type for its slot: C4477</li><li>a backslash escape C doesn't know, like <code>\\q</code>: C4129</li></ul><p class=\"warn\">Windows paths are the classic C4129. <code>\"C:\\Games\"</code> contains <code>\\G</code>, which isn't an escape. Double every backslash: <code>\"C:\\\\Games\"</code>.</p>"
+     ]
+    ],
+    "king": "§3.1"
+   },
    "code": "#include <stdio.h>\n\nint main(void) {\n    printf(\"Score:\\t%d\\n\", 120);\n    printf(\"Path: C:\\\\Games\\\\runner\\n\");\n    printf(\"Progress: 50%%\\n\");\n    printf(\"Lets\\r party\\n\");\n    return 0;\n}",
    "walk": [
     [
@@ -297,19 +458,159 @@
      "printf never adds a new line for you. Add \\n to the last printf and the prompt starts on its own line."
     ]
    ],
-   "bridge": "You can print anything you want. Next: <b>what to do when the compiler says no</b>."
+   "bridge": "You can print text and a fixed number. Next: <b>variables: storing a number</b>, so %d can show a score that changes.",
+   "lang": "c"
+  },
+  {
+   "id": "variables",
+   "title": "Variables: storing a number",
+   "kick": "int · declare · = · %d with a value · names",
+   "mins": 15,
+   "skills": [
+    "variable",
+    "identifier"
+   ],
+   "builds": "Escape sequences and %d: each %d slot takes the next value. Your first C program: statements run top to bottom.",
+   "why": "A game is mostly numbers that change: the score goes up, lives go down, the level ticks over. A variable is a named box that holds one of those numbers, so your code can store it, change it and print it. Until now %d could only show a number you typed in. Now it shows whatever the box holds.",
+   "learn": {
+    "parts": [
+     [
+      "A named box",
+      "<p>A <b>variable</b> is a named piece of memory that holds one value. In this phase every variable is an <code>int</code>: a whole number such as 0, 3 or −250. Decimals and letters need other types, which Variables and types in Phase 2 covers.</p>"
+     ],
+     [
+      "Declare, assign, initialise",
+      "<p>Three words, three steps:</p><ul><li><b>Declare</b>: <code>int score;</code> makes a box called score. It has a name and a type, but no value you can rely on.</li><li><b>Assign</b>: <code>score = 0;</code> stores 0 in it.</li><li><b>Initialise</b>: <code>int lives = 3;</code> declares the box and gives it a first value in one line.</li></ul><p>Initialising is the habit to build. A box that's never empty can't surprise you.</p>"
+     ],
+     [
+      "= stores, it doesn't compare",
+      "<p>In maths, <code>=</code> says two sides are equal. In C it's an instruction: work out the right side, then put the result in the variable on the left. So <code>score = score + 10;</code> is fine. It reads the old score, adds 10 and stores the new total. The left side has to be a variable; <code>10 = score;</code> won't compile.</p>"
+     ],
+     [
+      "Printing values",
+      "<p>Now <code>%d</code> earns its place. Each <code>%d</code> in the format string is filled by the next value after it, and that value can be a variable or a sum:</p><pre>printf(\"Lives: %d\\n\", lives);\nprintf(\"%d of %d\\n\", score, 1000);\nprintf(\"Next: %d\\n\", level + 1);</pre><p>The last line works out <code>level + 1</code> and prints the answer. level doesn't change: only <code>=</code> changes a variable.</p>"
+     ],
+     [
+      "Naming rules",
+      "<p>A name you make up is called an <b>identifier</b>. It can use letters, digits and <code>_</code>, but can't start with a digit. <code>lives</code>, <code>enemy_count</code> and <code>wave2</code> are fine; <code>2lives</code> and <code>enemy-count</code> aren't. Names are case-sensitive, so <code>Score</code> and <code>score</code> are two different boxes.</p><p>You can't use a <b>keyword</b>, one of C's own words, as a name: <code>int</code>, <code>return</code>, <code>if</code>, <code>while</code>, <code>for</code>, <code>void</code>, <code>char</code> and a few dozen more. Avoid names starting with an underscore too, because the compiler and its libraries use those. Pick names that say what the number is: <code>lives</code> beats <code>x</code>.</p>"
+     ],
+     [
+      "Mistakes that bite",
+      "<ul><li><b>Using a box before filling it.</b> An int you never assigned holds whatever was left in that memory: garbage.</li><li><b>Thinking <code>int a, b = 0;</code> sets both.</b> It sets only b.</li><li><b>Misspelling the name.</b> <code>scroe</code> isn't <code>score</code>, and the compiler has never heard of it.</li></ul><p class=\"warn\">MSVC warns when you read a variable before giving it a value (C4700), and /WX turns that into a failed build. A misspelled or undeclared name is error C2065: undeclared identifier. You'll meet both again in Reading compiler errors.</p>"
+     ]
+    ],
+    "king": "§2.4, §2.7"
+   },
+   "code": "#include <stdio.h>\n\nint main(void) {\n    int score;\n    int lives = 3;\n    int level = 1;\n\n    score = 0;\n    printf(\"Score: %d\\n\", score);\n\n    score = 250;\n    printf(\"Score: %d  Lives: %d\\n\", score, lives);\n    printf(\"Next level: %d\\n\", level + 1);\n    return 0;\n}",
+   "walk": [
+    [
+     4,
+     "<b>int score;</b> is a <b>declaration</b>: make a box called score that holds a whole number. Nothing in it yet is worth trusting."
+    ],
+    [
+     5,
+     "<b>Declare and initialise</b> in one line: lives is made and holds 3 from the start."
+    ],
+    [
+     8,
+     "<b>Assignment</b>: <code>=</code> stores the value on the right in the box on the left. score now holds 0."
+    ],
+    [
+     9,
+     "<b>%d</b> is filled with whatever score holds right now: 0."
+    ],
+    [
+     11,
+     "Assigning again replaces the old value. The 0 is gone; score is 250."
+    ],
+    [
+     12,
+     "Two slots, two values, filled in order: score, then lives."
+    ],
+    [
+     13,
+     "<b>level + 1</b> is worked out (2) and printed. level itself still holds 1."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a labelled box on a shelf. The label is the name, the box holds exactly one whole number, and putting a new number in throws the old one out.",
+   "check": {
+    "q": "After line 13 runs, what does level hold?",
+    "opts": [
+     "1",
+     "2",
+     "0",
+     "Nothing: printing it used it up"
+    ],
+    "a": 0,
+    "hint": "Does line 13 store anything in level, or only read it?",
+    "why": "Only <code>=</code> changes a variable. <code>level + 1</code> reads level, works out 2 and hands that to printf. The box still holds 1.",
+    "miss": {
+     "1": "printf shows 2, but that's the value of the expression. Nothing stored it back in level.",
+     "2": "level was initialised to 1 on line 6, and nothing has stored anything else in it since.",
+     "3": "Reading a variable never empties it. You can print it as often as you like."
+    }
+   },
+   "tryit": {
+    "task": "Make a box called coins holding 5, then print Coins: 5 using it.",
+    "code": "#include <stdio.h>\n\nint main(void) {\n    ____ coins = 5;\n    printf(\"Coins: ____\\n\", ____);\n    return 0;\n}",
+    "answer": "int coins = 5;   then   printf(\"Coins: %d\\n\", coins);"
+   },
+   "qa": [
+    [
+     "What does int a, b = 0; set?",
+     "Only b. The <code>= 0</code> belongs to b alone; a is declared but holds garbage. Write <code>int a = 0, b = 0;</code>, or more clearly, one declaration per line."
+    ],
+    [
+     "Isn't score = score + 10 a maths mistake?",
+     "In maths it would be. In C, <code>=</code> means store. The right side is worked out first using the old score, then the result goes back into score, so it adds 10. Comparing two values uses <code>==</code>, which Decisions with if / else covers in Phase 2.5."
+    ],
+    [
+     "Why do I get C4700 when I print a variable?",
+     "You read it before storing anything in it. Give it a value when you declare it: <code>int score = 0;</code>."
+    ],
+    [
+     "How big a number can an int hold?",
+     "On Windows, from about −2.1 billion to +2.1 billion. Variables and types in Phase 2 covers sizes, decimals (float) and single characters (char)."
+    ],
+    [
+     "Do declarations have to go at the top?",
+     "No. Since C99 you can declare a variable anywhere in main before you use it. Grouping them at the top, as here, keeps them easy to find. Very old C required it."
+    ]
+   ],
+   "bridge": "You can store and print numbers. Next: <b>reading compiler errors</b>, including the ones a mistyped variable name causes.",
+   "lang": "c"
   },
   {
    "id": "errors",
    "title": "Reading compiler errors",
    "kick": "file(line): error C2143 · warnings",
    "mins": 12,
-   "lang": "c",
    "skills": [
     "compile-error"
    ],
-   "builds": "Concepts 1 and 2: every statement ends with ;, and cl reports problems when you compile.",
+   "builds": "Your first C program: every statement ends with ;. Compiling and running with cl: cl reports problems when you compile. Variables: storing a number: every name must be declared.",
    "why": "You will see compiler errors every day, for as long as you write code. They look scary but follow one pattern: file, line, code, message. Reading them calmly is a skill, and it’s the fastest way to fix your own code.",
+   "learn": {
+    "parts": [
+     [
+      "Errors and warnings",
+      "<p>An <b>error</b> means your code breaks C's rules, so the compiler can't translate it. A <b>warning</b> means the code is legal but looks like a mistake. C was built to be small and fast, and it trusts you to mean what you write, so very little gets checked while the program runs. Warnings are the compiler's chance to catch you first, which is why our build treats them as errors.</p>"
+     ],
+     [
+      "How to read one",
+      "<p>Every message has four parts: <code>file(line): error C2143: message</code>. Fix the <b>first</b> one, rebuild, and repeat. Later messages are often knock-on effects. If the line it names looks fine, check the line above.</p>"
+     ],
+     [
+      "The ones Phase 1 produces",
+      "<pre>C2143  missing ';' before ...    the line above lacks its ;\nC2001  newline in constant        a string never closed\nC2017  illegal escape sequence    \\n outside the quotes\nC4013  'prinf' undefined          misspelled function name;\n       then LNK2019               without /WX, the link fails\nC1071  end of file in comment     a /* with no */\nC4700  uninitialized variable     read before it was set\nC2065  undeclared identifier      variable misspelled or\n                                  never declared</pre>"
+     ],
+     [
+      "What the codes mean",
+      "<p class=\"warn\">C2xxx is an error and C4xxx a warning. C1xxx is fatal: the compiler gives up on the spot. LNKxxxx comes from the linker, after compiling worked.</p>"
+     ]
+    ],
+    "king": "Chapter 1 Q&A, §2.3, §2.8"
+   },
    "code": "#include <stdio.h>\n\nint main(void) {\n    printf(\"Hello\\n\");\n    printf(\"World\\n\")\n    return 0;\n}",
    "walk": [
     [
@@ -351,7 +652,7 @@
    "qa": [
     [
      "Error or warning: what’s the difference?",
-     "An error (C2xxx) means no .exe is made. A warning (C4xxx) means something looks wrong. On its own it still makes an .exe, but your build.bat (Concept 5) adds /WX, which turns every warning into an error, so no .exe either."
+     "An error (C2xxx) means no .exe is made. A warning (C4xxx) means something looks wrong. On its own it still makes an .exe, but the build.bat in the next concept adds /WX, which turns every warning into an error, so no .exe either."
     ],
     [
      "Why do I get ten errors for one mistake?",
@@ -367,6 +668,7 @@
     ]
    ],
    "bridge": "You can read the compiler’s complaints. Next: <b>build.bat</b>, one word that compiles with the right warnings switched on.",
+   "lang": "c",
    "expect_compile_error": true
   },
   {
@@ -374,14 +676,34 @@
    "title": "build.bat and compiler flags",
    "kick": "build.bat · /W4 /WX · %ERRORLEVEL%",
    "mins": 15,
-   "lang": "bat",
    "skills": [
     "build-bat",
     "msvc-flags",
     "errorlevel"
    ],
-   "builds": "Concept 2: the cl command. Concept 4: errors and warnings.",
+   "builds": "Compiling and running with cl: the cl command and /Fe:. Reading compiler errors: errors and warnings.",
    "why": "Typing cl with the right flags every time gets old, and it’s easy to forget the flags that catch bugs. build.bat is a file of commands you run with one word: <code>build</code>. Every project from here on has one.",
+   "learn": {
+    "parts": [
+     [
+      "Make the compiler fussy",
+      "<p>The best setting for a beginner is the strictest one. Every warning is the compiler pointing at a line that's probably wrong, for free. With MSVC that means <code>/W4</code>, the highest everyday warning level, plus <code>/WX</code> so none of them can be ignored.</p>"
+     ],
+     [
+      "Why not /Wall?",
+      "<p>MSVC has a level above <code>/W4</code> called <code>/Wall</code>. It switches on warnings that are off for good reason, many of them about Microsoft's own headers: padding inside structs, which functions got inlined. With <code>/WX</code> those would fail every build and tell you nothing useful. <code>/W4</code> is what real projects use.</p>"
+     ],
+     [
+      "Sticking to the standard",
+      "<p>C has an official rulebook, and its versions are named by year: C99, C11, C17. Adding <code>/std:c17</code> to FLAGS tells cl to follow C17 rather than its own default.</p>"
+     ],
+     [
+      "ERRORLEVEL is main's return value",
+      "<p>When a program ends, Windows keeps the number it returned in <code>%ERRORLEVEL%</code>. For your programs, that's the value after <code>return</code> in main. Run <code>hello_world.exe</code>, then <code>echo %ERRORLEVEL%</code>, and you'll see 0. cl plays by the same rule: 0 if the build worked, anything else if it didn't. Line 4 of build.bat checks exactly that.</p><p class=\"warn\">A printf slot with no value, <code>printf(\"%d\\n\")</code>, is C4473. Under /WX that's BUILD FAILED, which is what you want.</p>"
+     ]
+    ],
+    "king": "Chapter 1 and 2 Q&A on warning levels"
+   },
    "code": "@echo off\nset FLAGS=/W4 /WX /Zi /Od\ncl %FLAGS% hello_world.c /Fe:hello_world.exe\nif %ERRORLEVEL% neq 0 (\n    echo BUILD FAILED\n    exit /b 1\n)\necho BUILD OK",
    "walk": [
     [
@@ -455,22 +777,43 @@
     ],
     [
      "Should build.bat be committed?",
-     "Yes, it is part of the project. The files it produces (*.exe, *.obj, *.pdb) are not. Phase 4 adds a .gitignore for them."
+     "Yes, it's part of the project. The files it produces (*.exe, *.obj, *.pdb) are not. Saving your work with Git, next, adds a three-line .gitignore for them."
     ]
    ],
-   "bridge": "You can build with one word. Last: <b>saving your work to GitHub</b>, so it’s backed up and your partner can see it."
+   "bridge": "You can build with one word. Last: <b>saving your work to GitHub</b>, so it’s backed up and your partner can see it.",
+   "lang": "bat"
   },
   {
    "id": "git",
    "title": "Saving your work with Git",
    "kick": "git status · add · commit · push",
    "mins": 10,
-   "lang": "shell",
    "skills": [
     "git-basics"
    ],
    "builds": "Environment Setup: Git installed and your game-dev-exercises repo cloned.",
    "why": "Right now your code lives on one hard drive. Git takes snapshots of it, and GitHub keeps a copy online that Person A, your programming partner, can read. Small snapshots, often, mean you can always get back to a version that worked.",
+   "learn": {
+    "parts": [
+     [
+      "The session loop",
+      "<p>Git keeps a history of snapshots, called <b>commits</b>, on your machine. GitHub keeps a copy online. Every session follows the same loop: <code>git pull</code> to fetch anything new, do your work, then <code>status</code>, <code>add</code>, <code>commit</code>, <code>push</code>.</p>"
+     ],
+     [
+      "pull and log",
+      "<p><code>git pull</code> downloads commits from GitHub that you don't have yet, such as ones Person A pushed or ones you made on another computer, and merges them into your files. Run it before you start. <code>git log --oneline</code> lists your commits, newest first, one line each. It's how you check a commit really happened.</p>"
+     ],
+     [
+      "Why the practice commits name files",
+      "<p>The Phase 1 tasks use <code>git add hello_world.c build.bat</code>, not <code>git add .</code>. The dot adds everything that changed, and every build leaves .exe, .obj and .pdb files behind. They're rebuilt from your code any time, they're large, and they change on every build. Naming files means only what you meant goes in, and you look at each one as you add it.</p>"
+     ],
+     [
+      "A three-line .gitignore",
+      "<p>Better still, tell Git to skip build output for good. Make a file called <code>.gitignore</code> in the repo's top folder:</p><pre>*.exe\n*.obj\n*.pdb</pre><p><code>*</code> means “any name”. Commit the .gitignore itself, and <code>git status</code> stops listing build files. Phase 4's .gitignore concept covers the rest.</p><p class=\"warn\">If <code>git push</code> is rejected and mentions fetching first, GitHub has commits you don't. Run <code>git pull</code>, then push again.</p>"
+     ]
+    ],
+    "king": "Not in King"
+   },
    "code": "git status\ngit add hello_world.c build.bat\ngit commit -m \"Add hello world and build.bat\"\ngit push",
    "walk": [
     [
@@ -524,7 +867,7 @@
     ],
     [
      "Should I commit the .exe?",
-     "No. It’s rebuilt from your code any time. Phase 4 adds a .gitignore so Git skips .exe and .obj files automatically."
+     "No. It's rebuilt from your code any time. Add the three-line .gitignore from this page and Git skips .exe, .obj and .pdb files automatically."
     ],
     [
      "Does the commit message need a format?",
@@ -532,10 +875,11 @@
     ],
     [
      "What does git add . do, and how do I confirm a push worked?",
-     "The dot means all changed files. After git push, open github.com/4samtaylor/game-dev-exercises and refresh: your commit should be at the top."
+     "The dot means every changed file, build output included unless a .gitignore leaves it out. That's why the practice commits name each file. To confirm a push, run <code>git log --oneline</code>, or open github.com/4samtaylor/game-dev-exercises and refresh: your commit should be at the top."
     ]
    ],
-   "bridge": "That’s every concept in Phase 1. Next: <b>Trace</b>, predicting what small programs print, then the Phase 1 tasks."
+   "bridge": "That’s every concept in Phase 1. Next: <b>Trace</b>, predicting what small programs print, then the Phase 1 tasks.",
+   "lang": "shell"
   }
  ]
 }

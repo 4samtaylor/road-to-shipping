@@ -1,937 +1,1068 @@
 {
- "program": {
-  "scene": "p1-recipe",
-  "steps": [
-   {
-    "line": 1,
-    "ms": 1200,
-    "note": "#include <stdio.h> hands the program its tools. The one we need is printf, which writes to the screen.",
-    "do": [
-     {
-      "a": "tools"
-     }
+  "program": {
+    "scene": "p1-recipe",
+    "steps": [
+      {
+        "line": 1,
+        "ms": 1200,
+        "note": "#include <stdio.h> hands the program its tools. The one we need is printf, which writes to the screen.",
+        "do": [
+          {
+            "a": "tools"
+          }
+        ]
+      },
+      {
+        "line": 3,
+        "ms": 1200,
+        "note": "main is where the program starts. The computer plants a flag here and reads the steps below it, in order.",
+        "do": [
+          {
+            "a": "start"
+          }
+        ]
+      },
+      {
+        "line": 4,
+        "ms": 900,
+        "note": "Step one: use printf.",
+        "do": [
+          {
+            "i": 0,
+            "a": "pick"
+          }
+        ]
+      },
+      {
+        "line": 4,
+        "ms": 1200,
+        "note": "printf shows Hello, World! on the screen. Step one is done.",
+        "do": [
+          {
+            "t": "Hello, World!",
+            "len": 0.6,
+            "a": "show"
+          },
+          {
+            "i": 0,
+            "at": 0.6,
+            "len": 0.4,
+            "a": "tick"
+          }
+        ],
+        "out": "Hello, World!\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 5,
+        "ms": 900,
+        "note": "Step two: printf again.",
+        "do": [
+          {
+            "i": 1,
+            "a": "pick"
+          }
+        ]
+      },
+      {
+        "line": 5,
+        "ms": 1200,
+        "note": "It shows Ready to ship. on the next line.",
+        "do": [
+          {
+            "t": "Ready to ship.",
+            "len": 0.6,
+            "a": "show"
+          },
+          {
+            "i": 1,
+            "at": 0.6,
+            "len": 0.4,
+            "a": "tick"
+          }
+        ],
+        "out": "Ready to ship.\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 6,
+        "ms": 1300,
+        "note": "return 0 says the program finished, and everything went fine.",
+        "do": [
+          {
+            "i": 2,
+            "len": 0.4,
+            "a": "tick"
+          },
+          {
+            "at": 0.4,
+            "len": 0.6,
+            "a": "done"
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 900,
+        "note": "The closing brace ends main. The recipe is finished.",
+        "do": []
+      }
     ]
-   },
-   {
-    "line": 3,
-    "ms": 1200,
-    "note": "main is where the program starts. The computer plants a flag here and reads the steps below it, in order.",
-    "do": [
-     {
-      "a": "start"
-     }
-    ]
-   },
-   {
-    "line": 4,
-    "ms": 900,
-    "note": "Step one: use printf.",
-    "do": [
-     {
-      "i": 0,
-      "a": "pick"
-     }
-    ]
-   },
-   {
-    "line": 4,
-    "ms": 1200,
-    "note": "printf shows Hello, World! on the screen. Step one is done.",
-    "do": [
-     {
-      "t": "Hello, World!",
-      "len": 0.6,
-      "a": "show"
-     },
-     {
-      "i": 0,
-      "at": 0.6,
-      "len": 0.4,
-      "a": "tick"
-     }
+  },
+  "compile": {
+    "scene": "p1-pipeline",
+    "steps": [
+      {
+        "line": 1,
+        "ms": 1200,
+        "note": "cd moves the terminal into the p01 folder, where hello_world.c lives.",
+        "do": [
+          {
+            "a": "cd"
+          }
+        ],
+        "out": "> cd C:\\Users\\4samt\\Documents\\Dev\\game-dev-exercises\\p01\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 2,
+        "ms": 1300,
+        "note": "dir lists the files here. Only the recipe, hello_world.c, so far.",
+        "do": [
+          {
+            "a": "dir"
+          }
+        ],
+        "out": "> dir\nhello_world.c\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 3,
+        "ms": 1700,
+        "note": "cl is the cook. First it compiles: it reads hello_world.c and makes hello_world.obj.",
+        "do": [
+          {
+            "k": 1,
+            "a": "cook"
+          }
+        ],
+        "out": "> cl hello_world.c\nhello_world.c\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 3,
+        "ms": 1700,
+        "note": "Then cl links: it joins the .obj with the standard pieces into hello_world.exe.",
+        "do": [
+          {
+            "k": 2,
+            "a": "cook"
+          }
+        ]
+      },
+      {
+        "line": 3,
+        "ms": 1300,
+        "note": "Now the folder holds the .exe too. The .c recipe did not change, but there is a meal to eat.",
+        "do": [
+          {
+            "a": "dir"
+          }
+        ]
+      },
+      {
+        "line": 4,
+        "ms": 1300,
+        "note": "Typing the name of the .exe runs the program.",
+        "do": [
+          {
+            "a": "run"
+          }
+        ],
+        "out": "> hello_world.exe\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 4,
+        "ms": 1700,
+        "note": "The .exe does what the recipe said: two lines on the screen.",
+        "do": [
+          {
+            "t": "Hello, World!",
+            "len": 0.5,
+            "a": "show"
+          },
+          {
+            "t": "Ready to ship.",
+            "at": 0.5,
+            "len": 0.5,
+            "a": "show"
+          }
+        ],
+        "out": "Hello, World!\nReady to ship.\n",
+        "outAt": 0.4
+      },
+      {
+        "line": 4,
+        "ms": 1500,
+        "note": "If you edit the .c file, nothing changes here until you run cl again to cook a new .exe.",
+        "do": []
+      }
     ],
-    "out": "Hello, World!\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 5,
-    "ms": 900,
-    "note": "Step two: printf again.",
-    "do": [
-     {
-      "i": 1,
-      "a": "pick"
-     }
+    "prompt": ""
+  },
+  "escapes": {
+    "scene": "p1-cursor",
+    "steps": [
+      {
+        "line": 4,
+        "ms": 900,
+        "note": "printf types the plain text Score: at the cursor.",
+        "do": [
+          {
+            "t": "Score:",
+            "a": "put"
+          }
+        ],
+        "out": "Score:",
+        "outAt": 0.5
+      },
+      {
+        "line": 4,
+        "ms": 1100,
+        "note": "\\t is the Tab key. The cursor jumps to the next tab stop.",
+        "do": [
+          {
+            "t": "\\t",
+            "d": "Tab: jump to the next tab stop",
+            "len": 0.3,
+            "a": "key"
+          },
+          {
+            "at": 0.2,
+            "len": 0.8,
+            "a": "tab"
+          }
+        ],
+        "out": "\t",
+        "outAt": 0.5
+      },
+      {
+        "line": 4,
+        "ms": 1200,
+        "note": "%d opens a slot. The value after the string, 120, goes into it.",
+        "do": [
+          {
+            "t": "%d",
+            "d": "slot: the number 120 goes here",
+            "len": 0.3,
+            "a": "key"
+          },
+          {
+            "t": "120",
+            "at": 0.3,
+            "len": 0.7,
+            "a": "put"
+          }
+        ],
+        "out": "120",
+        "outAt": 0.5
+      },
+      {
+        "line": 4,
+        "ms": 1100,
+        "note": "\\n is the Enter key. The cursor goes to the start of the next line.",
+        "do": [
+          {
+            "t": "\\n",
+            "d": "Enter: start a new line",
+            "len": 0.3,
+            "a": "key"
+          },
+          {
+            "at": 0.2,
+            "len": 0.8,
+            "a": "nl"
+          }
+        ],
+        "out": "\n",
+        "outAt": 0.5
+      },
+      {
+        "line": 5,
+        "ms": 900,
+        "note": "Plain text first.",
+        "do": [
+          {
+            "t": "Path: C:",
+            "a": "put"
+          }
+        ],
+        "out": "Path: C:",
+        "outAt": 0.5
+      },
+      {
+        "line": 5,
+        "ms": 1900,
+        "note": "A single backslash would start a control key. Two backslashes (\\\\) print one real backslash.",
+        "do": [
+          {
+            "t": "\\\\",
+            "d": "two backslashes print one \\",
+            "len": 0.2,
+            "a": "key"
+          },
+          {
+            "t": "\\",
+            "at": 0.2,
+            "len": 0.15,
+            "a": "put"
+          },
+          {
+            "t": "Games",
+            "at": 0.35,
+            "len": 0.4,
+            "a": "put"
+          },
+          {
+            "t": "\\",
+            "at": 0.75,
+            "len": 0.2,
+            "a": "put"
+          }
+        ],
+        "out": "\\Games\\",
+        "outAt": 0.5
+      },
+      {
+        "line": 5,
+        "ms": 1500,
+        "note": "More plain text, then Enter.",
+        "do": [
+          {
+            "t": "runner",
+            "len": 0.6,
+            "a": "put"
+          },
+          {
+            "t": "\\n",
+            "d": "Enter: start a new line",
+            "at": 0.6,
+            "len": 0.15,
+            "a": "key"
+          },
+          {
+            "at": 0.7,
+            "len": 0.3,
+            "a": "nl"
+          }
+        ],
+        "out": "runner\n",
+        "outAt": 0.5
+      },
+      {
+        "line": 6,
+        "ms": 1000,
+        "note": "Plain text again. Now the percent sign.",
+        "do": [
+          {
+            "t": "Progress: 50",
+            "a": "put"
+          }
+        ],
+        "out": "Progress: 50",
+        "outAt": 0.5
+      },
+      {
+        "line": 6,
+        "ms": 1200,
+        "note": "A single % opens a slot, so we press it twice (%%) to print one real percent sign.",
+        "do": [
+          {
+            "t": "%%",
+            "d": "two percents print one %",
+            "len": 0.3,
+            "a": "key"
+          },
+          {
+            "t": "%",
+            "at": 0.3,
+            "len": 0.3,
+            "a": "put"
+          }
+        ],
+        "out": "%",
+        "outAt": 0.5
+      },
+      {
+        "line": 6,
+        "ms": 1000,
+        "note": "Enter, to finish the line.",
+        "do": [
+          {
+            "t": "\\n",
+            "d": "Enter: start a new line",
+            "len": 0.3,
+            "a": "key"
+          },
+          {
+            "at": 0.2,
+            "len": 0.8,
+            "a": "nl"
+          }
+        ],
+        "out": "\n",
+        "outAt": 0.5
+      },
+      {
+        "line": 7,
+        "ms": 900,
+        "note": "printf types Lets.",
+        "do": [
+          {
+            "t": "Lets",
+            "a": "put"
+          }
+        ],
+        "out": "Lets",
+        "outAt": 0.5
+      },
+      {
+        "line": 7,
+        "ms": 1300,
+        "note": "\\r is Carriage Return. It sends the cursor back to the start of this same line, without a new line.",
+        "do": [
+          {
+            "t": "\\r",
+            "d": "Return: back to the start of this line",
+            "len": 0.3,
+            "a": "key"
+          },
+          {
+            "at": 0.2,
+            "len": 0.8,
+            "a": "cr"
+          }
+        ],
+        "out": "\r",
+        "outAt": 0.5
+      },
+      {
+        "line": 7,
+        "ms": 1900,
+        "note": "Now the text types over the old text. A space, p, a and r replace L, e, t and s. Then ty fills in after.",
+        "do": [
+          {
+            "t": " party",
+            "a": "put"
+          }
+        ],
+        "out": " party",
+        "outAt": 0.5
+      },
+      {
+        "line": 7,
+        "ms": 1000,
+        "note": "Enter, to finish the line.",
+        "do": [
+          {
+            "t": "\\n",
+            "d": "Enter: start a new line",
+            "len": 0.3,
+            "a": "key"
+          },
+          {
+            "at": 0.2,
+            "len": 0.8,
+            "a": "nl"
+          }
+        ],
+        "out": "\n",
+        "outAt": 0.5
+      },
+      {
+        "line": 8,
+        "ms": 800,
+        "note": "return 0 means the program finished fine.",
+        "do": []
+      }
     ]
-   },
-   {
-    "line": 5,
-    "ms": 1200,
-    "note": "It shows Ready to ship. on the next line.",
-    "do": [
-     {
-      "t": "Ready to ship.",
-      "len": 0.6,
-      "a": "show"
-     },
-     {
-      "i": 1,
-      "at": 0.6,
-      "len": 0.4,
-      "a": "tick"
-     }
+  },
+  "errors": {
+    "scene": "p1-compiler",
+    "steps": [
+      {
+        "line": 1,
+        "ms": 1100,
+        "note": "The compiler reads your file from the top, one line at a time. Line 1 is fine.",
+        "do": [
+          {
+            "row": 1,
+            "a": "read"
+          }
+        ]
+      },
+      {
+        "line": 3,
+        "ms": 1000,
+        "note": "Line 3 starts main. Fine so far.",
+        "do": [
+          {
+            "row": 3,
+            "a": "read"
+          }
+        ]
+      },
+      {
+        "line": 4,
+        "ms": 1000,
+        "note": "Line 4 is a full statement that ends with a semicolon. Fine.",
+        "do": [
+          {
+            "row": 4,
+            "a": "read"
+          }
+        ]
+      },
+      {
+        "line": 5,
+        "ms": 1500,
+        "note": "Line 5 looks like a printf, but it does not end with a semicolon. The compiler is not worried yet: maybe the statement carries on.",
+        "do": [
+          {
+            "row": 5,
+            "len": 0.5,
+            "a": "read"
+          },
+          {
+            "row": 5,
+            "at": 0.5,
+            "len": 0.5,
+            "a": "wait"
+          }
+        ]
+      },
+      {
+        "line": 6,
+        "ms": 1500,
+        "note": "Line 6 starts with return. That cannot be part of the printf, so now the compiler is stuck.",
+        "do": [
+          {
+            "row": 6,
+            "len": 0.5,
+            "a": "read"
+          },
+          {
+            "row": 6,
+            "at": 0.5,
+            "len": 0.5,
+            "a": "halt"
+          }
+        ]
+      },
+      {
+        "line": 6,
+        "ms": 1500,
+        "note": "It reports the problem here, on line 6, and builds no .exe.",
+        "do": [
+          {
+            "a": "msg"
+          }
+        ],
+        "out": "hello_world.c(6): error C2143: syntax error: missing ';' before 'return'\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 5,
+        "ms": 1500,
+        "note": "But the real mistake is on line 5. The compiler only noticed one line later.",
+        "do": [
+          {
+            "row": 5,
+            "a": "blame"
+          }
+        ]
+      },
+      {
+        "line": 5,
+        "ms": 1800,
+        "note": "Add the semicolon at the end of line 5 and it builds.",
+        "do": [
+          {
+            "a": "fix"
+          }
+        ]
+      }
+    ]
+  },
+  "buildbat": {
+    "scene": "p1-bat",
+    "steps": [
+      {
+        "line": 1,
+        "ms": 1100,
+        "note": "@echo off tells the script not to print each command before it runs. The window stays tidy.",
+        "do": [
+          {
+            "a": "quiet"
+          }
+        ]
+      },
+      {
+        "line": 2,
+        "ms": 1300,
+        "note": "set FLAGS=... stores some text in a variable called FLAGS. Think of a jar with a label.",
+        "do": [
+          {
+            "a": "set"
+          }
+        ]
+      },
+      {
+        "line": 3,
+        "ms": 1100,
+        "note": "This line runs the compiler. Before it runs, %FLAGS% is a stand-in for whatever is in the jar.",
+        "do": [
+          {
+            "a": "cmd"
+          }
+        ]
+      },
+      {
+        "line": 3,
+        "ms": 1500,
+        "note": "The script swaps %FLAGS% for the jar's contents. The command becomes cl /W4 /WX /Zi /Od hello_world.c ...",
+        "do": [
+          {
+            "a": "expand"
+          }
+        ]
+      },
+      {
+        "line": 3,
+        "ms": 1800,
+        "note": "cl compiles and links, using those flags, and makes hello_world.exe.",
+        "do": [
+          {
+            "a": "build"
+          }
+        ],
+        "out": "hello_world.c\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 3,
+        "ms": 1300,
+        "note": "When a command finishes, Windows leaves a number in ERRORLEVEL. 0 means it worked.",
+        "do": [
+          {
+            "v": 0,
+            "a": "level"
+          }
+        ]
+      },
+      {
+        "line": 4,
+        "ms": 1800,
+        "note": "The if checks the number: is 0 not equal to 0? No, so it is false, and the whole block inside the brackets is skipped.",
+        "do": [
+          {
+            "r": false,
+            "a": "gate"
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1200,
+        "note": "Nothing failed, so the script reaches the last line and prints BUILD OK.",
+        "do": [
+          {
+            "a": "ok"
+          }
+        ],
+        "out": "BUILD OK\n",
+        "outAt": 0.4
+      }
     ],
-    "out": "Ready to ship.\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 6,
-    "ms": 1300,
-    "note": "return 0 says the program finished, and everything went fine.",
-    "do": [
-     {
-      "i": 2,
-      "len": 0.4,
-      "a": "tick"
-     },
-     {
-      "at": 0.4,
-      "len": 0.6,
-      "a": "done"
-     }
-    ]
-   },
-   {
-    "line": 7,
-    "ms": 900,
-    "note": "The closing brace ends main. The recipe is finished.",
-    "do": []
-   }
-  ]
- },
- "compile": {
-  "scene": "p1-pipeline",
-  "steps": [
-   {
-    "line": 1,
-    "ms": 1200,
-    "note": "cd moves the terminal into the p01 folder, where hello_world.c lives.",
-    "do": [
-     {
-      "a": "cd"
-     }
+    "prompt": ""
+  },
+  "git": {
+    "scene": "git-graph",
+    "steps": [
+      {
+        "line": 1,
+        "ms": 1800,
+        "note": "Your PC and GitHub hold the same first snapshot. Person A has no copy yet. git status looks at your folder for changes.",
+        "out": "> git status\nOn branch main\nYour branch is up to date with 'origin/main'.\n\n",
+        "outAt": 0.4,
+        "do": [
+          {
+            "a": "show",
+            "vis": [
+              1,
+              1,
+              1
+            ],
+            "names": [
+              "Your PC",
+              "GitHub",
+              "Person A's PC"
+            ],
+            "at": 0,
+            "len": 0.1
+          },
+          {
+            "a": "world",
+            "p": 0,
+            "cs": [
+              [
+                "c1",
+                0,
+                0,
+                [],
+                {
+                  "hash": "3a9f0d1"
+                }
+              ]
+            ],
+            "br": [
+              [
+                "main",
+                "c1"
+              ],
+              [
+                "origin/main",
+                "c1",
+                1
+              ]
+            ],
+            "head": "main",
+            "files": [],
+            "at": 0,
+            "len": 0.3
+          },
+          {
+            "a": "world",
+            "p": 1,
+            "cs": [
+              [
+                "c1",
+                0,
+                0,
+                [],
+                {
+                  "hash": "3a9f0d1"
+                }
+              ]
+            ],
+            "br": [
+              [
+                "main",
+                "c1"
+              ]
+            ],
+            "head": "main",
+            "files": [],
+            "at": 0.05,
+            "len": 0.3
+          }
+        ]
+      },
+      {
+        "line": 1,
+        "ms": 1500,
+        "note": "Two new files, not yet in any snapshot. Git lists them as untracked.",
+        "out": "Untracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\tbuild.bat\n\thello_world.c\n\nnothing added to commit but untracked files present (use \"git add\" to track)\n",
+        "outAt": 0.2,
+        "do": [
+          {
+            "a": "files",
+            "p": 0,
+            "list": [
+              [
+                "hello_world.c",
+                "??"
+              ],
+              [
+                "build.bat",
+                "??"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "line": 2,
+        "ms": 1200,
+        "note": "git add puts both files in the envelope, ready for the next snapshot.",
+        "out": "> git add hello_world.c build.bat\n",
+        "do": [
+          {
+            "a": "files",
+            "p": 0,
+            "list": [
+              [
+                "hello_world.c",
+                "S"
+              ],
+              [
+                "build.bat",
+                "??"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "line": 2,
+        "ms": 1100,
+        "note": "Then build.bat. Both are in the envelope. Nothing is saved yet.",
+        "do": [
+          {
+            "a": "files",
+            "p": 0,
+            "list": [
+              [
+                "hello_world.c",
+                "S"
+              ],
+              [
+                "build.bat",
+                "S"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "line": 3,
+        "ms": 1800,
+        "note": "git commit seals the envelope with a label. The new dot appears on your PC only.",
+        "out": "> git commit -m \"Add hello world and build.bat\"\n[main 40bcc83] Add hello world and build.bat\n 2 files changed, 15 insertions(+)\n create mode 100644 build.bat\n create mode 100644 hello_world.c\n",
+        "outAt": 0.2,
+        "do": [
+          {
+            "a": "files",
+            "p": 0,
+            "list": [],
+            "at": 0,
+            "len": 0.4
+          },
+          {
+            "a": "commit",
+            "p": 0,
+            "id": "c2",
+            "col": 1,
+            "par": [
+              "c1"
+            ],
+            "hash": "40bcc83",
+            "lab": "Add hello world and build.bat",
+            "at": 0.3,
+            "len": 0.7
+          }
+        ]
+      },
+      {
+        "line": 3,
+        "ms": 1500,
+        "note": "GitHub and Person A do not have it. If your laptop died now, this snapshot would be gone.",
+        "do": [
+          {
+            "a": "hl",
+            "p": 0,
+            "id": "c2"
+          },
+          {
+            "a": "say",
+            "p": 1,
+            "t": "no new dot here yet",
+            "at": 0.2,
+            "len": 0.7
+          }
+        ]
+      },
+      {
+        "line": 4,
+        "ms": 2200,
+        "note": "git push posts the snapshot to GitHub. Watch the dot fly up.",
+        "out": "> git push\nTo https://github.com/4samtaylor/game-dev-exercises\n   3a9f0d1..40bcc83  main -> main\n",
+        "outAt": 0.6,
+        "do": [
+          {
+            "a": "fly",
+            "from": 0,
+            "to": 1,
+            "ids": [
+              "c2"
+            ],
+            "mv": [
+              [
+                "main",
+                "c2"
+              ]
+            ],
+            "at": 0,
+            "len": 0.8
+          },
+          {
+            "a": "flag",
+            "p": 0,
+            "n": "origin/main",
+            "h": "c2",
+            "r": 1,
+            "at": 0.85,
+            "len": 0.15
+          }
+        ]
+      },
+      {
+        "line": 4,
+        "ms": 1800,
+        "note": "Now it's backed up on GitHub, where Person A can see it. In Phase 4 they clone it onto their PC.",
+        "do": [
+          {
+            "a": "hl",
+            "p": 1,
+            "id": "c2",
+            "at": 0,
+            "len": 0.7
+          }
+        ]
+      }
     ],
-    "out": "> cd C:\\Users\\4samt\\Documents\\Dev\\game-dev-exercises\\p01\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 2,
-    "ms": 1300,
-    "note": "dir lists the files here. Only the recipe, hello_world.c, so far.",
-    "do": [
-     {
-      "a": "dir"
-     }
-    ],
-    "out": "> dir\nhello_world.c\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 3,
-    "ms": 1700,
-    "note": "cl is the cook. First it compiles: it reads hello_world.c and makes hello_world.obj.",
-    "do": [
-     {
-      "k": 1,
-      "a": "cook"
-     }
-    ],
-    "out": "> cl hello_world.c\nhello_world.c\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 3,
-    "ms": 1700,
-    "note": "Then cl links: it joins the .obj with the standard pieces into hello_world.exe.",
-    "do": [
-     {
-      "k": 2,
-      "a": "cook"
-     }
+    "prompt": ""
+  },
+  "variables": {
+    "scene": "boxes",
+    "steps": [
+      {
+        "line": 4,
+        "ms": 1100,
+        "note": "int score; builds a box for a whole number. Nothing has been put in it yet.",
+        "do": [
+          {
+            "a": "cap",
+            "t": "score: not set yet",
+            "at": 0.3,
+            "len": 0.4
+          }
+        ]
+      },
+      {
+        "line": 5,
+        "ms": 1300,
+        "note": "lives is made and filled in one go: it starts at 3.",
+        "do": [
+          {
+            "a": "appear",
+            "slot": 4,
+            "len": 0.3
+          },
+          {
+            "a": "drop",
+            "slot": 4,
+            "shape": "sq",
+            "text": "3",
+            "val": "3",
+            "at": 0.3
+          }
+        ]
+      },
+      {
+        "line": 6,
+        "ms": 1000,
+        "note": "level gets a box too, holding 1. There's only room to draw two.",
+        "do": [
+          {
+            "a": "cap",
+            "t": "level = 1",
+            "at": 0.2,
+            "len": 0.4
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1100,
+        "note": "= stores the 0 in score. Now it holds something you can trust.",
+        "do": [
+          {
+            "a": "drop",
+            "slot": 0,
+            "shape": "sq",
+            "text": "0",
+            "val": "0"
+          }
+        ]
+      },
+      {
+        "line": 9,
+        "ms": 1100,
+        "out": "Score: 0\n",
+        "outAt": 0.5,
+        "note": "%d is filled with what score holds right now.",
+        "do": [
+          {
+            "a": "pick",
+            "slots": [
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 1200,
+        "note": "A new value goes in. The old 0 is thrown out.",
+        "do": [
+          {
+            "a": "drop",
+            "slot": 0,
+            "shape": "sq",
+            "text": "250",
+            "val": "250"
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 1400,
+        "out": "Score: 250  Lives: 3\n",
+        "outAt": 0.5,
+        "note": "Two slots, filled in order: score first, then lives.",
+        "do": [
+          {
+            "a": "pick",
+            "slots": [
+              0,
+              4
+            ]
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 1300,
+        "out": "Next level: 2\n",
+        "outAt": 0.5,
+        "note": "level + 1 is worked out and printed. level itself still holds 1.",
+        "do": [
+          {
+            "a": "cap",
+            "t": "level + 1 = 2, level stays 1",
+            "at": 0.2,
+            "len": 0.4
+          }
+        ]
+      },
+      {
+        "line": 14,
+        "ms": 1000,
+        "note": "return 0: done, no problems.",
+        "do": []
+      }
     ]
-   },
-   {
-    "line": 3,
-    "ms": 1300,
-    "note": "Now the folder holds the .exe too. The .c recipe did not change, but there is a meal to eat.",
-    "do": [
-     {
-      "a": "dir"
-     }
-    ]
-   },
-   {
-    "line": 4,
-    "ms": 1300,
-    "note": "Typing the name of the .exe runs the program.",
-    "do": [
-     {
-      "a": "run"
-     }
-    ],
-    "out": "> hello_world.exe\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 4,
-    "ms": 1700,
-    "note": "The .exe does what the recipe said: two lines on the screen.",
-    "do": [
-     {
-      "t": "Hello, World!",
-      "len": 0.5,
-      "a": "show"
-     },
-     {
-      "t": "Ready to ship.",
-      "at": 0.5,
-      "len": 0.5,
-      "a": "show"
-     }
-    ],
-    "out": "Hello, World!\nReady to ship.\n",
-    "outAt": 0.4
-   },
-   {
-    "line": 4,
-    "ms": 1500,
-    "note": "If you edit the .c file, nothing changes here until you run cl again to cook a new .exe.",
-    "do": []
-   }
-  ],
-  "prompt": ""
- },
- "escapes": {
-  "scene": "p1-cursor",
-  "steps": [
-   {
-    "line": 4,
-    "ms": 900,
-    "note": "printf types the plain text Score: at the cursor.",
-    "do": [
-     {
-      "t": "Score:",
-      "a": "put"
-     }
-    ],
-    "out": "Score:",
-    "outAt": 0.5
-   },
-   {
-    "line": 4,
-    "ms": 1100,
-    "note": "\\t is the Tab key. The cursor jumps to the next tab stop.",
-    "do": [
-     {
-      "t": "\\t",
-      "d": "Tab: jump to the next tab stop",
-      "len": 0.3,
-      "a": "key"
-     },
-     {
-      "at": 0.2,
-      "len": 0.8,
-      "a": "tab"
-     }
-    ],
-    "out": "\t",
-    "outAt": 0.5
-   },
-   {
-    "line": 4,
-    "ms": 1200,
-    "note": "%d opens a slot. The value after the string, 120, goes into it.",
-    "do": [
-     {
-      "t": "%d",
-      "d": "slot: the number 120 goes here",
-      "len": 0.3,
-      "a": "key"
-     },
-     {
-      "t": "120",
-      "at": 0.3,
-      "len": 0.7,
-      "a": "put"
-     }
-    ],
-    "out": "120",
-    "outAt": 0.5
-   },
-   {
-    "line": 4,
-    "ms": 1100,
-    "note": "\\n is the Enter key. The cursor goes to the start of the next line.",
-    "do": [
-     {
-      "t": "\\n",
-      "d": "Enter: start a new line",
-      "len": 0.3,
-      "a": "key"
-     },
-     {
-      "at": 0.2,
-      "len": 0.8,
-      "a": "nl"
-     }
-    ],
-    "out": "\n",
-    "outAt": 0.5
-   },
-   {
-    "line": 5,
-    "ms": 900,
-    "note": "Plain text first.",
-    "do": [
-     {
-      "t": "Path: C:",
-      "a": "put"
-     }
-    ],
-    "out": "Path: C:",
-    "outAt": 0.5
-   },
-   {
-    "line": 5,
-    "ms": 1900,
-    "note": "A single backslash would start a control key. Two backslashes (\\\\) print one real backslash.",
-    "do": [
-     {
-      "t": "\\\\",
-      "d": "two backslashes print one \\",
-      "len": 0.2,
-      "a": "key"
-     },
-     {
-      "t": "\\",
-      "at": 0.2,
-      "len": 0.15,
-      "a": "put"
-     },
-     {
-      "t": "Games",
-      "at": 0.35,
-      "len": 0.4,
-      "a": "put"
-     },
-     {
-      "t": "\\",
-      "at": 0.75,
-      "len": 0.2,
-      "a": "put"
-     }
-    ],
-    "out": "\\Games\\",
-    "outAt": 0.5
-   },
-   {
-    "line": 5,
-    "ms": 1500,
-    "note": "More plain text, then Enter.",
-    "do": [
-     {
-      "t": "runner",
-      "len": 0.6,
-      "a": "put"
-     },
-     {
-      "t": "\\n",
-      "d": "Enter: start a new line",
-      "at": 0.6,
-      "len": 0.15,
-      "a": "key"
-     },
-     {
-      "at": 0.7,
-      "len": 0.3,
-      "a": "nl"
-     }
-    ],
-    "out": "runner\n",
-    "outAt": 0.5
-   },
-   {
-    "line": 6,
-    "ms": 1000,
-    "note": "Plain text again. Now the percent sign.",
-    "do": [
-     {
-      "t": "Progress: 50",
-      "a": "put"
-     }
-    ],
-    "out": "Progress: 50",
-    "outAt": 0.5
-   },
-   {
-    "line": 6,
-    "ms": 1200,
-    "note": "A single % opens a slot, so we press it twice (%%) to print one real percent sign.",
-    "do": [
-     {
-      "t": "%%",
-      "d": "two percents print one %",
-      "len": 0.3,
-      "a": "key"
-     },
-     {
-      "t": "%",
-      "at": 0.3,
-      "len": 0.3,
-      "a": "put"
-     }
-    ],
-    "out": "%",
-    "outAt": 0.5
-   },
-   {
-    "line": 6,
-    "ms": 1000,
-    "note": "Enter, to finish the line.",
-    "do": [
-     {
-      "t": "\\n",
-      "d": "Enter: start a new line",
-      "len": 0.3,
-      "a": "key"
-     },
-     {
-      "at": 0.2,
-      "len": 0.8,
-      "a": "nl"
-     }
-    ],
-    "out": "\n",
-    "outAt": 0.5
-   },
-   {
-    "line": 7,
-    "ms": 900,
-    "note": "printf types Lets.",
-    "do": [
-     {
-      "t": "Lets",
-      "a": "put"
-     }
-    ],
-    "out": "Lets",
-    "outAt": 0.5
-   },
-   {
-    "line": 7,
-    "ms": 1300,
-    "note": "\\r is Carriage Return. It sends the cursor back to the start of this same line, without a new line.",
-    "do": [
-     {
-      "t": "\\r",
-      "d": "Return: back to the start of this line",
-      "len": 0.3,
-      "a": "key"
-     },
-     {
-      "at": 0.2,
-      "len": 0.8,
-      "a": "cr"
-     }
-    ],
-    "out": "\r",
-    "outAt": 0.5
-   },
-   {
-    "line": 7,
-    "ms": 1900,
-    "note": "Now the text types over the old text. A space, p, a and r replace L, e, t and s. Then ty fills in after.",
-    "do": [
-     {
-      "t": " party",
-      "a": "put"
-     }
-    ],
-    "out": " party",
-    "outAt": 0.5
-   },
-   {
-    "line": 7,
-    "ms": 1000,
-    "note": "Enter, to finish the line.",
-    "do": [
-     {
-      "t": "\\n",
-      "d": "Enter: start a new line",
-      "len": 0.3,
-      "a": "key"
-     },
-     {
-      "at": 0.2,
-      "len": 0.8,
-      "a": "nl"
-     }
-    ],
-    "out": "\n",
-    "outAt": 0.5
-   },
-   {
-    "line": 8,
-    "ms": 800,
-    "note": "return 0 means the program finished fine.",
-    "do": []
-   }
-  ]
- },
- "errors": {
-  "scene": "p1-compiler",
-  "steps": [
-   {
-    "line": 1,
-    "ms": 1100,
-    "note": "The compiler reads your file from the top, one line at a time. Line 1 is fine.",
-    "do": [
-     {
-      "row": 1,
-      "a": "read"
-     }
-    ]
-   },
-   {
-    "line": 3,
-    "ms": 1000,
-    "note": "Line 3 starts main. Fine so far.",
-    "do": [
-     {
-      "row": 3,
-      "a": "read"
-     }
-    ]
-   },
-   {
-    "line": 4,
-    "ms": 1000,
-    "note": "Line 4 is a full statement that ends with a semicolon. Fine.",
-    "do": [
-     {
-      "row": 4,
-      "a": "read"
-     }
-    ]
-   },
-   {
-    "line": 5,
-    "ms": 1500,
-    "note": "Line 5 looks like a printf, but it does not end with a semicolon. The compiler is not worried yet: maybe the statement carries on.",
-    "do": [
-     {
-      "row": 5,
-      "len": 0.5,
-      "a": "read"
-     },
-     {
-      "row": 5,
-      "at": 0.5,
-      "len": 0.5,
-      "a": "wait"
-     }
-    ]
-   },
-   {
-    "line": 6,
-    "ms": 1500,
-    "note": "Line 6 starts with return. That cannot be part of the printf, so now the compiler is stuck.",
-    "do": [
-     {
-      "row": 6,
-      "len": 0.5,
-      "a": "read"
-     },
-     {
-      "row": 6,
-      "at": 0.5,
-      "len": 0.5,
-      "a": "halt"
-     }
-    ]
-   },
-   {
-    "line": 6,
-    "ms": 1500,
-    "note": "It reports the problem here, on line 6, and builds no .exe.",
-    "do": [
-     {
-      "a": "msg"
-     }
-    ],
-    "out": "hello_world.c(6): error C2143: syntax error: missing ';' before 'return'\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 5,
-    "ms": 1500,
-    "note": "But the real mistake is on line 5. The compiler only noticed one line later.",
-    "do": [
-     {
-      "row": 5,
-      "a": "blame"
-     }
-    ]
-   },
-   {
-    "line": 5,
-    "ms": 1800,
-    "note": "Add the semicolon at the end of line 5 and it builds.",
-    "do": [
-     {
-      "a": "fix"
-     }
-    ]
-   }
-  ]
- },
- "buildbat": {
-  "scene": "p1-bat",
-  "steps": [
-   {
-    "line": 1,
-    "ms": 1100,
-    "note": "@echo off tells the script not to print each command before it runs. The window stays tidy.",
-    "do": [
-     {
-      "a": "quiet"
-     }
-    ]
-   },
-   {
-    "line": 2,
-    "ms": 1300,
-    "note": "set FLAGS=... stores some text in a variable called FLAGS. Think of a jar with a label.",
-    "do": [
-     {
-      "a": "set"
-     }
-    ]
-   },
-   {
-    "line": 3,
-    "ms": 1100,
-    "note": "This line runs the compiler. Before it runs, %FLAGS% is a stand-in for whatever is in the jar.",
-    "do": [
-     {
-      "a": "cmd"
-     }
-    ]
-   },
-   {
-    "line": 3,
-    "ms": 1500,
-    "note": "The script swaps %FLAGS% for the jar's contents. The command becomes cl /W4 /WX /Zi /Od hello_world.c ...",
-    "do": [
-     {
-      "a": "expand"
-     }
-    ]
-   },
-   {
-    "line": 3,
-    "ms": 1800,
-    "note": "cl compiles and links, using those flags, and makes hello_world.exe.",
-    "do": [
-     {
-      "a": "build"
-     }
-    ],
-    "out": "hello_world.c\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 3,
-    "ms": 1300,
-    "note": "When a command finishes, Windows leaves a number in ERRORLEVEL. 0 means it worked.",
-    "do": [
-     {
-      "v": 0,
-      "a": "level"
-     }
-    ]
-   },
-   {
-    "line": 4,
-    "ms": 1800,
-    "note": "The if checks the number: is 0 not equal to 0? No, so it is false, and the whole block inside the brackets is skipped.",
-    "do": [
-     {
-      "r": false,
-      "a": "gate"
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 1200,
-    "note": "Nothing failed, so the script reaches the last line and prints BUILD OK.",
-    "do": [
-     {
-      "a": "ok"
-     }
-    ],
-    "out": "BUILD OK\n",
-    "outAt": 0.4
-   }
-  ],
-  "prompt": ""
- },
- "git": {
-  "scene": "git-graph",
-  "steps": [
-   {
-    "line": 1,
-    "ms": 1800,
-    "note": "Your PC and GitHub hold the same first snapshot. Person A has no copy yet. git status looks at your folder for changes.",
-    "out": "> git status\nOn branch main\nYour branch is up to date with 'origin/main'.\n\n",
-    "outAt": 0.4,
-    "do": [
-     {
-      "a": "show",
-      "vis": [
-       1,
-       1,
-       1
-      ],
-      "names": [
-       "Your PC",
-       "GitHub",
-       "Person A's PC"
-      ],
-      "at": 0,
-      "len": 0.1
-     },
-     {
-      "a": "world",
-      "p": 0,
-      "cs": [
-       [
-        "c1",
-        0,
-        0,
-        [],
-        {
-         "hash": "3a9f0d1"
-        }
-       ]
-      ],
-      "br": [
-       [
-        "main",
-        "c1"
-       ],
-       [
-        "origin/main",
-        "c1",
-        1
-       ]
-      ],
-      "head": "main",
-      "files": [],
-      "at": 0,
-      "len": 0.3
-     },
-     {
-      "a": "world",
-      "p": 1,
-      "cs": [
-       [
-        "c1",
-        0,
-        0,
-        [],
-        {
-         "hash": "3a9f0d1"
-        }
-       ]
-      ],
-      "br": [
-       [
-        "main",
-        "c1"
-       ]
-      ],
-      "head": "main",
-      "files": [],
-      "at": 0.05,
-      "len": 0.3
-     }
-    ]
-   },
-   {
-    "line": 1,
-    "ms": 1500,
-    "note": "Two new files, not yet in any snapshot. Git lists them as untracked.",
-    "out": "Untracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\tbuild.bat\n\thello_world.c\n\nnothing added to commit but untracked files present (use \"git add\" to track)\n",
-    "outAt": 0.2,
-    "do": [
-     {
-      "a": "files",
-      "p": 0,
-      "list": [
-       [
-        "hello_world.c",
-        "??"
-       ],
-       [
-        "build.bat",
-        "??"
-       ]
-      ]
-     }
-    ]
-   },
-   {
-    "line": 2,
-    "ms": 1200,
-    "note": "git add puts both files in the envelope, ready for the next snapshot.",
-    "out": "> git add hello_world.c build.bat\n",
-    "do": [
-     {
-      "a": "files",
-      "p": 0,
-      "list": [
-       [
-        "hello_world.c",
-        "S"
-       ],
-       [
-        "build.bat",
-        "??"
-       ]
-      ]
-     }
-    ]
-   },
-   {
-    "line": 2,
-    "ms": 1100,
-    "note": "Then build.bat. Both are in the envelope. Nothing is saved yet.",
-    "do": [
-     {
-      "a": "files",
-      "p": 0,
-      "list": [
-       [
-        "hello_world.c",
-        "S"
-       ],
-       [
-        "build.bat",
-        "S"
-       ]
-      ]
-     }
-    ]
-   },
-   {
-    "line": 3,
-    "ms": 1800,
-    "note": "git commit seals the envelope with a label. The new dot appears on your PC only.",
-    "out": "> git commit -m \"Add hello world and build.bat\"\n[main 40bcc83] Add hello world and build.bat\n 2 files changed, 15 insertions(+)\n create mode 100644 build.bat\n create mode 100644 hello_world.c\n",
-    "outAt": 0.2,
-    "do": [
-     {
-      "a": "files",
-      "p": 0,
-      "list": [],
-      "at": 0,
-      "len": 0.4
-     },
-     {
-      "a": "commit",
-      "p": 0,
-      "id": "c2",
-      "col": 1,
-      "par": [
-       "c1"
-      ],
-      "hash": "40bcc83",
-      "lab": "Add hello world and build.bat",
-      "at": 0.3,
-      "len": 0.7
-     }
-    ]
-   },
-   {
-    "line": 3,
-    "ms": 1500,
-    "note": "GitHub and Person A do not have it. If your laptop died now, this snapshot would be gone.",
-    "do": [
-     {
-      "a": "hl",
-      "p": 0,
-      "id": "c2"
-     },
-     {
-      "a": "say",
-      "p": 1,
-      "t": "no new dot here yet",
-      "at": 0.2,
-      "len": 0.7
-     }
-    ]
-   },
-   {
-    "line": 4,
-    "ms": 2200,
-    "note": "git push posts the snapshot to GitHub. Watch the dot fly up.",
-    "out": "> git push\nTo https://github.com/4samtaylor/game-dev-exercises\n   3a9f0d1..40bcc83  main -> main\n",
-    "outAt": 0.6,
-    "do": [
-     {
-      "a": "fly",
-      "from": 0,
-      "to": 1,
-      "ids": [
-       "c2"
-      ],
-      "mv": [
-       [
-        "main",
-        "c2"
-       ]
-      ],
-      "at": 0,
-      "len": 0.8
-     },
-     {
-      "a": "flag",
-      "p": 0,
-      "n": "origin/main",
-      "h": "c2",
-      "r": 1,
-      "at": 0.85,
-      "len": 0.15
-     }
-    ]
-   },
-   {
-    "line": 4,
-    "ms": 1800,
-    "note": "Now it's backed up on GitHub, where Person A can see it. In Phase 4 they clone it onto their PC.",
-    "do": [
-     {
-      "a": "hl",
-      "p": 1,
-      "id": "c2",
-      "at": 0,
-      "len": 0.7
-     }
-    ]
-   }
-  ],
-  "prompt": ""
- }
+  }
 }
