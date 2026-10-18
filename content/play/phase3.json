@@ -403,7 +403,7 @@
    {
     "line": 7,
     "ms": 1700,
-    "note": "main calls print_menu. The compiler checks the contents page, finds it, and allows the call.",
+    "note": "main calls print_menu. The compiler already allowed this, because the contents page listed it.",
     "do": [
      {
       "a": "main",
@@ -429,12 +429,8 @@
    {
     "line": 12,
     "ms": 1400,
-    "note": "Here is the real print_menu. void and (void) match the contents entry exactly.",
+    "note": "The call jumps down to the real print_menu. void and (void) match the contents entry.",
     "do": [
-     {
-      "a": "body",
-      "i": 0
-     },
      {
       "a": "match",
       "i": 0,
@@ -475,7 +471,7 @@
    {
     "line": 8,
     "ms": 1700,
-    "note": "main needs square(4) before it can print. The contents page lists square, so the call is allowed.",
+    "note": "main calls square(4). The compiler already allowed this, because the contents page listed it.",
     "do": [
      {
       "a": "main",
@@ -501,12 +497,8 @@
    {
     "line": 16,
     "ms": 1400,
-    "note": "The real square. int and (int n) match its contents entry. n is 4.",
+    "note": "The call jumps down to the real square. int and (int n) match its contents entry. n is 4.",
     "do": [
-     {
-      "a": "body",
-      "i": 1
-     },
      {
       "a": "match",
       "i": 1,
@@ -754,42 +746,40 @@
    },
    {
     "line": 7,
-    "ms": 1800,
-    "note": "Before compiling, START_LIVES is swapped for 3. The compiler only ever sees int lives = 3;",
+    "ms": 2600,
+    "note": "Before compiling, both names are swapped for their numbers: START_LIVES becomes 3 and MAX_SCORES becomes 5. The compiler only ever sees the numbers.",
     "do": [
      {
       "a": "swap",
       "k": 0,
       "at": 0,
-      "len": 0.6
+      "len": 0.3
+     },
+     {
+      "a": "swap",
+      "k": 1,
+      "at": 0.3,
+      "len": 0.3
      },
      {
       "a": "lives",
       "v": "3",
-      "at": 0.6,
-      "len": 0.4
+      "at": 0.65,
+      "len": 0.3
      }
     ]
    },
    {
     "line": 8,
-    "ms": 1800,
-    "note": "MAX_SCORES becomes 5 in the loop too. i starts at 0: is 0 < 5? Yes.",
+    "ms": 1300,
+    "note": "The loop starts with i at 0. Is 0 < 5? Yes.",
     "do": [
-     {
-      "a": "swap",
-      "k": 1,
-      "at": 0,
-      "len": 0.6
-     },
      {
       "a": "loop",
       "i": 0,
       "done": 0,
       "chk": "0 < 5",
-      "r": true,
-      "at": 0.6,
-      "len": 0.4
+      "r": true
      }
     ]
    },
@@ -1442,21 +1432,16 @@
    },
    {
     "line": 6,
-    "ms": 1200,
-    "note": "The prompt appears, then the program waits for the keyboard.",
+    "ms": 1000,
+    "note": "The prompt appears.",
     "out": "Your name: ",
     "outAt": 0.4,
-    "do": [
-     {
-      "a": "stdin",
-      "t": []
-     }
-    ]
+    "do": []
    },
    {
     "line": 7,
     "ms": 3200,
-    "note": "Sample input: Sam, then Enter. fgets scoops the whole line into name, Enter (\\n) included, and adds the stop sign.",
+    "note": "fgets waits. Sample input: Sam, then Enter. It scoops the whole line into name, Enter (\\n) included, and adds the stop sign.",
     "do": [
      {
       "a": "stdin",

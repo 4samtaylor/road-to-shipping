@@ -825,7 +825,7 @@
    {
     "line": 2,
     "ms": 1200,
-    "note": "git add picks files for the next snapshot, like putting photos in an envelope. hello_world.c goes in first.",
+    "note": "git add puts both files in the envelope, ready for the next snapshot.",
     "out": "> git add hello_world.c build.bat\n",
     "do": [
      {
@@ -869,7 +869,7 @@
     "line": 3,
     "ms": 1800,
     "note": "git commit seals the envelope with a label. The new dot appears on your PC only.",
-    "out": "> git commit -m \"Add hello world and build.bat\"\n[main 40bcc83] Add hello world and build.bat\n 2 files changed, 2 insertions(+)\n create mode 100644 build.bat\n create mode 100644 hello_world.c\n",
+    "out": "> git commit -m \"Add hello world and build.bat\"\n[main 40bcc83] Add hello world and build.bat\n 2 files changed, 15 insertions(+)\n create mode 100644 build.bat\n create mode 100644 hello_world.c\n",
     "outAt": 0.2,
     "do": [
      {

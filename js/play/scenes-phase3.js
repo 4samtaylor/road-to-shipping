@@ -159,7 +159,7 @@
     var entY = function (i) { return 66 + i * 24; };
     RTSPlay.scene('p3-contents', {
       W: W, H: H,
-      init: function () { return { ent: [0, 0], body: [0, 0], match: [0, 0], lit: -1, mainT: '', got: '', cap: '' }; },
+      init: function () { return { ent: [0, 0], body: [1, 1], match: [0, 0], lit: -1, mainT: '', got: '', cap: '' }; },
       apply: function (S, a) {
         switch (a.a) {
           case 'entry': S.ent[a.i] = 1; break;
@@ -210,12 +210,12 @@
           rrect(c, x, CY, CW, CHH, 6);
           if (shown) { c.fillStyle = C.surface2; c.fill(); c.strokeStyle = lit ? C.accent : C.border2; c.lineWidth = lit ? 2.5 : 1.5; c.stroke(); }
           else { c.save(); c.setLineDash([4, 4]); c.strokeStyle = C.border2; c.lineWidth = 1.5; c.stroke(); c.restore(); }
-          txt(c, ch.name, x + 12, CY + 14, { size: 10, w: 700, col: shown ? (lit ? C.accent : C.text) : C.muted, align: 'left' });
+          c.save(); if (!lit) c.globalAlpha = 0.6; txt(c, ch.name, x + 12, CY + 14, { size: 10, w: 700, col: lit ? C.accent : C.text, align: 'left' });
           if (shown) { var bstr = ch.body.slice(0, Math.ceil(ch.body.length * clamp(r)));
             rrect(c, x + 8, CY + 28, CW - 16, 26, 4); c.fillStyle = rgba(C.accent, 0.1); c.fill();
-            txt(c, bstr, x + 14, CY + 41, { size: 8, w: 600, col: C.text, align: 'left' });
+            txt(c, bstr, x + 14, CY + 41, { size: 8, w: 600, col: C.text, align: 'left' }); c.restore();
             if (V.match[i]) { var k2 = V.matchK ? V.matchK[i] : 1; tick(c, x + CW - 14, CY + 14, Math.max(k2, 0), C.accent); } }
-          else txt(c, 'not read yet', x + CW / 2, CY + 40, { size: 8, col: C.muted });
+          
         });
         /* compiler peeks at contents */
         if (V.look) { var L = V.look, p = L.lp, y2 = entY(L.i) + 12;

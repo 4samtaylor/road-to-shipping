@@ -483,7 +483,7 @@
 
   /* ================= p2-tape : random numbers ================= */
   (function () {
-    var TAPE = ['708751583', '286884797', '1500726753', '2029542795', '1992164192', '89733111'], CX = 8, CWD = 62, CY = 78;
+    var TAPE = ['10576', '30474', '19244', '6210', '4160', '6010'], CX = 8, CWD = 62, CY = 78;
     var BX = [130, 270];
     reg('p2-tape', {
       acts: ['clock', 'srand', 'pull', 'calc'],
@@ -523,7 +523,7 @@
           rrect(c, x, CY, CWD, 34, 3); c.fillStyle = V.tape ? rgba(nxt ? C.accent : C.purple, nxt ? .2 : .1) : rgba(C.muted, .08); c.fill();
           c.strokeStyle = V.tape ? rgba(nxt ? C.accent : C.purple, nxt ? .95 : .5) : rgba(C.muted, .35); c.lineWidth = nxt ? 2 : 1; c.stroke();
           var lift = V.pullK && V.pullK.i === i ? Math.sin(Math.PI * V.pullK.p) * 12 : 0;
-          txt(c, V.tape ? TAPE[i] : '?', x + CWD / 2, CY + 17 - lift, { size: TAPE[i].length > 9 ? 9 : 10, w: 700, col: V.tape ? C.text : C.muted });
+          txt(c, V.tape ? TAPE[i] : '?', x + CWD / 2, CY + 17 - lift, { size: 12, w: 700, col: V.tape ? C.text : C.muted });
           c.restore();
         }
         /* next marker */

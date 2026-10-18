@@ -207,7 +207,7 @@
    {
     "line": 16,
     "ms": 1600,
-    "note": "printf reads three boxes. hero.y is never printed, because it was never set.",
+    "note": "printf reads hero.health, boss.health and hero.x. hero.y still holds garbage, so it is good we never read it.",
     "do": [
      {
       "a": "pulse",
@@ -495,7 +495,7 @@
       "kind": "ptr",
       "type": "int*",
       "name": "p",
-      "addr": "0x1004",
+      "addr": "0x1008",
       "x": 146,
       "y": 108,
       "to": "score",
@@ -526,7 +526,7 @@
       "kind": "int",
       "type": "int",
       "name": "copy",
-      "addr": "0x1008",
+      "addr": "0x1010",
       "v": "",
       "x": 272,
       "y": 108
@@ -722,7 +722,7 @@
    {
     "line": 8,
     "ms": 1700,
-    "note": "reset gets a pointer, not a copy. Its box holds 0x3004 and an arrow reaches back into main's score.",
+    "note": "reset gets a copy of the address, not a copy of score. Its box holds 0x3004 and an arrow reaches back into main's score.",
     "do": [
      {
       "a": "frame",
@@ -835,7 +835,7 @@
       "kind": "int",
       "type": "int",
       "name": "amount",
-      "addr": "0x2ff4",
+      "addr": "0x2ff8",
       "v": 25,
       "x": 210,
       "y": 172,
@@ -983,7 +983,7 @@
       "kind": "ptr",
       "type": "Player*",
       "name": "target",
-      "addr": "0x2ff8",
+      "addr": "0x3008",
       "x": 150,
       "y": 76,
       "w": 108,
@@ -1026,7 +1026,7 @@
       "kind": "int",
       "type": "int",
       "name": "amount",
-      "addr": "0x2ff4",
+      "addr": "0x2ff8",
       "v": 10,
       "x": 190,
       "y": 178,
@@ -1133,7 +1133,7 @@
       "kind": "int",
       "type": "int",
       "name": "amount",
-      "addr": "0x2ff4",
+      "addr": "0x2ff8",
       "v": 10,
       "x": 190,
       "y": 178,
@@ -1217,7 +1217,7 @@
       "kind": "ptr",
       "type": "FILE*",
       "name": "f",
-      "addr": "0x2ffc",
+      "addr": "0x3010",
       "x": 278,
       "y": 76,
       "w": 108,
@@ -1727,12 +1727,7 @@
      },
      {
       "a": "arrow",
-      "to": 15,
-      "via": [
-       7,
-       8,
-       9
-      ]
+      "to": 15
      },
      {
       "a": "locals",
@@ -1770,7 +1765,7 @@
       "rows": [
        [
         "p",
-        "0x00affc10"
+        "0x000000e5a7affc10"
        ],
        [
         "amount",
@@ -1813,7 +1808,7 @@
       "rows": [
        [
         "p",
-        "0x00affc10"
+        "0x000000e5a7affc10"
        ],
        [
         "amount",
@@ -1855,7 +1850,7 @@
       "rows": [
        [
         "p",
-        "0x00affc10"
+        "0x000000e5a7affc10"
        ],
        [
         "amount",

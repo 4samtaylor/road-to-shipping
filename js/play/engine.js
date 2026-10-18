@@ -106,6 +106,14 @@
     return P;
   }
 
+  /* ---------- ligature guard: the code font fuses -> <= >= != == into one glyph; a zero-width
+     non-joiner between the characters stops that (canvas has no font-variant-ligatures) ---------- */
+  function nl(t) { return typeof t === 'string' ? t.replace(/->|<=|>=|!=|==/g, function (m) { return m[0] + '\u200C' + m[1]; }) : t; }
+  function noLig(c) {
+    ['fillText', 'strokeText'].forEach(function (k) { var f = c[k]; c[k] = function (t) { arguments[0] = nl(t); return f.apply(c, arguments); }; });
+    var mt = c.measureText; c.measureText = function (t) { return mt.call(c, nl(t)); };
+  }
+
   /* ---------- highlighter (same rules and classes as the ladder code panel) ---------- */
   var KW = /^(return|if|else|while|for|switch|case|break|default|do|true|false|sizeof)$/, TY = /^(int|float|char|bool|double|void|unsigned)$/;
   function hl(line) {
@@ -139,6 +147,7 @@
       '.rtsp-code,.rtsp-stage{min-width:0}',
       '.rtsp-stage{display:flex;flex-direction:column;gap:10px}',
       '.rtsp-codebox{position:relative;background:var(--code-bg);border:1px solid var(--code-line);overflow:auto;max-height:340px;font-family:var(--font-code,var(--font-mono,monospace));font-size:12.5px;line-height:1.75;padding:8px 0;color:var(--code-text)}',
+      '.rtsp-codebox,.rtsp-con,.rtsp-note{font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}',
       '.rtsp-ln{display:grid;grid-template-columns:32px max-content;padding-right:14px;border-left:2px solid transparent;min-width:100%;width:max-content;transition:opacity .15s}',
       '.rtsp-ln i{font-style:normal;text-align:right;padding-right:12px;color:var(--syn-cm);opacity:.7;font-size:11px;user-select:none}',
       '.rtsp-ln span{white-space:pre}',
@@ -256,6 +265,7 @@
     var lineEls = lines.map(function (t, i) { var d = document.createElement('div'); d.className = 'rtsp-ln'; d.innerHTML = '<i>' + (i + 1) + '</i><span>' + (hl(t) || ' ') + '</span>'; codeEl.appendChild(d); return d; });
     cv.setAttribute('aria-label', (spec.title || 'Program') + ' animation. Press Play or Step to run the program.');
     var ctx = cv.getContext('2d'), C = palette(), scale = 1;
+    noLig(ctx);
     function resize() {
       var r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1, w = Math.max(1, Math.round(r.width * dpr)), h = Math.round(w * sc.H / sc.W);
       if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; } scale = w / sc.W;

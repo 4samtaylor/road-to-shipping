@@ -762,24 +762,26 @@
    {
     "line": 8,
     "ms": 900,
-    "note": "printf shows the question. Now the program waits for the player. (Sample run: the player types 42, then y.)",
-    "do": [
-     {
-      "t": "waiting for the player...",
-      "a": "cap"
-     }
-    ],
+    "note": "printf shows the question. (Sample run: the player types 42, then y.)",
+    "do": [],
     "out": "Guess a number: ",
     "outAt": 0.3
    },
    {
     "line": 9,
     "ms": 1300,
-    "note": "The player types 4, 2 and Enter. Everything sits in the keyboard buffer, including the Enter mark.",
+    "note": "scanf waits for the player. They type 4, 2 and Enter, and everything sits in the keyboard buffer, including the Enter mark.",
     "do": [
      {
+      "a": "cap",
+      "t": "waiting for the player...",
+      "len": 0.25
+     },
+     {
+      "a": "type",
       "t": "42\n",
-      "a": "type"
+      "at": 0.25,
+      "len": 0.75
      }
     ]
    },
@@ -820,23 +822,25 @@
     "line": 12,
     "ms": 900,
     "note": "Next question for the player.",
-    "do": [
-     {
-      "t": "waiting for the player...",
-      "a": "cap"
-     }
-    ],
+    "do": [],
     "out": "Play again? (y/n) ",
     "outAt": 0.3
    },
    {
     "line": 13,
     "ms": 1300,
-    "note": "The player types y and Enter. Now the buffer holds the old Enter mark, then y, then another Enter.",
+    "note": "scanf waits again. The player types y and Enter. Now the buffer holds the old Enter mark, then y, then another Enter.",
     "do": [
      {
+      "a": "cap",
+      "t": "waiting for the player...",
+      "len": 0.25
+     },
+     {
+      "a": "type",
       "t": "y\n",
-      "a": "type"
+      "at": 0.25,
+      "len": 0.75
      }
     ]
    },
@@ -1044,7 +1048,7 @@
    {
     "line": 9,
     "ms": 1500,
-    "note": "switch looks along the labels for one that matches 2. Case 1 does not match.",
+    "note": "switch jumps straight to the label that matches 2.",
     "do": [
      {
       "row": 0,
@@ -1466,7 +1470,7 @@
    {
     "line": 6,
     "ms": 1800,
-    "note": "srand uses that clock number to pick a start spot in the list. Same clock, same start spot.",
+    "note": "srand uses that clock number to pick a start spot in the list. Same clock, same start spot. (For 1760000000, Windows gives 10576, 30474, 19244...)",
     "do": [
      {
       "len": 1,
@@ -1477,7 +1481,7 @@
    {
     "line": 7,
     "ms": 1400,
-    "note": "rand() reads the next number on the list: 708751583. The pointer moves on by one.",
+    "note": "rand() reads the next number on the list: 10576. The pointer moves on by one.",
     "do": [
      {
       "i": 0,
@@ -1488,12 +1492,12 @@
    {
     "line": 7,
     "ms": 1800,
-    "note": "% 100 + 1 squeezes it into 1 to 100. 708751583 % 100 is 83, plus 1 is 84. That goes in secret.",
+    "note": "% 100 + 1 squeezes it into 1 to 100. 10576 % 100 is 76, plus 1 is 77. That goes in secret.",
     "do": [
      {
-      "raw": "708751583",
+      "raw": "10576",
       "m": 100,
-      "v": "84",
+      "v": "77",
       "box": 0,
       "a": "calc"
      }
@@ -1502,7 +1506,7 @@
    {
     "line": 8,
     "ms": 1400,
-    "note": "The next rand() reads the next number on the list: 286884797.",
+    "note": "The next rand() reads the next number on the list: 30474.",
     "do": [
      {
       "i": 1,
@@ -1513,12 +1517,12 @@
    {
     "line": 8,
     "ms": 1800,
-    "note": "% 6 + 1 squeezes it into 1 to 6, like a dice. 286884797 % 6 is 5, plus 1 is 6. That goes in roll.",
+    "note": "% 6 + 1 squeezes it into 1 to 6, like a dice. 30474 % 6 is 0, plus 1 is 1. That goes in roll.",
     "do": [
      {
-      "raw": "286884797",
+      "raw": "30474",
       "m": 6,
-      "v": "6",
+      "v": "1",
       "box": 1,
       "a": "calc"
      }
@@ -1529,7 +1533,7 @@
     "ms": 1000,
     "note": "printf shows both numbers.",
     "do": [],
-    "out": "Secret: 84  Dice: 6\n",
+    "out": "Secret: 77  Dice: 1\n",
     "outAt": 0.5
    },
    {
