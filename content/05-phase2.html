@@ -315,6 +315,9 @@
 9</pre>
                   float to int <strong class="t-text">truncates toward zero</strong>. It does not round. 1.8 becomes 1 and 9.99 becomes 9. The fraction is thrown in the bin, not weighed up.<br><br>
                   This is exactly what <span class="cmd">int var(float x) { return x; }</span> was doing silently in session 1, and why the compiler raised C4244. Note that <span class="cmd">x</span> itself is untouched, it still prints 1.8. The <span class="cmd">(int)</span> cast doesn't change the behaviour one bit; it changes the conversation with the compiler from "you might not have meant this" to "I meant it."</div>
+                </details>
+              </div>
+
 
               <div class="quiz-item drill-item">
                 <div class="quiz-q">2. Off by one, how many times does this run?</div>
