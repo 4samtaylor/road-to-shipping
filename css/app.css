@@ -2720,7 +2720,7 @@ body.editing .pg[hidden] { display: block; margin-top: 26px; }
   .pg-b { min-height: 40px; font-size: 13px; padding: 8px 12px; }
   .pg-b.pg-n { min-width: 40px; }
   .pg-foot { grid-template-columns: 1fr; }
-  .pg-foot .pg-next { text-align: left; order: -1; }
+  .pg-foot .pg-next { text-align: left; }
   .pg-start { width: 100%; justify-content: center; }
   .lad-row { min-height: 44px; }
   .pg-later .lad-m { max-width: 90px; }
