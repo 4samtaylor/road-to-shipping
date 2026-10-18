@@ -45,6 +45,10 @@
     [
      "Isn’t this just writing the code myself?",
      "It’s writing the one line that matters. The signature is the contract. The body is detail you can check against it."
+    ],
+    [
+     "What happens to the parts I leave out of a prompt?",
+     "Claude fills every gap with a guess, and a guess that compiles looks right until it doesn’t match your structs or your partner’s code. Paste your structs and existing function names first, then ask for one thing."
     ]
    ],
    "bridge": "You can pin down what you want. Next: <b>reading every line</b> of what comes back, before you run it.",
@@ -262,6 +266,10 @@
     [
      "Will Claude be offended?",
      "No. “Simplify” is a normal instruction and it works well."
+    ],
+    [
+     "How do I stop Claude rewriting my whole file?",
+     "Say <code>show me ONLY the lines to add and where they go</code>, and <code>alongside the existing</code> if you want an addition, not a replacement. You get a small diff you can read."
     ]
    ],
    "bridge": "You can cut code down to size. Next: <b>owning the architecture</b>, deciding the shape of the game before Claude writes any of it.",

@@ -1,743 +1,767 @@
 {
- "_about": "Concept ladder for the Learn stage. One concept per rung. Rung ids are progress keys: never rename. skills are glossary.json ids that move to Practiced when the check is passed. goals maps checkpoint data-ids to the rungs (1-based) that teach them. lang: c programs are compiled and run to verify each check.",
- "phase": "phase3b",
- "goals": {
-  "cp-p3-1": [
-   2,
-   3,
-   4
-  ],
-  "cp-p3-2": [
-   7,
-   8
-  ],
-  "cp-p3-3": [
-   4,
-   7
+  "_about": "Concept ladder for the Learn stage. One concept per rung. Rung ids are progress keys: never rename. skills are glossary.json ids that move to Practiced when the check is passed. goals maps checkpoint data-ids to the rungs (1-based) that teach them. lang: c programs are compiled and run to verify each check.",
+  "phase": "phase3b",
+  "goals": {
+    "cp-p3-1": [
+      2,
+      3,
+      4
+    ],
+    "cp-p3-2": [
+      7,
+      8
+    ],
+    "cp-p3-3": [
+      4,
+      7
+    ]
+  },
+  "rungs": [
+    {
+      "id": "structs",
+      "title": "Structs and the dot operator",
+      "kick": "typedef struct · fields · hero.health",
+      "mins": 12,
+      "lang": "c",
+      "skills": [
+        "struct",
+        "dot"
+      ],
+      "builds": "Phase 2: int and float variables. Phase 3: arrays, many boxes of the <i>same</i> type.",
+      "why": "A player in your game has a position and health, and maybe more. Without a struct you’d carry loose variables around and hope you never mix up whose x is whose. A struct bundles them into one thing you can name, copy and pass around.",
+      "code": "#include <stdio.h>\n\ntypedef struct {\n    float x;\n    float y;\n    int health;\n} Player;\n\nint main() {\n    Player hero;\n    Player boss;\n    hero.health = 100;\n    boss.health = 500;\n    hero.x = 2.5f;\n    boss.health = boss.health - 30;\n    printf(\"hero %d, boss %d, x %.1f\\n\", hero.health, boss.health, hero.x);\n    return 0;\n}",
+      "walk": [
+        [
+          3,
+          "<b>typedef struct { ... } Player;</b> is a blueprint. It lists the named boxes (<b>fields</b>) every Player has. It doesn’t create a player yet."
+        ],
+        [
+          4,
+          "Fields can have different types. An array is many boxes of one type, reached by number. A struct is a few boxes of different types, reached by name."
+        ],
+        [
+          7,
+          "The name after the closing brace is what <code>typedef</code> gives you: from now on <code>Player</code> is a type, like <code>int</code>."
+        ],
+        [
+          10,
+          "<b>Player hero;</b> builds one real player from the blueprint. Line 11 builds a second one. They’re completely separate."
+        ],
+        [
+          12,
+          "The <b>dot</b> reaches into one named box: <code>hero.health</code> is the health field of hero. You can read it or assign to it, like any int."
+        ],
+        [
+          15,
+          "Only boss’s health changes. hero has its own health box."
+        ],
+        [
+          16,
+          "Prints <code>hero 100, boss 470, x 2.5</code>. Notice hero.y is never printed: it was never set, so it holds garbage."
+        ]
+      ],
+      "model": "<b>Mental model:</b> a form with labelled boxes: x, y, health. The typedef is the blank form. <code>Player hero;</code> is one copy of it, and the dot says which box you mean.",
+      "check": {
+        "q": "What does line 16 print?",
+        "opts": [
+          "hero 70, boss 470, x 2.5",
+          "hero 100, boss 500, x 2.5",
+          "hero 100, boss 470, x 2.5",
+          "hero 70, boss 500, x 2.5"
+        ],
+        "a": 2,
+        "hint": "Line 15 names boss.health. Does it touch hero?",
+        "why": "boss.health goes 500 to 470. hero.health is a separate box that was never touched, so it stays 100. Each Player built from the blueprint has its own fields.",
+        "miss": {
+          "0": "That would mean line 15 also lowered hero’s health. It only names boss.",
+          "1": "Line 15 does run: boss drops to 470.",
+          "3": "Both numbers are wrong: hero stays 100 and boss drops to 470."
+        }
+      },
+      "tryit": {
+        "task": "Add an int field called mana to Player, then set hero’s mana to 30.",
+        "code": "typedef struct {\n    int health;\n    ____ mana;\n} Player;\n\nPlayer hero;\nhero____mana = 30;",
+        "answer": "int, then . (a dot)"
+      },
+      "qa": [
+        [
+          "Why typedef? Can I leave it out?",
+          "You can, but then you write <code>struct Player</code> every time. typedef lets you write just <code>Player</code>."
+        ],
+        [
+          "What’s in a field I haven’t set?",
+          "Whatever was in that memory before: garbage. Set every field before you use it, like you do with ordinary variables."
+        ],
+        [
+          "Can a struct hold an array?",
+          "Yes. A field can be an int, a float, an array, even another struct. The Runner in Phase 4.5 holds its whole obstacle array this way."
+        ],
+        [
+          "How do arrays and structs fit together?",
+          "Put them together and you get the shape nearly every game runs on: <code>Enemy enemies[MAX_ENEMIES];</code>, one array, one loop, one struct per thing on screen. Phase 6 is built from exactly this, and the stretch goal on the Build page is your first go at it."
+        ]
+      ],
+      "bridge": "You can bundle data into a struct. Next: <b>what happens when you hand a struct to a function</b>."
+    },
+    {
+      "id": "struct-copy",
+      "title": "Structs are copied",
+      "kick": "b = a · passing by value · copies",
+      "mins": 12,
+      "lang": "c",
+      "skills": [
+        "struct-copy"
+      ],
+      "builds": "Concept 1: structs and the dot. Phase 3, scope: functions get <i>copies</i>, so reset() couldn’t change main’s score.",
+      "why": "In Phase 3, reset(score) couldn’t change main’s score. Structs follow the same rule, and it matters more here: a damage function that works on a copy of the player does nothing at all. Seeing the problem first is what makes the fix in concept 4 make sense.",
+      "code": "#include <stdio.h>\n\ntypedef struct {\n    int health;\n} Player;\n\nvoid hurt(Player p) {\n    p.health = p.health - 10;\n    printf(\"Inside hurt: %d\\n\", p.health);\n}\n\nint main() {\n    Player hero;\n    hero.health = 100;\n    Player backup = hero;\n    hurt(hero);\n    backup.health = 1;\n    printf(\"hero %d, backup %d\\n\", hero.health, backup.health);\n    return 0;\n}",
+      "walk": [
+        [
+          7,
+          "hurt receives a <code>Player p</code>: a complete copy of whatever main passes in. Every field is copied."
+        ],
+        [
+          8,
+          "This lowers the <i>copy’s</i> health. The copy is thrown away when hurt ends."
+        ],
+        [
+          9,
+          "Prints <code>Inside hurt: 90</code>. The function did its job, on a photocopy."
+        ],
+        [
+          15,
+          "<b>Player backup = hero;</b> copies every field of hero into a brand new Player. From here on they’re two separate players that started out identical."
+        ],
+        [
+          16,
+          "Passes a copy of hero. Nothing hurt does can reach main’s hero."
+        ],
+        [
+          17,
+          "Changes backup only."
+        ],
+        [
+          18,
+          "hero is still 100. backup is 1."
+        ]
+      ],
+      "model": "<b>Mental model:</b> a photocopier. Assigning a struct, or passing it to a function, photocopies the whole form. Scribbling on the copy never changes the original.",
+      "check": {
+        "q": "What is the second line of output?",
+        "opts": [
+          "hero 100, backup 1",
+          "hero 90, backup 1",
+          "hero 1, backup 1",
+          "hero 90, backup 90"
+        ],
+        "a": 0,
+        "hint": "Which Player did hurt change? Which Player did line 17 change?",
+        "why": "hurt only lowered its own copy, so hero stays 100. Line 17 only touched backup, which was a separate copy from line 15.",
+        "miss": {
+          "1": "That needs hurt to change the real hero. It only changed its copy.",
+          "2": "backup is a copy, not another name for hero. Setting backup can’t change hero.",
+          "3": "hurt can’t change hero (the copy dies), and line 17 sets backup to 1."
+        }
+      },
+      "tryit": {
+        "task": "Copy a into b, then set only b’s health to 5.",
+        "code": "Player a;\na.health = 100;\nPlayer b = ____;\nb.health = 5;\n// a.health is still 100",
+        "answer": "a"
+      },
+      "qa": [
+        [
+          "So how does a function change the real player?",
+          "By being given the player’s <i>address</i> instead of a copy. That’s a pointer, and it’s the next two concepts."
+        ],
+        [
+          "Is copying a big struct slow?",
+          "It copies every byte. For a small struct it’s nothing. For a big one, passing an address is cheaper too, which is a second reason games pass pointers."
+        ],
+        [
+          "Why did insert_score change my real array in Phase 3?",
+          "Arrays are the exception: passing an array hands over its address, not a copy. A struct has no such shortcut, so it’s copied."
+        ],
+        [
+          "Does <code>b = a</code> behave the same in GDScript?",
+          "No. In GDScript objects are references, so <code>b = a</code> gives two names for one object and setting <code>b.health</code> changes <code>a.health</code> too. In C a struct is a value, so you get two separate players."
+        ]
+      ],
+      "bridge": "You’ve seen the problem: a copy can’t change the original. Next: <b>pointers</b>, a way to hold where something lives."
+    },
+    {
+      "id": "pointers",
+      "title": "Pointers: & and *",
+      "kick": "int* p · &x · *p",
+      "mins": 15,
+      "lang": "c",
+      "skills": [
+        "pointer",
+        "deref",
+        "addr"
+      ],
+      "builds": "Phase 2: scanf(&x) handed scanf the address of x. Phase 3: the FILE * you were told to ignore.",
+      "why": "A pointer is a variable that holds where something lives instead of the thing itself. Hand a function that address and it can reach back and change the original. Every game function that updates the player works this way.",
+      "code": "#include <stdio.h>\n\nint main() {\n    int score = 10;\n    int* p = &score;\n    int copy = score;\n\n    *p = 50;\n    printf(\"score %d, copy %d\\n\", score, copy);\n    printf(\"*p is %d\\n\", *p);\n    return 0;\n}",
+      "walk": [
+        [
+          4,
+          "An ordinary int. Somewhere in memory there’s a box holding 10, and that box has an address."
+        ],
+        [
+          5,
+          "<b>&score</b> means “the address of score”: the same & you gave scanf. <b>int* p</b> declares a variable that holds the address of an int. Now p points at score."
+        ],
+        [
+          6,
+          "copy gets the <i>value</i> 10. It’s a separate box, so it has nothing to do with score from now on."
+        ],
+        [
+          8,
+          "<b>*p</b> means “go to the address in p and use what’s there”. This line writes 50 into score’s box."
+        ],
+        [
+          9,
+          "score changed, though it was never named on line 8. copy is still 10."
+        ],
+        [
+          10,
+          "<code>*p</code> reads the same box, so it prints 50. Two names for one box: score, and *p."
+        ]
+      ],
+      "model": "<b>Mental model:</b> a note with a house address on it. <code>&score</code> writes the address down. <code>p</code> is the note. <code>*p</code> means walk to that address and open the front door.",
+      "check": {
+        "q": "What is the first line of output?",
+        "opts": [
+          "score 10, copy 10",
+          "score 50, copy 50",
+          "score 10, copy 50",
+          "score 50, copy 10"
+        ],
+        "a": 3,
+        "hint": "*p = 50 writes into score’s box. Does copy share that box?",
+        "why": "p holds score’s address, so *p = 50 changes score to 50. copy took the value 10 on line 6, before the change, and lives in its own box.",
+        "miss": {
+          "0": "Line 8 does run: it changes score through the pointer.",
+          "1": "copy is a separate box that got its value earlier. It doesn’t follow score.",
+          "2": "Backwards: score is the one that changes, through p."
+        }
+      },
+      "tryit": {
+        "task": "Make p point at lives, then set lives to 3 through p.",
+        "code": "int lives = 1;\nint* p = ____lives;\n____p = 3;",
+        "answer": "&   then   *"
+      },
+      "qa": [
+        [
+          "The * appears in two places. Is it the same thing?",
+          "Related but different jobs. In a <i>declaration</i> (<code>int* p</code>) it means “p is a pointer”. In an <i>expression</i> (<code>*p = 50</code>) it means “go to the address”. & is the reverse: “give me the address”."
+        ],
+        [
+          "Is <code>int *p</code> different from <code>int* p</code>?",
+          "No, the compiler treats them the same. This roadmap writes <code>int* p</code>, and the <code>FILE *f</code> from Phase 3 is the same idea written the other way."
+        ],
+        [
+          "What does a pointer actually print as?",
+          "A big number like 0x00affc10, the address. You’ll see one in the debugger’s Watch window in the last concept."
+        ],
+        [
+          "GDScript has no pointers. Why does C make me deal with them?",
+          "GDScript has them, it just hides them: objects are passed by reference, which is a pointer with the asterisk filed off. C makes you choose between copying a whole struct every frame and handing over one address."
+        ]
+      ],
+      "bridge": "You can hold an address and follow it. Next: <b>passing a pointer to a function</b>, and the <b>-></b> shortcut for structs."
+    },
+    {
+      "id": "by-pointer",
+      "title": "Passing by pointer and ->",
+      "kick": "Player* p · &hero · p->health",
+      "mins": 15,
+      "lang": "c",
+      "skills": [
+        "by-pointer",
+        "arrow"
+      ],
+      "builds": "Concepts 2 and 3: a copy can’t change the original, but an address can. Phase 3: scope and reset().",
+      "why": "Time to fix Phase 3’s reset problem. If a function takes a pointer, the caller passes an address with &, and the function reaches back through it. This is why player_move takes a Player* and not a Player.",
+      "code": "#include <stdio.h>\n\ntypedef struct {\n    int health;\n    int score;\n} Player;\n\nvoid reset(int* score) {\n    *score = 0;\n}\n\nvoid heal(Player* p, int amount) {\n    p->health = p->health + amount;\n}\n\nint main() {\n    Player hero;\n    hero.health = 60;\n    hero.score = 99;\n    reset(&hero.score);\n    heal(&hero, 25);\n    printf(\"health %d, score %d\\n\", hero.health, hero.score);\n    return 0;\n}",
+      "walk": [
+        [
+          8,
+          "The parameter is <code>int* score</code>: a pointer. The function receives an address, not a copy of the number."
+        ],
+        [
+          9,
+          "Goes to that address and writes 0. This is the reset() that Phase 3 couldn’t write."
+        ],
+        [
+          12,
+          "<b>Player* p</b>: heal gets the address of a Player, so it works on the real one."
+        ],
+        [
+          13,
+          "<b>p->health</b> is shorthand for <code>(*p).health</code>: follow the pointer, then take the health field. With a pointer, use the arrow."
+        ],
+        [
+          20,
+          "The caller passes <b>&hero.score</b>: the address of that one field."
+        ],
+        [
+          21,
+          "<b>&hero</b> is the address of the whole Player. heal follows it and changes the real hero."
+        ],
+        [
+          22,
+          "Prints <code>health 85, score 0</code>. Both changes stuck."
+        ]
+      ],
+      "model": "<b>Mental model:</b> giving someone your address instead of a photocopy of your house plans. They can walk in and move the furniture. Dot when you hold the thing (<code>hero.health</code>), arrow when you hold its address (<code>p->health</code>).",
+      "check": {
+        "q": "On line 13 you write p.health instead of p->health. What happens?",
+        "opts": [
+          "It works the same",
+          "The build fails",
+          "It heals a copy instead",
+          "It builds but prints garbage"
+        ],
+        "a": 1,
+        "hint": "The dot works on a struct you hold. What kind of thing is p?",
+        "why": "p is a Player*, an address, not a Player. The dot only works on a struct itself, so the compiler refuses. Pointer means arrow; actual struct means dot.",
+        "miss": {
+          "0": "They’re not interchangeable. The dot needs a struct, the arrow needs a pointer to one.",
+          "2": "It never gets that far: the compiler won’t accept the dot on a pointer at all.",
+          "3": "That never runs. The compiler rejects the line before the program exists."
+        }
+      },
+      "tryit": {
+        "task": "Write damage so it lowers the real player’s health.",
+        "code": "void damage(____ p, int amount) {\n    p____health = p____health - amount;\n}",
+        "answer": "Player*   then   ->   and   ->"
+      },
+      "qa": [
+        [
+          "Where do I put the & when I call?",
+          "On the variable you want changed: <code>heal(&hero, 25)</code>. If the parameter is a pointer, the caller passes an address."
+        ],
+        [
+          "Can I still just use (*p).health?",
+          "Yes, it means exactly the same thing. The arrow is the shorthand everyone uses."
+        ],
+        [
+          "Does this fix Phase 3’s array behaviour too?",
+          "It explains it. An array’s name already acts like the address of its first box, which is why insert_score changed your real array all along."
+        ],
+        [
+          "When do I use the arrow and when the dot?",
+          "Holding a pointer? Use the arrow: <code>p->health</code>. Holding the actual struct? Use the dot: <code>player.health</code>."
+        ]
+      ],
+      "bridge": "You can hand a function the real thing. Next: <b>NULL</b>, the address that points nowhere, and why you check for it."
+    },
+    {
+      "id": "null",
+      "title": "NULL",
+      "kick": "NULL · p == NULL · checking first",
+      "mins": 10,
+      "lang": "c",
+      "skills": [
+        "null"
+      ],
+      "builds": "Concept 4: functions that take a Player*. Phase 3: fopen returns NULL when a file can’t be opened.",
+      "why": "A pointer can hold “no address at all”: NULL. Following it crashes the program. Functions use NULL to say “I couldn’t give you one”, like fopen did in Phase 3, so you check before you follow a pointer.",
+      "code": "#define _CRT_SECURE_NO_WARNINGS\n#include <stdio.h>\n\ntypedef struct { int health; } Player;\n\nvoid heal(Player* p, int amount) {\n    if (p == NULL) {\n        printf(\"No player to heal\\n\");\n        return;\n    }\n    p->health = p->health + amount;\n}\n\nint main() {\n    Player hero;\n    hero.health = 50;\n    Player* target = NULL;\n    heal(target, 10);\n    target = &hero;\n    heal(target, 10);\n    printf(\"hero %d\\n\", hero.health);\n\n    FILE* f = fopen(\"no_such_file.txt\", \"r\");\n    if (f == NULL) {\n        printf(\"No file\\n\");\n    }\n    return 0;\n}",
+      "walk": [
+        [
+          7,
+          "The guard. <b>NULL</b> is a pointer that points at nothing. Check for it <i>before</i> using the pointer."
+        ],
+        [
+          9,
+          "Leave early. A bare <code>return;</code> is allowed in a void function."
+        ],
+        [
+          11,
+          "Only reached when p is a real address."
+        ],
+        [
+          17,
+          "target starts as NULL: a note with no address written on it."
+        ],
+        [
+          18,
+          "Passes NULL. The check on line 7 catches it and prints the message."
+        ],
+        [
+          19,
+          "Now target holds hero’s address."
+        ],
+        [
+          20,
+          "This time the check passes, so hero heals to 60."
+        ],
+        [
+          23,
+          "The same pattern from Phase 3. <code>FILE *</code> is a pointer too, and fopen returns NULL when it can’t open the file."
+        ]
+      ],
+      "model": "<b>Mental model:</b> a blank note. There’s no address on it, so walking to “wherever it says” gets you nowhere, fast. Look at the note before you set off.",
+      "check": {
+        "q": "You delete the whole if block (lines 7 to 10) and run. What happens at the heal(target, 10) call that comes after target = NULL?",
+        "opts": [
+          "It prints “No player to heal” anyway",
+          "It heals hero to 60",
+          "Nothing happens and the program carries on",
+          "The program almost certainly crashes"
+        ],
+        "a": 3,
+        "hint": "With no check, line 11 follows the address stored in p. What address is that?",
+        "why": "p->health follows the pointer, and NULL is address zero, which your program isn’t allowed to touch. Windows stops it with an access violation. Crashing right at the bug is the good outcome, and the check prevents it.",
+        "miss": {
+          "0": "That message only exists inside the if block you deleted.",
+          "1": "target is NULL at that point, not hero’s address. It’s only set on line 19.",
+          "2": "Following NULL isn’t harmless. The program is stopped for touching memory it doesn’t own."
+        }
+      },
+      "tryit": {
+        "task": "Add the guard so damage does nothing when p is NULL.",
+        "code": "void damage(Player* p, int amount) {\n    if (p ____ NULL) {\n        return;\n    }\n    p->health = p->health - amount;\n}",
+        "answer": "=="
+      },
+      "qa": [
+        [
+          "Why does NULL crash instead of doing nothing?",
+          "Address zero is never part of your program’s memory, so the operating system stops you the moment you touch it. That’s louder than silent wrong answers."
+        ],
+        [
+          "Should every pointer be checked?",
+          "Check the ones that can legitimately be NULL: things like fopen results. A pointer you got from <code>&hero</code> can never be NULL."
+        ],
+        [
+          "Is NULL the same as 0?",
+          "It’s a zero address. Write NULL when you mean a pointer, so the code says what you mean."
+        ]
+      ],
+      "bridge": "You can use pointers without crashing. Next: <b>enum</b>, readable names instead of magic numbers, for game states."
+    },
+    {
+      "id": "enum",
+      "title": "enum",
+      "kick": "typedef enum · named constants · switch",
+      "mins": 10,
+      "lang": "c",
+      "skills": [
+        "enum"
+      ],
+      "builds": "Phase 3: #define named constants. Phase 2: switch.",
+      "why": "A game is always in one state: menu, playing, game over. You could use 0, 1 and 2, but then nobody (including you in a week) knows what 2 means. An enum gives each number a name, and the compiler counts for you.",
+      "code": "#include <stdio.h>\n\ntypedef enum { STATE_MENU, STATE_PLAYING, STATE_GAMEOVER } GameState;\n\nint main() {\n    GameState state = STATE_PLAYING;\n    int lives = 0;\n\n    printf(\"MENU=%d PLAYING=%d GAMEOVER=%d\\n\", STATE_MENU, STATE_PLAYING, STATE_GAMEOVER);\n    if (lives == 0) {\n        state = STATE_GAMEOVER;\n    }\n    switch (state) {\n        case STATE_MENU:     printf(\"show menu\\n\"); break;\n        case STATE_PLAYING:  printf(\"run game\\n\"); break;\n        case STATE_GAMEOVER: printf(\"show game over\\n\"); break;\n    }\n    return 0;\n}",
+      "walk": [
+        [
+          3,
+          "<b>enum</b> makes a list of names. The compiler numbers them for you: 0, 1, 2. typedef gives the type a one-word name, like with struct."
+        ],
+        [
+          6,
+          "A GameState variable. It reads as a sentence: the state is playing."
+        ],
+        [
+          9,
+          "Each name is really just an int. This prints <code>MENU=0 PLAYING=1 GAMEOVER=2</code>."
+        ],
+        [
+          11,
+          "Assigning uses the names, never the numbers."
+        ],
+        [
+          13,
+          "switch on an enum reads like a menu of cases. This is the shape of a game’s main loop."
+        ],
+        [
+          16,
+          "lives is 0, so state became GAMEOVER and this case prints."
+        ]
+      ],
+      "model": "<b>Mental model:</b> named positions on a dial. You say “playing” and the dial clicks to position 1. You never have to remember that 1 means playing.",
+      "check": {
+        "q": "You add STATE_PAUSED between STATE_MENU and STATE_PLAYING in the enum. What does the first line print?",
+        "opts": [
+          "MENU=0 PLAYING=1 GAMEOVER=2",
+          "MENU=0 PAUSED=1 PLAYING=2 GAMEOVER=3",
+          "MENU=0 PLAYING=2 GAMEOVER=3",
+          "A compile error: the values changed"
+        ],
+        "a": 2,
+        "hint": "The compiler numbers names in order, one after another. What number does PLAYING get now?",
+        "why": "Names are numbered in the order written. With PAUSED in second place, PLAYING becomes 2 and GAMEOVER becomes 3. That’s why you use the names and never the raw numbers.",
+        "miss": {
+          "0": "That’s the old numbering. PAUSED now takes slot 1, pushing the rest along.",
+          "1": "The printf line only prints three values and has no PAUSED in it.",
+          "3": "Renumbering is fine. Code using the names keeps working, which is the whole point."
+        }
+      },
+      "tryit": {
+        "task": "Add STATE_PAUSED between PLAYING and GAMEOVER.",
+        "code": "typedef enum {\n    STATE_MENU,\n    STATE_PLAYING,\n    ____,\n    STATE_GAMEOVER\n} GameState;",
+        "answer": "STATE_PAUSED"
+      },
+      "qa": [
+        [
+          "How is this different from #define?",
+          "A #define is find-and-replace. An enum is a real type, the compiler numbers it for you, and debuggers show the name instead of a bare number."
+        ],
+        [
+          "Can I choose the numbers?",
+          "Yes: <code>STATE_MENU = 5</code>. Most of the time you don’t care what they are."
+        ],
+        [
+          "Where will I use this?",
+          "Phase 4.5 and Phase 6 both run on a state enum. The switch on it decides what the game does each frame."
+        ]
+      ],
+      "bridge": "You can name your states. Next: <b>header files</b>, splitting a struct and its functions across .h and .c files."
+    },
+    {
+      "id": "headers",
+      "title": "Header files and #pragma once",
+      "kick": "player.h · player.c · #include \"…\" · #pragma once",
+      "mins": 15,
+      "lang": "text",
+      "skills": [
+        "header-split",
+        "pragma-once"
+      ],
+      "builds": "Phase 3: prototypes tell the compiler a function exists before its body. Concept 1: the Player struct.",
+      "why": "One big file stops being readable. Splitting lets the functions live in player.c, while the struct and prototypes live in a header (.h). main.c only needs the header to know what exists, and every file that uses the player includes it.",
+      "code": "// ---- player.h ----\n#pragma once\n\ntypedef struct {\n    int health;\n} Player;\n\nvoid player_heal(Player* p, int amount);\n\n// ---- player.c ----\n#include \"player.h\"\n\nvoid player_heal(Player* p, int amount) {\n    p->health = p->health + amount;\n}\n\n// ---- main.c ----\n#include <stdio.h>\n#include \"player.h\"\n\nint main() {\n    Player hero;\n    hero.health = 50;\n    player_heal(&hero, 25);\n    printf(\"health %d\\n\", hero.health);\n    return 0;\n}",
+      "walk": [
+        [
+          2,
+          "<b>#pragma once</b> means “only read this file once per .c file”. Without it, a header included twice would define Player twice."
+        ],
+        [
+          4,
+          "The struct lives in the header, so every file that includes it knows what a Player is."
+        ],
+        [
+          8,
+          "A prototype, exactly like Phase 3’s. The header lists <i>what exists</i>: names and types, no bodies."
+        ],
+        [
+          11,
+          "Quotes mean “a header of mine, in this folder”. Angle brackets, like <code>&lt;stdio.h&gt;</code>, mean “from the compiler’s own library”."
+        ],
+        [
+          13,
+          "The body lives in player.c. Only this file needs it."
+        ],
+        [
+          19,
+          "main.c includes the header only. It never mentions player.c. It knows player_heal exists, and the body gets connected later."
+        ],
+        [
+          27,
+          "That’s all three files. Build every .c file together: <code>cl /W4 /WX main.c player.c /Fe:game.exe</code>. The next concept is what goes wrong if you forget one."
+        ]
+      ],
+      "model": "<b>Mental model:</b> the .h is the menu on the restaurant door, the .c is the kitchen. Customers (main.c) read the menu. They don’t need to see the kitchen.",
+      "check": {
+        "q": "You delete #pragma once, and main.c ends up including player.h twice (say through two other headers). What happens?",
+        "opts": [
+          "Nothing, it builds the same",
+          "The linker complains about player_heal",
+          "It builds, but player_heal runs twice",
+          "A compile error: Player is defined twice"
+        ],
+        "a": 3,
+        "hint": "What does the second include paste into the file?",
+        "why": "#include pastes the file’s text in. Twice means the typedef struct appears twice in one file, and the compiler refuses to define Player a second time. #pragma once stops the second paste.",
+        "miss": {
+          "0": "Nothing skips the second copy unless #pragma once (or a guard like it) is there.",
+          "1": "Linker errors are about missing function bodies. This fails earlier, in the compiler.",
+          "2": "A repeated prototype is harmless, and the function isn’t called by the include. The struct is the problem."
+        }
+      },
+      "tryit": {
+        "task": "Finish player.h: add the include guard, and the prototype for player_heal.",
+        "code": "// player.h\n____\n\ntypedef struct {\n    int health;\n} Player;\n\n____",
+        "answer": "#pragma once   and   void player_heal(Player* p, int amount);"
+      },
+      "qa": [
+        [
+          "What goes in a .h and what in a .c?",
+          "The .h holds declarations: structs, prototypes, #defines others need. The .c holds the bodies. Other files include the .h, never the .c."
+        ],
+        [
+          "Does player.c include player.h too?",
+          "Yes. It needs the Player struct, and including it also makes the compiler check that the prototype matches the body."
+        ],
+        [
+          "Why is it fine to change player.c without touching main.c?",
+          "main.c only depends on the header. Change a body and only that file needs recompiling."
+        ]
+      ],
+      "bridge": "You can split code into files. Next: <b>linker errors</b>, what you see when a file is missing from the build."
+    },
+    {
+      "id": "linker",
+      "title": "Linker errors (LNK2019)",
+      "kick": "compiler vs linker · unresolved external symbol",
+      "mins": 10,
+      "lang": "shell",
+      "skills": [
+        "linker"
+      ],
+      "builds": "Concept 7: main.c calls player_heal, which is declared in player.h and written in player.c.",
+      "why": "Building is two jobs. The compiler checks each .c file and promises “this function exists somewhere”. The linker then goes and collects every promise. Forget a .c file and the compiler is happy but the linker can’t find the body.",
+      "code": "> cl /W4 /WX /Zi main.c /Fe:game.exe\nmain.c\nmain.obj : error LNK2019: unresolved external symbol _player_heal referenced in function _main\ngame.exe : fatal error LNK1120: 1 unresolved externals\n\n> cl /W4 /WX /Zi main.c player.c /Fe:game.exe\nmain.c\nplayer.c\n(builds game.exe)",
+      "walk": [
+        [
+          1,
+          "Only main.c is on the command line. player.c is not part of this build. (Compiler and linker banner lines are left out.)"
+        ],
+        [
+          2,
+          "main.c compiled fine. The prototype in player.h was enough for the compiler to accept the call."
+        ],
+        [
+          3,
+          "<b>LNK2019</b>: the <b>linker</b> looked for the body of player_heal and found none. You may see <code>_player_heal</code> on 32-bit builds and <code>player_heal</code> on x64; the leading underscore is just how 32-bit builds label names."
+        ],
+        [
+          4,
+          "LNK1120 is the summary: one unresolved name, so no game.exe."
+        ],
+        [
+          6,
+          "The fix: list <i>every</i> .c file. Now player.c is compiled too, and the linker finds the body."
+        ],
+        [
+          9,
+          "No errors this time, and game.exe exists. In build.bat the list of files is the SOURCES line: add the file there and every build includes it."
+        ]
+      ],
+      "model": "<b>Mental model:</b> the compiler checks each chapter on its own and accepts the table of contents. The linker goes to bind the book and finds chapter 7 is missing from the pile.",
+      "check": {
+        "q": "You see LNK2019: unresolved external symbol _player_heal. What is the right fix?",
+        "opts": [
+          "Add #pragma once to player.h",
+          "Add player.c to the cl command",
+          "Add another prototype for player_heal to main.c",
+          "Remove /WX so warnings stop failing the build"
+        ],
+        "a": 1,
+        "hint": "The prototype is fine (the compiler passed). What is missing is the function’s body. Where does it live?",
+        "why": "The body is in player.c, and the build never compiled it. Add player.c to the command line (or to SOURCES in build.bat) and the linker can find it.",
+        "miss": {
+          "0": "#pragma once is about double includes. The compiler already passed.",
+          "2": "The compiler already knows the function exists. A second promise doesn’t supply a body.",
+          "3": "LNK2019 is an error, not a warning. /WX has nothing to do with it."
+        }
+      },
+      "tryit": {
+        "task": "Fix the command so both files are built.",
+        "code": "cl /W4 /WX /Zi main.c ____ /Fe:game.exe",
+        "answer": "player.c"
+      },
+      "qa": [
+        [
+          "What’s the difference between a compiler error and a linker error?",
+          "Compiler: “I don’t understand this line.” Linker: “I understood everything, but I can’t find this function’s body.” LNK numbers are the linker’s."
+        ],
+        [
+          "I get “unresolved external symbol” for a function I did write.",
+          "Check two things: the .c file is in the build, and the name is spelled exactly the same, capitals included, in the call, the prototype and the body."
+        ],
+        [
+          "What was the .obj file from Phase 1?",
+          "The compiler’s output for one .c file. The linker joins the .obj files into one .exe."
+        ]
+      ],
+      "bridge": "You can read a linker error. Last concept: <b>the debugger</b>, where you watch a pointer change instead of guessing."
+    },
+    {
+      "id": "debugger",
+      "title": "The debugger",
+      "kick": "F9 · F5 · F10 · F11 · Watch",
+      "mins": 15,
+      "lang": "c",
+      "skills": [
+        "debugger"
+      ],
+      "builds": "Concept 4: damage works through a pointer. Phase 1: /Zi in build.bat writes the symbol file the debugger reads.",
+      "why": "printf debugging means edit, rebuild, run, read, repeat. A debugger freezes the program mid-run so you can look at everything at once. It’s also the best way to see a pointer: you can watch the real hero change from inside a function that never names it.",
+      "code": "#include <stdio.h>\n\ntypedef struct {\n    int health;\n} Player;\n\nvoid damage(Player* p, int amount) {\n    p->health = p->health - amount;\n}\n\nint main() {\n    Player hero;\n    hero.health = 100;\n    damage(&hero, 30);\n    damage(&hero, 30);\n    printf(\"health %d\\n\", hero.health);\n    return 0;\n}",
+      "walk": [
+        [
+          14,
+          "<b>F9</b> with the cursor here puts a breakpoint on the line: a red dot. The program will stop <i>before</i> this line runs."
+        ],
+        [
+          14,
+          "Run build.bat first (it keeps /Zi and /Od), then <b>F5</b>. The program starts and freezes here with a yellow arrow. In the Watch window, <code>hero.health</code> shows 100."
+        ],
+        [
+          14,
+          "<b>F10</b> steps over: it runs the whole line, damage included, and stops on line 15. Watch now shows 70."
+        ],
+        [
+          15,
+          "<b>F11</b> steps into: the arrow jumps to the top of damage (line 7, where the brace is). Press F10 once to reach line 8. Watch <code>p</code> (an address like 0x00affc10), <code>*p</code> and <code>p->health</code>."
+        ],
+        [
+          8,
+          "Press F10 here: this line runs. <code>p->health</code> drops to 40, and <code>hero.health</code> would show 40 too if you clicked main in the Call Stack. Same box, two names."
+        ],
+        [
+          16,
+          "Press <b>F5</b> to run on to the end, or <b>Shift+F5</b> to stop."
+        ]
+      ],
+      "model": "<b>Mental model:</b> a pause button with X-ray vision. You freeze the game on a line and look inside every box without changing anything.",
+      "check": {
+        "q": "You put a breakpoint on line 15 and press F5. Then you press F11 to go inside damage, and F10 until the yellow arrow is on the closing brace (line 9). What does p->health show in the Watch window?",
+        "opts": [
+          "70",
+          "100",
+          "40",
+          "It can’t be shown: p isn’t in scope yet"
+        ],
+        "a": 2,
+        "hint": "What does line 8 do to p->health?",
+        "why": "Before line 15 runs, health is 70. Inside damage, line 8 subtracts 30. By the time the arrow reaches the closing brace, line 8 has run, so p->health shows 40.",
+        "miss": {
+          "0": "70 is the value before line 8 runs. The arrow is past it by the closing brace.",
+          "1": "100 was the value before line 14. By line 15 the first damage call had already run.",
+          "3": "F11 stepped inside damage, so p exists and is in scope. Back in main, p wouldn’t be."
+        }
+      },
+      "tryit": {
+        "task": "Match the key to the job: set a breakpoint, start debugging, run one line without going inside a function.",
+        "code": "____  breakpoint on this line\n____  start debugging (or keep going)\n____  step over",
+        "answer": "F9, F5, F10"
+      },
+      "qa": [
+        [
+          "My breakpoints are hollow circles.",
+          "Usually a stale exe: you edited the code and pressed F5 without running build first. F5 does not compile. Check /Zi is in build.bat and game.pdb exists next to game.exe."
+        ],
+        [
+          "F11 dropped me into a screen of assembly.",
+          "You stepped into a library function like printf. You don’t have its source. Shift+F11 steps back out; use F10 on lines that call library functions."
+        ],
+        [
+          "How do I set the debugger up?",
+          "A one-time config file called launch.json tells VS Code which .exe to run. The Build page for this phase has the four steps."
+        ],
+        [
+          "What are the other debugger keys and the Watch panel?",
+          "<code>Shift+F5</code> stops the program and <code>Ctrl+Shift+D</code> opens the Run and Debug sidebar. The Watch panel re-evaluates any expression you type (<code>p</code>, <code>*p</code>, <code>p->health</code>) after every step, and hovering a variable works too."
+        ],
+        [
+          "Breakpoints are still hollow after I rebuilt.",
+          "Check the <code>\"program\"</code> path in launch.json points at the exe your build.bat actually makes (<code>${workspaceFolder}/game.exe</code> if it builds into the repo root). Also open the repo as a folder, not a single file, or <code>${workspaceFolder}</code> means nothing."
+        ]
+      ],
+      "bridge": "That’s every concept in Phase 3.5. Next: <b>Phase 4, Git &amp; Your Partner</b>, sharing this code without stepping on each other."
+    }
   ]
- },
- "rungs": [
-  {
-   "id": "structs",
-   "title": "Structs and the dot operator",
-   "kick": "typedef struct · fields · hero.health",
-   "mins": 12,
-   "lang": "c",
-   "skills": [
-    "struct",
-    "dot"
-   ],
-   "builds": "Phase 2: int and float variables. Phase 3: arrays, many boxes of the <i>same</i> type.",
-   "why": "A player in your game has a position and health, and maybe more. Without a struct you’d carry loose variables around and hope you never mix up whose x is whose. A struct bundles them into one thing you can name, copy and pass around.",
-   "code": "#include <stdio.h>\n\ntypedef struct {\n    float x;\n    float y;\n    int health;\n} Player;\n\nint main() {\n    Player hero;\n    Player boss;\n    hero.health = 100;\n    boss.health = 500;\n    hero.x = 2.5f;\n    boss.health = boss.health - 30;\n    printf(\"hero %d, boss %d, x %.1f\\n\", hero.health, boss.health, hero.x);\n    return 0;\n}",
-   "walk": [
-    [
-     3,
-     "<b>typedef struct { ... } Player;</b> is a blueprint. It lists the named boxes (<b>fields</b>) every Player has. It doesn’t create a player yet."
-    ],
-    [
-     4,
-     "Fields can have different types. An array is many boxes of one type, reached by number. A struct is a few boxes of different types, reached by name."
-    ],
-    [
-     7,
-     "The name after the closing brace is what <code>typedef</code> gives you: from now on <code>Player</code> is a type, like <code>int</code>."
-    ],
-    [
-     10,
-     "<b>Player hero;</b> builds one real player from the blueprint. Line 11 builds a second one. They’re completely separate."
-    ],
-    [
-     12,
-     "The <b>dot</b> reaches into one named box: <code>hero.health</code> is the health field of hero. You can read it or assign to it, like any int."
-    ],
-    [
-     15,
-     "Only boss’s health changes. hero has its own health box."
-    ],
-    [
-     16,
-     "Prints <code>hero 100, boss 470, x 2.5</code>. Notice hero.y is never printed: it was never set, so it holds garbage."
-    ]
-   ],
-   "model": "<b>Mental model:</b> a form with labelled boxes: x, y, health. The typedef is the blank form. <code>Player hero;</code> is one copy of it, and the dot says which box you mean.",
-   "check": {
-    "q": "What does line 16 print?",
-    "opts": [
-     "hero 70, boss 470, x 2.5",
-     "hero 100, boss 500, x 2.5",
-     "hero 100, boss 470, x 2.5",
-     "hero 70, boss 500, x 2.5"
-    ],
-    "a": 2,
-    "hint": "Line 15 names boss.health. Does it touch hero?",
-    "why": "boss.health goes 500 to 470. hero.health is a separate box that was never touched, so it stays 100. Each Player built from the blueprint has its own fields.",
-    "miss": {
-     "0": "That would mean line 15 also lowered hero’s health. It only names boss.",
-     "1": "Line 15 does run: boss drops to 470.",
-     "3": "Both numbers are wrong: hero stays 100 and boss drops to 470."
-    }
-   },
-   "tryit": {
-    "task": "Add an int field called mana to Player, then set hero’s mana to 30.",
-    "code": "typedef struct {\n    int health;\n    ____ mana;\n} Player;\n\nPlayer hero;\nhero____mana = 30;",
-    "answer": "int, then . (a dot)"
-   },
-   "qa": [
-    [
-     "Why typedef? Can I leave it out?",
-     "You can, but then you write <code>struct Player</code> every time. typedef lets you write just <code>Player</code>."
-    ],
-    [
-     "What’s in a field I haven’t set?",
-     "Whatever was in that memory before: garbage. Set every field before you use it, like you do with ordinary variables."
-    ],
-    [
-     "Can a struct hold an array?",
-     "Yes. A field can be an int, a float, an array, even another struct. The Runner in Phase 4.5 holds its whole obstacle array this way."
-    ]
-   ],
-   "bridge": "You can bundle data into a struct. Next: <b>what happens when you hand a struct to a function</b>."
-  },
-  {
-   "id": "struct-copy",
-   "title": "Structs are copied",
-   "kick": "b = a · passing by value · copies",
-   "mins": 12,
-   "lang": "c",
-   "skills": [
-    "struct-copy"
-   ],
-   "builds": "Concept 1: structs and the dot. Phase 3, scope: functions get <i>copies</i>, so reset() couldn’t change main’s score.",
-   "why": "In Phase 3, reset(score) couldn’t change main’s score. Structs follow the same rule, and it matters more here: a damage function that works on a copy of the player does nothing at all. Seeing the problem first is what makes the fix in concept 4 make sense.",
-   "code": "#include <stdio.h>\n\ntypedef struct {\n    int health;\n} Player;\n\nvoid hurt(Player p) {\n    p.health = p.health - 10;\n    printf(\"Inside hurt: %d\\n\", p.health);\n}\n\nint main() {\n    Player hero;\n    hero.health = 100;\n    Player backup = hero;\n    hurt(hero);\n    backup.health = 1;\n    printf(\"hero %d, backup %d\\n\", hero.health, backup.health);\n    return 0;\n}",
-   "walk": [
-    [
-     7,
-     "hurt receives a <code>Player p</code>: a complete copy of whatever main passes in. Every field is copied."
-    ],
-    [
-     8,
-     "This lowers the <i>copy’s</i> health. The copy is thrown away when hurt ends."
-    ],
-    [
-     9,
-     "Prints <code>Inside hurt: 90</code>. The function did its job, on a photocopy."
-    ],
-    [
-     15,
-     "<b>Player backup = hero;</b> copies every field of hero into a brand new Player. From here on they’re two separate players that started out identical."
-    ],
-    [
-     16,
-     "Passes a copy of hero. Nothing hurt does can reach main’s hero."
-    ],
-    [
-     17,
-     "Changes backup only."
-    ],
-    [
-     18,
-     "hero is still 100. backup is 1."
-    ]
-   ],
-   "model": "<b>Mental model:</b> a photocopier. Assigning a struct, or passing it to a function, photocopies the whole form. Scribbling on the copy never changes the original.",
-   "check": {
-    "q": "What is the second line of output?",
-    "opts": [
-     "hero 100, backup 1",
-     "hero 90, backup 1",
-     "hero 1, backup 1",
-     "hero 90, backup 90"
-    ],
-    "a": 0,
-    "hint": "Which Player did hurt change? Which Player did line 17 change?",
-    "why": "hurt only lowered its own copy, so hero stays 100. Line 17 only touched backup, which was a separate copy from line 15.",
-    "miss": {
-     "1": "That needs hurt to change the real hero. It only changed its copy.",
-     "2": "backup is a copy, not another name for hero. Setting backup can’t change hero.",
-     "3": "hurt can’t change hero (the copy dies), and line 17 sets backup to 1."
-    }
-   },
-   "tryit": {
-    "task": "Copy a into b, then set only b’s health to 5.",
-    "code": "Player a;\na.health = 100;\nPlayer b = ____;\nb.health = 5;\n// a.health is still 100",
-    "answer": "a"
-   },
-   "qa": [
-    [
-     "So how does a function change the real player?",
-     "By being given the player’s <i>address</i> instead of a copy. That’s a pointer, and it’s the next two concepts."
-    ],
-    [
-     "Is copying a big struct slow?",
-     "It copies every byte. For a small struct it’s nothing. For a big one, passing an address is cheaper too, which is a second reason games pass pointers."
-    ],
-    [
-     "Why did insert_score change my real array in Phase 3?",
-     "Arrays are the exception: passing an array hands over its address, not a copy. A struct has no such shortcut, so it’s copied."
-    ]
-   ],
-   "bridge": "You’ve seen the problem: a copy can’t change the original. Next: <b>pointers</b>, a way to hold where something lives."
-  },
-  {
-   "id": "pointers",
-   "title": "Pointers: & and *",
-   "kick": "int* p · &x · *p",
-   "mins": 15,
-   "lang": "c",
-   "skills": [
-    "pointer",
-    "deref",
-    "addr"
-   ],
-   "builds": "Phase 2: scanf(&x) handed scanf the address of x. Phase 3: the FILE * you were told to ignore.",
-   "why": "A pointer is a variable that holds where something lives instead of the thing itself. Hand a function that address and it can reach back and change the original. Every game function that updates the player works this way.",
-   "code": "#include <stdio.h>\n\nint main() {\n    int score = 10;\n    int* p = &score;\n    int copy = score;\n\n    *p = 50;\n    printf(\"score %d, copy %d\\n\", score, copy);\n    printf(\"*p is %d\\n\", *p);\n    return 0;\n}",
-   "walk": [
-    [
-     4,
-     "An ordinary int. Somewhere in memory there’s a box holding 10, and that box has an address."
-    ],
-    [
-     5,
-     "<b>&score</b> means “the address of score”: the same & you gave scanf. <b>int* p</b> declares a variable that holds the address of an int. Now p points at score."
-    ],
-    [
-     6,
-     "copy gets the <i>value</i> 10. It’s a separate box, so it has nothing to do with score from now on."
-    ],
-    [
-     8,
-     "<b>*p</b> means “go to the address in p and use what’s there”. This line writes 50 into score’s box."
-    ],
-    [
-     9,
-     "score changed, though it was never named on line 8. copy is still 10."
-    ],
-    [
-     10,
-     "<code>*p</code> reads the same box, so it prints 50. Two names for one box: score, and *p."
-    ]
-   ],
-   "model": "<b>Mental model:</b> a note with a house address on it. <code>&score</code> writes the address down. <code>p</code> is the note. <code>*p</code> means walk to that address and open the front door.",
-   "check": {
-    "q": "What is the first line of output?",
-    "opts": [
-     "score 10, copy 10",
-     "score 50, copy 50",
-     "score 10, copy 50",
-     "score 50, copy 10"
-    ],
-    "a": 3,
-    "hint": "*p = 50 writes into score’s box. Does copy share that box?",
-    "why": "p holds score’s address, so *p = 50 changes score to 50. copy took the value 10 on line 6, before the change, and lives in its own box.",
-    "miss": {
-     "0": "Line 8 does run: it changes score through the pointer.",
-     "1": "copy is a separate box that got its value earlier. It doesn’t follow score.",
-     "2": "Backwards: score is the one that changes, through p."
-    }
-   },
-   "tryit": {
-    "task": "Make p point at lives, then set lives to 3 through p.",
-    "code": "int lives = 1;\nint* p = ____lives;\n____p = 3;",
-    "answer": "&   then   *"
-   },
-   "qa": [
-    [
-     "The * appears in two places. Is it the same thing?",
-     "Related but different jobs. In a <i>declaration</i> (<code>int* p</code>) it means “p is a pointer”. In an <i>expression</i> (<code>*p = 50</code>) it means “go to the address”. & is the reverse: “give me the address”."
-    ],
-    [
-     "Is <code>int *p</code> different from <code>int* p</code>?",
-     "No, the compiler treats them the same. This roadmap writes <code>int* p</code>, and the <code>FILE *f</code> from Phase 3 is the same idea written the other way."
-    ],
-    [
-     "What does a pointer actually print as?",
-     "A big number like 0x00affc10, the address. You’ll see one in the debugger’s Watch window in the last concept."
-    ]
-   ],
-   "bridge": "You can hold an address and follow it. Next: <b>passing a pointer to a function</b>, and the <b>-></b> shortcut for structs."
-  },
-  {
-   "id": "by-pointer",
-   "title": "Passing by pointer and ->",
-   "kick": "Player* p · &hero · p->health",
-   "mins": 15,
-   "lang": "c",
-   "skills": [
-    "by-pointer",
-    "arrow"
-   ],
-   "builds": "Concepts 2 and 3: a copy can’t change the original, but an address can. Phase 3: scope and reset().",
-   "why": "Time to fix Phase 3’s reset problem. If a function takes a pointer, the caller passes an address with &, and the function reaches back through it. This is why player_move takes a Player* and not a Player.",
-   "code": "#include <stdio.h>\n\ntypedef struct {\n    int health;\n    int score;\n} Player;\n\nvoid reset(int* score) {\n    *score = 0;\n}\n\nvoid heal(Player* p, int amount) {\n    p->health = p->health + amount;\n}\n\nint main() {\n    Player hero;\n    hero.health = 60;\n    hero.score = 99;\n    reset(&hero.score);\n    heal(&hero, 25);\n    printf(\"health %d, score %d\\n\", hero.health, hero.score);\n    return 0;\n}",
-   "walk": [
-    [
-     8,
-     "The parameter is <code>int* score</code>: a pointer. The function receives an address, not a copy of the number."
-    ],
-    [
-     9,
-     "Goes to that address and writes 0. This is the reset() that Phase 3 couldn’t write."
-    ],
-    [
-     12,
-     "<b>Player* p</b>: heal gets the address of a Player, so it works on the real one."
-    ],
-    [
-     13,
-     "<b>p->health</b> is shorthand for <code>(*p).health</code>: follow the pointer, then take the health field. With a pointer, use the arrow."
-    ],
-    [
-     20,
-     "The caller passes <b>&hero.score</b>: the address of that one field."
-    ],
-    [
-     21,
-     "<b>&hero</b> is the address of the whole Player. heal follows it and changes the real hero."
-    ],
-    [
-     22,
-     "Prints <code>health 85, score 0</code>. Both changes stuck."
-    ]
-   ],
-   "model": "<b>Mental model:</b> giving someone your address instead of a photocopy of your house plans. They can walk in and move the furniture. Dot when you hold the thing (<code>hero.health</code>), arrow when you hold its address (<code>p->health</code>).",
-   "check": {
-    "q": "On line 13 you write p.health instead of p->health. What happens?",
-    "opts": [
-     "It works the same",
-     "The build fails",
-     "It heals a copy instead",
-     "It builds but prints garbage"
-    ],
-    "a": 1,
-    "hint": "The dot works on a struct you hold. What kind of thing is p?",
-    "why": "p is a Player*, an address, not a Player. The dot only works on a struct itself, so the compiler refuses. Pointer means arrow; actual struct means dot.",
-    "miss": {
-     "0": "They’re not interchangeable. The dot needs a struct, the arrow needs a pointer to one.",
-     "2": "It never gets that far: the compiler won’t accept the dot on a pointer at all.",
-     "3": "That never runs. The compiler rejects the line before the program exists."
-    }
-   },
-   "tryit": {
-    "task": "Write damage so it lowers the real player’s health.",
-    "code": "void damage(____ p, int amount) {\n    p____health = p____health - amount;\n}",
-    "answer": "Player*   then   ->   and   ->"
-   },
-   "qa": [
-    [
-     "Where do I put the & when I call?",
-     "On the variable you want changed: <code>heal(&hero, 25)</code>. If the parameter is a pointer, the caller passes an address."
-    ],
-    [
-     "Can I still just use (*p).health?",
-     "Yes, it means exactly the same thing. The arrow is the shorthand everyone uses."
-    ],
-    [
-     "Does this fix Phase 3’s array behaviour too?",
-     "It explains it. An array’s name already acts like the address of its first box, which is why insert_score changed your real array all along."
-    ]
-   ],
-   "bridge": "You can hand a function the real thing. Next: <b>NULL</b>, the address that points nowhere, and why you check for it."
-  },
-  {
-   "id": "null",
-   "title": "NULL",
-   "kick": "NULL · p == NULL · checking first",
-   "mins": 10,
-   "lang": "c",
-   "skills": [
-    "null"
-   ],
-   "builds": "Concept 4: functions that take a Player*. Phase 3: fopen returns NULL when a file can’t be opened.",
-   "why": "A pointer can hold “no address at all”: NULL. Following it crashes the program. Functions use NULL to say “I couldn’t give you one”, like fopen did in Phase 3, so you check before you follow a pointer.",
-   "code": "#define _CRT_SECURE_NO_WARNINGS\n#include <stdio.h>\n\ntypedef struct { int health; } Player;\n\nvoid heal(Player* p, int amount) {\n    if (p == NULL) {\n        printf(\"No player to heal\\n\");\n        return;\n    }\n    p->health = p->health + amount;\n}\n\nint main() {\n    Player hero;\n    hero.health = 50;\n    Player* target = NULL;\n    heal(target, 10);\n    target = &hero;\n    heal(target, 10);\n    printf(\"hero %d\\n\", hero.health);\n\n    FILE* f = fopen(\"no_such_file.txt\", \"r\");\n    if (f == NULL) {\n        printf(\"No file\\n\");\n    }\n    return 0;\n}",
-   "walk": [
-    [
-     7,
-     "The guard. <b>NULL</b> is a pointer that points at nothing. Check for it <i>before</i> using the pointer."
-    ],
-    [
-     9,
-     "Leave early. A bare <code>return;</code> is allowed in a void function."
-    ],
-    [
-     11,
-     "Only reached when p is a real address."
-    ],
-    [
-     17,
-     "target starts as NULL: a note with no address written on it."
-    ],
-    [
-     18,
-     "Passes NULL. The check on line 7 catches it and prints the message."
-    ],
-    [
-     19,
-     "Now target holds hero’s address."
-    ],
-    [
-     20,
-     "This time the check passes, so hero heals to 60."
-    ],
-    [
-     23,
-     "The same pattern from Phase 3. <code>FILE *</code> is a pointer too, and fopen returns NULL when it can’t open the file."
-    ]
-   ],
-   "model": "<b>Mental model:</b> a blank note. There’s no address on it, so walking to “wherever it says” gets you nowhere, fast. Look at the note before you set off.",
-   "check": {
-    "q": "You delete the whole if block (lines 7 to 10) and run. What happens at the heal(target, 10) call that comes after target = NULL?",
-    "opts": [
-     "It prints “No player to heal” anyway",
-     "It heals hero to 60",
-     "Nothing happens and the program carries on",
-     "The program almost certainly crashes"
-    ],
-    "a": 3,
-    "hint": "With no check, line 11 follows the address stored in p. What address is that?",
-    "why": "p->health follows the pointer, and NULL is address zero, which your program isn’t allowed to touch. Windows stops it with an access violation. Crashing right at the bug is the good outcome, and the check prevents it.",
-    "miss": {
-     "0": "That message only exists inside the if block you deleted.",
-     "1": "target is NULL at that point, not hero’s address. It’s only set on line 19.",
-     "2": "Following NULL isn’t harmless. The program is stopped for touching memory it doesn’t own."
-    }
-   },
-   "tryit": {
-    "task": "Add the guard so damage does nothing when p is NULL.",
-    "code": "void damage(Player* p, int amount) {\n    if (p ____ NULL) {\n        return;\n    }\n    p->health = p->health - amount;\n}",
-    "answer": "=="
-   },
-   "qa": [
-    [
-     "Why does NULL crash instead of doing nothing?",
-     "Address zero is never part of your program’s memory, so the operating system stops you the moment you touch it. That’s louder than silent wrong answers."
-    ],
-    [
-     "Should every pointer be checked?",
-     "Check the ones that can legitimately be NULL: things like fopen results. A pointer you got from <code>&hero</code> can never be NULL."
-    ],
-    [
-     "Is NULL the same as 0?",
-     "It’s a zero address. Write NULL when you mean a pointer, so the code says what you mean."
-    ]
-   ],
-   "bridge": "You can use pointers without crashing. Next: <b>enum</b>, readable names instead of magic numbers, for game states."
-  },
-  {
-   "id": "enum",
-   "title": "enum",
-   "kick": "typedef enum · named constants · switch",
-   "mins": 10,
-   "lang": "c",
-   "skills": [
-    "enum"
-   ],
-   "builds": "Phase 3: #define named constants. Phase 2: switch.",
-   "why": "A game is always in one state: menu, playing, game over. You could use 0, 1 and 2, but then nobody (including you in a week) knows what 2 means. An enum gives each number a name, and the compiler counts for you.",
-   "code": "#include <stdio.h>\n\ntypedef enum { STATE_MENU, STATE_PLAYING, STATE_GAMEOVER } GameState;\n\nint main() {\n    GameState state = STATE_PLAYING;\n    int lives = 0;\n\n    printf(\"MENU=%d PLAYING=%d GAMEOVER=%d\\n\", STATE_MENU, STATE_PLAYING, STATE_GAMEOVER);\n    if (lives == 0) {\n        state = STATE_GAMEOVER;\n    }\n    switch (state) {\n        case STATE_MENU:     printf(\"show menu\\n\"); break;\n        case STATE_PLAYING:  printf(\"run game\\n\"); break;\n        case STATE_GAMEOVER: printf(\"show game over\\n\"); break;\n    }\n    return 0;\n}",
-   "walk": [
-    [
-     3,
-     "<b>enum</b> makes a list of names. The compiler numbers them for you: 0, 1, 2. typedef gives the type a one-word name, like with struct."
-    ],
-    [
-     6,
-     "A GameState variable. It reads as a sentence: the state is playing."
-    ],
-    [
-     9,
-     "Each name is really just an int. This prints <code>MENU=0 PLAYING=1 GAMEOVER=2</code>."
-    ],
-    [
-     11,
-     "Assigning uses the names, never the numbers."
-    ],
-    [
-     13,
-     "switch on an enum reads like a menu of cases. This is the shape of a game’s main loop."
-    ],
-    [
-     16,
-     "lives is 0, so state became GAMEOVER and this case prints."
-    ]
-   ],
-   "model": "<b>Mental model:</b> named positions on a dial. You say “playing” and the dial clicks to position 1. You never have to remember that 1 means playing.",
-   "check": {
-    "q": "You add STATE_PAUSED between STATE_MENU and STATE_PLAYING in the enum. What does the first line print?",
-    "opts": [
-     "MENU=0 PLAYING=1 GAMEOVER=2",
-     "MENU=0 PAUSED=1 PLAYING=2 GAMEOVER=3",
-     "MENU=0 PLAYING=2 GAMEOVER=3",
-     "A compile error: the values changed"
-    ],
-    "a": 2,
-    "hint": "The compiler numbers names in order, one after another. What number does PLAYING get now?",
-    "why": "Names are numbered in the order written. With PAUSED in second place, PLAYING becomes 2 and GAMEOVER becomes 3. That’s why you use the names and never the raw numbers.",
-    "miss": {
-     "0": "That’s the old numbering. PAUSED now takes slot 1, pushing the rest along.",
-     "1": "The printf line only prints three values and has no PAUSED in it.",
-     "3": "Renumbering is fine. Code using the names keeps working, which is the whole point."
-    }
-   },
-   "tryit": {
-    "task": "Add STATE_PAUSED between PLAYING and GAMEOVER.",
-    "code": "typedef enum {\n    STATE_MENU,\n    STATE_PLAYING,\n    ____,\n    STATE_GAMEOVER\n} GameState;",
-    "answer": "STATE_PAUSED"
-   },
-   "qa": [
-    [
-     "How is this different from #define?",
-     "A #define is find-and-replace. An enum is a real type, the compiler numbers it for you, and debuggers show the name instead of a bare number."
-    ],
-    [
-     "Can I choose the numbers?",
-     "Yes: <code>STATE_MENU = 5</code>. Most of the time you don’t care what they are."
-    ],
-    [
-     "Where will I use this?",
-     "Phase 4.5 and Phase 6 both run on a state enum. The switch on it decides what the game does each frame."
-    ]
-   ],
-   "bridge": "You can name your states. Next: <b>header files</b>, splitting a struct and its functions across .h and .c files."
-  },
-  {
-   "id": "headers",
-   "title": "Header files and #pragma once",
-   "kick": "player.h · player.c · #include \"…\" · #pragma once",
-   "mins": 15,
-   "lang": "text",
-   "skills": [
-    "header-split",
-    "pragma-once"
-   ],
-   "builds": "Phase 3: prototypes tell the compiler a function exists before its body. Concept 1: the Player struct.",
-   "why": "One big file stops being readable. Splitting lets the functions live in player.c, while the struct and prototypes live in a header (.h). main.c only needs the header to know what exists, and every file that uses the player includes it.",
-   "code": "// ---- player.h ----\n#pragma once\n\ntypedef struct {\n    int health;\n} Player;\n\nvoid player_heal(Player* p, int amount);\n\n// ---- player.c ----\n#include \"player.h\"\n\nvoid player_heal(Player* p, int amount) {\n    p->health = p->health + amount;\n}\n\n// ---- main.c ----\n#include <stdio.h>\n#include \"player.h\"\n\nint main() {\n    Player hero;\n    hero.health = 50;\n    player_heal(&hero, 25);\n    printf(\"health %d\\n\", hero.health);\n    return 0;\n}",
-   "walk": [
-    [
-     2,
-     "<b>#pragma once</b> means “only read this file once per .c file”. Without it, a header included twice would define Player twice."
-    ],
-    [
-     4,
-     "The struct lives in the header, so every file that includes it knows what a Player is."
-    ],
-    [
-     8,
-     "A prototype, exactly like Phase 3’s. The header lists <i>what exists</i>: names and types, no bodies."
-    ],
-    [
-     11,
-     "Quotes mean “a header of mine, in this folder”. Angle brackets, like <code>&lt;stdio.h&gt;</code>, mean “from the compiler’s own library”."
-    ],
-    [
-     13,
-     "The body lives in player.c. Only this file needs it."
-    ],
-    [
-     19,
-     "main.c includes the header only. It never mentions player.c. It knows player_heal exists, and the body gets connected later."
-    ],
-    [
-     27,
-     "That’s all three files. Build every .c file together: <code>cl /W4 /WX main.c player.c /Fe:game.exe</code>. The next concept is what goes wrong if you forget one."
-    ]
-   ],
-   "model": "<b>Mental model:</b> the .h is the menu on the restaurant door, the .c is the kitchen. Customers (main.c) read the menu. They don’t need to see the kitchen.",
-   "check": {
-    "q": "You delete #pragma once, and main.c ends up including player.h twice (say through two other headers). What happens?",
-    "opts": [
-     "Nothing, it builds the same",
-     "The linker complains about player_heal",
-     "It builds, but player_heal runs twice",
-     "A compile error: Player is defined twice"
-    ],
-    "a": 3,
-    "hint": "What does the second include paste into the file?",
-    "why": "#include pastes the file’s text in. Twice means the typedef struct appears twice in one file, and the compiler refuses to define Player a second time. #pragma once stops the second paste.",
-    "miss": {
-     "0": "Nothing skips the second copy unless #pragma once (or a guard like it) is there.",
-     "1": "Linker errors are about missing function bodies. This fails earlier, in the compiler.",
-     "2": "A repeated prototype is harmless, and the function isn’t called by the include. The struct is the problem."
-    }
-   },
-   "tryit": {
-    "task": "Finish player.h: add the include guard, and the prototype for player_heal.",
-    "code": "// player.h\n____\n\ntypedef struct {\n    int health;\n} Player;\n\n____",
-    "answer": "#pragma once   and   void player_heal(Player* p, int amount);"
-   },
-   "qa": [
-    [
-     "What goes in a .h and what in a .c?",
-     "The .h holds declarations: structs, prototypes, #defines others need. The .c holds the bodies. Other files include the .h, never the .c."
-    ],
-    [
-     "Does player.c include player.h too?",
-     "Yes. It needs the Player struct, and including it also makes the compiler check that the prototype matches the body."
-    ],
-    [
-     "Why is it fine to change player.c without touching main.c?",
-     "main.c only depends on the header. Change a body and only that file needs recompiling."
-    ]
-   ],
-   "bridge": "You can split code into files. Next: <b>linker errors</b>, what you see when a file is missing from the build."
-  },
-  {
-   "id": "linker",
-   "title": "Linker errors (LNK2019)",
-   "kick": "compiler vs linker · unresolved external symbol",
-   "mins": 10,
-   "lang": "shell",
-   "skills": [
-    "linker"
-   ],
-   "builds": "Concept 7: main.c calls player_heal, which is declared in player.h and written in player.c.",
-   "why": "Building is two jobs. The compiler checks each .c file and promises “this function exists somewhere”. The linker then goes and collects every promise. Forget a .c file and the compiler is happy but the linker can’t find the body.",
-   "code": "> cl /W4 /WX /Zi main.c /Fe:game.exe\nmain.c\nmain.obj : error LNK2019: unresolved external symbol _player_heal referenced in function _main\ngame.exe : fatal error LNK1120: 1 unresolved externals\n\n> cl /W4 /WX /Zi main.c player.c /Fe:game.exe\nmain.c\nplayer.c\n(builds game.exe)",
-   "walk": [
-    [
-     1,
-     "Only main.c is on the command line. player.c is not part of this build. (Compiler and linker banner lines are left out.)"
-    ],
-    [
-     2,
-     "main.c compiled fine. The prototype in player.h was enough for the compiler to accept the call."
-    ],
-    [
-     3,
-     "<b>LNK2019</b>: the <b>linker</b> looked for the body of player_heal and found none. The leading underscore is how 32-bit builds label function names."
-    ],
-    [
-     4,
-     "LNK1120 is the summary: one unresolved name, so no game.exe."
-    ],
-    [
-     6,
-     "The fix: list <i>every</i> .c file. Now player.c is compiled too, and the linker finds the body."
-    ],
-    [
-     9,
-     "No errors this time, and game.exe exists. In build.bat the list of files is the SOURCES line: add the file there and every build includes it."
-    ]
-   ],
-   "model": "<b>Mental model:</b> the compiler checks each chapter on its own and accepts the table of contents. The linker goes to bind the book and finds chapter 7 is missing from the pile.",
-   "check": {
-    "q": "You see LNK2019: unresolved external symbol _player_heal. What is the right fix?",
-    "opts": [
-     "Add #pragma once to player.h",
-     "Add player.c to the cl command",
-     "Add another prototype for player_heal to main.c",
-     "Remove /WX so warnings stop failing the build"
-    ],
-    "a": 1,
-    "hint": "The prototype is fine (the compiler passed). What is missing is the function’s body. Where does it live?",
-    "why": "The body is in player.c, and the build never compiled it. Add player.c to the command line (or to SOURCES in build.bat) and the linker can find it.",
-    "miss": {
-     "0": "#pragma once is about double includes. The compiler already passed.",
-     "2": "The compiler already knows the function exists. A second promise doesn’t supply a body.",
-     "3": "LNK2019 is an error, not a warning. /WX has nothing to do with it."
-    }
-   },
-   "tryit": {
-    "task": "Fix the command so both files are built.",
-    "code": "cl /W4 /WX /Zi main.c ____ /Fe:game.exe",
-    "answer": "player.c"
-   },
-   "qa": [
-    [
-     "What’s the difference between a compiler error and a linker error?",
-     "Compiler: “I don’t understand this line.” Linker: “I understood everything, but I can’t find this function’s body.” LNK numbers are the linker’s."
-    ],
-    [
-     "I get “unresolved external symbol” for a function I did write.",
-     "Check two things: the .c file is in the build, and the name is spelled exactly the same, capitals included, in the call, the prototype and the body."
-    ],
-    [
-     "What was the .obj file from Phase 1?",
-     "The compiler’s output for one .c file. The linker joins the .obj files into one .exe."
-    ]
-   ],
-   "bridge": "You can read a linker error. Last concept: <b>the debugger</b>, where you watch a pointer change instead of guessing."
-  },
-  {
-   "id": "debugger",
-   "title": "The debugger",
-   "kick": "F9 · F5 · F10 · F11 · Watch",
-   "mins": 15,
-   "lang": "c",
-   "skills": [
-    "debugger"
-   ],
-   "builds": "Concept 4: damage works through a pointer. Phase 1: /Zi in build.bat writes the symbol file the debugger reads.",
-   "why": "printf debugging means edit, rebuild, run, read, repeat. A debugger freezes the program mid-run so you can look at everything at once. It’s also the best way to see a pointer: you can watch the real hero change from inside a function that never names it.",
-   "code": "#include <stdio.h>\n\ntypedef struct {\n    int health;\n} Player;\n\nvoid damage(Player* p, int amount) {\n    p->health = p->health - amount;\n}\n\nint main() {\n    Player hero;\n    hero.health = 100;\n    damage(&hero, 30);\n    damage(&hero, 30);\n    printf(\"health %d\\n\", hero.health);\n    return 0;\n}",
-   "walk": [
-    [
-     14,
-     "<b>F9</b> with the cursor here puts a breakpoint on the line: a red dot. The program will stop <i>before</i> this line runs."
-    ],
-    [
-     14,
-     "Run build.bat first (it keeps /Zi and /Od), then <b>F5</b>. The program starts and freezes here with a yellow arrow. In the Watch window, <code>hero.health</code> shows 100."
-    ],
-    [
-     14,
-     "<b>F10</b> steps over: it runs the whole line, damage included, and stops on line 15. Watch now shows 70."
-    ],
-    [
-     15,
-     "<b>F11</b> steps into: the arrow jumps to the top of damage (line 7, where the brace is). Press F10 once to reach line 8. Watch <code>p</code> (an address like 0x00affc10), <code>*p</code> and <code>p->health</code>."
-    ],
-    [
-     8,
-     "Press F10 here: this line runs. <code>p->health</code> drops to 40, and <code>hero.health</code> would show 40 too if you clicked main in the Call Stack. Same box, two names."
-    ],
-    [
-     16,
-     "Press <b>F5</b> to run on to the end, or <b>Shift+F5</b> to stop."
-    ]
-   ],
-   "model": "<b>Mental model:</b> a pause button with X-ray vision. You freeze the game on a line and look inside every box without changing anything.",
-   "check": {
-    "q": "You put a breakpoint on line 15 and press F5. Then you press F11 to go inside damage, and F10 until the yellow arrow is on the closing brace (line 9). What does p->health show in the Watch window?",
-    "opts": [
-     "70",
-     "100",
-     "40",
-     "It can’t be shown: p isn’t in scope yet"
-    ],
-    "a": 2,
-    "hint": "What does line 8 do to p->health?",
-    "why": "Before line 15 runs, health is 70. Inside damage, line 8 subtracts 30. By the time the arrow reaches the closing brace, line 8 has run, so p->health shows 40.",
-    "miss": {
-     "0": "70 is the value before line 8 runs. The arrow is past it by the closing brace.",
-     "1": "100 was the value before line 14. By line 15 the first damage call had already run.",
-     "3": "F11 stepped inside damage, so p exists and is in scope. Back in main, p wouldn’t be."
-    }
-   },
-   "tryit": {
-    "task": "Match the key to the job: set a breakpoint, start debugging, run one line without going inside a function.",
-    "code": "____  breakpoint on this line\n____  start debugging (or keep going)\n____  step over",
-    "answer": "F9, F5, F10"
-   },
-   "qa": [
-    [
-     "My breakpoints are hollow circles.",
-     "Usually a stale exe: you edited the code and pressed F5 without running build first. F5 does not compile. Check /Zi is in build.bat and game.pdb exists next to game.exe."
-    ],
-    [
-     "F11 dropped me into a screen of assembly.",
-     "You stepped into a library function like printf. You don’t have its source. Shift+F11 steps back out; use F10 on lines that call library functions."
-    ],
-    [
-     "How do I set the debugger up?",
-     "A one-time config file called launch.json tells VS Code which .exe to run. The Build page for this phase has the four steps."
-    ]
-   ],
-   "bridge": "That’s every concept in Phase 3.5. Next: <b>Phase 4, Git &amp; Your Partner</b>, sharing this code without stepping on each other."
-  }
- ]
 }

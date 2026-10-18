@@ -1,0 +1,1187 @@
+{
+ "update-render": {
+  "scene": "p6-ref",
+  "steps": [
+   {
+    "line": 14,
+    "ms": 1400,
+    "note": "g holds the whole game: x is 0 and paused is 0. The referee (update) changes it, and the camera (render) only films it.",
+    "do": [
+     {
+      "a": "game"
+     }
+    ]
+   },
+   {
+    "line": 15,
+    "ms": 800,
+    "note": "Frame 1 begins.",
+    "do": [
+     {
+      "a": "frame",
+      "n": 1
+     }
+    ]
+   },
+   {
+    "line": 16,
+    "ms": 900,
+    "note": "Frame 1 is not 3 or 4, so paused stays 0.",
+    "do": [
+     {
+      "a": "paused",
+      "n": 1,
+      "to": 0
+     }
+    ]
+   },
+   {
+    "line": 17,
+    "ms": 900,
+    "note": "paused is 0, so !paused is true: the referee is called.",
+    "do": [
+     {
+      "a": "ref",
+      "rest": false
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 1200,
+    "note": "update adds 10 to x. The referee has changed the game: x is 10.",
+    "do": [
+     {
+      "a": "upd",
+      "to": 10
+     }
+    ]
+   },
+   {
+    "line": 18,
+    "ms": 800,
+    "note": "Now render is called: the camera comes up.",
+    "do": []
+   },
+   {
+    "line": 10,
+    "ms": 1100,
+    "note": "render prints x, and the screen shows the player at 10. The camera changed nothing.",
+    "do": [
+     {
+      "a": "snap",
+      "v": 10
+     }
+    ],
+    "out": "x = 10\n",
+    "outAt": 0.4
+   },
+   {
+    "line": 16,
+    "ms": 900,
+    "note": "Frame 2: still not paused.",
+    "do": [
+     {
+      "a": "frame",
+      "n": 2
+     },
+     {
+      "a": "paused",
+      "n": 2,
+      "to": 0
+     }
+    ]
+   },
+   {
+    "line": 17,
+    "ms": 800,
+    "note": "Not paused, so the referee works again.",
+    "do": []
+   },
+   {
+    "line": 6,
+    "ms": 1100,
+    "note": "update adds 10: x is 20.",
+    "do": [
+     {
+      "a": "upd",
+      "to": 20
+     }
+    ]
+   },
+   {
+    "line": 10,
+    "ms": 1100,
+    "note": "The camera films frame 2: x = 20.",
+    "do": [
+     {
+      "a": "snap",
+      "v": 20
+     }
+    ],
+    "out": "x = 20\n",
+    "outAt": 0.4
+   },
+   {
+    "line": 16,
+    "ms": 1100,
+    "note": "Frame 3 is one of the paused frames: paused becomes 1.",
+    "do": [
+     {
+      "a": "frame",
+      "n": 3
+     },
+     {
+      "a": "paused",
+      "n": 3,
+      "to": 1
+     }
+    ]
+   },
+   {
+    "line": 17,
+    "ms": 1300,
+    "note": "!paused is false, so update is skipped. The referee sits this frame out and x does not change.",
+    "do": [
+     {
+      "a": "ref",
+      "rest": true
+     },
+     {
+      "a": "ban",
+      "t": "paused: the referee sits out",
+      "k": "warn"
+     }
+    ]
+   },
+   {
+    "line": 10,
+    "ms": 1100,
+    "note": "render still runs on a paused frame, so the screen keeps drawing. x is still 20.",
+    "do": [
+     {
+      "a": "snap",
+      "v": 20
+     }
+    ],
+    "out": "x = 20\n",
+    "outAt": 0.4
+   },
+   {
+    "line": 16,
+    "ms": 900,
+    "note": "Frame 4 is paused too.",
+    "do": [
+     {
+      "a": "frame",
+      "n": 4
+     },
+     {
+      "a": "paused",
+      "n": 4,
+      "to": 1
+     }
+    ]
+   },
+   {
+    "line": 17,
+    "ms": 800,
+    "note": "Skipped again: the referee stays off duty.",
+    "do": []
+   },
+   {
+    "line": 10,
+    "ms": 1100,
+    "note": "The camera films the same picture: x = 20.",
+    "do": [
+     {
+      "a": "snap",
+      "v": 20
+     }
+    ],
+    "out": "x = 20\n",
+    "outAt": 0.4
+   },
+   {
+    "line": 16,
+    "ms": 1000,
+    "note": "Frame 5: paused goes back to 0.",
+    "do": [
+     {
+      "a": "frame",
+      "n": 5
+     },
+     {
+      "a": "paused",
+      "n": 5,
+      "to": 0
+     },
+     {
+      "a": "ban",
+      "t": ""
+     }
+    ]
+   },
+   {
+    "line": 17,
+    "ms": 900,
+    "note": "Not paused, so the referee is back at work.",
+    "do": [
+     {
+      "a": "ref",
+      "rest": false
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 1100,
+    "note": "update adds 10: x is 30.",
+    "do": [
+     {
+      "a": "upd",
+      "to": 30
+     }
+    ]
+   },
+   {
+    "line": 10,
+    "ms": 1100,
+    "note": "The last frame films x = 30.",
+    "do": [
+     {
+      "a": "snap",
+      "v": 30
+     }
+    ],
+    "out": "x = 30\n",
+    "outAt": 0.4
+   },
+   {
+    "line": 20,
+    "ms": 1300,
+    "note": "The loop is over. update ran on 3 frames, render ran on all 5.",
+    "do": [
+     {
+      "a": "ban",
+      "t": "update ran 3 times, render ran 5 times"
+     }
+    ]
+   }
+  ]
+ },
+ "delta-time": {
+  "scene": "p6-dt",
+  "steps": [
+   {
+    "line": 13,
+    "ms": 1400,
+    "note": "Both PCs play the same one second of game, moving 120 pixels per second. First the old PC, at 30 frames per second.",
+    "do": [
+     {
+      "a": "start",
+      "i": 0
+     }
+    ]
+   },
+   {
+    "line": 4,
+    "ms": 800,
+    "note": "x starts at 0.",
+    "do": []
+   },
+   {
+    "line": 5,
+    "ms": 1300,
+    "note": "dt is the length of one frame: 1/30 of a second. Here are the 30 frame slices.",
+    "do": [
+     {
+      "a": "dt",
+      "i": 0
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 900,
+    "note": "The loop will go round 30 times, once per frame.",
+    "do": []
+   },
+   {
+    "line": 7,
+    "ms": 1200,
+    "note": "speed x dt is 120 x (1/30) = 4. Each frame moves the player just 4 pixels.",
+    "do": [
+     {
+      "a": "step",
+      "i": 0,
+      "k": 1,
+      "x": 4
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 2800,
+    "note": "The other 29 frames do the same, shown fast: 30 hops of 4 pixels make 120.",
+    "do": [
+     {
+      "a": "step",
+      "i": 0,
+      "k": 30,
+      "x": 120
+     }
+    ]
+   },
+   {
+    "line": 9,
+    "ms": 900,
+    "note": "x is 120.0, and it is returned.",
+    "do": [
+     {
+      "a": "ret",
+      "i": 0
+     }
+    ]
+   },
+   {
+    "line": 13,
+    "ms": 900,
+    "note": "printf shows the old PC's distance.",
+    "do": [],
+    "out": "30 fps: 120.0\n",
+    "outAt": 0.4
+   },
+   {
+    "line": 14,
+    "ms": 1200,
+    "note": "Now the fast PC: 60 frames per second, the same second, the same speed.",
+    "do": [
+     {
+      "a": "start",
+      "i": 1
+     }
+    ]
+   },
+   {
+    "line": 4,
+    "ms": 800,
+    "note": "x starts at 0.",
+    "do": []
+   },
+   {
+    "line": 5,
+    "ms": 1200,
+    "note": "dt is now 1/60, so each frame is half as long, and there are 60 slices.",
+    "do": [
+     {
+      "a": "dt",
+      "i": 1
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 1200,
+    "note": "120 x (1/60) = 2. Each frame moves only 2 pixels: smaller hops, but twice as many.",
+    "do": [
+     {
+      "a": "step",
+      "i": 1,
+      "k": 1,
+      "x": 2
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 2800,
+    "note": "The other 59 frames do the same, shown fast: 60 hops of 2 pixels.",
+    "do": [
+     {
+      "a": "step",
+      "i": 1,
+      "k": 60,
+      "x": 120
+     }
+    ]
+   },
+   {
+    "line": 9,
+    "ms": 900,
+    "note": "x is 120.0 here too.",
+    "do": [
+     {
+      "a": "ret",
+      "i": 1
+     }
+    ]
+   },
+   {
+    "line": 14,
+    "ms": 1100,
+    "note": "The fast PC covers the same distance.",
+    "do": [
+     {
+      "a": "ban",
+      "t": "same distance in one second"
+     }
+    ],
+    "out": "60 fps: 120.0\n",
+    "outAt": 0.4
+   },
+   {
+    "line": 15,
+    "ms": 1300,
+    "note": "Slow frames hop far, fast frames hop short, and the player ends up in the same place. That is delta time.",
+    "do": []
+   }
+  ]
+ },
+ "next-state": {
+  "scene": "p6-states",
+  "steps": [
+   {
+    "line": 7,
+    "ms": 1100,
+    "note": "The game starts in MENU. The token shows which state the game is in.",
+    "do": []
+   },
+   {
+    "line": 9,
+    "ms": 1200,
+    "note": "Frame 1. next_state starts as a copy of state: MENU. It is a sticky note for the next state.",
+    "do": [
+     {
+      "a": "frame",
+      "n": 1
+     },
+     {
+      "a": "nx",
+      "to": 0
+     }
+    ]
+   },
+   {
+    "line": 10,
+    "ms": 1000,
+    "note": "The switch looks at the current state and runs only that state's code: MENU.",
+    "do": [
+     {
+      "a": "spot",
+      "i": 0
+     }
+    ]
+   },
+   {
+    "line": 12,
+    "ms": 900,
+    "note": "Is frame 2? No, it is frame 1, so next_state stays MENU.",
+    "do": []
+   },
+   {
+    "line": 20,
+    "ms": 1100,
+    "note": "printf shows this frame's state.",
+    "do": [
+     {
+      "a": "say",
+      "t": "frame 1: MENU"
+     }
+    ],
+    "out": "frame 1: MENU\n",
+    "outAt": 0.3
+   },
+   {
+    "line": 21,
+    "ms": 1000,
+    "note": "state = next_state: still MENU.",
+    "do": [
+     {
+      "a": "swap",
+      "to": 0
+     }
+    ]
+   },
+   {
+    "line": 9,
+    "ms": 1000,
+    "note": "Frame 2. The note is reset to the current state.",
+    "do": [
+     {
+      "a": "frame",
+      "n": 2
+     },
+     {
+      "a": "nx",
+      "to": 0
+     },
+     {
+      "a": "spot",
+      "i": null
+     }
+    ]
+   },
+   {
+    "line": 12,
+    "ms": 1300,
+    "note": "Frame 2 in MENU: yes! We write PLAYING on the sticky note. The token has not moved yet.",
+    "do": [
+     {
+      "a": "spot",
+      "i": 0
+     },
+     {
+      "a": "nx",
+      "to": 1
+     }
+    ]
+   },
+   {
+    "line": 20,
+    "ms": 1200,
+    "note": "The frame still prints MENU, because everything in this frame ran as MENU.",
+    "do": [
+     {
+      "a": "say",
+      "t": "frame 2: MENU"
+     }
+    ],
+    "out": "frame 2: MENU\n",
+    "outAt": 0.3
+   },
+   {
+    "line": 21,
+    "ms": 1400,
+    "note": "The turn is over, so now state becomes PLAYING. The token hops across.",
+    "do": [
+     {
+      "a": "swap",
+      "to": 1
+     }
+    ]
+   },
+   {
+    "line": 9,
+    "ms": 1000,
+    "note": "Frame 3. The note is reset to the current state: PLAYING.",
+    "do": [
+     {
+      "a": "frame",
+      "n": 3
+     },
+     {
+      "a": "nx",
+      "to": 1
+     },
+     {
+      "a": "spot",
+      "i": null
+     }
+    ]
+   },
+   {
+    "line": 15,
+    "ms": 1100,
+    "note": "The switch runs PLAYING's code. Is frame 4? No, so nothing changes.",
+    "do": [
+     {
+      "a": "spot",
+      "i": 1
+     }
+    ]
+   },
+   {
+    "line": 20,
+    "ms": 1100,
+    "note": "The frame prints PLAYING.",
+    "do": [
+     {
+      "a": "say",
+      "t": "frame 3: PLAYING"
+     }
+    ],
+    "out": "frame 3: PLAYING\n",
+    "outAt": 0.3
+   },
+   {
+    "line": 21,
+    "ms": 1000,
+    "note": "state = next_state: still PLAYING.",
+    "do": [
+     {
+      "a": "swap",
+      "to": 1
+     }
+    ]
+   },
+   {
+    "line": 9,
+    "ms": 1000,
+    "note": "Frame 4. The note is PLAYING again.",
+    "do": [
+     {
+      "a": "frame",
+      "n": 4
+     },
+     {
+      "a": "nx",
+      "to": 1
+     },
+     {
+      "a": "spot",
+      "i": null
+     }
+    ]
+   },
+   {
+    "line": 15,
+    "ms": 1300,
+    "note": "Frame 4 in PLAYING: yes! We write GAME_OVER on the sticky note.",
+    "do": [
+     {
+      "a": "spot",
+      "i": 1
+     },
+     {
+      "a": "nx",
+      "to": 2
+     }
+    ]
+   },
+   {
+    "line": 20,
+    "ms": 1100,
+    "note": "This frame still prints PLAYING.",
+    "do": [
+     {
+      "a": "say",
+      "t": "frame 4: PLAYING"
+     }
+    ],
+    "out": "frame 4: PLAYING\n",
+    "outAt": 0.3
+   },
+   {
+    "line": 21,
+    "ms": 1400,
+    "note": "Turn over: state becomes GAME_OVER.",
+    "do": [
+     {
+      "a": "swap",
+      "to": 2
+     }
+    ]
+   },
+   {
+    "line": 9,
+    "ms": 1000,
+    "note": "Frame 5. The note is GAME_OVER.",
+    "do": [
+     {
+      "a": "frame",
+      "n": 5
+     },
+     {
+      "a": "nx",
+      "to": 2
+     },
+     {
+      "a": "spot",
+      "i": null
+     }
+    ]
+   },
+   {
+    "line": 18,
+    "ms": 1000,
+    "note": "GAME_OVER has nothing to do, so it just breaks out of the switch.",
+    "do": [
+     {
+      "a": "spot",
+      "i": 2
+     }
+    ]
+   },
+   {
+    "line": 20,
+    "ms": 1100,
+    "note": "The frame prints GAME_OVER.",
+    "do": [
+     {
+      "a": "say",
+      "t": "frame 5: GAME_OVER"
+     }
+    ],
+    "out": "frame 5: GAME_OVER\n",
+    "outAt": 0.3
+   },
+   {
+    "line": 21,
+    "ms": 1000,
+    "note": "state = next_state: GAME_OVER stays.",
+    "do": [
+     {
+      "a": "swap",
+      "to": 2
+     }
+    ]
+   },
+   {
+    "line": 23,
+    "ms": 1300,
+    "note": "The loop ends. The state only ever changed at the end of a frame.",
+    "do": [
+     {
+      "a": "ban",
+      "t": "state changed only at the end of a frame"
+     }
+    ]
+   }
+  ]
+ },
+ "aabb": {
+  "scene": "p6-aabb",
+  "steps": [
+   {
+    "line": 11,
+    "ms": 1200,
+    "note": "The player box: top-left corner (10, 10), 20 wide and 20 tall. So it covers x 10 to 30 and y 10 to 30.",
+    "do": [
+     {
+      "a": "declare",
+      "b": "player"
+     }
+    ]
+   },
+   {
+    "line": 12,
+    "ms": 1000,
+    "note": "corner starts at (25, 25). It overlaps the player's bottom right.",
+    "do": [
+     {
+      "a": "declare",
+      "b": "corner"
+     }
+    ]
+   },
+   {
+    "line": 13,
+    "ms": 1000,
+    "note": "touching starts at x = 30, exactly where the player ends.",
+    "do": [
+     {
+      "a": "declare",
+      "b": "touching"
+     }
+    ]
+   },
+   {
+    "line": 14,
+    "ms": 1000,
+    "note": "far_away sits at (50, 50), well clear of the player.",
+    "do": [
+     {
+      "a": "declare",
+      "b": "far_away"
+     }
+    ]
+   },
+   {
+    "line": 15,
+    "ms": 1000,
+    "note": "inside is a tiny 5 by 5 box at (15, 15), fully inside the player.",
+    "do": [
+     {
+      "a": "declare",
+      "b": "inside"
+     }
+    ]
+   },
+   {
+    "line": 16,
+    "ms": 1200,
+    "note": "overlap(player, corner): a is the player, b is corner. The four tests below must all be true.",
+    "do": [
+     {
+      "a": "focus",
+      "b": "corner"
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 2200,
+    "note": "x axis: the player's left edge (10) is left of corner's right edge (45), and its right edge (30) is right of corner's left edge (25). The x shadows overlap.",
+    "do": [
+     {
+      "a": "cond",
+      "i": 0,
+      "r": "yes",
+      "t": "10 < 45",
+      "len": 0.45
+     },
+     {
+      "a": "cond",
+      "i": 1,
+      "r": "yes",
+      "t": "30 > 25",
+      "at": 0.5,
+      "len": 0.45
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 2000,
+    "note": "The same two tests for y both pass: the y shadows overlap too.",
+    "do": [
+     {
+      "a": "cond",
+      "i": 2,
+      "r": "yes",
+      "t": "10 < 45",
+      "len": 0.45
+     },
+     {
+      "a": "cond",
+      "i": 3,
+      "r": "yes",
+      "t": "30 > 25",
+      "at": 0.5,
+      "len": 0.45
+     }
+    ]
+   },
+   {
+    "line": 16,
+    "ms": 1000,
+    "note": "All four are true, so overlap returns 1.",
+    "do": [
+     {
+      "a": "verdict",
+      "v": 1
+     }
+    ],
+    "out": "1\n",
+    "outAt": 0.4
+   },
+   {
+    "line": 17,
+    "ms": 1000,
+    "note": "Next: overlap(player, touching).",
+    "do": [
+     {
+      "a": "focus",
+      "b": "touching"
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 2200,
+    "note": "10 < 50 is true, but 30 > 30 is false: the edges only meet, they do not overlap. Because of &&, C stops here and the y tests never run.",
+    "do": [
+     {
+      "a": "cond",
+      "i": 0,
+      "r": "yes",
+      "t": "10 < 50",
+      "len": 0.45
+     },
+     {
+      "a": "cond",
+      "i": 1,
+      "r": "no",
+      "t": "30 > 30",
+      "at": 0.5,
+      "len": 0.4
+     },
+     {
+      "a": "cond",
+      "i": 2,
+      "r": "skip",
+      "t": "",
+      "at": 0.92,
+      "len": 0.04
+     },
+     {
+      "a": "cond",
+      "i": 3,
+      "r": "skip",
+      "t": "",
+      "at": 0.96,
+      "len": 0.04
+     }
+    ]
+   },
+   {
+    "line": 17,
+    "ms": 1000,
+    "note": "One test failed, so overlap returns 0.",
+    "do": [
+     {
+      "a": "verdict",
+      "v": 0
+     }
+    ],
+    "out": "0\n",
+    "outAt": 0.4
+   },
+   {
+    "line": 18,
+    "ms": 1000,
+    "note": "Next: overlap(player, far_away).",
+    "do": [
+     {
+      "a": "focus",
+      "b": "far_away"
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 2200,
+    "note": "The player ends at x = 30 but far_away starts at 50, so 30 > 50 is false. Nothing more to check.",
+    "do": [
+     {
+      "a": "cond",
+      "i": 0,
+      "r": "yes",
+      "t": "10 < 60",
+      "len": 0.45
+     },
+     {
+      "a": "cond",
+      "i": 1,
+      "r": "no",
+      "t": "30 > 50",
+      "at": 0.5,
+      "len": 0.4
+     },
+     {
+      "a": "cond",
+      "i": 2,
+      "r": "skip",
+      "t": "",
+      "at": 0.92,
+      "len": 0.04
+     },
+     {
+      "a": "cond",
+      "i": 3,
+      "r": "skip",
+      "t": "",
+      "at": 0.96,
+      "len": 0.04
+     }
+    ]
+   },
+   {
+    "line": 18,
+    "ms": 1000,
+    "note": "overlap returns 0.",
+    "do": [
+     {
+      "a": "verdict",
+      "v": 0
+     }
+    ],
+    "out": "0\n",
+    "outAt": 0.4
+   },
+   {
+    "line": 19,
+    "ms": 1000,
+    "note": "Last: overlap(player, inside).",
+    "do": [
+     {
+      "a": "focus",
+      "b": "inside"
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 2100,
+    "note": "The player's x range (10 to 30) contains inside's (15 to 20), so both x tests pass.",
+    "do": [
+     {
+      "a": "cond",
+      "i": 0,
+      "r": "yes",
+      "t": "10 < 20",
+      "len": 0.45
+     },
+     {
+      "a": "cond",
+      "i": 1,
+      "r": "yes",
+      "t": "30 > 15",
+      "at": 0.5,
+      "len": 0.45
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 1900,
+    "note": "And both y tests pass.",
+    "do": [
+     {
+      "a": "cond",
+      "i": 2,
+      "r": "yes",
+      "t": "10 < 20",
+      "len": 0.45
+     },
+     {
+      "a": "cond",
+      "i": 3,
+      "r": "yes",
+      "t": "30 > 15",
+      "at": 0.5,
+      "len": 0.45
+     }
+    ]
+   },
+   {
+    "line": 19,
+    "ms": 1000,
+    "note": "All four are true, so overlap returns 1: a box fully inside still counts as a hit.",
+    "do": [
+     {
+      "a": "verdict",
+      "v": 1
+     }
+    ],
+    "out": "1\n",
+    "outAt": 0.4
+   },
+   {
+    "line": 20,
+    "ms": 1100,
+    "note": "Done. Two boxes hit only when their shadows overlap on both axes.",
+    "do": []
+   }
+  ]
+ },
+ "textout": {
+  "scene": "p6-label",
+  "steps": [
+   {
+    "line": 5,
+    "ms": 1400,
+    "note": "score is a plain int: 12. The window will show it as text. This program runs until you close the window, so we film one paint and stop.",
+    "do": [
+     {
+      "a": "score"
+     }
+    ]
+   },
+   {
+    "line": 30,
+    "ms": 1200,
+    "note": "CreateWindow makes a visible window titled Score (WS_VISIBLE shows it straight away).",
+    "do": [
+     {
+      "a": "win"
+     }
+    ]
+   },
+   {
+    "line": 31,
+    "ms": 1200,
+    "note": "GetMessage picks up a WM_PAINT message and DispatchMessage hands it to WndProc.",
+    "do": [
+     {
+      "a": "msg",
+      "m": "WM_PAINT"
+     }
+    ]
+   },
+   {
+    "line": 8,
+    "ms": 900,
+    "note": "WndProc checks: is this WM_PAINT? Yes, so we draw.",
+    "do": []
+   },
+   {
+    "line": 10,
+    "ms": 1000,
+    "note": "BeginPaint gives us hdc, the surface to draw on.",
+    "do": [
+     {
+      "a": "hdc",
+      "on": true
+     }
+    ]
+   },
+   {
+    "line": 11,
+    "ms": 1000,
+    "note": "buf is 32 character boxes, holding junk for now.",
+    "do": [
+     {
+      "a": "cells"
+     }
+    ]
+   },
+   {
+    "line": 12,
+    "ms": 1900,
+    "note": "snprintf builds \"Score: 12\" in buf, one character per box, and ends it with a zero. It can never write past the 32 boxes.",
+    "do": [
+     {
+      "a": "snp"
+     }
+    ]
+   },
+   {
+    "line": 13,
+    "ms": 2400,
+    "note": "strlen counts the 9 characters. TextOut then sticks them on the window, 10 pixels across and 10 down, using hdc.",
+    "do": [
+     {
+      "a": "len",
+      "len": 0.3
+     },
+     {
+      "a": "draw",
+      "at": 0.35,
+      "len": 0.65
+     }
+    ]
+   },
+   {
+    "line": 14,
+    "ms": 900,
+    "note": "EndPaint finishes painting.",
+    "do": [
+     {
+      "a": "hdc",
+      "on": false
+     }
+    ]
+   },
+   {
+    "line": 15,
+    "ms": 900,
+    "note": "return 0 says the message was handled.",
+    "do": [
+     {
+      "a": "msg",
+      "m": null
+     }
+    ]
+   },
+   {
+    "line": 31,
+    "ms": 1300,
+    "note": "Back to GetMessage, waiting for the next message. The window shows Score: 12. The loop runs until the window is closed; we stop the film here.",
+    "do": []
+   }
+  ],
+  "prompt": ""
+ }
+}

@@ -169,6 +169,14 @@
     [
      "Are there other types?",
      "Teams add their own. <code>chore</code> (housekeeping like .gitignore) and <code>test</code> are common. Pick a short list with Person A and stick to it."
+    ],
+    [
+     "Why does Git make me git add before I commit?",
+     "So you choose what goes into each snapshot. If you fixed a bug and half-started a feature in one sitting, staging lets you commit just the fix with a message that says so. The staging area is the “this goes in the photo” pile."
+    ],
+    [
+     "What actually is a commit?",
+     "A full snapshot of every tracked file, plus a note of which commit came before it, who made it and why. The long hex string (<code>a3f9c2e…</code>) is a fingerprint of all that, so change one byte and it changes. That is why history can’t be changed without every later fingerprint changing too."
     ]
    ],
    "bridge": "You can write messages worth reading. Next: <b>branches</b>, so new work doesn’t break the game both of you run."
@@ -488,11 +496,15 @@
     ],
     [
      "What else should be in it?",
-     "The starter list on the Phase 4 page also covers .ilk, .exp, .lib, .dll and build folders like Debug/. Paste it in your repo root."
+     "The starter list just below this concept also covers .ilk, .exp, .lib, .dll and build folders like Debug/. Paste it in your repo root."
     ],
     [
      "I added a rule and nothing changed.",
      "Check the file is named exactly <code>.gitignore</code> (no .txt on the end) and sits in the repo’s top folder. Then check whether the file was tracked before."
+    ],
+    [
+     "Why keep .exe, .obj and .pdb out of the repo?",
+     "They’re generated, so anyone can rebuild them in seconds. They’re binary, so Git can’t merge them, and every version is kept forever. Commit the recipe (your .c files and build.bat), not the cake."
     ]
    ],
    "bridge": "That’s every concept in Phase 4. Next: <b>Phase 4.5</b>, the ASCII Runner."

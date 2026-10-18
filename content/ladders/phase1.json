@@ -102,6 +102,14 @@
     [
      "Does the spacing matter?",
      "Not to the compiler. Indenting the lines inside { } is for you: it shows what belongs to main at a glance."
+    ],
+    [
+     "What does the .h in stdio.h mean?",
+     "It is a <em>header</em>. It holds a promise: a function called printf exists and this is how you call it. The compiler checks your calls against that promise, and the real code is added later when the program is linked. Phase 3.5 has you write your own header."
+    ],
+    [
+     "Why is the compiler so strict about a missing ; or a misspelled name?",
+     "The computer only understands machine code, and the compiler has to translate with no guessing. It stops rather than produce something wrong, which catches mistakes before they become bugs in a running game."
     ]
    ],
    "bridge": "You can write a program. Next: <b>turning it into something Windows can run</b>, with cl."
@@ -172,6 +180,14 @@
     [
      "Can I name the .exe something else?",
      "Yes. Concept 5 shows the option for that and puts it in build.bat, so you never have to type it."
+    ],
+    [
+     "Why does C need a compile step when Python just runs?",
+     "Python works out what each line means while it runs. C does that work once up front: cl turns the whole file into machine code, so the .exe runs with no translator in the way. That speed is a big reason games are written in C and C++. The price is the wait and the strictness."
+    ],
+    [
+     "What is actually inside hello_world.exe?",
+     "Machine code for your main, plus startup code from the C runtime. printf itself is not in your file: cl compiles your code to a .obj, then links it with the library that contains printf."
     ]
    ],
    "bridge": "You can build and run. Next: <b>controlling exactly what printf shows</b>: new lines, special characters and numbers."
@@ -242,6 +258,14 @@
     [
      "Can %d show a decimal number?",
      "No. %d is for whole numbers only. Phase 2 adds %f for decimals."
+    ],
+    [
+     "Is \\r ever useful, or was it just a Session 1 accident?",
+     "It is the oldest trick in terminal drawing. In Phase 4.5 you will use it on purpose to redraw the game over the same line every frame."
+    ],
+    [
+     "Why does my prompt appear glued to the end of my output?",
+     "printf never adds a new line for you. Add \\n to the last printf and the prompt starts on its own line."
     ]
    ],
    "bridge": "You can print anything you want. Next: <b>what to do when the compiler says no</b>."
@@ -307,6 +331,10 @@
     [
      "How do I look up an error code?",
      "Search “MSVC C2143”. Microsoft’s page for each code explains it with examples."
+    ],
+    [
+     "Why does the error say \\n is unknown, C2017?",
+     "The \\n ended up outside the quotes. Write <code>printf(\"text\\n\")</code>, not <code>printf(\"text\")\\n</code>."
     ]
    ],
    "bridge": "You can read the compiler’s complaints. Next: <b>build.bat</b>, one word that compiles with the right warnings switched on.",
@@ -391,6 +419,14 @@
     [
      "When do I add more .c files?",
      "From Phase 3.5. You’ll list them in a SOURCES variable and pass them all to cl."
+    ],
+    [
+     "When do I switch /Od to /O2?",
+     "/Od switches optimisation off for faster builds while you develop. When you ship, use /O2 for a faster executable."
+    ],
+    [
+     "Should build.bat be committed?",
+     "Yes, it is part of the project. The files it produces (*.exe, *.obj, *.pdb) are not. Phase 4 adds a .gitignore for them."
     ]
    ],
    "bridge": "You can build with one word. Last: <b>saving your work to GitHub</b>, so it’s backed up and your partner can see it."
@@ -460,6 +496,14 @@
     [
      "Should I commit the .exe?",
      "No. It’s rebuilt from your code any time. Phase 4 adds a .gitignore so Git skips .exe and .obj files automatically."
+    ],
+    [
+     "Does the commit message need a format?",
+     "A tidy habit is <code>type: short description</code>, with types like feat, fix, refactor and docs, for example <code>feat: hello world compiles and runs</code>."
+    ],
+    [
+     "What does git add . do, and how do I confirm a push worked?",
+     "The dot means all changed files. After git push, open github.com/4samtaylor/game-dev-exercises and refresh: your commit should be at the top."
     ]
    ],
    "bridge": "That’s every concept in Phase 1. Next: <b>Trace</b>, predicting what small programs print, then the Phase 1 tasks."

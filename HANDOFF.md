@@ -1,6 +1,6 @@
 # Road to Shipping: session handoff
 
-Last updated: 13 October 2026 (v21). Owner: Sam (GitHub `4samtaylor`). Read this first in a new session.
+Last updated: v22 (pages inside phases). Owner: Sam (GitHub `4samtaylor`). Read this first in a new session.
 
 ## What this is
 
@@ -28,7 +28,8 @@ A C game-dev learning roadmap (13 phases: C → terminal game → Win32 window �
 | v18: Settings window (tabs: Appearance, Account, Editing, Progress data, Shortcuts) + account footer in the rail; ⋯ trimmed to quick actions; Person A block removed from Weekly Practice; VS Code steps 7–12 in Environment Setup | Live (PR #13) |
 | v19: Concept ladder for Phase 2's Learn stage (8 concepts, one at a time); old Learn blocks folded into "Full notes" | Live (PR #14) |
 | v20: Concept table of contents (no slider); Phase 1 and 3 ladders; `docs/REBUILD_PLAN.md` | Live (PR #15) |
-| v21: Ladders for every phase (1 to 7); Library by phase and concept with Focus / This phase / All / Phase… filter and search; Phase 5 starter fixed for /W4 /WX (C4100, C4204, brush leak) | PR #16 |
+| v21: Ladders for every phase (1 to 7); Library by phase and concept with Focus / This phase / All / Phase… filter and search; Phase 5 starter fixed for /W4 /WX (C4100, C4204, brush leak) | Live (PR #16) |
+| v22: Pages inside phases (Overview → one page per concept → Trace → Build → Practice → Review), Section notes drawer, content cut ~45% and re-homed per concept (maps in `docs/pages/`), See It Run animations for all 60 concepts in Phases 1 to 6 | PR #17 |
 | Supabase | Tables `profiles`, `progress`, `notes`, `user_state`, `skills`; RLS on all; newest-wins triggers; `delete_my_account()`. Migrations: `init_progress_sync`, `harden_functions`, `skills_and_admin_views`. Security advisor: only the intentional `delete_my_account` and a "leaked password protection" suggestion |
 | Admin views | `admin.user_overview`, `admin.user_activity` (Table Editor → schema dropdown → `admin`). Not exposed to the API |
 | Auth settings | Confirm email off, min password 8, new sign-ups off (Sam did these) |
@@ -51,6 +52,9 @@ content/NN-*.html          one fragment per phase/section
 content/glossary.json      cheat-sheet + explainer entries per phase (ids are skill ids)
 content/ladders/<phase>.json  concept ladder for that phase's Learn stage (rung ids are progress keys; never rename)
 content/exercises.json     weekly practice exercise pool (ids are 'done' keys; never rename)
+content/play/<phase>.json  See It Run specs, keyed by rung id (js/play/README.md has the format)
+js/play/                   See It Run engine (engine.js), scenes (scenes-core.js, scenes-<phase>.js), README
+docs/pages/<phase>.md      v22 content map: every old block → page / moved / cut, with reasons
 supabase/setup.sql         readable summary of the first two migrations
 supabase/migrations/       migration files from 2026-10-06 on
 design/theme-workshop/     snapshot of the theme design canvas
@@ -75,6 +79,17 @@ privacy.html, sw.js, manifest.webmanifest, icons/, fonts/, setup.ps1, README.md
 - **Settings (v18):** `openSettings(tab)` renders `settingsHTML()` in the floating window; tab in `rts_set_tab`. Action rows are proxies (`data-proxy`) for hidden buttons in `#menu-src` (index.html), which cloud.js/github.js still wire by id, so their hidden state carries over. ◑ opens the Appearance tab. Rail footer `#rl-foot` (`renderRailFoot()`) re-renders when `#tb-sync` text changes; `RTS_CLOUD.account()` / `.enabled()` expose the signed-in email.
 - **☰ on desktop:** rail/main/dock are pinned to grid columns 1/2/3; `rail-off` sets `--rail-w: 0px` on `.shell`. Don't hide a grid child without pinning columns.
 - **Ask Claude:** off by default (menu toggle; `rts_ask_claude`). Links to `https://claude.ai/new?q=<prompt>`, which uses Sam's own Pro plan. Not yet confirmed that the prefill works while signed in; ask Sam.
+
+## v22: pages inside phases
+
+- **Page model:** a phase with `data-ladder` is a list of pages: Overview, Concept 1..N, Trace, Build, Practice, Review (pages with no blocks are skipped; Build comes before Practice because practice uses the starter code). Overview is the table of contents (goals, concept list, later pages, King reading, one Start / Continue button). A concept page is one ladder rung plus its attached blocks. Phases without a ladder (or if the ladder fails to load) get Learn / Trace / Build / Practice / Review.
+- **`data-page` values** on each top-level child of `.phase-inner`: `overview`, `concept:<rungId>`, `trace`, `build`, `practice`, `review`, `notes`, `help`. No `data-page` falls back to `stageOf()` (learn becomes notes). `data-order="-1"` still puts a block first on its page; the checkpoint always ends Review. Page containers have ids `<pid>-overview`, `<pid>-c<k>`, `<pid>-trace` etc. All blocks stay in the DOM (non-current pages are `hidden`), so counts, search and sync are unchanged. Code: `stagePhase`, `buildPages`, `showPage`, `revealPage` (anything that scrolls to an element calls it first), `renderOverview`, `renderStrip`, `renderFoot`.
+- **State and URL:** `state._pages[pid]` = saved page key (synced as user_state `_pages`). Hash is `#/<pid>/<key>` (`overview`, `1`..`N`, `trace`...). `#/<pid>` resumes the saved page. Opening a concept sets `state._ladder[pid].cur`. Left/Right arrows move Back/Next.
+- **Drawers:** `help` blocks go to the Stuck? drawer, `notes` blocks to the **Section notes** drawer (`#notes`, built in JS next to `#help`; button hidden when a phase has none). Tasks inside drawers are not counted in progress.
+- **See It Run hook:** on a concept page, if `RTSPlay.has(pid, rungId)`, part 2's header gets a "Step through | ▶ Watch it run" switch. Watch mode hides the walkthrough code and walk controls and opens the player in `.lad-play-host` via `RTSPlay.open(host, pid, rungId)` (the engine's own header is hidden by CSS there); switching back closes it and restores the walkthrough at the same step. The player survives re-renders of the same concept (the host node is lifted out and put back) and closes when the rung or page changes or edit mode starts. `window.RTS_LADDERS` exposes the ladders; the `rtsplay:loaded` event redraws the concept so the button appears; theme changes call `RTSPlay.refresh()`.
+- **Phones:** the page strip is one horizontally scrolling row (current pill scrolled into view) with a small tools row (Section notes, Stuck? Help, Cheat sheet) below.
+- **See It Run engine (`js/play/`):** `engine.js` exposes `window.RTSPlay` (`scene`, `has`, `open`, `close`, `refresh`, `load`, `ready`, `mount`). Specs load lazily from `content/play/<pid>.json` on the first `has()` call and fire `rtsplay:loaded`. A spec's `line` numbers point into the rung's own `code` (read from `window.RTS_LADDERS`), so **if you edit a rung's code, re-check its play spec**. The console handles `\r` like a terminal; `prompt` sets the header line (default `> game.exe`, `""` hides it, used for shell/bat/text rungs). Each new `scenes-*.js` needs a script tag in index.html (validate.py checks this, plus spec rung ids, line ranges and scene names). Phase 7 has no animations (its concepts are prompts, not programs); `content/play/phase7.json` is `{}` to avoid a 404.
+- **Writing content now:** new material goes on the page it serves (`data-page`). A task that practises one concept sits on that concept page in a small "Practice this" block (max two attached blocks per concept). Curiosity questions become rung `qa`. Don't re-add Concepts First / Explain Like I'm New / Session Plan blocks; the concept pages replace them.
 
 ## How sync works (js/cloud.js)
 

@@ -236,8 +236,7 @@ function goTo(id, opts) {
   if (opts.flash) flash(byId[id].el);
 }
 function scrollToEl(el, offset) {
-  var nb = el.closest && el.closest('.lad-notes-body');   // v19: open a phase's full notes before jumping into them
-  if (nb && nb.hidden) toggleNotes(nb.parentNode, true);
+  revealPage(el);   // v22: switch to the page (or drawer) that holds it first
   var y = window.pageYOffset + el.getBoundingClientRect().top - (offset || TOPBAR + 78);
   window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
 }
@@ -254,6 +253,7 @@ function revealTask(t) {
   if (phase) setOpen(phase, true);
   var acc = t.closest('.acc-section');
   if (acc) acc.classList.add('open');
+  revealPage(t);
   setTimeout(function () { scrollToEl(t, TOPBAR + 110); flash(t); }, 60);
 }
 
@@ -302,10 +302,13 @@ document.addEventListener('click', function (e) {
     return;
   }
   if ((el = e.target.closest('[data-help]'))) { openHelp(el.dataset.help); return; }
+  if ((el = e.target.closest('[data-notes]'))) { openNotes(el.dataset.notes); return; }
   if ((el = e.target.closest('[data-stage]'))) {
-    var st = document.getElementById(el.dataset.stage);
-    var sh = st && $('.phase-header', st.closest('.phase'));
-    if (st) { scrollToEl(st, TOPBAR + (sh ? sh.offsetHeight : 0) + 10); flash(st); }
+    // old stage links ("phase2-practice") now name a page; "-learn" means the concept you're on (or Overview)
+    var st = document.getElementById(el.dataset.stage), sid = el.dataset.stage.replace(/-(learn|trace|practice|build|review)$/, ''), sp = byId[sid];
+    if (st && st.classList.contains('pg')) showPage(sid, st.dataset.pg, { push: true });
+    else if (sp && sp.pages && /-learn$/.test(el.dataset.stage)) showPage(sid, sp.pages[0].rung === undefined && sp.pages[0].key !== 'overview' ? sp.pages[0].key : (sp.ladder ? 'overview' : sp.pages[0].key), { push: true });
+    else if (st) { revealPage(st); scrollToEl(st, TOPBAR + 20); flash(st); }
     return;
   }
   if ((el = e.target.closest('.section-block-header'))) {
@@ -440,6 +443,7 @@ function applyAppearance() {
   root.style.setProperty('--font-display', th.display);
   var m = document.querySelector('meta[name="theme-color"]');
   if (m) m.setAttribute('content', th.meta);
+  if (window.RTSPlay && RTSPlay.refresh) { try { RTSPlay.refresh(); } catch (e) {} }   // See It Run reads its colours from the tokens
 }
 function setTheme(mode) {
   state._theme = byIdIn(THEMES, mode) ? mode : 'dark';
@@ -659,16 +663,17 @@ function buildIndex() {
   var out = [];
   sections.forEach(function (s) {
     out.push({ kind: 'phase', title: s.num + '  ' + s.title, where: s.week || '', run: function () { goTo(s.id); } });
-    $$('.section-block', s.el).concat(s.help ? $$('.section-block', s.help) : []).forEach(function (b) {
+    $$('.section-block', s.el).concat(s.help ? $$('.section-block', s.help) : [], s.notes ? $$('.section-block', s.notes) : []).forEach(function (b) {
       var hd = $('.section-block-header', b);
       if (!hd) return;
-      var inHelp = !!(s.help && s.help.contains(b));
+      var inHelp = !!(s.help && s.help.contains(b)), inNotes = !!(s.notes && s.notes.contains(b));
       out.push({
-        kind: inHelp ? 'help' : 'section', title: (hd.textContent || '').trim().replace(/\s+/g, ' '), where: s.num + ' ' + s.title,
+        kind: inHelp ? 'help' : inNotes ? 'notes' : 'section', title: (hd.textContent || '').trim().replace(/\s+/g, ' '), where: s.num + ' ' + s.title,
         run: function () {
           ensureSection(s.id);
           if (b.classList.contains('acc-section')) b.classList.add('open');
           if (inHelp) { openHelp(s.id); setTimeout(function () { b.scrollIntoView({ block: 'start' }); flash(b); }, 60); return; }
+          if (inNotes) { openNotes(s.id); setTimeout(function () { b.scrollIntoView({ block: 'start' }); flash(b); }, 60); return; }
           if (s.isPhase) setOpen(s.el, true);
           setTimeout(function () { scrollToEl(b, TOPBAR + 74); flash(b); }, 60);
         }
@@ -713,7 +718,7 @@ function renderPal(q) {
       return { kind: 'phase', title: s.num + '  ' + s.title, where: s.week || '', run: function () { goTo(s.id); } };
     }));
   } else {
-    var W = { phase: 0, action: 1, term: 2, section: 2, help: 2, task: 3, check: 4 };
+    var W = { phase: 0, action: 1, term: 2, section: 2, help: 2, notes: 2, task: 3, check: 4 };
     res = index.concat(actions()).map(function (r) {
       var i = r.title.toLowerCase().indexOf(q);
       if (i < 0) return null;
@@ -814,7 +819,13 @@ document.addEventListener('keydown', function (e) {
   if (typing) return;
   if (e.key === '/') { e.preventDefault(); openPal(); return; }
   if (e.key.toLowerCase() === 'e' && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); setEditing(!document.body.classList.contains('editing')); return; }
-  if (e.key === 'Escape') { closeMenu(); closeRailMobile(); closeHelp(); hideToast(); return; }
+  if (e.key === 'Escape') { closeMenu(); closeRailMobile(); closeHelp(); closeNotes(); hideToast(); return; }
+  if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && !e.metaKey && !e.ctrlKey && !e.altKey && !e.shiftKey &&
+      !document.body.classList.contains('editing') && !($('#fw') && !$('#fw').hidden) && !e.target.closest('select, [role="slider"]')) {
+    var sc = byId[currentView];
+    if (sc && sc.pages && pageStep(e.key === 'ArrowRight' ? 1 : -1)) e.preventDefault();
+    return;
+  }
   if (e.key === ']' || e.key === '[') {
     e.preventDefault();
     var i = sections.findIndex(function (s) { return s.id === lastSpy; });
@@ -976,14 +987,32 @@ function updateNext() {
   $('#wn-ph').innerHTML = cleared.length + ' of ' + ph.length + ' <em>· ' + (state._log ? Object.keys(state._log).length : 0) + ' working days logged</em>';
 }
 
-/* ─── v13: SHOW LESS ──────────────────────────────────────────
-   Every phase is regrouped at load into the same five stages
-   (Learn → Trace → Practice → Build → Review), each with a size label,
-   goals from the checkpoint at the top, and "Stuck?" + Claude prompts
-   moved into a help drawer. Content files stay untouched: blocks move
-   after markAnchors(), so edits still map back to their source.
+/* ─── v22: PAGES INSIDE PHASES ────────────────────────────────
+   A phase is no longer one long scroll. Each phase with a concept
+   ladder is an ordered list of pages:
+     Overview · Concept 1…N · Trace · Build · Practice · Review
+   Overview is the table of contents (goals, concepts, later pages,
+   King reading, one Start / Continue button). A concept page is one
+   ladder rung plus the blocks tagged data-page="concept:<rungId>".
+   Every other top-level block of the phase carries data-page =
+   overview | concept:<rungId> | trace | build | practice | review |
+   notes | help. "notes" blocks live in the Section notes drawer and
+   "help" blocks in the Stuck? drawer (same pattern, both outside the
+   page). A block with no data-page falls back to the old badge rule
+   (stageOf: learn → notes, so the app works with either state of the
+   content). Pages with no blocks are skipped; phases without a ladder
+   get Learn / Trace / Build / Practice / Review pages the same way.
+   All blocks stay in the DOM (non-current pages are `hidden`), so
+   task counts, progress, search, the library and sync keep working;
+   anything that scrolls to an element switches to its page first
+   (revealPage). The saved page is state._pages[pid]; the URL is
+   #/<pid>/<key> (overview, 1…N, trace, build, practice, review).
+   Content files stay untouched by this code: blocks move after
+   markAnchors(), so edit keys (phase:blkN) still map to the source.
    ───────────────────────────────────────────────────────────── */
-var STAGES = [['learn', 'Learn'], ['trace', 'Trace'], ['practice', 'Practice'], ['build', 'Build'], ['review', 'Review']];
+var LATER = ['trace', 'build', 'practice', 'review'];
+var PAGE_NAMES = { overview: 'Overview', learn: 'Learn', trace: 'Trace', build: 'Build', practice: 'Practice', review: 'Review' };
+var PAGE_HINTS = { trace: 'predict the output', build: 'starter code and setup', practice: 'tasks', review: 'quiz and checkpoint' };
 function stageOf(block) {
   var b = (($('.badge', block) || {}).textContent || '').trim().toLowerCase();
   if (/^stuck|claude code prompts/.test(b)) return 'help';
@@ -992,6 +1021,13 @@ function stageOf(block) {
   if (/starter code|^git|build\.bat|tooling|prompt templates|^build|^stretch/.test(b)) return 'build';
   if (/quiz|mixed review/.test(b)) return 'review';
   return 'learn';
+}
+function pageOf(k) {
+  var p = ((k.dataset && k.dataset.page) || '').trim();
+  if (p) return p;
+  if (k.classList.contains('checkpoint')) return 'review';
+  if (k.classList.contains('section-block')) { var st = stageOf(k); return st === 'learn' ? 'notes' : st; }
+  return 'notes';
 }
 function plural(n, w) { return n + ' ' + w + (n === 1 ? '' : 's'); }
 function stageSize(key, els) {
@@ -1024,13 +1060,12 @@ function stageSize(key, els) {
 function stagePhase(s) {
   var inner = $('.phase-inner', s.el);
   if (!inner || !$('.tasks, .checkpoint', inner)) return;
-  var bins = { learn: [], trace: [], practice: [], build: [], review: [], help: [] };
+  var bins = {};
   Array.prototype.slice.call(inner.children).forEach(function (k) {
-    if (k.classList.contains('checkpoint')) bins.review.push(k);
-    else if (k.classList.contains('section-block')) bins[stageOf(k)].push(k);
-    else bins.learn.push(k);
+    var p = pageOf(k);
+    (bins[p] = bins[p] || []).push(k);
   });
-  // within a stage, source order wins unless a block asks to go first (data-order="-1");
+  // within a page, source order wins unless a block asks to go first (data-order="-1");
   // the checkpoint always closes Review
   var weight = function (k) { return k.classList.contains('checkpoint') ? 99 : +(k.dataset.order || 0); };
   Object.keys(bins).forEach(function (key) {
@@ -1038,39 +1073,27 @@ function stagePhase(s) {
       .sort(function (a, b) { return weight(a[0]) - weight(b[0]) || a[1] - b[1]; })
       .map(function (x) { return x[0]; });
   });
+  s.ladder = !!s.el.dataset.ladder;
+  s.bins = bins;
+  s.cps = $$('.cp-item', inner).map(function (c) { return [($('.cp-text', c) || c).textContent.trim(), c.dataset.id || '']; });
 
-  var cps = $$('.cp-item', inner).map(function (c) { return [($('.cp-text', c) || c).textContent.trim(), c.dataset.id || '']; });
-  var html = cps.length ? '<div class="goals"><div class="goals-lbl">By the end of this phase</div><ul>' +
-    cps.map(function (t) { return '<li data-cp="' + esc(t[1]) + '"><span class="goal-t">' + esc(t[0]) + '</span></li>'; }).join('') + '</ul></div>' : '';
-  html += '<nav class="stage-nav" aria-label="Stages in this phase">';
-  var n = 0;
-  STAGES.forEach(function (st) {
-    if (bins[st[0]].length || (st[0] === 'learn' && s.el.dataset.ladder)) html += '<button data-stage="' + s.id + '-' + st[0] + '"><b>' + (++n) + '</b> ' + st[1] + '</button>';
-  });
-  if (bins.help.length) html += '<button class="stage-help" data-help="' + s.id + '">Stuck? Help</button>';
-  inner.insertAdjacentHTML('afterbegin', html + '</nav><div class="ph-time" data-time role="button" tabindex="0" title="Where your time went"></div>');
-
-  n = 0;
-  STAGES.forEach(function (st) {
-    var els = bins[st[0]];
-    if (!els.length && !(st[0] === 'learn' && s.el.dataset.ladder)) return;   // a ladder phase always gets a Learn stage
-    var sec = document.createElement('section');
-    sec.className = 'stage';
-    sec.id = s.id + '-' + st[0];
-    var lad = st[0] === 'learn' && s.el.dataset.ladder;
-    sec.innerHTML = '<div class="stage-hd"><span class="stage-n">' + (++n) + '</span><span class="stage-name">' + st[1] +
-      '</span><span class="stage-size">' + esc(lad ? 'Concept ladder' : stageSize(st[0], els)) + '</span></div>';
-    if (lad) {
-      // v19: the ladder teaches one concept at a time; the old long-form notes stay below, folded away
-      sec.insertAdjacentHTML('beforeend', '<div class="lad" data-ladder-mount="' + esc(lad) + '"><div class="lad-loading">Loading concepts…</div></div>' +
-        '<div class="lad-notes"><button class="lad-notes-btn" aria-expanded="false"><span>Full notes for this phase</span><small>The long-form version: every concept on one page, plus the session plan</small></button><div class="lad-notes-body" hidden></div></div>');
-      els.forEach(function (e) { $('.lad-notes-body', sec).appendChild(e); });
-      if (!els.length) $('.lad-notes', sec).hidden = true;
-    } else els.forEach(function (e) { sec.appendChild(e); });
-    inner.appendChild(sec);
+  var html = '<div class="ph-time" data-time role="button" tabindex="0" title="Where your time went"></div>' +
+    '<div class="pg-top"><nav class="pg-strip" aria-label="Pages in this phase"></nav>' +
+    '<div class="stage-nav pg-tools" aria-label="Phase tools">' +
+    '<button class="stage-notes" data-notes="' + s.id + '" hidden>Section notes</button>' +
+    '<button class="stage-help" data-help="' + s.id + '"' + ((bins.help || []).length ? '' : ' hidden') + '>Stuck? Help</button></div></div>' +
+    '<div class="pg-area" data-phase="' + s.id + '">' + (s.ladder ? '<div class="pg-loading">Loading concepts…</div>' : '') + '</div>' +
+    '<nav class="pg-foot" aria-label="Previous and next page"></nav>' +
+    '<div class="pg-hold" hidden></div>';
+  Array.prototype.slice.call(inner.children).forEach(function (k) { k.remove(); });
+  inner.innerHTML = html;
+  var hold = $('.pg-hold', inner);
+  Object.keys(bins).forEach(function (key) {
+    if (key === 'help') return;
+    bins[key].forEach(function (e) { hold.appendChild(e); });
   });
 
-  if (bins.help.length) {
+  if ((bins.help || []).length) {
     var set = document.createElement('div');
     set.className = 'help-set';
     set.hidden = true;
@@ -1079,12 +1102,255 @@ function stagePhase(s) {
     s.help = set;
   }
   s.staged = true;
+  s.hasPages = true;
+  if (!s.ladder) buildPages(s);
 }
 function stageAll() { sections.forEach(function (s) { if (s.isPhase) stagePhase(s); }); }
+
+/* notes drawer: a sibling of the help drawer, created here so index.html stays as it is */
+function ensureNotesDrawer() {
+  if ($('#notes')) return;
+  $('#help').insertAdjacentHTML('afterend',
+    '<aside class="help notes" id="notes" role="dialog" aria-modal="false" aria-labelledby="notes-title" hidden>' +
+    '<div class="help-hd"><div><div class="help-kick">Section notes</div><h2 id="notes-title"></h2></div>' +
+    '<button class="icb" id="notes-x" aria-label="Close section notes">✕</button></div>' +
+    '<div class="help-body" id="notes-body"></div></aside>');
+  $('#notes-x').addEventListener('click', closeNotes);
+}
+function notesSet(s) {
+  if (s.notes) return s.notes;
+  ensureNotesDrawer();
+  var set = document.createElement('div');
+  set.className = 'notes-set';
+  set.hidden = true;
+  set.dataset.phase = s.id;
+  $('#notes-body').appendChild(set);
+  s.notes = set;
+  return set;
+}
+function toNotes(s, els) {
+  if (!els.length) return;
+  var set = notesSet(s);
+  els.forEach(function (b) { if (b.classList.contains('section-block')) b.classList.add('open'); set.appendChild(b); });
+}
+
+function pageId(s, key, rung) { return s.id + '-' + (rung !== undefined ? 'c' + (rung + 1) : key); }
+function buildPages(s) {
+  var area = $('.pg-area', s.el), hold = $('.pg-hold', s.el), bins = s.bins, d = s.ladder && LADDERS[s.id], pages = [];
+  if (!area) return;
+  area.innerHTML = '';
+  var mk = function (key, rung, label) {
+    var el = document.createElement('section');
+    el.className = 'pg' + (rung !== undefined ? ' pg-concept' : key === 'overview' ? ' pg-overview' : '');
+    el.id = pageId(s, key, rung);
+    el.dataset.pg = key; el.dataset.phase = s.id; el.hidden = true;
+    area.appendChild(el);
+    var pg = { key: key, label: label || PAGE_NAMES[key] || key, el: el, rung: rung };
+    pages.push(pg);
+    return pg;
+  };
+  var put = function (host, els) { (els || []).forEach(function (e) { host.appendChild(e); }); };
+  var head = function (pg, els) {
+    pg.size = stageSize(pg.key, els);
+    pg.count = els.length;
+    pg.el.insertAdjacentHTML('afterbegin', '<div class="stage-hd"><span class="stage-name">' + esc(pg.label) + '</span>' +
+      (PAGE_HINTS[pg.key] ? '<span class="stage-hint">' + esc(PAGE_HINTS[pg.key]) + '</span>' : '') +
+      '<span class="stage-size">' + esc(pg.size) + '</span></div>');
+    put(pg.el, els);
+  };
+  var used = { help: 1, notes: 1 };
+  if (d) {
+    var ov = mk('overview');
+    ov.el.innerHTML = '<div class="pg-ov-gen"></div><div class="pg-ov-blocks"></div>';
+    put($('.pg-ov-blocks', ov.el), bins.overview); used.overview = 1;
+    d.rungs.forEach(function (r, k) {
+      var pg = mk(String(k + 1), k, 'Concept ' + (k + 1));
+      pg.title = r.title;
+      pg.el.innerHTML = '<div class="lad" data-ladder-mount="' + esc(s.id) + '" data-rung="' + k + '"></div><div class="pg-cblocks"></div>';
+      var mine = bins['concept:' + r.id] || [];
+      mine.forEach(function (b) { if (b.classList.contains('acc-section') && $('.task', b)) b.classList.add('open'); });
+      put($('.pg-cblocks', pg.el), mine); used['concept:' + r.id] = 1;
+    });
+    LATER.forEach(function (key) {
+      if (!(bins[key] || []).length) return;
+      head(mk(key), bins[key]); used[key] = 1;
+    });
+    // anything tagged for a page that doesn't exist goes to the notes drawer so nothing is lost
+    Object.keys(bins).forEach(function (key) { if (!used[key]) toNotes(s, bins[key]); });
+    toNotes(s, bins.notes || []);
+  } else {
+    // no ladder (or it failed to load): Learn · Trace · Build · Practice · Review
+    var learn = [];
+    ['overview', 'learn'].forEach(function (k) { learn = learn.concat(bins[k] || []); used[k] = 1; });
+    Object.keys(bins).forEach(function (key) { if (/^concept:/.test(key)) { learn = learn.concat(bins[key]); used[key] = 1; } });
+    learn = learn.concat(bins.notes || []);
+    if (s.notes) learn = learn.concat(Array.prototype.slice.call(s.notes.children));
+    if (s.notes) { s.notes.remove(); s.notes = null; }
+    if (learn.length) head(mk('learn'), learn);
+    LATER.forEach(function (key) { if ((bins[key] || []).length) { head(mk(key), bins[key]); used[key] = 1; } });
+    if (pages[0] && s.cps.length) pages[0].el.insertAdjacentHTML('afterbegin', goalsHTML(s, null));
+  }
+  s.pages = pages;
+  var nb = $('.stage-notes', s.el);
+  if (nb) nb.hidden = !s.notes;
+  if (hold && !hold.children.length) hold.remove();
+  if (currentView === s.id) showPage(s.id, s.want, { keepScroll: true });
+  index = null;
+}
+function pageIndex(s, key) {
+  for (var i = 0; i < s.pages.length; i++) if (s.pages[i].key === String(key)) return i;
+  return -1;
+}
+function savedPage(s) {
+  if (!state._pages || typeof state._pages !== 'object') state._pages = {};
+  var k = state._pages[s.id];
+  return k !== undefined && pageIndex(s, k) >= 0 ? String(k) : s.pages[0].key;
+}
+function closePlay(root) {
+  if (!window.RTSPlay || !RTSPlay.close) return;
+  $$('.lad-play-host', root).forEach(function (h) { try { RTSPlay.close(h); } catch (e) {} });
+}
+function pageHash(pid, key) { return '#/' + encodeURIComponent(pid) + '/' + encodeURIComponent(key); }
+function showPage(pid, key, o) {
+  o = o || {};
+  var s = byId[pid];
+  if (!s || !s.pages || !s.pages.length) return;
+  var i = key !== undefined && key !== null && key !== '' ? pageIndex(s, key) : -1;
+  if (i < 0) i = pageIndex(s, savedPage(s));
+  var pg = s.pages[i];
+  s.pages.forEach(function (p) {
+    if (p !== pg && !p.el.hidden) closePlay(p.el);
+    p.el.hidden = p !== pg;
+  });
+  s.want = undefined;
+  if (pg.rung === undefined || ladState(pid).cur !== pg.rung) ladUI(pid).watch = null;   // the player closes when the concept or page changes
+  if (!state._pages || typeof state._pages !== 'object') state._pages = {};
+  state._pages[pid] = pg.key;
+  if (pg.rung !== undefined) ladState(pid).cur = pg.rung;
+  if (pg.rung !== undefined) renderLadder(pid);
+  else if (pg.key === 'overview') renderOverview(pid);
+  renderStrip(s);
+  renderFoot(s);
+  if (currentView === pid) {
+    var h = pageHash(pid, pg.key);
+    if (location.hash !== h) {
+      try { if (o.push) history.pushState(null, '', h); else history.replaceState(null, '', h); } catch (e) {}
+    }
+  }
+  if (!o.keepScroll) {
+    var anchor = $('.pg-top', s.el) || pg.el, hd = $('.phase-header', s.el);   // the phase header is sticky: land just under it
+    window.scrollTo(0, Math.max(0, window.pageYOffset + anchor.getBoundingClientRect().top - (TOPBAR + (hd ? hd.offsetHeight : 0) + 10)));
+  }
+  libRender();
+  save();
+}
+// make sure the page holding `el` is showing (called before anything scrolls to it)
+function revealPage(el) {
+  if (!el || !el.closest) return;
+  var pg = el.closest('.pg');
+  if (pg && pg.hidden) {
+    var s = byId[pg.dataset.phase];
+    if (s && currentView !== s.id) navigate(s.id);
+    showPage(pg.dataset.phase, pg.dataset.pg, { push: true, keepScroll: true });
+    return;
+  }
+  var ns = el.closest('.notes-set');
+  if (ns) { openNotes(ns.dataset.phase); return; }
+  var hs = el.closest('.help-set');
+  if (hs) { var hp = sections.filter(function (x) { return x.help === hs; })[0]; if (hp) openHelp(hp.id); }
+}
+function renderStrip(s) {
+  var strip = $('.pg-strip', s.el);
+  if (!strip || !s.pages) return;
+  if (s.pages.length < 2) { strip.innerHTML = ''; strip.hidden = true; return; }
+  strip.hidden = false;
+  var cur = savedPage(s), l = s.ladder && LADDERS[s.id] ? ladState(s.id) : null, h = '', sep = false;
+  s.pages.forEach(function (p) {
+    var isC = p.rung !== undefined, done = isC && l && l.done[LADDERS[s.id].rungs[p.rung].id];
+    if (!isC && p.key !== 'overview' && !sep && s.ladder) { h += '<span class="pg-sep" aria-hidden="true"></span>'; sep = true; }
+    h += '<button class="pg-b' + (isC ? ' pg-n' : '') + (p.key === cur ? ' cur' : '') + (done ? ' done' : '') + '" data-pg-go="' + p.key + '"' +
+      (p.key === cur ? ' aria-current="page"' : '') + (isC ? ' title="' + esc(p.title || '') + '" aria-label="Concept ' + (p.rung + 1) + (p.title ? ': ' + esc(p.title) : '') + (done ? ' (done)' : '') + '"' : '') + '>' +
+      (isC ? (done ? '✓' : (p.rung + 1)) : esc(p.label)) + '</button>';
+  });
+  strip.innerHTML = h;
+  var cb = $('.pg-b.cur', strip);   // phones: the strip is one scrolling row, keep the current pill in view
+  if (cb && strip.scrollWidth > strip.clientWidth) strip.scrollLeft = Math.max(0, cb.offsetLeft - (strip.clientWidth - cb.offsetWidth) / 2);
+}
+function renderFoot(s) {
+  var foot = $('.pg-foot', s.el);
+  if (!foot || !s.pages) return;
+  var i = pageIndex(s, savedPage(s)), prev = s.pages[i - 1], next = s.pages[i + 1];
+  var si = sections.indexOf(s), ps = sections[si - 1], ns = sections[si + 1];
+  var name = function (p) { return p.rung !== undefined ? 'Concept ' + (p.rung + 1) + (p.title ? ': ' + p.title : '') : p.label; };
+  var secName = function (x) { return x.num + ' · ' + x.title; };
+  var h = '';
+  if (prev) h += '<button class="sf-btn pg-prev" data-pg-go="' + prev.key + '"><small>‹ Back</small>' + esc(name(prev)) + '</button>';
+  else if (ps) h += '<button class="sf-btn pg-prev" data-go="' + ps.id + '"><small>‹ Previous section</small>' + esc(secName(ps)) + '</button>';
+  else h += '<span></span>';
+  if (next) h += '<button class="sf-btn pg-next" data-pg-go="' + next.key + '"><small>Next ›</small>' + esc(name(next)) + '</button>';
+  else if (ns) h += '<button class="sf-btn pg-next" data-go="' + ns.id + '"><small>Next section ›</small>' + esc(secName(ns)) + '</button>';
+  else h += '<span></span>';
+  foot.innerHTML = h;
+}
+function pageStep(d) {
+  var s = byId[currentView];
+  if (!s || !s.pages) return false;
+  var i = pageIndex(s, savedPage(s)) + d;
+  if (s.pages[i]) { showPage(s.id, s.pages[i].key, { push: true }); return true; }
+  var si = sections.indexOf(s), to = sections[si + d];
+  if (to) { goTo(to.id); return true; }
+  return false;
+}
+function goalsHTML(s, d) {
+  if (!s.cps.length) return '';
+  var l = d ? ladState(s.id) : null;
+  return '<div class="goals"><div class="goals-lbl">By the end of this phase</div><ul>' + s.cps.map(function (t) {
+    var nums = d ? (d.goals || {})[t[1]] : null, pills = '';
+    if (nums && nums.length) pills = '<span class="lad-pills">' + nums.map(function (n) {
+      var x = d.rungs[n - 1]; if (!x) return '';
+      return '<button class="lad-pill' + (l.done[x.id] ? ' done' : '') + '" data-lad-go="' + (n - 1) + '" title="' + esc(x.title) + '">' + n + '</button>';
+    }).join('') + '</span>';
+    return '<li data-cp="' + esc(t[1]) + '"><span class="goal-t">' + esc(t[0]) + '</span>' + pills + '</li>';
+  }).join('') + '</ul></div>';
+}
+function renderOverview(pid) {
+  var s = byId[pid], d = LADDERS[pid], gen = s && s.pages && $('.pg-ov-gen', s.el);
+  if (!gen || !d) return;
+  var l = ladState(pid), rungs = d.rungs, doneN = rungs.filter(function (x) { return l.done[x.id]; }).length;
+  var mins = rungs.reduce(function (a, r) { return a + (+r.mins || 0); }, 0);
+  var tasks = counts(s);
+  // Start / Continue: first unfinished concept (the one you were on if it's unfinished), else the first later page
+  var cur = Math.max(0, Math.min(rungs.length - 1, +l.cur || 0)), target = null, started = doneN > 0 || (state._pages && state._pages[pid] && state._pages[pid] !== 'overview');
+  if (!l.done[rungs[cur].id]) target = String(cur + 1);
+  else { for (var k = 0; k < rungs.length; k++) if (!l.done[rungs[k].id]) { target = String(k + 1); break; } }
+  var laterPages = s.pages.filter(function (p) { return p.rung === undefined && p.key !== 'overview'; });
+  var label;
+  if (target) label = (started ? 'Continue' : 'Start') + ' · Concept ' + target + ' ›';
+  else { target = laterPages[0] ? laterPages[0].key : '1'; label = 'Continue · ' + (laterPages[0] ? laterPages[0].label : 'Concept 1') + ' ›'; }
+  // the sticky phase header above already shows number, tag and title, so the overview adds only the numbers and the one button
+  var h = '<header class="pg-ov-hd">' +
+    '<div class="pg-ov-meta"><span>' + plural(rungs.length, 'concept') + ' · ~' + mins + ' min</span>' +
+    (tasks.tasks ? '<span>' + plural(tasks.tasks, 'task') + ' · ≈' + fmtMins(tasks.tasks * MIN_PER_TASK) + '</span>' : '') +
+    '<span>' + doneN + ' of ' + rungs.length + ' concepts done</span></div>' +
+    '<button class="lad-btn go pg-start" data-pg-go="' + target + '">' + label + '</button></header>';
+  h += goalsHTML(s, d);
+  h += '<section class="pg-ov-sec"><div class="pg-ov-lbl">Concepts</div><ol class="lad-toc" aria-label="Concepts in this phase">' +
+    rungs.map(function (x, k) {
+      var cls = (k === cur && started ? ' cur' : '') + (l.done[x.id] ? ' done' : '');
+      return '<li><button class="lad-row' + cls + '" data-lad-go="' + k + '"><span class="lad-n">' + (l.done[x.id] ? '✓' : k + 1) + '</span>' +
+        '<span class="lad-t">' + esc(x.title) + '<small>' + esc(x.kick) + '</small></span><span class="lad-m">~' + x.mins + 'm</span></button></li>';
+    }).join('') + '</ol></section>';
+  if (laterPages.length) h += '<section class="pg-ov-sec"><div class="pg-ov-lbl">Then</div><ul class="pg-later">' + laterPages.map(function (p) {
+    return '<li><button class="lad-row" data-pg-go="' + p.key + '"><span class="lad-n pg-dot">›</span><span class="lad-t">' + esc(p.label) +
+      '<small>' + esc(PAGE_HINTS[p.key] || '') + '</small></span><span class="lad-m">' + esc(p.size || '') + '</span></button></li>';
+  }).join('') + '</ul></section>';
+  gen.innerHTML = h;
+}
 
 function openHelp(id) {
   var s = byId[id];
   if (!s || !s.help) return;
+  closeNotes();
   $$('.help-set').forEach(function (h) { h.hidden = h !== s.help; });
   $('#help-title').textContent = s.num + ' · ' + s.title;
   $('#help').hidden = false;
@@ -1097,14 +1363,32 @@ function closeHelp() {
   $('#help').hidden = true;
   document.body.classList.remove('help-open');
 }
+function openNotes(id) {
+  var s = byId[id];
+  if (!s || !s.notes) return;
+  closeHelp();
+  $$('.notes-set').forEach(function (h) { h.hidden = h !== s.notes; });
+  $('#notes-title').textContent = s.num + ' · ' + s.title;
+  $('#notes').hidden = false;
+  document.body.classList.add('help-open');
+  $('#notes-body').scrollTop = 0;
+  $('#notes-x').focus({ preventScroll: true });
+}
+function closeNotes() {
+  var n = $('#notes');
+  if (!n || n.hidden) return;
+  n.hidden = true;
+  if ($('#help').hidden) document.body.classList.remove('help-open');
+}
 function updateHelpFab() {
-  var s = byId[lastSpy], fab = $('#help-fab');
-  fab.hidden = !(s && s.help && s.el.classList.contains('open'));
+  var s = byId[currentView], fab = $('#help-fab');
+  fab.hidden = !(s && s.help);
   if (!fab.hidden) fab.dataset.help = s.id;
 }
 $('#help-x').addEventListener('click', closeHelp);
 document.addEventListener('click', function (e) {
   if (!$('#help').hidden && !e.target.closest('#help, [data-help], .pal-bd, .toast')) closeHelp();
+  if ($('#notes') && !$('#notes').hidden && !e.target.closest('#notes, [data-notes], .pal-bd, .toast')) closeNotes();
 });
 
 /* ─── v15: CHEAT SHEETS, EXPLAINERS, TIME, DASHBOARD ──────────
@@ -1172,7 +1456,7 @@ function findEntry(text, pid) {
 }
 function linkTerms() {
   sections.forEach(function (s) {
-    [s.el].concat(s.help ? [s.help] : []).forEach(function (root) {
+    [s.el].concat(s.help ? [s.help] : [], s.notes ? [s.notes] : []).forEach(function (root) {
       $$('.cmd', root).forEach(function (el) {
         if (el.closest('pre, .term') || el.dataset.term) return;
         var e = findEntry(el.textContent || '', s.id);
@@ -1448,9 +1732,13 @@ function renderAsk() {
 /* ─── dashboard and section pages ─── */
 var currentView = null;   // null = dashboard, else a section id
 function sectionFromHash() {
-  var m = /^#\/(.+)$/.exec(location.hash || '');
+  var m = /^#\/([^\/]+)/.exec(location.hash || '');
   var id = m ? decodeURIComponent(m[1]) : null;
   return id && byId[id] ? id : null;
+}
+function pageFromHash() {
+  var m = /^#\/[^\/]+\/([^\/]+)/.exec(location.hash || '');
+  return m ? decodeURIComponent(m[1]) : null;
 }
 function showView(id, opts) {
   opts = opts || {};
@@ -1461,6 +1749,11 @@ function showView(id, opts) {
   var weekly = $('.weekly');
   if (weekly) weekly.classList.toggle('is-current', currentView === 'sync-agenda');
   if (currentView && byId[currentView].isPhase) setOpen(byId[currentView].el, true);
+  var vs = byId[currentView];
+  if (vs && vs.hasPages) {
+    if (vs.pages) showPage(vs.id, opts.page, { keepScroll: true });   // opens the saved page unless the URL names one
+    else vs.want = opts.page;                                          // ladder still loading: buildPages opens it
+  }
   if (!currentView) renderDash();
   if (currentView === 'sync-agenda') renderWeekly();
   renderSecbar();
@@ -1470,13 +1763,13 @@ function showView(id, opts) {
   spy();
   updateTimeUI();
 }
-function navigate(id) {
-  var hash = id ? '#/' + encodeURIComponent(id) : '#/';
+function navigate(id, page) {
+  var hash = id ? '#/' + encodeURIComponent(id) + (page ? '/' + encodeURIComponent(page) : '') : '#/';
   if (location.hash !== hash) history.pushState(null, '', hash);
-  showView(id);
+  showView(id, { page: page });
 }
 function ensureSection(id) { if (currentView !== id) navigate(id); }
-window.addEventListener('popstate', function () { showView(sectionFromHash()); });
+window.addEventListener('popstate', function () { showView(sectionFromHash(), { page: pageFromHash() }); });
 
 function renderSecbar() {
   var bar = $('#secbar'), foot = $('#secfoot');
@@ -1490,9 +1783,10 @@ function renderSecbar() {
   var prev = sections[i - 1], next = sections[i + 1];
   bar.innerHTML = '<button class="sb-back" data-dash>‹ All sections</button>' +
     '<span class="sb-pos">' + (i + 1) + ' of ' + sections.length + '</span>';
-  foot.innerHTML = (prev ? '<button class="sf-btn" data-go="' + prev.id + '"><small>‹ Previous</small>' + esc(prev.num + ' · ' + prev.title) + '</button>' : '<span></span>') +
+  var paged = byId[currentView].hasPages;   // paged phases carry Back / Next page buttons of their own
+  foot.innerHTML = paged ? '<button class="sf-btn sf-dash" data-dash><small>Back to</small>All sections</button>' : ((prev ? '<button class="sf-btn" data-go="' + prev.id + '"><small>‹ Previous</small>' + esc(prev.num + ' · ' + prev.title) + '</button>' : '<span></span>') +
     '<button class="sf-btn sf-dash" data-dash><small>Back to</small>All sections</button>' +
-    (next ? '<button class="sf-btn sf-next" data-go="' + next.id + '"><small>Next ›</small>' + esc(next.num + ' · ' + next.title) + '</button>' : '<span></span>');
+    (next ? '<button class="sf-btn sf-next" data-go="' + next.id + '"><small>Next ›</small>' + esc(next.num + ' · ' + next.title) + '</button>' : '<span></span>'));
 }
 
 function renderDash() {
@@ -1514,7 +1808,7 @@ function renderDash() {
     '<button class="ds ds-btn" data-time><b id="dash-time">' + fmtDur(totalSecs()) + '</b><span>time spent ›</span></button>' +
     '<button class="ds ds-btn" data-time><b id="dash-session">' + fmtDur(sessionSecs()) + '</b><span>this session ›</span></button>' +
     '</div>' +
-    (next ? '<button class="dash-go" data-resume><small>Continue · ' + esc(nextSec ? nextSec.num + ' ' + nextSec.title : '') + '</small>' + esc(taskLabel(next).slice(0, 110)) + '</button>'
+    (next ? '<button class="dash-go" ' + (nextSec && nextSec.hasPages ? 'data-continue="' + nextSec.id + '"' : 'data-resume') + '><small>Continue · ' + esc(nextSec ? nextSec.num + ' ' + nextSec.title : '') + contPageLabel(nextSec) + '</small>' + esc(taskLabel(next).slice(0, 110)) + '</button>'
           : '<div class="dash-go done"><small>All done</small>Every task is checked off. Ship it.</div>') +
     '</header>';
   var used = {}, rows = [];
@@ -1531,6 +1825,11 @@ function renderDash() {
   var rest = sections.filter(function (s) { return !used[s.id]; }).map(function (s) { return s.id; });
   if (rest.length) h += dashGroup('More', rest, nextSec);
   dash.innerHTML = h;
+}
+function contPageLabel(s) {
+  if (!s || !s.pages) return '';
+  var p = s.pages[pageIndex(s, savedPage(s))];
+  return p ? ' · ' + (p.rung !== undefined ? 'Concept ' + (p.rung + 1) : p.label) : '';
 }
 function dashGroup(label, ids, nextSec) {
   return '<div class="dash-grp"><div class="dash-grp-lbl">' + esc(label) + '</div><div class="dash-grid">' + ids.map(function (id) {
@@ -1593,6 +1892,13 @@ document.addEventListener('click', function (e) {
   if ((el = e.target.closest('[data-time]'))) { e.stopPropagation(); closeMenu(); openTime(); return; }
   if ((el = e.target.closest('[data-dash]'))) { e.stopPropagation(); navigate(null); return; }
   if ((el = e.target.closest('[data-resume]'))) { e.stopPropagation(); resume(); return; }
+  if ((el = e.target.closest('[data-continue]'))) { e.stopPropagation(); navigate(el.dataset.continue); return; }
+  if ((el = e.target.closest('[data-pg-go]'))) {
+    e.stopPropagation();
+    var pgph = el.closest('.phase');
+    if (pgph) showPage(pgph.id, el.dataset.pgGo, { push: true });
+    return;
+  }
   if ((el = e.target.closest('#m-ask'))) {
     e.stopPropagation(); closeMenu();
     lsSetv('rts_ask_claude', askOn() ? '0' : '1');
@@ -1779,7 +2085,7 @@ function renderDockSheet() {
    innerHTML (with runtime UI stripped) under state._edits.
    ───────────────────────────────────────────────────────────── */
 if (!state._edits) state._edits = {};
-var INJECTED = '.lib, .wk-live, .lad, .lad-pills, .tn-btn, .tn-wrap, .ptoc, .ph-prog, .ph-est, .em-ctl, .em-add, .goals, .stage-nav, .stage-hd, .ph-time, .dash, .secbar, .secfoot, .prompt-ask, .stage-ask';
+var INJECTED = '.pg-top, .pg-foot, .pg-ov-gen, .pg-loading, .stage-hint, .lib, .wk-live, .lad, .lad-pills, .tn-btn, .tn-wrap, .ptoc, .ph-prog, .ph-est, .em-ctl, .em-add, .goals, .stage-nav, .stage-hd, .ph-time, .dash, .secbar, .secfoot, .prompt-ask, .stage-ask';
 
 function markAnchors() {
   sections.forEach(function (s) {
@@ -1852,6 +2158,7 @@ function captureEdit(anchor) {
 }
 function setEditing(on) {
   document.body.classList.toggle('editing', on);
+  if (on) closePlay(document);
   $('#tb-edit').classList.toggle('editing-on', on);
   $$('[data-ek]').forEach(function (a) {
     if (on) a.setAttribute('contenteditable', 'true');
@@ -2205,16 +2512,21 @@ document.addEventListener('input', function (e) {
   save();
 });
 
-/* ─── v19: CONCEPT LADDER ─────────────────────────────────────
-   A phase with data-ladder="<id>" teaches its Learn stage from
-   content/ladders/<id>.json: one concept (rung) at a time, each with
-   why → a program you step through → one check → a small try-it →
-   optional Q&A → a line pointing at the next rung. Passing a check
-   moves that rung's glossary skills to Practiced. Which rungs are done
-   and which one is open sync as user_state "_ladder"; walkthrough
-   position and answers stay on this page view.
+/* ─── v19/v22: CONCEPT LADDER ─────────────────────────────────
+   A phase with data-ladder="<id>" teaches from content/ladders/<id>.json:
+   one concept (rung) per page, each with why → a program you step
+   through (optionally ▶ See it run, when window.RTSPlay has a scene
+   for it) → one check → a small try-it → optional Q&A → a line
+   pointing at the next page. renderLadder(pid) draws only the rung
+   you're on (state._ladder[pid].cur) into that concept page's mount;
+   the table of contents (lad-toc), goals and Start / Continue live on
+   the Overview page (renderOverview). Passing a check moves that
+   rung's glossary skills to Practiced. Which rungs are done and which
+   one is open sync as user_state "_ladder"; the page you were on is
+   "_pages". Walkthrough position and answers stay on this page view.
    ───────────────────────────────────────────────────────────── */
 var LADDERS = {}, LAD_UI = {};
+window.RTS_LADDERS = LADDERS;   // the See It Run engine reads rung code from here
 function ladState(pid) {
   if (!state._ladder || typeof state._ladder !== 'object') state._ladder = {};
   var l = state._ladder[pid];
@@ -2223,28 +2535,18 @@ function ladState(pid) {
   return l;
 }
 function ladUI(pid) { return LAD_UI[pid] || (LAD_UI[pid] = { step: {}, ans: {}, rev: {} }); }
-function toggleNotes(wrap, open) {
-  var body = $('.lad-notes-body', wrap), btn = $('.lad-notes-btn', wrap);
-  if (!body) return;
-  body.hidden = open === undefined ? !body.hidden : !open;
-  btn.setAttribute('aria-expanded', !body.hidden);
-}
 function loadLadders() {
-  $$('[data-ladder-mount]').forEach(function (m) {
-    var pid = m.dataset.ladderMount;
+  sections.forEach(function (s) {
+    if (!s.isPhase || !s.ladder || !s.hasPages) return;
+    var pid = s.id;
     fetch('content/ladders/' + pid + '.json', { cache: 'no-cache' })
       .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; })
       .then(function (d) {
-        if (!d || !d.rungs || !d.rungs.length) throw new Error('no ladder');
-        LADDERS[pid] = d;
-        var sz = document.querySelector('#' + cssId(pid) + '-learn .stage-size');
-        if (sz) sz.textContent = plural(d.rungs.length, 'concept') + ' · ~' + d.rungs.reduce(function (a, r) { return a + (+r.mins || 0); }, 0) + ' min';
-        renderLadder(pid);
-      })
-      .catch(function () {
-        // no ladder: show the full notes as before
-        m.innerHTML = '';
-        toggleNotes(m.parentNode.querySelector('.lad-notes'), true);
+        if (d && d.rungs && d.rungs.length) LADDERS[pid] = d;
+        else s.ladder = false;   // no ladder: Learn / Trace / Build / Practice / Review pages
+        buildPages(s);
+        if (LADDERS[pid]) renderLadder(pid);
       });
   });
 }
@@ -2275,25 +2577,27 @@ function ladSkillNames(ids) {
 }
 function renderLadder(pid) {
   libRender(); // the Library highlights the current concept
-  var d = LADDERS[pid], m = document.querySelector('[data-ladder-mount="' + pid + '"]');
-  if (!d || !m || document.body.classList.contains('editing')) return;
+  var d = LADDERS[pid], s = byId[pid];
+  if (!d || !s || !s.pages || document.body.classList.contains('editing')) return;
   var l = ladState(pid), ui = ladUI(pid), rungs = d.rungs;
   var i = Math.max(0, Math.min(rungs.length - 1, +l.cur || 0)), r = rungs[i];
-  var doneN = rungs.filter(function (x) { return l.done[x.id]; }).length;
+  var mounts = $$('[data-ladder-mount="' + pid + '"]'), m = null;
+  mounts.forEach(function (x) {
+    if (+x.dataset.rung === i) { m = x; return; }
+    if (x.innerHTML) { closePlay(x); x.innerHTML = ''; }   // only the concept you're on is drawn
+  });
+  if (!m) return;
+  // an open See It Run player survives a redraw of the same concept: lift its host out, put it back after
+  var keep = $('.lad-play-host', m);
+  if (keep && !keep.firstChild) keep = null;
+  if (keep && keep.parentNode) keep.parentNode.removeChild(keep);
 
-  var h = '<div class="lad-live"><div class="lad-top"><span class="lad-count">' + doneN + ' of ' + rungs.length + ' concepts</span>' +
-    '<span class="lad-bar"><i style="width:' + Math.round(doneN / rungs.length * 100) + '%"></i></span></div><ol class="lad-toc" aria-label="Concepts in this phase">' +
-    rungs.map(function (x, k) {
-      var cls = (k === i ? ' cur' : '') + (l.done[x.id] ? ' done' : '');
-      return '<li><button class="lad-row' + cls + '" data-lad-go="' + k + '"' + (k === i ? ' aria-current="step"' : '') + '>' +
-        '<span class="lad-n">' + (l.done[x.id] ? '✓' : k + 1) + '</span><span class="lad-t">' + esc(x.title) + '<small>' + esc(x.kick) + '</small></span>' +
-        '<span class="lad-m">' + (k === i ? 'Open' : '~' + x.mins + 'm') + '</span></button></li>';
-    }).join('') + '</ol>';
-
+  var h = '<div class="lad-live">';
   var step = ui.step[r.id] || 0, walkDone = step >= r.walk.length, ans = ui.ans[r.id], done = !!l.done[r.id];
   var tries = (ans && ans.tries) || [], right = tries.indexOf(r.check.a) >= 0;
   var hideWalk = ans && ans.skipped && right && tries.length === 1 && !ui.rev['walk' + r.id];
   var showCheck = walkDone || done || ans;
+  var canPlay = !!(window.RTSPlay && RTSPlay.has && RTSPlay.has(pid, r.id));
 
   h += '<article class="lad-rung"><header class="lad-hd"><div><div class="lad-kick">Concept ' + (i + 1) + ' of ' + rungs.length + ' · ' + esc(r.kick) + ' · ~' + r.mins + ' min</div>' +
     '<h3 class="lad-title">' + esc(r.title) + '</h3><div class="lad-builds"><b>Builds on</b> ' + r.builds + '</div></div>' +
@@ -2302,16 +2606,20 @@ function renderLadder(pid) {
 
   if (!hideWalk) {
     var at = step > 0 ? r.walk[Math.min(step, r.walk.length) - 1] : null;
-    h += '<section class="lad-part"><div class="lad-ph"><b>2</b>See it, one line at a time</div>' + ladCode(r.code, at ? at[0] : 0) +
+    var watch = canPlay && ui.watch === r.id;   // one view: either the step-through or the player, never both
+    h += '<section class="lad-part"><div class="lad-ph lad-ph2"><span><b>2</b>See it, one line at a time</span>' +
+      (canPlay ? '<span class="lad-seg" role="group" aria-label="How to see it"><button data-lad-mode="step" aria-pressed="' + !watch + '"' + (watch ? '' : ' class="on"') + '>Step through</button>' +
+        '<button data-lad-mode="watch" aria-pressed="' + watch + '"' + (watch ? ' class="on"' : '') + '>▶ Watch it run</button></span>' : '') + '</div>' +
+      (watch ? '<div class="lad-play-host"></div>' : ladCode(r.code, at ? at[0] : 0) +
       '<div class="lad-walk"><div class="lad-note">' + (at ? '<small>Line ' + at[0] + ' · stop ' + Math.min(step, r.walk.length) + ' of ' + r.walk.length + '</small>' + at[1]
         : '<small>' + r.walk.length + ' stops</small>Read the whole program once. Then step through the lines that matter.') + '</div>' +
       '<div class="lad-ctl"><button class="lad-btn" data-lad-walk="-1"' + (step === 0 ? ' disabled' : '') + '>Back</button>' +
       (step < r.walk.length ? '<button class="lad-btn go" data-lad-walk="1">' + (step === 0 ? 'Start' : 'Next line') + '</button>' : '<button class="lad-btn" data-lad-walk="restart">From the top</button>') +
-      '</div></div>' + (walkDone ? '<p class="lad-model">' + r.model + '</p>' : '') + '</section>';
+      '</div></div>' + (walkDone ? '<p class="lad-model">' + r.model + '</p>' : '')) + '</section>';
   }
 
   if (!showCheck) {
-    h += '<section class="lad-part lad-wait"><div class="lad-ph"><b>3</b>Check, try, curious</div><p>These open when you finish the walkthrough, or straight away with <b>I know this: quiz me</b>.</p></section>';
+    h += '<section class="lad-part lad-wait"><div class="lad-ph"><b>3</b>Check, try, curious</div><p>These open when you finish the walkthrough' + (canPlay ? ' or watch it run to the end' : '') + ', or straight away with <b>I know this: quiz me</b>.</p></section>';
   } else {
     var c = r.check;
     h += '<section class="lad-part" data-lad-check><div class="lad-ph"><b>3</b>Check: predict it</div><div class="lad-q">' + esc(c.q) + '</div><div class="lad-opts">' +
@@ -2336,48 +2644,42 @@ function renderLadder(pid) {
         (rev ? '<div class="lad-ans"><small>One answer</small><pre>' + esc(r.tryit.answer) + '</pre></div>' : '<button class="lad-link" data-lad-reveal>Show one answer</button>') + '</section>';
       h += '<section class="lad-part"><div class="lad-ph"><b>5</b>Curious? (optional)</div><div class="lad-qas">' +
         r.qa.map(function (q) { return '<details class="lad-qa"><summary>' + esc(q[0]) + '</summary><div>' + q[1] + '</div></details>'; }).join('') + '</div></section>';
-      h += '<div class="lad-bridge"><p>' + r.bridge + '</p>' + (i < rungs.length - 1
-        ? '<button class="lad-btn go" data-lad-go="' + (i + 1) + '">Concept ' + (i + 2) + ' ›</button>'
-        : ladNextStage(pid)) + '</div>';
+      var nextP = s.pages[pageIndex(s, String(i + 1)) + 1];
+      h += '<div class="lad-bridge"><p>' + r.bridge + '</p>' + (nextP
+        ? '<button class="lad-btn go" data-pg-go="' + nextP.key + '">' + esc(nextP.rung !== undefined ? 'Concept ' + (nextP.rung + 1) : nextP.label) + ' ›</button>' : '') + '</div>';
     }
   }
   m.innerHTML = h + '</article></div>';
-
-  // goals: show which concepts teach each one
-  var ph = document.getElementById(pid);
-  $$('.goals li[data-cp]', ph).forEach(function (li) {
-    var old = $('.lad-pills', li); if (old) old.remove();
-    var nums = (d.goals || {})[li.dataset.cp];
-    if (!nums || !nums.length) return;
-    li.insertAdjacentHTML('beforeend', '<span class="lad-pills">' + nums.map(function (n) {
-      var x = rungs[n - 1]; if (!x) return '';
-      return '<button class="lad-pill' + (l.done[x.id] ? ' done' : '') + '" data-lad-go="' + (n - 1) + '" title="' + esc(x.title) + '">' + n + '</button>';
-    }).join('') + '</span>');
-  });
+  if (keep) {
+    var nh = $('.lad-play-host', m);
+    if (nh) nh.parentNode.replaceChild(keep, nh);
+    else if (window.RTSPlay) RTSPlay.close(keep);   // the walkthrough part is gone, so the player goes too
+  } else if (canPlay && ui.watch === r.id) {
+    var wh = $('.lad-play-host', m);
+    if (wh && window.RTSPlay) RTSPlay.open(wh, pid, r.id);
+  }
+  renderOverview(pid);   // done ticks, pills and Start / Continue follow the ladder state
+  renderStrip(s);
 }
-function ladNextStage(pid) {
-  // after the last concept, point at the first stage that exists after Learn
-  var st = [['trace', 'Trace'], ['practice', 'Practice'], ['build', 'Build'], ['review', 'Review']].filter(function (x) { return document.getElementById(pid + '-' + x[0]); })[0];
-  return st ? '<button class="lad-btn go" data-stage="' + pid + '-' + st[0] + '">Go to ' + st[1] + ' ›</button>' : '';
-}
-function ladScrollTop(pid) {
-  var m = document.querySelector('[data-ladder-mount="' + pid + '"] .lad-rung');
-  if (m && m.getBoundingClientRect().top < TOPBAR + 40) scrollToEl(m, TOPBAR + 70);
-}
+// watching See It Run to the end counts as finishing the walkthrough, so the check opens
+document.addEventListener('rtsplay:ended', function (e) {
+  var ph = e.target.closest && e.target.closest('.phase'), pid = ph && ph.dataset.ladder, d = pid && LADDERS[pid];
+  if (!d) return;
+  var r = d.rungs[Math.max(0, Math.min(d.rungs.length - 1, +ladState(pid).cur || 0))], ui = ladUI(pid);
+  if ((ui.step[r.id] || 0) >= r.walk.length) return;
+  ui.step[r.id] = r.walk.length;
+  renderLadder(pid);
+});
 document.addEventListener('click', function (e) {
   if (document.body.classList.contains('editing')) return;
-  var el = e.target.closest('.lad-notes-btn');
-  if (el) { e.stopPropagation(); toggleNotes(el.parentNode); return; }
-  el = e.target.closest('[data-lad-go], [data-lad-walk], [data-lad-quiz], [data-lad-opt], [data-lad-hint], [data-lad-reveal], [data-lad-showwalk]');
+  var el = e.target.closest('[data-lad-go], [data-lad-walk], [data-lad-quiz], [data-lad-opt], [data-lad-hint], [data-lad-reveal], [data-lad-showwalk], [data-lad-mode]');
   if (!el) return;
-  var ph = el.closest('.phase'), pid = ph && ph.dataset.ladder, d = pid && LADDERS[pid];
+  var ph = el.closest('.phase'), pid = ph && ph.dataset.ladder && ph.id, d = pid && LADDERS[pid];
   if (!d) return;
   e.stopPropagation();
   var l = ladState(pid), ui = ladUI(pid), r = d.rungs[Math.max(0, Math.min(d.rungs.length - 1, +l.cur || 0))];
   if (el.hasAttribute('data-lad-go')) {
-    l.cur = +el.dataset.ladGo; save(); renderLadder(pid);
-    var art = document.querySelector('[data-ladder-mount="' + pid + '"]');
-    if (art) scrollToEl(art, TOPBAR + 70);
+    showPage(pid, String(+el.dataset.ladGo + 1), { push: true });   // sets cur, redraws, scrolls to the top of the page
     return;
   }
   if (el.hasAttribute('data-lad-walk')) {
@@ -2390,6 +2692,12 @@ document.addEventListener('click', function (e) {
     renderLadder(pid);
     var ck = document.querySelector('[data-ladder-mount="' + pid + '"] [data-lad-check]');
     if (ck) scrollToEl(ck, TOPBAR + 90);
+    return;
+  }
+  if (el.hasAttribute('data-lad-mode')) {
+    if (el.dataset.ladMode === 'watch') ui.watch = r.id;
+    else { ui.watch = null; closePlay(el.closest('.lad-part')); }   // back to the walkthrough where you left it
+    renderLadder(pid);
     return;
   }
   if (el.hasAttribute('data-lad-opt')) {
@@ -2424,7 +2732,7 @@ applyState();
 applyAppearance();
 sections.forEach(function (s) { if (s.isPhase) setOpen(s.el, true); });   // only the current section is shown
 renderAsk();
-showView(sectionFromHash(), { keepScroll: false });
+showView(sectionFromHash(), { keepScroll: false, page: pageFromHash() });
 if (state._lastVisit) {
   var d = new Date(state._lastVisit);
   $('#rl-lastvisit').textContent = 'Last session: ' + d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
@@ -2473,6 +2781,11 @@ a11ySync();
 loadGlossary();
 loadExercises();
 loadLadders();
+document.addEventListener('rtsplay:loaded', function (e) {
+  // the player's specs arrived after the concept page drew: redraw so the ▶ button shows up
+  var pid = e && e.detail && e.detail.pid, s = pid && byId[pid];
+  if (s && s.pages && currentView === pid && LADDERS[pid]) renderLadder(pid);
+});
 renderWeekly();
 updateTimeUI();
 

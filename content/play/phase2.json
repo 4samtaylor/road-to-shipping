@@ -1,0 +1,1547 @@
+{
+ "loops": {
+  "scene": "loops",
+  "steps": [
+   {
+    "line": 4,
+    "ms": 1100,
+    "note": "lives starts at 3: three hearts.",
+    "do": [
+     {
+      "a": "lives",
+      "to": 3
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 800,
+    "note": "Check first: is 3 > 0? Yes, so the block runs.",
+    "do": [
+     {
+      "a": "check",
+      "t": "lives > 0",
+      "v": "3 > 0",
+      "r": true
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 1000,
+    "out": "Lives: 3\n",
+    "outAt": 0.3,
+    "note": "printf prints the current lives.",
+    "do": [
+     {
+      "a": "run",
+      "from": 0,
+      "to": 0.5,
+      "ease": "start"
+     },
+     {
+      "a": "say",
+      "t": "Lives: 3",
+      "at": 0.25,
+      "len": 0.7
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 1000,
+    "note": "lives drops by 1: 3 becomes 2. Then back to the start line for the next check.",
+    "do": [
+     {
+      "a": "run",
+      "from": 0.5,
+      "to": 1,
+      "ease": "end"
+     },
+     {
+      "a": "lives",
+      "to": 2,
+      "at": 0.1,
+      "len": 0.6
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 800,
+    "note": "Check first: is 2 > 0? Yes, so the block runs.",
+    "do": [
+     {
+      "a": "check",
+      "t": "lives > 0",
+      "v": "2 > 0",
+      "r": true
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 1000,
+    "out": "Lives: 2\n",
+    "outAt": 0.3,
+    "note": "printf prints the current lives.",
+    "do": [
+     {
+      "a": "run",
+      "from": 0,
+      "to": 0.5,
+      "ease": "start"
+     },
+     {
+      "a": "say",
+      "t": "Lives: 2",
+      "at": 0.25,
+      "len": 0.7
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 1000,
+    "note": "lives drops by 1: 2 becomes 1. Then back to the start line for the next check.",
+    "do": [
+     {
+      "a": "run",
+      "from": 0.5,
+      "to": 1,
+      "ease": "end"
+     },
+     {
+      "a": "lives",
+      "to": 1,
+      "at": 0.1,
+      "len": 0.6
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 800,
+    "note": "Check first: is 1 > 0? Yes, so the block runs.",
+    "do": [
+     {
+      "a": "check",
+      "t": "lives > 0",
+      "v": "1 > 0",
+      "r": true
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 1000,
+    "out": "Lives: 1\n",
+    "outAt": 0.3,
+    "note": "printf prints the current lives.",
+    "do": [
+     {
+      "a": "run",
+      "from": 0,
+      "to": 0.5,
+      "ease": "start"
+     },
+     {
+      "a": "say",
+      "t": "Lives: 1",
+      "at": 0.25,
+      "len": 0.7
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 1000,
+    "note": "lives drops by 1: 1 becomes 0. Then back to the start line for the next check.",
+    "do": [
+     {
+      "a": "run",
+      "from": 0.5,
+      "to": 1,
+      "ease": "end"
+     },
+     {
+      "a": "lives",
+      "to": 0,
+      "at": 0.1,
+      "len": 0.6
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 1000,
+    "note": "0 > 0 is false. The block is skipped and the loop is over.",
+    "do": [
+     {
+      "a": "check",
+      "t": "lives > 0",
+      "v": "0 > 0",
+      "r": false
+     }
+    ]
+   },
+   {
+    "line": 9,
+    "ms": 1300,
+    "out": "Game over\n",
+    "outAt": 0.4,
+    "note": "Runs once, after the loop is done.",
+    "do": [
+     {
+      "a": "walk",
+      "to": [
+       46,
+       214
+      ],
+      "len": 0.75
+     },
+     {
+      "a": "over",
+      "on": true,
+      "at": 0.2
+     }
+    ]
+   },
+   {
+    "line": 11,
+    "ms": 900,
+    "note": "for sets i = 1, then checks i <= 3.",
+    "do": [
+     {
+      "a": "over",
+      "on": false
+     },
+     {
+      "a": "slots"
+     },
+     {
+      "a": "hud",
+      "name": "i",
+      "val": 1
+     },
+     {
+      "a": "check",
+      "t": "i <= 3",
+      "v": "1 <= 3",
+      "r": true
+     }
+    ]
+   },
+   {
+    "line": 12,
+    "ms": 1100,
+    "out": "Wave 1\n",
+    "outAt": 0.3,
+    "note": "Wave 1 spawns.",
+    "do": [
+     {
+      "a": "spawn",
+      "n": 1
+     }
+    ]
+   },
+   {
+    "line": 11,
+    "ms": 900,
+    "note": "i++ makes i 2. Check i <= 3: yes.",
+    "do": [
+     {
+      "a": "hud",
+      "name": "i",
+      "val": 2
+     },
+     {
+      "a": "check",
+      "t": "i <= 3",
+      "v": "2 <= 3",
+      "r": true
+     }
+    ]
+   },
+   {
+    "line": 12,
+    "ms": 1100,
+    "out": "Wave 2\n",
+    "outAt": 0.3,
+    "note": "Wave 2 spawns.",
+    "do": [
+     {
+      "a": "spawn",
+      "n": 2
+     }
+    ]
+   },
+   {
+    "line": 11,
+    "ms": 900,
+    "note": "i++ makes i 3. Check i <= 3: yes.",
+    "do": [
+     {
+      "a": "hud",
+      "name": "i",
+      "val": 3
+     },
+     {
+      "a": "check",
+      "t": "i <= 3",
+      "v": "3 <= 3",
+      "r": true
+     }
+    ]
+   },
+   {
+    "line": 12,
+    "ms": 1100,
+    "out": "Wave 3\n",
+    "outAt": 0.3,
+    "note": "Wave 3 spawns.",
+    "do": [
+     {
+      "a": "spawn",
+      "n": 3
+     }
+    ]
+   },
+   {
+    "line": 11,
+    "ms": 900,
+    "note": "i++ makes i 4. 4 <= 3 is false, so the loop ends.",
+    "do": [
+     {
+      "a": "hud",
+      "name": "i",
+      "val": 4
+     },
+     {
+      "a": "check",
+      "t": "i <= 3",
+      "v": "4 <= 3",
+      "r": false
+     }
+    ]
+   },
+   {
+    "line": 14,
+    "ms": 900,
+    "note": "Done. The program ends.",
+    "do": [
+     {
+      "a": "check",
+      "t": "return 0",
+      "v": "program ends",
+      "r": "exit 0"
+     },
+     {
+      "a": "hop"
+     }
+    ]
+   }
+  ]
+ },
+ "types": {
+  "scene": "boxes",
+  "steps": [
+   {
+    "line": 2,
+    "ms": 1000,
+    "note": "stdbool.h gives you bool, true and false.",
+    "do": [
+     {
+      "a": "unlock",
+      "slot": 3
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 1100,
+    "note": "int: a whole-number box (square lid). It starts at 0.",
+    "do": [
+     {
+      "a": "drop",
+      "slot": 0,
+      "shape": "sq",
+      "text": "0",
+      "val": "0"
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 1100,
+    "note": "float: a decimal box (round lid).",
+    "do": [
+     {
+      "a": "drop",
+      "slot": 1,
+      "shape": "ci",
+      "text": "2.5",
+      "val": "2.5"
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 1100,
+    "note": "char: one character (triangle lid). 'q' is stored as 113.",
+    "do": [
+     {
+      "a": "drop",
+      "slot": 2,
+      "shape": "tr",
+      "text": "q",
+      "val": "'q'",
+      "sub": "113"
+     }
+    ]
+   },
+   {
+    "line": 8,
+    "ms": 1100,
+    "note": "bool: true or false (diamond lid).",
+    "do": [
+     {
+      "a": "drop",
+      "slot": 3,
+      "shape": "di",
+      "text": "T",
+      "val": "true"
+     }
+    ]
+   },
+   {
+    "line": 10,
+    "ms": 1200,
+    "note": "Take score (0), add 10, put 10 back in score.",
+    "do": [
+     {
+      "a": "drop",
+      "slot": 0,
+      "shape": "sq",
+      "text": "+10",
+      "val": "10"
+     }
+    ]
+   },
+   {
+    "line": 11,
+    "ms": 2600,
+    "note": "A float into an int box: the .9 does not fit and is chopped off. C does not round.",
+    "do": [
+     {
+      "a": "appear",
+      "slot": 4,
+      "len": 0.22
+     },
+     {
+      "a": "chop",
+      "slot": 4,
+      "at": 0.24,
+      "val": "2"
+     },
+     {
+      "a": "cap",
+      "t": "chopped, not rounded",
+      "at": 0.6,
+      "len": 0.2
+     }
+    ]
+   },
+   {
+    "line": 12,
+    "ms": 1400,
+    "out": "10 2\n",
+    "outAt": 0.4,
+    "note": "Two %d slots, filled left to right by score and lives.",
+    "do": [
+     {
+      "a": "pick",
+      "slots": [
+       0,
+       4
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "printf": {
+  "scene": "p2-form",
+  "steps": [
+   {
+    "line": 4,
+    "ms": 900,
+    "note": "score is a box that holds 120.",
+    "do": [
+     {
+      "i": 0,
+      "val": "120",
+      "a": "var"
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 900,
+    "note": "speed holds 2.5. Its lid is round, because it is a float.",
+    "do": [
+     {
+      "i": 1,
+      "val": "2.5",
+      "a": "var"
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 900,
+    "note": "key holds the single character q.",
+    "do": [
+     {
+      "i": 2,
+      "val": "q",
+      "a": "var"
+     }
+    ]
+   },
+   {
+    "line": 8,
+    "ms": 1000,
+    "note": "printf starts with a form: plain text, plus a hole shaped for an int (%d).",
+    "do": [
+     {
+      "parts": [
+       "Score: ",
+       {
+        "h": "%d",
+        "v": "120",
+        "k": "sq"
+       },
+       "\\n"
+      ],
+      "a": "form"
+     }
+    ]
+   },
+   {
+    "line": 8,
+    "ms": 1500,
+    "note": "The value in score drops into the hole. Then the line prints.",
+    "do": [
+     {
+      "h": 0,
+      "i": 0,
+      "tok": "120",
+      "text": "120",
+      "at": 0,
+      "len": 0.55,
+      "a": "fill"
+     },
+     {
+      "t": "Score: 120\n",
+      "at": 0.55,
+      "len": 0.45,
+      "a": "print"
+     }
+    ],
+    "out": "Score: 120\n",
+    "outAt": 0.6
+   },
+   {
+    "line": 9,
+    "ms": 1000,
+    "note": "%f is a hole for a float.",
+    "do": [
+     {
+      "parts": [
+       "Speed: ",
+       {
+        "h": "%f",
+        "v": "2.500000",
+        "k": "ci"
+       },
+       "\\n"
+      ],
+      "a": "form"
+     }
+    ]
+   },
+   {
+    "line": 9,
+    "ms": 1500,
+    "note": "%f always shows six digits after the point, so 2.5 prints as 2.500000.",
+    "do": [
+     {
+      "h": 0,
+      "i": 1,
+      "tok": "2.5",
+      "text": "2.500000",
+      "at": 0,
+      "len": 0.55,
+      "a": "fill"
+     },
+     {
+      "t": "Speed: 2.500000\n",
+      "at": 0.55,
+      "len": 0.45,
+      "a": "print"
+     }
+    ],
+    "out": "Speed: 2.500000\n",
+    "outAt": 0.6
+   },
+   {
+    "line": 10,
+    "ms": 1000,
+    "note": "%.1f is still a float hole, but it shows just one digit after the point.",
+    "do": [
+     {
+      "parts": [
+       "Speed: ",
+       {
+        "h": "%.1f",
+        "v": "2.5",
+        "k": "ci"
+       },
+       "\\n"
+      ],
+      "a": "form"
+     }
+    ]
+   },
+   {
+    "line": 10,
+    "ms": 1500,
+    "note": "Now the same speed prints as 2.5.",
+    "do": [
+     {
+      "h": 0,
+      "i": 1,
+      "tok": "2.5",
+      "text": "2.5",
+      "at": 0,
+      "len": 0.55,
+      "a": "fill"
+     },
+     {
+      "t": "Speed: 2.5\n",
+      "at": 0.55,
+      "len": 0.45,
+      "a": "print"
+     }
+    ],
+    "out": "Speed: 2.5\n",
+    "outAt": 0.6
+   },
+   {
+    "line": 11,
+    "ms": 1000,
+    "note": "%c is a hole for one character.",
+    "do": [
+     {
+      "parts": [
+       "Key: ",
+       {
+        "h": "%c",
+        "v": "q",
+        "k": "tr"
+       },
+       "\\n"
+      ],
+      "a": "form"
+     }
+    ]
+   },
+   {
+    "line": 11,
+    "ms": 1500,
+    "note": "The letter q goes straight in and prints as q.",
+    "do": [
+     {
+      "h": 0,
+      "i": 2,
+      "tok": "q",
+      "text": "q",
+      "at": 0,
+      "len": 0.55,
+      "a": "fill"
+     },
+     {
+      "t": "Key: q\n",
+      "at": 0.55,
+      "len": 0.45,
+      "a": "print"
+     }
+    ],
+    "out": "Key: q\n",
+    "outAt": 0.6
+   },
+   {
+    "line": 12,
+    "ms": 1000,
+    "note": "This time the hole is an int hole (%d), but we feed it the char key.",
+    "do": [
+     {
+      "parts": [
+       "Key as a number: ",
+       {
+        "h": "%d",
+        "v": "113",
+        "k": "sq"
+       },
+       "\\n"
+      ],
+      "a": "form"
+     }
+    ]
+   },
+   {
+    "line": 12,
+    "ms": 1500,
+    "note": "A char is really a small number underneath. The int hole shows q as its number, 113.",
+    "do": [
+     {
+      "h": 0,
+      "i": 2,
+      "tok": "q",
+      "text": "113",
+      "at": 0,
+      "len": 0.55,
+      "tok2": "113",
+      "k2": "sq",
+      "a": "fill"
+     },
+     {
+      "t": "Key as a number: 113\n",
+      "at": 0.55,
+      "len": 0.45,
+      "a": "print"
+     }
+    ],
+    "out": "Key as a number: 113\n",
+    "outAt": 0.6
+   },
+   {
+    "line": 13,
+    "ms": 800,
+    "note": "return 0 means the program finished fine.",
+    "do": []
+   }
+  ]
+ },
+ "scanf": {
+  "scene": "p2-scanf",
+  "steps": [
+   {
+    "line": 5,
+    "ms": 900,
+    "note": "int guess makes an empty box. It holds junk (shown as ?) until something is put in.",
+    "do": [
+     {
+      "i": 0,
+      "a": "decl"
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 900,
+    "note": "char again is a second box, for one character.",
+    "do": [
+     {
+      "i": 1,
+      "a": "decl"
+     }
+    ]
+   },
+   {
+    "line": 8,
+    "ms": 900,
+    "note": "printf shows the question. (Sample run: the player types 42, then y.)",
+    "do": [],
+    "out": "Guess a number: ",
+    "outAt": 0.3
+   },
+   {
+    "line": 9,
+    "ms": 1300,
+    "note": "scanf waits for the player. They type 4, 2 and Enter, and everything sits in the keyboard buffer, including the Enter mark.",
+    "do": [
+     {
+      "a": "cap",
+      "t": "waiting for the player...",
+      "len": 0.25
+     },
+     {
+      "a": "type",
+      "t": "42\n",
+      "at": 0.25,
+      "len": 0.75
+     }
+    ]
+   },
+   {
+    "line": 9,
+    "ms": 1200,
+    "note": "scanf(\"%d\", &guess): the &guess part is the address of the guess box, so scanf knows where to put the number.",
+    "do": [
+     {
+      "i": 0,
+      "call": "scanf(\"%d\", &guess)",
+      "a": "aim"
+     }
+    ]
+   },
+   {
+    "line": 9,
+    "ms": 1700,
+    "note": "%d reads the digits 4 and 2 and stops at Enter. The number 42 travels to that address and lands in guess.",
+    "do": [
+     {
+      "n": 2,
+      "i": 0,
+      "val": "42",
+      "a": "take"
+     }
+    ]
+   },
+   {
+    "line": 10,
+    "ms": 1000,
+    "note": "guess now holds 42, so printf shows it. The Enter mark is still waiting in the buffer.",
+    "do": [],
+    "out": "You guessed 42\n",
+    "outAt": 0.4
+   },
+   {
+    "line": 12,
+    "ms": 900,
+    "note": "Next question for the player.",
+    "do": [],
+    "out": "Play again? (y/n) ",
+    "outAt": 0.3
+   },
+   {
+    "line": 13,
+    "ms": 1300,
+    "note": "scanf waits again. The player types y and Enter. Now the buffer holds the old Enter mark, then y, then another Enter.",
+    "do": [
+     {
+      "a": "cap",
+      "t": "waiting for the player...",
+      "len": 0.25
+     },
+     {
+      "a": "type",
+      "t": "y\n",
+      "at": 0.25,
+      "len": 0.75
+     }
+    ]
+   },
+   {
+    "line": 13,
+    "ms": 1300,
+    "note": "scanf(\" %c\", &again): the space before %c means skip any leftover whitespace first. &again is the address of the again box.",
+    "do": [
+     {
+      "i": 1,
+      "call": "scanf(\" %c\", &again)",
+      "a": "aim"
+     }
+    ]
+   },
+   {
+    "line": 13,
+    "ms": 1200,
+    "note": "The space skips the old Enter mark. Without it, %c would grab that Enter as the answer.",
+    "do": [
+     {
+      "n": 1,
+      "a": "skip"
+     }
+    ]
+   },
+   {
+    "line": 13,
+    "ms": 1500,
+    "note": "Now %c takes one character, y, and sends it to the address of again.",
+    "do": [
+     {
+      "n": 1,
+      "i": 1,
+      "val": "y",
+      "a": "take"
+     }
+    ]
+   },
+   {
+    "line": 14,
+    "ms": 800,
+    "note": "return 0 means the program finished fine.",
+    "do": []
+   }
+  ]
+ },
+ "if": {
+  "scene": "p2-doors",
+  "steps": [
+   {
+    "line": 5,
+    "ms": 900,
+    "note": "secret is 42. This is the number to find.",
+    "do": [
+     {
+      "n": "secret",
+      "val": 42,
+      "a": "set"
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 700,
+    "note": "guess is an empty box for now.",
+    "do": [
+     {
+      "n": "guess",
+      "val": "?",
+      "a": "set"
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 800,
+    "note": "printf asks the question.",
+    "do": [],
+    "out": "Guess: ",
+    "outAt": 0.3
+   },
+   {
+    "line": 8,
+    "ms": 1100,
+    "note": "scanf reads the player's number into guess. (Sample run: the player types 30.)",
+    "do": [
+     {
+      "n": "guess",
+      "val": 30,
+      "a": "set"
+     }
+    ]
+   },
+   {
+    "line": 10,
+    "ms": 1500,
+    "note": "The runner reaches the first door. Its sign says guess == secret, which is 30 == 42.",
+    "do": [
+     {
+      "to": 72,
+      "len": 0.55,
+      "a": "walk"
+     },
+     {
+      "door": 0,
+      "v": "30 == 42",
+      "r": false,
+      "at": 0.55,
+      "len": 0.45,
+      "a": "knock"
+     }
+    ]
+   },
+   {
+    "line": 12,
+    "ms": 1500,
+    "note": "False, so this door stays shut. Next door: guess < secret, which is 30 < 42.",
+    "do": [
+     {
+      "to": 200,
+      "len": 0.55,
+      "a": "walk"
+     },
+     {
+      "door": 1,
+      "v": "30 < 42",
+      "r": true,
+      "at": 0.55,
+      "len": 0.45,
+      "a": "knock"
+     }
+    ]
+   },
+   {
+    "line": 13,
+    "ms": 1400,
+    "note": "True! The runner goes through this door. Every door after it gets skipped, even the always-open else.",
+    "do": [
+     {
+      "door": 1,
+      "room": "Higher",
+      "a": "enter"
+     }
+    ]
+   },
+   {
+    "line": 13,
+    "ms": 1000,
+    "note": "Only this door's printf runs.",
+    "do": [
+     {
+      "t": "Higher",
+      "a": "say"
+     }
+    ],
+    "out": "Higher\n",
+    "outAt": 0.4
+   },
+   {
+    "line": 17,
+    "ms": 900,
+    "note": "return 0 means the program finished fine.",
+    "do": [
+     {
+      "a": "hop"
+     }
+    ]
+   }
+  ]
+ },
+ "switch": {
+  "scene": "p2-slope",
+  "steps": [
+   {
+    "line": 5,
+    "ms": 800,
+    "note": "choice is an empty box for now.",
+    "do": [
+     {
+      "val": "?",
+      "a": "choice"
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 800,
+    "note": "printf shows the menu.",
+    "do": [],
+    "out": "1 Play  2 Scores  3 Quit: ",
+    "outAt": 0.3
+   },
+   {
+    "line": 7,
+    "ms": 1100,
+    "note": "scanf reads the player's pick into choice. (Sample run: the player types 2.)",
+    "do": [
+     {
+      "val": 2,
+      "a": "choice"
+     }
+    ]
+   },
+   {
+    "line": 9,
+    "ms": 1500,
+    "note": "switch jumps straight to the label that matches 2.",
+    "do": [
+     {
+      "row": 0,
+      "r": false,
+      "len": 0.45,
+      "a": "scan"
+     },
+     {
+      "row": 1,
+      "r": true,
+      "at": 0.5,
+      "len": 0.5,
+      "a": "scan"
+     }
+    ]
+   },
+   {
+    "line": 13,
+    "ms": 1300,
+    "note": "Case 2 matches. The runner jumps straight to that label and skips case 1 entirely.",
+    "do": [
+     {
+      "to": [
+       104,
+       110
+      ],
+      "arc": 34,
+      "a": "go"
+     }
+    ]
+   },
+   {
+    "line": 14,
+    "ms": 1300,
+    "note": "From the label, the runner runs downhill and runs this printf.",
+    "do": [
+     {
+      "to": [
+       250,
+       110
+      ],
+      "a": "go"
+     },
+     {
+      "t": "High scores",
+      "at": 0.4,
+      "len": 0.6,
+      "a": "say"
+     }
+    ],
+    "out": "High scores\n",
+    "outAt": 0.5
+   },
+   {
+    "line": 15,
+    "ms": 1300,
+    "note": "break is a wall. The runner hits it and stops sliding. Without it, the runner would carry on into case 3.",
+    "do": [
+     {
+      "row": 1,
+      "a": "bump"
+     }
+    ]
+   },
+   {
+    "line": 15,
+    "ms": 1300,
+    "note": "Hitting break sends the runner out of the switch, to the line after it.",
+    "do": [
+     {
+      "to": [
+       360,
+       232
+      ],
+      "arc": 60,
+      "a": "go"
+     }
+    ]
+   },
+   {
+    "line": 22,
+    "ms": 800,
+    "note": "return 0 means the program finished fine.",
+    "do": []
+   }
+  ]
+ },
+ "math": {
+  "scene": "p2-calc",
+  "steps": [
+   {
+    "line": 4,
+    "ms": 900,
+    "note": "a is 7 and b is 2. Both are ints.",
+    "do": [
+     {
+      "t": "a = 7    b = 2",
+      "a": "vars"
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 1000,
+    "note": "a / b: an int divided by an int.",
+    "do": [
+     {
+      "x": {
+       "v": "7",
+       "t": "int"
+      },
+      "op": "/",
+      "y": {
+       "v": "2",
+       "t": "int"
+      },
+      "label": "a / b",
+      "a": "expr"
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 1700,
+    "note": "The true answer is 3.5, but int with int stays int. The .5 is chopped off and the answer is 3.",
+    "do": [
+     {
+      "v": "3",
+      "t": "int",
+      "frac": ".5",
+      "len": 0.7,
+      "a": "calc"
+     },
+     {
+      "t": "int / int = int",
+      "at": 0.6,
+      "len": 0.4,
+      "a": "rule"
+     }
+    ],
+    "out": "3\n",
+    "outAt": 0.7
+   },
+   {
+    "line": 6,
+    "ms": 1000,
+    "note": "a % b is the remainder after dividing.",
+    "do": [
+     {
+      "x": {
+       "v": "7",
+       "t": "int"
+      },
+      "op": "%",
+      "y": {
+       "v": "2",
+       "t": "int"
+      },
+      "label": "a % b",
+      "a": "expr"
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 1400,
+    "note": "2 goes into 7 three times (that is 6), and 1 is left over. So the answer is 1.",
+    "do": [
+     {
+      "v": "1",
+      "t": "int",
+      "a": "calc"
+     },
+     {
+      "t": "% gives the leftover",
+      "at": 0.5,
+      "len": 0.5,
+      "good": true,
+      "a": "rule"
+     }
+    ],
+    "out": "1\n",
+    "outAt": 0.6
+   },
+   {
+    "line": 7,
+    "ms": 1000,
+    "note": "a / 2.0f: this time one side is a float.",
+    "do": [
+     {
+      "x": {
+       "v": "7",
+       "t": "int"
+      },
+      "op": "/",
+      "y": {
+       "v": "2.0",
+       "t": "float"
+      },
+      "label": "a / 2.0f",
+      "a": "expr"
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 1900,
+    "note": "C turns the 7 into 7.0 first, and then divides. Float with float gives 3.5. Nothing is chopped.",
+    "do": [
+     {
+      "side": "a",
+      "v": "7.0",
+      "t": "float",
+      "tag": "promoted",
+      "len": 0.45,
+      "a": "cast"
+     },
+     {
+      "v": "3.5",
+      "t": "float",
+      "at": 0.5,
+      "len": 0.4,
+      "a": "calc"
+     },
+     {
+      "t": "one float in, float out",
+      "at": 0.7,
+      "len": 0.3,
+      "good": true,
+      "a": "rule"
+     }
+    ],
+    "out": "3.500000\n",
+    "outAt": 0.85
+   },
+   {
+    "line": 8,
+    "ms": 1000,
+    "note": "(float)a / b: the cast sits on a, so it happens before the division.",
+    "do": [
+     {
+      "x": {
+       "v": "7",
+       "t": "int"
+      },
+      "op": "/",
+      "y": {
+       "v": "2",
+       "t": "int"
+      },
+      "label": "(float)a / b",
+      "a": "expr"
+     }
+    ]
+   },
+   {
+    "line": 8,
+    "ms": 2100,
+    "note": "The cast makes a 7.0. Then b is promoted to 2.0 to match. The division is float, and the answer is 3.5.",
+    "do": [
+     {
+      "side": "a",
+      "v": "7.0",
+      "t": "float",
+      "tag": "(float)",
+      "len": 0.3,
+      "a": "cast"
+     },
+     {
+      "side": "b",
+      "v": "2.0",
+      "t": "float",
+      "tag": "promoted",
+      "at": 0.3,
+      "len": 0.3,
+      "a": "cast"
+     },
+     {
+      "v": "3.5",
+      "t": "float",
+      "at": 0.65,
+      "len": 0.3,
+      "a": "calc"
+     },
+     {
+      "t": "cast first, then divide",
+      "at": 0.8,
+      "len": 0.2,
+      "good": true,
+      "a": "rule"
+     }
+    ],
+    "out": "3.500000\n",
+    "outAt": 0.9
+   },
+   {
+    "line": 9,
+    "ms": 1000,
+    "note": "(float)(a / b): now the brackets put the division inside the cast.",
+    "do": [
+     {
+      "x": {
+       "v": "7",
+       "t": "int"
+      },
+      "op": "/",
+      "y": {
+       "v": "2",
+       "t": "int"
+      },
+      "label": "(float)(a / b)",
+      "a": "expr"
+     }
+    ]
+   },
+   {
+    "line": 9,
+    "ms": 1500,
+    "note": "The division happens first as ints, so 7 / 2 is already 3. The .5 is gone.",
+    "do": [
+     {
+      "v": "3",
+      "t": "int",
+      "frac": ".5",
+      "len": 0.8,
+      "a": "calc"
+     },
+     {
+      "t": "int / int = int",
+      "at": 0.6,
+      "len": 0.4,
+      "a": "rule"
+     }
+    ]
+   },
+   {
+    "line": 9,
+    "ms": 1600,
+    "note": "Then the cast turns that 3 into 3.0. Too late: the lost .5 does not come back.",
+    "do": [
+     {
+      "side": "r",
+      "v": "3.0",
+      "t": "float",
+      "tag": "(float)",
+      "len": 0.55,
+      "a": "cast"
+     },
+     {
+      "t": "cast too late",
+      "at": 0.6,
+      "len": 0.4,
+      "a": "rule"
+     }
+    ],
+    "out": "3.000000\n",
+    "outAt": 0.8
+   },
+   {
+    "line": 10,
+    "ms": 1000,
+    "note": "sizeof(int) asks how many bytes an int takes.",
+    "do": [
+     {
+      "x": {
+       "v": "int",
+       "t": "type"
+      },
+      "op": "sizeof",
+      "y": null,
+      "label": "sizeof(int)",
+      "a": "expr"
+     }
+    ]
+   },
+   {
+    "line": 10,
+    "ms": 1400,
+    "note": "On this computer an int is 4 bytes.",
+    "do": [
+     {
+      "v": "4",
+      "t": "size_t",
+      "a": "calc"
+     },
+     {
+      "t": "the size is a size_t number",
+      "at": 0.5,
+      "len": 0.5,
+      "good": true,
+      "a": "rule"
+     }
+    ],
+    "out": "4\n",
+    "outAt": 0.6
+   },
+   {
+    "line": 11,
+    "ms": 800,
+    "note": "return 0 means the program finished fine.",
+    "do": []
+   }
+  ]
+ },
+ "rand": {
+  "scene": "p2-tape",
+  "steps": [
+   {
+    "line": 6,
+    "ms": 1300,
+    "note": "time(NULL) reads the clock: the number of seconds since 1970. (Sample run: the clock says 1760000000.)",
+    "do": [
+     {
+      "val": "1760000000",
+      "a": "clock"
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 1800,
+    "note": "srand uses that clock number to pick a start spot in the list. Same clock, same start spot. (For 1760000000, Windows gives 10576, 30474, 19244...)",
+    "do": [
+     {
+      "len": 1,
+      "a": "srand"
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 1400,
+    "note": "rand() reads the next number on the list: 10576. The pointer moves on by one.",
+    "do": [
+     {
+      "i": 0,
+      "a": "pull"
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 1800,
+    "note": "% 100 + 1 squeezes it into 1 to 100. 10576 % 100 is 76, plus 1 is 77. That goes in secret.",
+    "do": [
+     {
+      "raw": "10576",
+      "m": 100,
+      "v": "77",
+      "box": 0,
+      "a": "calc"
+     }
+    ]
+   },
+   {
+    "line": 8,
+    "ms": 1400,
+    "note": "The next rand() reads the next number on the list: 30474.",
+    "do": [
+     {
+      "i": 1,
+      "a": "pull"
+     }
+    ]
+   },
+   {
+    "line": 8,
+    "ms": 1800,
+    "note": "% 6 + 1 squeezes it into 1 to 6, like a dice. 30474 % 6 is 0, plus 1 is 1. That goes in roll.",
+    "do": [
+     {
+      "raw": "30474",
+      "m": 6,
+      "v": "1",
+      "box": 1,
+      "a": "calc"
+     }
+    ]
+   },
+   {
+    "line": 9,
+    "ms": 1000,
+    "note": "printf shows both numbers.",
+    "do": [],
+    "out": "Secret: 77  Dice: 1\n",
+    "outAt": 0.5
+   },
+   {
+    "line": 10,
+    "ms": 800,
+    "note": "return 0 means the program finished fine.",
+    "do": []
+   }
+  ]
+ }
+}

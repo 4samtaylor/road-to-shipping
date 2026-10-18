@@ -99,6 +99,22 @@
     [
      "Why does the key I press not show on screen?",
      "<code>_getch</code> deliberately doesn’t echo. If it did, every letter you pressed would land in the middle of your game screen. <code>_getche</code> is the echoing version, and a game never wants it."
+    ],
+    [
+     "Why <code>while (_kbhit())</code> and not a single <code>if</code>?",
+     "Keys queue up. Hold one and Windows repeats it far faster than 30 times a second. A single <code>if</code> takes one key per frame and falls behind; <code>while (_kbhit())</code> drains the queue and keeps the latest key."
+    ],
+    [
+     "Why do _kbhit and _getch start with an underscore?",
+     "They aren’t standard C. <code>&lt;conio.h&gt;</code> is a Microsoft extension, and the underscore marks names outside the standard, so this won’t compile on Mac or Linux. That is one reason SDL2 and Godot exist."
+    ],
+    [
+     "Why not read input on a separate thread?",
+     "Two threads touching the same variables need locks, and mistakes cause bugs that show up one run in a hundred. Games check input once at the top of each frame, and Godot works the same way."
+    ],
+    [
+     "Why build a game with no window first?",
+     "So Phase 5 has only one new thing: the window. Its <code>PeekMessage</code> is this same “anything for me? no? carry on” idea, with a window attached."
     ]
    ],
    "bridge": "You can read keys without stopping the program. Next: <b>Sleep</b>, so the loop runs at a speed a person can follow."
@@ -172,6 +188,10 @@
     [
      "Why not just count to a big number to waste time?",
      "It burns the CPU at 100% and runs at different speeds on different PCs. Sleep gives the CPU back."
+    ],
+    [
+     "Is Sleep good enough for a real game?",
+     "No. It promises “at least this long”, so it’s fine here but not for precision. The fix is to measure the time each frame actually took and scale movement by it: Phase 5’s frame timer, or Godot’s <code>delta</code>."
     ]
    ],
    "bridge": "You can pace a loop. Next: <b>redrawing in place</b>, using \\r so each frame paints over the last."
@@ -319,6 +339,10 @@
     [
      "What if an obstacle is off the end of the track?",
      "<code>lane[obs_col]</code> would write outside the array. The starter guards it with <code>if (obs[i] &gt;= 0 &amp;&amp; obs[i] &lt; LANE_LEN)</code>."
+    ],
+    [
+     "Why one printf per frame instead of one per character?",
+     "Printing piece by piece is slow and you’d watch the line assemble, which is flicker. Build it in memory, print once, and the frame appears all at once."
     ]
    ],
    "bridge": "You can draw a frame in memory. Next: <b>the game loop</b>, which strings input, update, render and wait together."

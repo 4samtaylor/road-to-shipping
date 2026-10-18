@@ -7,31 +7,32 @@
         <div class="phase-title">Git &amp; Working With Your Partner</div>
       </div>
       <div class="phase-right">
-        <div class="phase-week">Week 4 — Ongoing</div>
+        <div class="phase-week">Week 4, Ongoing</div>
         <div class="phase-chevron">▼</div>
       </div>
     </div>
     <div class="phase-body">
       <div class="phase-inner">
 
-        <div class="section-block">
-          <div class="section-block-header"><span class="badge badge-green">Tasks</span></div>
+        <div class="section-block" data-page="concept:clone-pull">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
           <div class="section-block-body">
-            <div class="tasks" id="tasks-4">
-              <div class="task" data-id="p4-git-core-ops">
-                <div class="task-cb">✓</div>
-                <div class="task-content">
-                  <div class="task-text">Learn the 5 core Git operations: commit, push, pull, branch, merge <span class="task-tag t-git">Git</span></div>
-                  <div class="task-note">Use learngitbranching.js.org — it's interactive and free <span class="task-time">~30 min</span></div>
-                </div>
-              </div>
+            <div class="tasks">
               <div class="task" data-id="p4-shared-repo">
                 <div class="task-cb">✓</div>
                 <div class="task-content">
-                  <div class="task-text">Set up a shared repo with your partner — invite them as a collaborator on GitHub</div>
+                  <div class="task-text">Set up a shared repo with your partner. Invite them as a collaborator on GitHub.</div>
                   <div class="task-note"><span class="task-time">~15 min</span></div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block" data-page="concept:pull-requests">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
               <div class="task" data-id="p4-branching-strategy">
                 <div class="task-cb">✓</div>
                 <div class="task-content">
@@ -39,17 +40,33 @@
                   <div class="task-note">Rule: main is always buildable. Features go on branches. Merge via pull request. <span class="task-time">~20 min</span></div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block" data-page="concept:merge-conflicts">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
               <div class="task" data-id="p4-merge-conflict">
                 <div class="task-cb">✓</div>
                 <div class="task-content">
-                  <div class="task-text">Deliberately create and resolve a merge conflict — do this before it happens in real work</div>
+                  <div class="task-text">Deliberately create and resolve a merge conflict. Do this before it happens in real work.</div>
                   <div class="task-note"><span class="task-time">~20 min</span></div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block" data-page="concept:gitignore">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
               <div class="task" data-id="p4-gitignore">
                 <div class="task-cb">✓</div>
                 <div class="task-content">
-                  <div class="task-text">Add a .gitignore for C/C++ — don't commit .exe, .obj, or .pdb files</div>
+                  <div class="task-text">Add a .gitignore for C/C++ so you never commit .exe, .obj, or .pdb files</div>
                   <div class="task-note"><span class="task-time">~10 min</span></div>
                 </div>
               </div>
@@ -57,7 +74,22 @@
           </div>
         </div>
 
-        <div class="section-block acc-section open">
+        <div class="section-block" data-page="practice">
+          <div class="section-block-header"><span class="badge badge-green">Tasks</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
+              <div class="task" data-id="p4-git-core-ops">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Learn the 5 core Git operations: commit, push, pull, branch, merge <span class="task-tag t-git">Git</span></div>
+                  <div class="task-note">Use learngitbranching.js.org, it's interactive and free <span class="task-time">~30 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block acc-section open" data-page="concept:gitignore">
           <div class="section-block-header">
             <span class="badge badge-blue">Starter Code</span>&nbsp;&nbsp;.gitignore for C/C++
             <span class="acc-toggle-icon">▼</span>
@@ -65,7 +97,7 @@
           <div class="acc-body">
             <div class="code-wrap">
               <div class="code-label">
-                <span>.gitignore — paste this in your repo root</span>
+                <span>.gitignore, paste this in your repo root</span>
                 <button class="copy-btn">Copy</button>
               </div>
 <pre><span class="c-cm"># Compiled output</span>
@@ -85,8 +117,9 @@ x86/
 Debug/
 Release/
 
-<span class="c-cm"># VS Code settings (optional — remove if you want to share settings)</span>
-.vscode/
+<span class="c-cm"># VS Code settings (keep launch.json so your partner can debug too)</span>
+.vscode/*
+!.vscode/launch.json
 
 <span class="c-cm"># Visual Studio files</span>
 *.suo
@@ -96,7 +129,7 @@ Release/
           </div>
         </div>
 
-        <div class="section-block acc-section">
+        <div class="section-block acc-section" data-page="help">
           <div class="section-block-header">
             <span class="badge badge-orange">Stuck &amp; Curious</span>&nbsp;&nbsp;Git specifics
             <span class="acc-toggle-icon">▼</span>
@@ -104,37 +137,14 @@ Release/
           <div class="acc-body section-block-body">
             <div class="stuck-items">
               <div class="stuck-item">
-                <div class="stuck-q">What do I do when I get a merge conflict?</div>
-                <div class="stuck-a">Git will mark the conflicting file with &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD and ======= and &gt;&gt;&gt;&gt;&gt;&gt;&gt; sections. Open the file, decide which version is correct (or combine them manually), delete the marker lines, save the file, then run <span class="cmd">git add .</span> and <span class="cmd">git commit</span>. VS Code has a built-in merge editor — use it.</div>
-              </div>
-              <div class="stuck-item">
                 <div class="stuck-q">I committed something I shouldn't have</div>
-                <div class="stuck-a">If you haven't pushed yet: <span class="cmd">git reset --soft HEAD~1</span> undoes the last commit but keeps your changes. If you have pushed: don't panic. Ask Claude Code to walk you through a revert — the exact command depends on the situation.</div>
-              </div>
-              <div class="stuck-item">
-                <div class="stuck-q">What should a commit message say?</div>
-                <div class="stuck-a">Format: <span class="cmd">type: short description</span>. Types: feat (new feature), fix (bug fix), refactor (restructuring), docs (readme changes). Example: <span class="cmd">feat: add player_take_damage function</span>. Future you will thank present you.</div>
-              </div>
-            </div>
-            <div class="eyebrow eyebrow--md t-blue curious-lbl">// Curious — the "why" questions</div>
-            <div class="stuck-items">
-              <div class="stuck-item">
-                <div class="stuck-q">Why does Git make me <span class="cmd">git add</span> before I commit?</div>
-                <div class="stuck-a">So you choose what goes into each snapshot. You might have fixed a bug and half-started a feature in the same sitting. Staging lets you commit just the fix, with a message that says exactly that, and leave the feature for its own commit. The staging area is the "this goes in the photo" pile.</div>
-              </div>
-              <div class="stuck-item">
-                <div class="stuck-q">What actually is a commit?</div>
-                <div class="stuck-a">A full snapshot of every tracked file, plus a note saying which commit came before it, who made it and why. That long hex string (<span class="cmd">a3f9c2e…</span>) is a fingerprint of all of that together — change one byte anywhere and the fingerprint changes. That's why history can't be quietly edited, and why "which commit broke it?" always has an exact answer.</div>
-              </div>
-              <div class="stuck-item">
-                <div class="stuck-q">Why keep .exe, .obj and .pdb out of the repo?</div>
-                <div class="stuck-a">They're generated: anyone can rebuild them from the source in seconds. They're also binary, so Git can't merge them — two people building at once means a conflict on a file neither of you wrote. And they're big, and every version is kept forever. Commit the recipe (your .c files and build.bat), not the cake.</div>
+                <div class="stuck-a">If you haven't pushed yet: <span class="cmd">git reset --soft HEAD~1</span> undoes the last commit but keeps your changes. If you have pushed: don't panic. Ask Claude Code to walk you through a revert, the exact command depends on the situation.</div>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="checkpoint">
+        <div class="checkpoint" data-page="review">
           <div class="checkpoint-header">
             <span class="badge badge-green">Checkpoint</span>
             <span class="checkpoint-title">Ready to move on when:</span>
@@ -143,7 +153,7 @@ Release/
           <div class="checkpoint-items">
             <div class="cp-item" data-id="cp-p4-1"><span class="cp-cb">✓</span><span class="cp-text">You and your partner both have the repo cloned locally and can push/pull</span></div>
             <div class="cp-item" data-id="cp-p4-2"><span class="cp-cb">✓</span><span class="cp-text">You've resolved at least one merge conflict successfully</span></div>
-            <div class="cp-item" data-id="cp-p4-3"><span class="cp-cb">✓</span><span class="cp-text">Your .gitignore is in place — no build artifacts in the repo</span></div>
+            <div class="cp-item" data-id="cp-p4-3"><span class="cp-cb">✓</span><span class="cp-text">Your .gitignore is in place, no build artifacts in the repo</span></div>
           </div>
         </div>
 
