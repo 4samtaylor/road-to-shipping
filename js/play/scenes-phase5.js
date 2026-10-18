@@ -23,12 +23,12 @@
   var ENVC = { WM_PAINT: 'accent', WM_KEYDOWN: 'yellow', WM_DESTROY: 'orange', WM_QUIT: 'purple' };
   function env(c, C, m, sub, x, y, sc, al) {
     c.save(); c.globalAlpha *= al == null ? 1 : al; c.translate(x, y); c.scale(sc || 1, sc || 1);
-    var col = C[ENVC[m] || 'blue'], w = 58, h = sub ? 32 : 28;
+    var col = C[ENVC[m] || 'blue'], w = 58, h = sub ? 35 : 28;
     rrect(c, -w / 2, -h / 2, w, h, 3); c.fillStyle = C.surface; c.fill(); c.fillStyle = rgba(col, .2); c.fill();
     c.lineWidth = 1.4; c.strokeStyle = col; c.stroke();
     c.beginPath(); c.moveTo(-w / 2 + 1, -h / 2 + 1); c.lineTo(0, -h / 2 + 11); c.lineTo(w / 2 - 1, -h / 2 + 1); c.stroke();
-    txt(c, m, 0, sub ? 3 : 5, { size: 8, w: 700, col: C.text });
-    if (sub) txt(c, sub, 0, 12, { size: 8, col: C.muted2 });
+    txt(c, m, 0, sub ? 4 : 5, { size: 8, w: 700, col: C.text });
+    if (sub) txt(c, sub, 0, 13.5, { size: 8, col: C.muted2 });
     c.restore();
   }
   function winFrame(c, C, x, y, w, h, title, o) {   // returns nothing; client = (x+2, y+18, w-4, h-20)
@@ -155,7 +155,7 @@
       rrect(c, 202, 165, 126, 20, 3); c.fillStyle = rgba(C.text, .04); c.fill(); c.strokeStyle = C.border2; c.lineWidth = 1; c.stroke();
       if (V.tk0 && !V.hwnd) txt(c, 'NULL', 265, 175.5, { size: 10, col: C.muted, w: 700, al: V.tk0P != null && !S0(V) ? V.tk0P : 1 });
       if (V.hwnd) { var tp = V.hwndP != null && V.hwndP < 1 ? EZ.back(seg(V.hwndP, .1, .9)) : 1; c.save(); c.translate(265, 175); c.scale(tp, tp); ticket(c, C, -46, -9, 92, 18, V.hwnd, C.accent); c.restore();
-        txt(c, '(a claim ticket)', 336, 175, { size: 8, col: C.muted, align: 'left' }); }
+        txt(c, 'the HWND: a claim ticket', 265, 193, { size: 8, col: C.muted }); }
       /* bottom: chips and message loop */
       if (V.chips) { var cp = V.chipsP != null && V.chipsP < 1 ? V.chipsP : 1;
         c.save(); c.globalAlpha *= cp;
@@ -213,7 +213,7 @@
         case 'title': S.title = a.t; break;
         case 'x': S.gx = a.to; break;
         case 'post': S.q.push({ m: a.m, sub: a.sub || '' }); break;
-        case 'take': if (S.q.length) S.hand = S.q.shift(); break;
+        case 'take': if (S.q.length) { var t0 = S.q.shift(); S.hand = { m: t0.m, sub: t0.sub, x: HX, y: HY, sc: 1, al: 1 }; } break;
         case 'give': S.hand = null; S.hl = a.row; break;
         case 'send': S.hl = a.row; break;
         case 'hl': S.hl = a.row || null; break;
@@ -310,7 +310,7 @@
         // variable + chips inside client bottom strip
         if (V.gx != null) { var gp = pop(V.gxPop ? V.gxPop : 0) ; var k = 1 + .3 * (V.gxPop || 0);
           c.save(); c.translate(cx + 6, cy + ch - 9); txt(c, 'g_rect_x = ', 0, 0, { size: 9, col: C.muted2, align: 'left' });
-          c.translate(54, 0); c.scale(k, k); txt(c, String(V.gx), 0, 0, { size: 10, w: 700, col: C.purple, align: 'left' }); c.restore(); }
+          c.translate(62, 0); c.scale(k, k); txt(c, String(V.gx), 0, 0, { size: 10, w: 700, col: C.purple, align: 'left' }); c.restore(); }
         if (V.hdc) chip(c, C, cx + cw - 90, cy + ch - 17, 34, 14, 'hdc', C.blue, V.hdcA != null ? V.hdcA : 1);
         if (V.brush) { var ba = V.brushA != null ? V.brushA : 1; c.save(); c.globalAlpha *= ba; chip(c, C, cx + cw - 52, cy + ch - 17, 48, 14, 'brush', C.accent, 1); c.fillStyle = C.accent; c.fillRect(cx + cw - 49, cy + ch - 13, 5, 6); c.restore(); }
         c.restore();
@@ -378,7 +378,7 @@
   var kitEnd = function (i) { return DISH[i][1] === 'u' ? [262, 75 + (i - 1) * 11] : [262, 165 + (i - 3.5) * 11]; };
   RTSPlay.scene('p5-libs', {
     W: W, H: H,
-    init: function () { return { u: false, g: false, d: [0, 0, 0, 0, 0], bc: null, bl: null, dec: false }; },
+    init: function () { return { u: true, g: true, d: [0, 0, 0, 0, 0], bc: null, bl: null, dec: false }; },
     apply: function (S, a) {
       switch (a.a) {
         case 'kitchens': S.u = a.u; S.g = a.g; break;
@@ -435,7 +435,7 @@
         c.globalAlpha *= on ? 1 : .55;
         rrect(c, 262, y, 128, 90, 4); c.fillStyle = on ? rgba(col, .12) : rgba(C.text, .03); c.fill(); c.lineWidth = 1.4; c.strokeStyle = on ? col : C.muted; if (!on) c.setLineDash([4, 4]); c.stroke(); c.setLineDash([]);
         pix(c, ['00100100', '01111110', '01000010', '01111110', '01000010', '01111110'], 270, y + 6, 2.6, ['', on ? col : C.muted]);
-        txt(c, k[1], 330, y + 15, { size: 10, w: 700, col: on ? col : C.muted2, align: 'left' });
+        txt(c, k[1], 298, y + 15, { size: 10, w: 700, col: on ? col : C.muted2, align: 'left' });
         txt(c, k[2], 326, y + 74, { size: 8, col: C.muted2 });
         if (!on) { txt(c, 'left off the', 326, y + 45, { size: 9, col: C.orange, w: 700 }); txt(c, 'command line', 326, y + 57, { size: 9, col: C.orange, w: 700 }); }
         c.restore();
@@ -516,7 +516,7 @@
         flag(c, C, lx, ty, 'last', C.blue);
         if (V.res != null || V.now != null) flag(c, C, nx, ty, 'now', C.orange);
         if (V.cur > .3) { c.fillStyle = rgba(C.accent, .35); c.fillRect(lx, ty - 5, nx - lx, 3);
-          if (V.now != null && nx - lx > 80) txt(c, 'ticks elapsed', (lx + nx) / 2, ty - 14, { size: 8, col: C.accent }); }
+          if (V.now != null && nx - lx > 80) txt(c, 'ticks elapsed', (lx + nx) / 2, ty + 28, { size: 8, col: C.accent }); }
         /* cursor */
         if (V.slp > 0 && V.slp < 1) { c.fillStyle = C.yellow; c.beginPath(); c.arc(nx, ty + 2, 4, 0, 7); c.fill();
           txt(c, 'Sleep(16)', nx, ty + 26, { size: 8, w: 700, col: C.yellow }); }

@@ -233,9 +233,9 @@
       });
       txt(c, 'other programs', bx, 178, { size: 8, col: C.muted, align: 'left' });
       /* chips */
-      if (V.fps || V.fpsK > 0) badge(c, C, 290, 198, 196, 20, '1000 / 33 = about 30 frames a second', C.accent, V.fpsK == null ? 1 : V.fpsK);
-      if (V.chip) badge(c, C, 96, 214, 176, 20, V.chip, C.purple, V.chipK == null ? 1 : V.chipK);
-      if (V.done || V.doneK > 0) badge(c, C, 290, 226, 100, 20, 'Done.', C.accent, V.doneK == null ? 1 : V.doneK);
+      if (V.fps || V.fpsK > 0) badge(c, C, 290, 204, 150, 20, 'about 30 frames a second', C.accent, V.fpsK == null ? 1 : V.fpsK);
+      if (V.chip) badge(c, C, 200, 230, 150, 20, V.chip, C.purple, V.chipK == null ? 1 : V.chipK);
+      if (V.done || V.doneK > 0) badge(c, C, 350, 230, 60, 20, 'Done.', C.accent, V.doneK == null ? 1 : V.doneK);
     }
   });
 
@@ -274,8 +274,8 @@
           if (lp > 0) {
             var startCol = snap ? 0 : col, n = Math.floor(t.length * tType + .0001), cells = V.cells.slice(), gens = V.gens.slice();
             if (lp >= 1) n = t.length;
-            for (var i = 0; i < n; i++) { cells[startCol + i] = t[i]; gens[startCol + i] = S.gen + 1; }
-            V.cells = cells; V.gens = gens; V.gen = S.gen + 1; V.col = snap ? (n > 0 ? startCol + n : lerp(col, 0, EZ.out(tSnap))) : startCol + n;
+            for (var i = 0; i < n; i++) { cells[startCol + i] = t[i]; gens[startCol + i] = lp >= 1 ? S.gen + 1 : S.gen; }
+            V.cells = cells; V.gens = gens; V.gen = lp >= 1 ? S.gen + 1 : S.gen; V.col = snap ? (n > 0 ? startCol + n : lerp(col, 0, EZ.out(tSnap))) : startCol + n;
             if (snap && lp > 0 && lp < .5) V.crK = pulse(seg(lp, .05, .5));
           }
           break;
@@ -297,9 +297,9 @@
       if (V.row === 1 || V.nlK > 0) txt(c, '$', TX0 + 6, rowY[1] + 1, { size: 15, w: 700, col: C.muted2, align: 'left', al: V.row === 1 ? 1 : 0 });
       var curRow = V.row === 1 ? 1 : 0, cxp = TX0 + V.col * TCW, blink = rm ? 1 : .55 + .45 * Math.sin(T / 220);
       c.save(); c.globalAlpha = blink; c.lineWidth = 2; c.strokeStyle = C.accent; c.strokeRect(cxp + 1.5, rowY[curRow] - 12, TCW - 3, 24); c.fillStyle = rgba(C.accent, .18); c.fillRect(cxp + 1.5, rowY[curRow] - 12, TCW - 3, 24); c.restore();
-      if (V.crK > 0) badge(c, C, TX0 + 2.5 * TCW, 24, 90, 14, '\\r: back to column 0', C.purple, V.crK);
+      if (V.crK > 0) badge(c, C, TX0 + 4.5 * TCW, 83, 90, 14, '\\r: back to column 0', C.purple, V.crK);
       var stale = false; for (var q = 0; q < 12; q++) if (V.cells[q] && V.gens[q] !== V.gen && V.gen > 0) stale = true;
-      if (stale) txt(c, 'old character left behind: the new line was shorter', 200, 126, { size: 8.5, w: 700, col: C.orange });
+      if (stale) txt(c, 'old character left behind: the new line was shorter', 200, 124, { size: 8.5, w: 700, col: C.orange });
       /* tray */
       txt(c, 'stdout buffer (printf puts text here first)', 44, 142, { size: 8, col: C.muted2, align: 'left' });
       rrect(c, 44, 150, 312, 34, 3); c.fillStyle = rgba(C.purple, .08); c.fill(); c.lineWidth = 1.2; c.setLineDash([4, 3]); c.strokeStyle = rgba(C.purple, .6); c.stroke(); c.setLineDash([]);
@@ -334,7 +334,7 @@
     },
     tween: function (V, a, lp, S) {
       switch (a.a) {
-        case 'alloc': V.allocK = EZ.back(lp); V.alloc = lp > 0; break;
+        case 'alloc': V.allocK = EZ.back(lp); V.alloc = lp > 0; V.cells = []; for (var q = 0; q < 13; q++) V.cells.push('?'); break;
         case 'var': V.obsK = EZ.back(lp); V.obs = lp > 0; break;
         case 'fill': { var n = Math.floor(12 * lp + .0001); if (lp >= 1) n = 12; V.cells = V.cells.slice(); for (var i = 0; i < n; i++) V.cells[i] = '.'; V.sweep = lp > 0 && lp < 1 ? lp * 12 : -1; break; }
         case 'term': V.cells = V.cells.slice(); if (lp >= .5) V.cells[12] = '\\0'; V.popI = 12; V.pop = pulse(seg(lp, .4, 1)); break;

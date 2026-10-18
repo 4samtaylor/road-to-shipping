@@ -74,7 +74,7 @@
           case 'start': V.start = true; V.flagK = EZ.bounce(seg(lp, 0, .7)); break;
           case 'pick': V.pick = { i: a.i, p: lp }; break;
           case 'tick': V.tick[a.i] = lp >= .4; V.tickK = { i: a.i, p: seg(lp, .4, 1) }; break;
-          case 'show': { var n = Math.floor(lp * (a.t.length + 1) + 1e-6); V.screen = S.screen.concat([a.t.slice(0, n)]); break; }
+          case 'show': { var n = Math.floor(lp * (a.t.length + 1) + 1e-6); V.screen = V.screen.concat([a.t.slice(0, n)]); break; }
           case 'done': V.done = true; V.doneK = EZ.back(lp); break;
         }
       },
@@ -137,7 +137,7 @@
           case 'dir': V.dirK = Math.sin(Math.PI * lp); break;
           case 'cook': V.cook = { k: a.k, p: lp }; V.have[a.k] = lp >= .7; V.haveK = a.k; V.haveP = seg(lp, .7, 1); break;
           case 'run': V.runK = lp; break;
-          case 'show': { var n = Math.floor(lp * (a.t.length + 1) + 1e-6); V.screen = S.screen.concat([a.t.slice(0, n)]); break; }
+          case 'show': { var n = Math.floor(lp * (a.t.length + 1) + 1e-6); V.screen = V.screen.concat([a.t.slice(0, n)]); break; }
         }
       },
       prep: function (V, S) { V.cook = null; V.haveK = -1; V.haveP = 1; V.dirK = 0; V.runK = null; V.cdK = null; },
@@ -276,7 +276,7 @@
           case 'read': { var e = EZ.io(lp); V.bandY = lerp(S.read ? rowY(S.read) : rowY(a.row), rowY(a.row), e); V.read = a.row; V.readLp = lp; break; }
           case 'wait': V.wait = a.row; V.waitK = EZ.back(lp); break;
           case 'halt': V.err = a.row; V.errK = EZ.back(lp); break;
-          case 'blame': V.blame = a.row; V.blameK = lp; break;
+          case 'blame': V.blame = a.row; V.blameK = lp; V.wait = 0; break;
           case 'msg': V.msg = true; V.msgK = EZ.out(lp); break;
           case 'fix': { V.fixK = lp; V.fixed = lp >= .35; V.wait = lp >= .35 ? 0 : S.wait; V.err = lp >= .35 ? 0 : S.err; V.blame = lp >= .35 ? 0 : S.blame; V.msg = lp < .35 ? S.msg : true; V.read = lp >= .5 ? 8 : S.read; V.bandY = lerp(S.read ? rowY(S.read) : rowY(1), rowY(7), EZ.io(lp)); V.okMsg = lp >= .5; V.msgK = EZ.out(seg(lp, .5, 1)); break; }
         }
@@ -302,15 +302,16 @@
         /* semicolon fix */
         if (V.fixed) { var fk = V.fixK == null ? 1 : EZ.back(seg(V.fixK, .1, .4)); txt(c, ';', TX + SRC[4].length * CW + 1, rowY(5), { size: 12 * Math.max(fk, 0.01), w: 800, col: C.accent, align: 'left' }); }
         /* waiting on row */
-        if (V.wait) { var wk = V.waitK == null ? 1 : V.waitK, wx = TX + SRC[V.wait - 1].length * CW + 12; c.save(); c.translate(wx, rowY(V.wait)); c.scale(Math.max(wk, 0), Math.max(wk, 0)); pill(c, 0, 0, 120, 16, C.yellow, .18);
+        if (V.wait) { var wk = V.waitK == null ? 1 : V.waitK, wx = TX + SRC[V.wait - 1].length * CW + 12; c.save(); c.translate(wx + 60, rowY(V.wait)); c.scale(Math.max(wk, 0), Math.max(wk, 0)); pill(c, 0, 0, 120, 16, C.yellow, .18);
           txt(c, 'not finished... more?', 0, .5, { size: 8.5, w: 700, col: C.yellow }); c.restore(); }
         /* halt */
-        if (V.err) { var ek = V.errK == null ? 1 : V.errK, ex = TX + SRC[V.err - 1].length * CW + 12; c.save(); c.translate(ex, rowY(V.err)); c.scale(Math.max(ek, 0), Math.max(ek, 0)); pill(c, 0, 0, 82, 16, C.orange, .22); txt(c, 'cannot read!', 0, .5, { size: 8.5, w: 700, col: C.orange }); c.restore(); }
-        /* blame arrow */
+        if (V.err) { var ek = V.errK == null ? 1 : V.errK, ex = TX + SRC[V.err - 1].length * CW + 12; c.save(); c.translate(ex + 41, rowY(V.err)); c.scale(Math.max(ek, 0), Math.max(ek, 0)); pill(c, 0, 0, 82, 16, C.orange, .22); txt(c, 'cannot read!', 0, .5, { size: 8.5, w: 700, col: C.orange }); c.restore(); }
+        /* blame: the missing semicolon */
         if (V.blame) {
-          var bk = V.blameK == null ? 1 : V.blameK, bx = TX + SRC[V.blame - 1].length * CW + 3 + 120 * 0, by = rowY(V.blame - 1) + 11;
-          c.save(); c.globalAlpha = clamp(bk * 2); c.strokeStyle = C.orange; c.lineWidth = 1.8; c.setLineDash([4, 3]); c.beginPath(); c.moveTo(TX + SRC[V.blame - 1].length * CW + 3, rowY(V.blame - 1) - 8); c.lineTo(TX + SRC[V.blame - 1].length * CW + 3, rowY(V.blame - 1) - 1); c.stroke(); c.setLineDash([]);
-          txt(c, '^ the ; belongs here', TX + SRC[V.blame - 1].length * CW - 1, rowY(V.blame - 1) + 12.5, { size: 9, w: 700, col: C.orange, align: 'left' }); c.restore();
+          var bk = V.blameK == null ? 1 : V.blameK, bx = TX + SRC[V.blame - 1].length * CW, by = rowY(V.blame);
+          c.save(); c.globalAlpha = clamp(bk * 2);
+          if (rm || Math.floor(T / 350) % 2 === 0) { c.fillStyle = C.orange; c.fillRect(bx + 1, by - 7, 7, 14); }
+          txt(c, '<- the ; belongs here', bx + 16, by, { size: 9.5, w: 700, col: C.orange, align: 'left' }); c.restore();
         }
         /* robot */
         var ry = V.bandY != null && V.read < 8 ? V.bandY : rowY(1);

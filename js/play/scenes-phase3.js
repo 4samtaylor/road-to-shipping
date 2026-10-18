@@ -26,10 +26,10 @@
      words { a1, b, la, lb }  cmp { to }  res { v, w, col }  ans { t, r }
 
    p3-grid      (2D arrays)  a 3x5 tile map with a row/col cursor
-     frame {}  row { r, s }  set { r, c, ch }  cur { r, c, from?, mark? }  fm { t }
+     frame {}  nocur {}  row { r, s }  set { r, c, ch }  cur { r, c, from?, mark? }  fm { t }
 
    p3-save      (files)  a notebook in a drawer: open, write, close, read it back
-     nocur {}  |  f { v }  open { mode:'w'|'r' }  chk { t, r }  write { t }  close {}  fread { t }  best { v }
+     f { v }  open { mode:'w'|'r' }  chk { t, r }  write { t }  close {}  fread { t }  best { v }
    ===================================================================== */
 (function () {
   'use strict';
@@ -231,7 +231,7 @@
   (function () {
     var NOTES = [{ w: 'MAX_SCORES', n: '5' }, { w: 'START_LIVES', n: '3' }];
     var STRIPS = [{ pre: 'int lives = ', w: 'START_LIVES', post: ';', n: '3', note: 1 }, { pre: 'for (...; i < ', w: 'MAX_SCORES', post: '; ...)', n: '5', note: 0 }];
-    var SY = [70, 106];
+    var SY = [64, 96];
     RTSPlay.scene('p3-define', {
       W: W, H: H,
       init: function () { return { notes: [0, 0], sw: [0, 0], lives: null, loop: null }; },
@@ -262,7 +262,7 @@
         });
         txt(c, 'what the compiler sees after find-and-replace', 20, 56, { size: 8, col: C.muted, align: 'left' });
         STRIPS.forEach(function (s, k) {
-          if (!V.sw[k]) return; var p = V.swK ? V.swK[k] : 1, flip = p >= 0.55, y = SY[k] + 12;
+          if (!V.sw[k]) return; var p = V.swK && V.swK[k] != null ? V.swK[k] : 1, flip = p >= 0.55, y = SY[k] + 12;
           var word = flip ? s.n : s.w, a0 = clamp(p / 0.2);
           c.save(); c.globalAlpha = a0; rrect(c, 20, y - 14, 250, 28, 5); c.fillStyle = C.surface2; c.fill(); c.strokeStyle = C.border2; c.lineWidth = 1.5; c.stroke();
           var sz = 12; c.font = '500 ' + sz + 'px ' + U.FONT; var w1 = c.measureText(s.pre).width, w2 = c.measureText(word).width, w3 = c.measureText(s.post).width;
@@ -276,12 +276,12 @@
           c.restore();
         });
         if (V.lives != null) { var lp2 = V.livesPop ? 1 + 0.25 * V.livesPop : 1;
-          c.save(); c.translate(335, 82); c.scale(lp2, lp2); rrect(c, -50, -16, 100, 32, 5); c.fillStyle = rgba(C.orange, 0.14); c.fill(); c.strokeStyle = rgba(C.orange, 0.7); c.lineWidth = 1.5; c.stroke();
+          c.save(); c.translate(335, 92); c.scale(lp2, lp2); rrect(c, -50, -16, 100, 32, 5); c.fillStyle = rgba(C.orange, 0.14); c.fill(); c.strokeStyle = rgba(C.orange, 0.7); c.lineWidth = 1.5; c.stroke();
           txt(c, 'lives', -42, 0, { size: 9, col: C.muted2, align: 'left' }); txt(c, String(V.lives), 40, 1, { size: 17, w: 700, col: C.text, align: 'right' }); c.restore(); }
         /* loop pips */
         var L = V.loop;
-        c.save(); c.strokeStyle = C.border2; c.setLineDash([3, 5]); c.beginPath(); c.moveTo(10, 146); c.lineTo(W - 10, 146); c.stroke(); c.restore();
-        txt(c, 'the loop', W - 12, 156, { size: 8, col: C.muted, align: 'right' });
+        c.save(); c.strokeStyle = C.border2; c.setLineDash([3, 5]); c.beginPath(); c.moveTo(10, 150); c.lineTo(W - 10, 150); c.stroke(); c.restore();
+        txt(c, 'the loop', W - 12, 160, { size: 8, col: C.muted, align: 'right' });
         for (var q = 0; q < 5; q++) {
           var px = 60 + q * 58, py = 176, on = L && q < L.done, fresh = L && q === L.done - 1 && V.loopK != null ? clamp(V.loopK) : 1;
           c.save(); c.translate(px + 24, py + 15); c.scale(on ? fresh : 1, on ? fresh : 1);
@@ -291,7 +291,7 @@
         }
         if (L && L.i != null) { var mi = Math.min(L.i, 5), mx = 60 + mi * 58 + 24;
           arrow(c, mx, 222, mx, 213, L.i > 4 ? C.orange : C.purple); txt(c, 'i = ' + L.i, mx, 234, { size: 10, w: 700, col: L.i > 4 ? C.orange : C.purple }); }
-        if (L && L.chk) { txt(c, L.chk, 150, 133, { size: 11, w: 700, col: C.text }); badge(c, C, 240, 133, L.r ? 'true' : 'false', L.r ? C.accent : C.orange, 1); }
+        if (L && L.chk) { txt(c, L.chk, 150, 137, { size: 11, w: 700, col: C.text }); badge(c, C, 240, 137, L.r ? 'true' : 'false', L.r ? C.accent : C.orange, 1); }
       }
     });
   })();
@@ -405,7 +405,7 @@
 
   /* ===================== p3-cmp ===================== */
   (function () {
-    var TX = 70, PITCH = 42, TW = 38, AY = 52, BY = 126;
+    var TX = 70, PITCH = 42, TW = 38, AY = 40, BY = 130;
     var code = function (ch) { return ch === '\\0' ? 0 : ch.charCodeAt(0); };
     function chars(s) { return s.split('').concat(['\\0']); }
     RTSPlay.scene('p3-cmp', {
@@ -576,13 +576,12 @@
         txt(c, 'int best', -60, -9, { size: 8, col: C.muted2, align: 'left' }); txt(c, String(V.best), 0, 8, { size: 15, w: 700, col: C.text }); c.restore();
         if (V.chk) { var k = V.chkK == null ? 1 : V.chkK; txt(c, V.chk.t, 80, 104, { size: 10, w: 700, col: C.text }); badge(c, C, 80, 124, V.chk.r ? 'true' : 'false', V.chk.r ? C.accent : C.orange, k); }
         /* drawer */
-                var ny = lerp(206, 100, nbk);
         if (nbk < 0.5) {
-          var sy = lerp(206, 150, nbk * 2); c.save();
+          var sy = lerp(206, 160, nbk * 2); c.save();
           rrect(c, NX + 20, sy - 14, NW - 40, 30, 4); c.fillStyle = rgba(C.yellow, 0.25); c.fill(); c.strokeStyle = C.yellow; c.lineWidth = 1.5; c.stroke();
           txt(c, 'best.txt', NX + NW / 2, sy + 1, { size: 11, w: 700, col: C.text }); c.restore();
         } else {
-          var k2 = seg(nbk, 0.5, 1), nh = 150 * k2 + 20, top = 150 - nh + 10;
+          var k2 = seg(nbk, 0.5, 1), top = lerp(150, 56, k2), nh = 192 - top;
           c.save(); c.globalAlpha = 1;
           rrect(c, NX, top, NW, nh, 6); c.fillStyle = C.surface2; c.fill(); c.strokeStyle = C.yellow; c.lineWidth = 2; c.stroke();
           if (k2 > 0.7) {
@@ -604,7 +603,7 @@
         rrect(c, NX + NW / 2 - 22, 220, 44, 8, 3); c.fillStyle = C.muted2; c.fill();
         txt(c, 'disk', NX + 8, 226, { size: 8, col: C.muted2, align: 'left' });
         /* leash */
-        if (V.leash) { c.save(); c.strokeStyle = C.purple; c.lineWidth = 2; c.setLineDash([5, 4]); c.lineDashOffset = rm ? 0 : -T / 60; c.beginPath(); c.moveTo(148, 56); c.bezierCurveTo(165, 56, 160, 90, NX + 4, 100); c.stroke(); c.restore(); }
+        if (V.leash) { c.save(); c.strokeStyle = C.purple; c.lineWidth = 2; c.setLineDash([5, 4]); c.lineDashOffset = rm ? 0 : -T / 60; c.beginPath(); c.moveTo(148, 56); c.bezierCurveTo(165, 56, 160, 90, NX + 4, 104); c.stroke(); c.restore(); }
         if (V.tok) paper(c, C, V.tok.x, V.tok.y, 44, 22, V.tok.t, { col: C.purple, al: V.tok.al, size: 13 });
       }
     });

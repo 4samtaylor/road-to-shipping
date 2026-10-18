@@ -91,7 +91,7 @@
   /* ================= p2-form : printf ================= */
   (function () {
     var VARS = [{ type: 'int', name: 'score', k: 'sq' }, { type: 'float', name: 'speed', k: 'ci' }, { type: 'char', name: 'key', k: 'tr' }];
-    var VX = [72, 200, 328], BT = 168, BH = 56, CW = 7.8, HY = 100;
+    var VX = [64, 200, 336], BT = 168, BH = 56, CW = 7.8, HY = 100;
     function holeW(p) { return Math.max(46, String(p.v || p.h).length * CW + 16); }
     function layout(parts) {
       var xs = [], tot = 0, hi = 0;
@@ -160,16 +160,16 @@
               txt(c, String(q.hole + 1), q.x + q.w / 2, HY - 14, { size: 9, w: 700, col: C.muted2 });
             }
           });
-          txt(c, 'holes fill left to right: 1, 2, 3', 372, 132, { size: 8, col: C.muted, align: 'right' });
+          txt(c, 'holes fill left to right', 372, 132, { size: 8, col: C.muted, align: 'right' });
           c.restore();
         }
         /* variable boxes */
         c.fillStyle = C.border2; c.fillRect(8, BT + BH + 6, W - 16, 3);
         V.vars.forEach(function (v, i) {
-          if (!v.vis) { c.save(); c.globalAlpha = .35; c.strokeStyle = C.muted; c.setLineDash([3, 4]); c.strokeRect(VX[i] - 40.5, BT + .5, 80, BH); c.restore(); return; }
+          if (!v.vis) { c.save(); c.globalAlpha = .35; c.strokeStyle = C.muted; c.setLineDash([3, 4]); c.strokeRect(VX[i] - 46.5, BT + .5, 92, BH); c.restore(); return; }
           var sc = v.app == null ? 1 : v.app;
           c.save(); c.translate(VX[i], BT + BH + 6); c.scale(Math.max(sc, 0), Math.max(sc, 0)); c.translate(-VX[i], -(BT + BH + 6));
-          box(c, C, VX[i], BT, 80, BH, C[KCOL[VARS[i].k]], VARS[i].type, VARS[i].name, v.val, v.pop, VARS[i].k); c.restore();
+          box(c, C, VX[i], BT, 92, BH, C[KCOL[VARS[i].k]], VARS[i].type, VARS[i].name, v.val, v.pop, VARS[i].k); c.restore();
         });
         (V.toks || []).forEach(function (t) { token(c, t, C); });
       }
@@ -188,7 +188,7 @@
         switch (a.a) {
           case 'decl': S.boxes[a.i].vis = true; break;
           case 'cap': S.cap = a.t; break;
-          case 'type': S.buf += a.t; break;
+          case 'type': S.buf += a.t; S.cap = null; break;
           case 'aim': S.aim = { i: a.i, call: a.call }; break;
           case 'skip': S.buf = S.buf.slice(a.n); break;
           case 'take': S.buf = S.buf.slice(a.n); S.boxes[a.i].val = a.val; break;
@@ -198,7 +198,7 @@
         switch (a.a) {
           case 'decl': V.boxes[a.i].vis = true; V.boxes[a.i].app = EZ.back(seg(lp, 0, .6)); break;
           case 'cap': V.capA = lp; V.cap = a.t; break;
-          case 'type': { var n = Math.floor(lp * a.t.length + 1e-6); V.buf = S.buf + a.t.slice(0, n); V.fresh = n > 0 ? S.buf.length + n - 1 : -1; V.fresh0 = V.fresh; break; }
+          case 'type': { V.cap = lp > 0 ? null : S.cap; var n = Math.floor(lp * a.t.length + 1e-6); V.buf = S.buf + a.t.slice(0, n); V.fresh = n > 0 ? S.buf.length + n - 1 : -1; V.fresh0 = V.fresh; break; }
           case 'aim': V.aim = { i: a.i, call: a.call }; V.aimK = EZ.out(lp); break;
           case 'skip': { var e = EZ.io(seg(lp, .3, 1)); V.skipN = lp > 0 ? a.n : 0; V.shift = a.n * CELL * (1 - e); V.fly = { n: a.n, lp: seg(lp, 0, .5), mode: 'skip', buf: S.buf }; break; }
           case 'take': {
@@ -336,7 +336,7 @@
             c.save(); c.globalAlpha = al; c.translate(x, DT + DH + 24); c.scale(k, k); var w = 52;
             rrect(c, -w / 2, -8, w, 16, 3); c.fillStyle = rgba(col, .18); c.fill(); c.strokeStyle = rgba(col, .65); c.lineWidth = 1; c.stroke(); txt(c, word, 0, .5, { size: 10, w: 700, col: col }); c.restore();
           }
-          if (d.dim && !d.open) txt(c, 'skipped', x, DT + DH + 24, { size: 9, col: C.muted2, al: d.dim });
+          if (d.dim && !d.open && d.r == null) txt(c, 'skipped', x, DT + DH + 24, { size: 9, col: C.muted2, al: d.dim });
         });
         /* runner */
         var r = V.run, bob = !rm && !r.mv ? Math.sin(T / 260) * .8 : 0;
@@ -349,7 +349,7 @@
   /* ================= p2-slope : switch ================= */
   (function () {
     var RY = [66, 110, 154, 198], LBL = ['case 1', 'case 2', 'case 3', 'default'], MSG = ['Starting...', 'High scores', 'Bye', 'Not an option'], PX0 = 100, WX = 296, DEPART = [360, 232];
-    var start = [44, 30];
+    var start = [30, 36];
     reg('p2-slope', {
       acts: ['choice', 'scan', 'go', 'bump', 'say'],
       init: function () { return { choice: null, tried: [null, null, null, null], run: { x: start[0], y: start[1], f: 1 }, bumped: -1 }; },
@@ -379,7 +379,7 @@
         txt(c, 'choice = ', W - 52, 18, { size: 12, col: C.muted2, align: 'right' });
         var pp = V.pop > 0 && V.pop < 1 ? 1 + .35 * Math.sin(Math.PI * V.pop) : 1;
         c.save(); c.translate(W - 40, 18); c.scale(pp, pp); txt(c, V.choice == null ? '?' : String(V.choice), 0, 0, { size: 15, w: 700, col: V.choice == null ? C.muted : C.purple }); c.restore();
-        txt(c, 'switch (choice)', 12, 16, { size: 10, w: 700, col: C.muted2, align: 'left' });
+        txt(c, 'orange wall = break', W - 12, 38, { size: 8.5, col: C.muted2, align: 'right' });
         for (var i = 0; i < 4; i++) {
           var y = RY[i], tr = V.tried[i];
           /* platform */
@@ -397,14 +397,12 @@
             c.save(); c.translate(0, 0); c.fillStyle = C.orange; c.fillRect(WX - 1 - bp * 2, y - 26, 8, 26);
             c.fillStyle = 'rgba(0,0,0,.28)'; for (var b = 0; b < 3; b++) c.fillRect(WX - 1 - bp * 2, y - 26 + b * 9 + 4, 8, 2);
             c.restore();
-            txt(c, 'break', WX + 3, y - 32, { size: 8, w: 700, col: C.orange });
             if (hit) { c.save(); c.strokeStyle = rgba(C.orange, .5 + .5 * bp); c.lineWidth = 2; c.strokeRect(WX - 3.5, y - 28, 13, 30); c.restore(); }
-            /* fall-through path that the wall blocks */
-            c.save(); c.strokeStyle = C.muted; c.globalAlpha = .55; c.setLineDash([3, 4]); c.beginPath(); c.moveTo(WX + 24, y + 1); c.quadraticCurveTo(WX + 54, y + 4, WX + 40, y + RY[i + 1] - y - 26 + 1); c.stroke(); c.setLineDash([]);
-            c.fillStyle = C.muted; c.beginPath(); c.moveTo(WX + 40, y + RY[i + 1] - y - 20); c.lineTo(WX + 35, y + RY[i + 1] - y - 28); c.lineTo(WX + 46, y + RY[i + 1] - y - 28); c.closePath(); c.fill(); c.restore();
+            /* the way down to the next case, if there were no break */
+            var ax = WX + 34; c.save(); c.strokeStyle = C.muted; c.globalAlpha = .6; c.setLineDash([3, 4]); c.beginPath(); c.moveTo(ax, y - 6); c.lineTo(ax, RY[i + 1] - 20); c.stroke(); c.setLineDash([]);
+            c.fillStyle = C.muted; c.beginPath(); c.moveTo(ax, RY[i + 1] - 13); c.lineTo(ax - 5, RY[i + 1] - 21); c.lineTo(ax + 5, RY[i + 1] - 21); c.closePath(); c.fill(); c.restore();
           }
         }
-        txt(c, 'no break: slides down to the next', W - 8, 128, { size: 8, col: C.muted, align: 'right', base: 'middle' });
         /* exit flag */
         c.fillStyle = C.border2; c.fillRect(DEPART[0] - 30, DEPART[1] + 4, 60, 3);
         c.fillStyle = C.accent; c.fillRect(DEPART[0] + 10, DEPART[1] - 24, 2, 28); c.fillRect(DEPART[0] - 4, DEPART[1] - 24, 14, 9);

@@ -87,9 +87,9 @@ function popScale(k) { return 1 + .22 * Math.sin(Math.PI * clamp(k)); }
       switch (a.a) {
         case 'frame': if (a.off) remove(S.frames, a.id); else S.frames.push({ id: a.id, t: a.t, x: a.x, y: a.y, w: a.w, h: a.h }); break;
         case 'card': { const cd = mk(a); if (a.copy) { const src = find(S.cards, a.copy); cd.fields = src.fields.map(f => ({ t: f.t, n: f.n, v: f.v, pop: 0 })); } S.cards.push(cd); break; }
-        case 'set': { const cd = find(S.cards, a.id); cd.fields[a.f].v = String(a.v); if (a.exp) S.exp = a.exp; break; }
-        case 'drop': remove(S.cards, a.id); break;
-        case 'pulse': if (a.exp) S.exp = a.exp; break;
+        case 'set': { const cd = find(S.cards, a.id); cd.fields[a.f].v = String(a.v); S.exp = a.exp || null; break; }
+        case 'drop': remove(S.cards, a.id); S.exp = null; break;
+        case 'pulse': S.exp = a.exp || null; break;
       }
     },
     tween(V, a, lp, S) {
@@ -125,12 +125,12 @@ function popScale(k) { return 1 + .22 * Math.sin(Math.PI * clamp(k)); }
         cd.fields.forEach((f, i) => {
           const y0 = HDR + i * ROW, pk = V.pulses.filter(p => p.id === cd.id && p.f === i).reduce((m, p) => Math.max(m, p.k), 0);
           if (pk > 0) { c.fillStyle = rgba(C.yellow, .22 * pk); c.fillRect(3, y0, cd.w - 6, ROW - 2); }
-          parts(c, [[f.t + ' ', C.muted, 9, 500], [f.n, bp ? C.muted2 : C.text, 11, 700]], 9, y0 + ROW / 2 - 1, 'left');
-          const vx = cd.w - 52, vy = y0 + 4, vh = ROW - 10;
-          rrect(c, vx, vy, 44, vh, 3);
+          parts(c, [[f.t + ' ', C.muted, 8, 500], [f.n, bp ? C.muted2 : C.text, 10, 700]], 9, y0 + ROW / 2 - 1, 'left');
+          const vx = cd.w - 46, vy = y0 + 4, vh = ROW - 10;
+          rrect(c, vx, vy, 38, vh, 3);
           if (bp) { c.setLineDash([3, 3]); c.strokeStyle = C.muted; c.lineWidth = 1; c.stroke(); c.setLineDash([]); }
           else { c.fillStyle = rgba(col, .2); c.fill(); c.strokeStyle = rgba(col, .7); c.lineWidth = 1; c.stroke(); }
-          if (!bp) { c.save(); c.translate(vx + 22, vy + vh / 2 + .5); const ps = f.pop > 0 && f.pop < 1 ? popScale(f.pop) : 1; c.scale(ps, ps);
+          if (!bp) { c.save(); c.translate(vx + 19, vy + vh / 2 + .5); const ps = f.pop > 0 && f.pop < 1 ? popScale(f.pop) : 1; c.scale(ps, ps);
             if (f.v == null) txt(c, '?', 0, 0, { size: 13, w: 700, col: C.muted }); else txt(c, f.v, 0, 0, { size: f.v.length > 3 ? 11 : 13, w: 700, col: C.text }); c.restore(); }
         });
         c.restore();
@@ -221,7 +221,7 @@ function popScale(k) { return 1 + .22 * Math.sin(Math.PI * clamp(k)); }
     draw(c, V, T, C, rm) {
       U.bg(c, C, W, H);
       V.frames.forEach(f => frameDraw(c, C, f, f.al));
-      const flash = id => (V.flash || []).filter(f => f.id === id).reduce((m, f) => Math.max(m, f.k), 0);
+      const flash = id => { const k = (V.flash || []).filter(f => f.id === id).reduce((m, f) => Math.max(m, f.k), 0); return k < .02 ? 0 : k; };
       const items = V.items, groups = items.filter(i => i.kind === 'group'), cells = items.filter(i => i.kind !== 'group');
       const drawBox = it => {
         const col = C[it.col], fk = flash(it.id), cx = it.x + it.w / 2, cy = it.y + it.h / 2;

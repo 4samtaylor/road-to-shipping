@@ -41,7 +41,7 @@
   'use strict';
   var U = RTSPlay.util, clamp = U.clamp, lerp = U.lerp, seg = U.seg, EZ = U.EZ, rgba = U.rgba, txt = U.txt, rr = U.rrect, pix = U.pix;
   var W = 400, H = 250, NP = 3;
-  var X = function (col) { return 82 + col * 40; };
+  var X = function (col) { return 112 + col * 52; };
 
   function newPlace() { return { cs: [], br: [], head: 'main', files: [], log: false, big: false, fy: 'top', tag: '' }; }
   function mk(it) {
@@ -79,7 +79,7 @@
     for (i = 0; i < NP; i++) { var ww = Math.max(0, vis[i]); Y.push(y); var h = tot > 0 ? avail * ww / tot : 0; Hh.push(h); if (ww > .02) y += h + gap; }
     return { y: Y, h: Hh };
   }
-  function laneY(y, h, lane) { var base = y + h * .48, gap = clamp(h * .26, 18, 34); return lane ? base + gap : base; }
+  function laneY(y, h, lane) { var base = y + h * .46, gap = clamp(h * .24, 17, 34); return lane ? base + gap : base; }
   var popv = function (V, k) { var v = V.pop && V.pop[k]; return v == null ? 1 : v; };
 
   /* ---------- chips ---------- */
@@ -226,15 +226,15 @@
     var pl = V.pl[p], y = L.y[p], h = L.h[p], al = clamp(V.vis[p] * 2.5), name = V.names[p] || '';
     c.save(); c.globalAlpha = al;
     pix(c, p === 1 ? SPEC_ICON.hub : SPEC_ICON.pc, 14, y + 4, 2, ['', p === 1 ? C.purple : C.accent], 1);
-    txt(c, name.toUpperCase(), 34, y + 10, { size: 8.5, w: 700, col: C.muted2, align: 'left' });
-    var tx = 34 + name.length * 5.1 + 8;
+    txt(c, name.toUpperCase(), 34, y + 10, { size: 9, w: 700, col: C.muted2, align: 'left' });
+    var tx = 34 + name.length * 5.4 + 8;
     if (pl.tag) {
       var tw = pl.tag.length * 5 + 10;
       rr(c, tx, y + 4, tw, 12, 3); c.fillStyle = rgba(C.orange, .2); c.fill(); c.strokeStyle = C.orange; c.lineWidth = 1; c.stroke();
       txt(c, pl.tag, tx + tw / 2, y + 10.5, { size: 8, w: 700, col: C.orange }); tx += tw + 6;
     }
     var locals = pl.br.filter(function (b) { return !b.r; }).length;
-    if (locals > 1 && !pl.big) txt(c, 'filled flag = you are here', tx, y + 10, { size: 7.5, col: C.muted, align: 'left' });
+    if (p === 0 && locals > 1) txt(c, 'filled flag = you are here', tx, y + 10, { size: 7.5, col: C.muted, align: 'left' });
 
     if (pl.log) logDraw(c, V, C, pl, p, y, h);
     else if (pl.cs.length) graphDraw(c, V, T, C, rm, pl, p, y, h);
@@ -285,7 +285,7 @@
   }
 
   function logDraw(c, V, C, pl, p, y, h) {
-    var n = pl.cs.length, rowH = h > 150 ? 32 : 26, y0 = y + 34, x0 = 28;
+    var n = pl.cs.length, rowH = h > 150 ? 38 : 26, y0 = y + 42, x0 = 28;
     var last = n - 1;
     c.save(); c.strokeStyle = C.border2; c.lineWidth = 2; c.beginPath();
     c.moveTo(x0, y0); c.lineTo(x0, y0 + (n - 1) * rowH - 2); c.stroke(); c.restore();
@@ -305,7 +305,7 @@
       c.restore();
       if (cm.rate) {
         var rp = popv(V, 'r' + p + cm.id), good = cm.rate === 'good', col = good ? C.accent : C.orange, bw = 38;
-        c.save(); c.translate(W - 14 - bw / 2, yy + 12); var s = EZ.back(rp); c.scale(s, s);
+        c.save(); c.translate(W - 14 - bw / 2, yy + 13); var s = EZ.back(rp); c.scale(s, s);
         rr(c, -bw / 2, -5.5, bw, 11, 3); c.fillStyle = rgba(col, .2); c.fill(); c.strokeStyle = col; c.lineWidth = 1; c.stroke();
         txt(c, good ? 'clear' : 'vague', 0, .5, { size: 7.5, w: 700, col: col }); c.restore();
       }
@@ -314,16 +314,16 @@
   }
 
   function graphDraw(c, V, T, C, rm, pl, p, y, h) {
-    var byId = {}; pl.cs.forEach(function (it) { byId[it.id] = it; });
+    var byId = {}, hasL1 = false; pl.cs.forEach(function (it) { byId[it.id] = it; if (it.lane) hasL1 = true; });
     pl.cs.forEach(function (it) {
       var s = popv(V, 'd' + p + it.id); if (s <= .02) return;
       var x = X(it.col), yy = laneY(y, h, it.lane);
       it.par.forEach(function (pid) {
         var pr = byId[pid]; if (!pr) return;
         var px = X(pr.col), py = laneY(y, h, pr.lane);
-        c.save(); c.globalAlpha *= Math.min(1, s * 1.6); c.lineWidth = 2.2; c.lineCap = 'round';
+        c.save(); c.globalAlpha *= Math.min(1, s * 1.6); c.lineWidth = 2.6; c.lineCap = 'round';
         c.strokeStyle = rgba(laneCol(Math.max(it.lane, pr.lane), C), .8); c.beginPath(); c.moveTo(px, py);
-        if (pr.lane === it.lane) c.lineTo(x, yy); else c.bezierCurveTo(px + 16, py, x - 16, yy, x, yy);
+        if (pr.lane === it.lane) c.lineTo(x, yy); else c.bezierCurveTo(px + 22, py, x - 22, yy, x, yy);
         c.stroke(); c.restore();
       });
     });
@@ -333,12 +333,13 @@
       V.dots[p + it.id] = { x: x, y: yy };
       c.save(); c.translate(x, yy); c.scale(k, k);
       if (it.kind === 'ghost') {
-        c.beginPath(); c.arc(0, 0, 5.5, 0, 7); c.setLineDash([2, 2]); c.strokeStyle = col; c.lineWidth = 1.5; c.stroke(); c.setLineDash([]);
+        c.beginPath(); c.arc(0, 0, 6.5, 0, 7); c.setLineDash([2, 2]); c.strokeStyle = col; c.lineWidth = 1.5; c.stroke(); c.setLineDash([]);
       } else {
-        if (it.kind === 'merge') { c.beginPath(); c.arc(0, 0, 8.5, 0, 7); c.strokeStyle = C.yellow; c.lineWidth = 1.5; c.stroke(); }
-        c.beginPath(); c.arc(0, 0, 5.5, 0, 7); c.fillStyle = col; c.fill(); c.lineWidth = 1.2; c.strokeStyle = C.ink; c.stroke();
+        if (it.kind === 'merge') { c.beginPath(); c.arc(0, 0, 10, 0, 7); c.strokeStyle = C.yellow; c.lineWidth = 1.5; c.stroke(); }
+        c.beginPath(); c.arc(0, 0, 6.5, 0, 7); c.fillStyle = col; c.fill(); c.lineWidth = 1.2; c.strokeStyle = C.ink; c.stroke();
       }
       c.restore();
+      if (it.hash && !hasL1 && it.kind !== 'ghost') txt(c, it.hash, x, yy + 15, { size: 7.5, col: C.muted, al: clamp(s) });
       if (V.ring && V.ring.p === p && V.ring.id === it.id && V.ring.t < 1) {
         c.save(); c.globalAlpha = 1 - V.ring.t; c.strokeStyle = col; c.lineWidth = 2; c.beginPath(); c.arc(x, yy, 6 + V.ring.t * 14, 0, 7); c.stroke(); c.restore();
       }
@@ -351,8 +352,8 @@
     pl.br.forEach(function (b) { if (byId[b.h]) (groups[b.h] = groups[b.h] || []).push(b); });
     Object.keys(groups).forEach(function (hid) {
       var cm = byId[hid], list = groups[hid].slice().sort(function (a, b) { return (a.r ? 1 : 0) - (b.r ? 1 : 0); });
-      var fs = 8, ws = list.map(function (b) { return b.n.length * fs * .6 + 9; }), total = ws.reduce(function (a, b) { return a + b + 3; }, -3);
-      var cx = X(cm.col), cy = laneY(y, h, cm.lane), x = clamp(cx - total / 2, 12, W - 12 - total), fy = cy + (cm.lane ? 14 : -14);
+      var fs = 9, ws = list.map(function (b) { return b.n.length * fs * .6 + 10; }), total = ws.reduce(function (a, b) { return a + b + 3; }, -3);
+      var cx = X(cm.col), cy = laneY(y, h, cm.lane), x = clamp(list.every(function (b) { return b.r; }) ? cx + 10 - total : cx - total / 2, 12, W - 12 - total), fy = cy + (cm.lane ? 15 : -15);
       var lcol = laneCol(cm.lane, C);
       list.forEach(function (b, i) {
         var w = ws[i], pp = popv(V, 'f' + p + b.n), dr = V.drop && V.drop.p === p && V.drop.n === b.n ? V.drop.t : 0;
@@ -361,7 +362,7 @@
         var s = EZ.back(pp) * (1 - dr), fx = x + w / 2;
         if (s > .02) {
           c.save(); c.translate(fx, fy); c.scale(s, s); c.globalAlpha *= 1 - dr;
-          rr(c, -w / 2, -5.5, w, 11, 4);
+          rr(c, -w / 2, -6.5, w, 13, 4);
           if (b.r) { c.setLineDash([2, 2]); c.strokeStyle = C.muted2; c.lineWidth = 1; c.stroke(); c.setLineDash([]); txt(c, b.n, 0, .5, { size: fs, w: 600, col: C.muted2 }); }
           else {
             c.fillStyle = hot > 0 ? rgba(lcol, .15 + .85 * hot) : rgba(lcol, .12); c.fill(); c.strokeStyle = lcol; c.lineWidth = 1; c.stroke();
