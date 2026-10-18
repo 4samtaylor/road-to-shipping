@@ -94,8 +94,11 @@ Built in the app (Claude's Motion artifact type isn't available on this account)
 |---|---|
 | v20 | Concept table of contents (no slider) · Phase 1 and 3 ladders · this plan |
 | v21 | Ladders for Phases 3.5, 4, 4.5, 5, 6 and 7 (all phases done) · Library by phase and concept with filter |
-| v23 | Pages inside phases + the cuts above (after Sam's week with the ladders) |
-| v25 | Play-button visuals: one prototype, then all concepts |
+| v22 | **Shipped together:** pages inside phases, the cuts above (all phases, ~45% fewer words, per-phase maps in `docs/pages/`), and See It Run for all 60 concepts in Phases 1 to 6 |
+
+## Review process used for v22
+
+Nine Sonnet agents re-homed one phase each (rules in section 2, checked by a page-map script that also guards every `data-id`); three Opus reviews checked for lost value, wrong pages, wrong facts and broken references, and a Haiku sweep checked voice and markup. A Sonnet agent built the page system, another turned the approved prototype into the engine, and six Sonnet agents wrote the scenes and specs, each diffing console output against real gcc runs. Two Opus reviews checked that every animation teaches the right model, and a Haiku agent clicked through every page and animation in the app at 1300 and 390 px.
 
 ## Review process used for v21
 
