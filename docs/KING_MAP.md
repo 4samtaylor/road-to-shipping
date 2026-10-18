@@ -4,7 +4,7 @@ Written 17 Oct 2026. Compares every phase and concept with K. N. King, *C Progra
 
 **How this was made:** one reviewer per phase read the ladder JSON, the phase HTML and `docs/pages/<phase>.md`, then listed King's matching sections, what King explains that we skip, and the questions a zero-experience reader would still have. This file merges those reports.
 
-**Spot-check needed:** King section numbers below come from memory of the 2nd edition, not from the book. Sam, please check a handful against your copy (especially §7.x, §15.x, §22.x, §26.2, §27.1) before they go into the app.
+**Section numbers verified** on 17 Oct 2026 against the official full contents on King's site (knking.com/books/c2/content.html). The ones a first draft got wrong are fixed here: `->` is §17.5, `<limits.h>` §23.2, `<ctype.h>` §23.5, `<string.h>` §23.6, unions as two views of one value §20.3, uninitialised variables §18.5, inline functions §18.6, `<stdbool.h>` §21.5.
 
 ---
 
@@ -42,7 +42,9 @@ Written 17 Oct 2026. Compares every phase and concept with K. N. King, *C Progra
 
 ## 2. Decisions for Sam
 
-| # | Question | Recommendation |
+**Status (17 Oct 2026):** Sam said "make adjustments", so every recommendation below is the working plan. Any of them can still be reversed before the phase it touches is rewritten. All of them land with the phase rewrites, not the fixes PR: D4 has to remove the `#define _CRT_SECURE_NO_WARNINGS` lines in the same change (defining it twice raises C4005, which `/WX` makes fatal), and D5/D6 change the toolchain, so they need one test build on Sam's PC first (`/std:c17` turns on MSVC's conforming preprocessor, and some Windows SDK headers warn under it).
+
+| # | Question | Decision |
 |---|---|---|
 | D1 | Split Phase 2 into **2 Values & Expressions** and **2.5 Decisions & Loops** (about 6 concepts each)? | Yes. Twelve concepts on one phase is the heaviest in the course, and the halves each end in a build (frame counter, guessing game). Costs a small progress migration (ticks on `if`, `loops`, `switch`, `rand` move to the new phase id). |
 | D2 | Add a **Variables** concept to Phase 1, or start Phase 2 with it? | Phase 1, after Escapes, so `%d` has a purpose. Phase 2 `types` then goes deeper instead of starting from zero. |
@@ -73,7 +75,7 @@ See section 5.
 
 ### Phase 02 Values & Expressions (if D1 is yes)
 1. `types` + identifiers and keywords, initialisation vs garbage, `#define` and `const` for named numbers (King §2.6), `bool` via `<stdbool.h>` (keyword only in C23)
-2. **NEW `sizes`** integer ranges, overflow, `unsigned`, `short`/`long`/`long long`, `float` vs `double` precision, `sizeof` and `<limits.h>`, a pointer to `<stdint.h>` for later (King §7.1–7.2, §7.6, §27.1)
+2. **NEW `sizes`** integer ranges, overflow, `unsigned`, `short`/`long`/`long long`, `float` vs `double` precision, `sizeof` and `<limits.h>`, a pointer to `<stdint.h>` for later (King §7.1–7.2, §7.6, §23.1–23.2, §27.1)
 3. `printf` + width, `-`, `0`, precision, `%s %u %x %lld %zu`, printing an expression
 4. `scanf` + how it scans (whitespace, stops at a mismatch, leftovers), its return value (moved out of the stretch box), `getchar`, a note on `scanf_s` (D4)
 5. **NEW `operators`** arithmetic operators, precedence and associativity, assignment as an expression, `+= -= *=`, `++`/`--` prefix vs postfix, one "don't do `i = i++`" warning (King §4.1–4.5)
@@ -91,13 +93,13 @@ See section 5.
 1. `define` → first (arrays need it) + what the preprocessor does, parentheses pitfall in the body, `const int` can't size an array in MSVC C, `enum { MAX = 5 }`
 2. `functions` + argument vs parameter, control jumping in and back out, forgetting `return`, `exit()`
 3. `prototypes` + names optional in prototypes, what happens when prototype and definition disagree
-4. `scope` + scope vs lifetime, uninitialised locals, blocks and shadowing, `static` locals (a call counter), one real example of a global causing a bug (King §10.1–10.4)
+4. `scope` + scope vs lifetime, uninitialised locals, blocks and shadowing, `static` locals (a call counter), one real example of a global causing a bug (King §10.1–10.4, §18.5)
 5. `arrays` + partial initialisers, `= {0}`, omitted size, garbage in uninitialised arrays, VLA wording fixed
 6. **NEW `array-args`** passing an array plus its length, why `sizeof` lies inside the function, the function changes the caller's array (King §9.3; the "why" is finished in 3.5 `pointer-arrays`)
 7. `strings` + literal vs variable, `char s[] = "…"` sizing, `{'a','b'}` has no terminator
 8. **NEW `string-copy`** `strlen`, `strcpy`, `strcat`, truncation and overflow, `snprintf` as the safe copy-and-join tool (King §13.5, §22.8)
 9. `fgets` + streams sidebar (`stdin`, `stdout`, `stderr`), `fgets` returning NULL, reading a number from a line with `sscanf`/`strtol`, discarding the rest of a long line
-10. `strcmp` + what "less than" means for text, `strncmp`, `<ctype.h>` (`toupper`, `isdigit`)
+10. `strcmp` + what "less than" means for text, `strncmp`, `<ctype.h>` (`toupper`, `isdigit`) (King §13.5, §23.5–23.6)
 11. `grid` + bounds checks on both indices, char grids aren't strings, filling with `memset`
 12. `files` + mode table (`r w a`, `+`, `b`), text vs binary on Windows, checking `fscanf`'s return, what the `&` in `&best` is (preview of pointers)
 
@@ -108,8 +110,8 @@ Recursion: optional Q&A only, not needed for the game.
 2. **NEW `struct-arrays`** `Enemy enemies[MAX]`, looping over them, a struct inside a struct (King §16.3)
 3. `struct-copy` + returning a struct, `==` doesn't work on structs, padding (why `sizeof` is bigger)
 4. `pointers` + memory as numbered bytes (links back to Phase 00), why pointers have types, `%p`, `p = q` vs `*p = *q`, uninitialised pointers, the `int* a, b;` trap (King §11.1–11.3)
-5. `by-pointer` + output parameters, swap, why `scanf` needs `&`, never return `&local`, a forward note on `const` (taught in 4.5)
-6. **NEW `pointer-arrays`** `p + 1`, `a[i]` is `*(a + i)`, array parameters are pointers, `const char *` and string literals, walking an array with a pointer (King §12.1–12.3, §13.1)
+5. `by-pointer` + output parameters, swap, why `scanf` needs `&`, never return `&local`, a forward note on `const` (taught in 4.5). King introduces `->` in §17.5 with linked lists; we keep it here because the game needs it now
+6. **NEW `pointer-arrays`** `p + 1`, `a[i]` is `*(a + i)`, array parameters are pointers, `const char *` and string literals, walking an array with a pointer (King §12.1–12.3, §13.1–13.2)
 7. `null` + `if (p)` idiom, NULL is only one bad value (garbage and dangling pointers can't be checked), soften "always crashes"
 8. **NEW `func-pointers`** a function's address, calling through a pointer, callbacks, the shape Phase 5's `WindowProc` uses (King §17.7)
 9. `enum` + explicit values, a `_COUNT` last entry, `/W4` warning for unhandled cases
@@ -146,7 +148,7 @@ Order unchanged. Depth to add, with prerequisites now taught earlier:
 4. `wndproc` + who calls it and when, `WM_CLOSE` → `WM_DESTROY`, `LOWORD`/`HIWORD`
 5. `message-loop` + the modal-loop catch (dragging the title bar), `wsprintf` can't do floats
 6. `gdi-invalidate` + top-left origin, y grows down, create / use / delete for GDI objects
-7. `frame-time` + 64-bit integers, `LARGE_INTEGER` as a union (one box), why the first frame spikes
+7. `frame-time` + 64-bit integers, `LARGE_INTEGER` as a union (one box; King §16.4, §20.3), why the first frame spikes
 8. `double-buffer` + what `SelectObject` swaps and why you put the old one back
 
 Fix: the starter uses `GetMessage`, but the practice asks for a frame limiter; switch the starter to `PeekMessage`.
@@ -157,7 +159,7 @@ Fix: the starter uses `GetMessage`, but the practice asks for a frame limiter; s
 3. `next-state` trimmed to what's new since 4.5 (end-of-frame switching, a name table)
 4. `aabb` + precedence of `+`, `<`, `&&`, tunnelling, undoing the move on a hit
 5. `textout` + buffer size, `TextOutA` vs `TextOutW`
-6. **NEW `game-files` (optional)** splitting the game into `game.h`/`game.c`/`player.c`, `static inline` in a header, matching the starter
+6. **NEW `game-files` (optional)** splitting the game into `game.h`/`game.c`/`player.c`, `static inline` in a header (King §18.2, §18.6), matching the starter
 
 ### Phase 07 Directing Claude Code
 No new rungs. Add the "things Claude may show you" box (function pointers, `malloc`/`free`, `memmove`) and fix the naming mismatches in section 6.
@@ -205,7 +207,7 @@ Columns: King sections · what King explains that our page skips · questions a 
 | fgets | §13.3, §22.5, §3.2 | Return value, streams, reading numbers from a line, leftovers | What is `stdin`? How do I read a number safely? |
 | strcmp | §13.5–13.6 | What "less than" means, `strncmp`, `strcpy`/`strcat`, safe variants | Why not -1/0/1? How do I check "starts with"? |
 | 2D arrays | §8.2, §9.3 | Why the column size is required, row-major memory, bounds, clearing | What if the player walks off the map? Why does the function need the column count? |
-| Files | §22.1–22.3, §22.5 | Modes, text vs binary, `fscanf`'s return, `fread`/`fwrite`, buffering | What's the `&` in `&best`? How do I save a whole array? |
+| Files | §22.1–22.3, §22.5–22.6 | Modes, text vs binary, `fscanf`'s return, `fread`/`fwrite`, buffering | What's the `&` in `&best`? How do I save a whole array? |
 
 ### Phase 3.5 Pointers & Structs
 
@@ -214,7 +216,7 @@ Columns: King sections · what King explains that our page skips · questions a 
 | Structs and dot | §16.1–16.2 | Initialisers, designated init, `= {0}`, tags, nested, arrays of structs | How do I set every field in one line? What does `= {0}` do? |
 | Structs are copied | §16.1–16.2, §9.3 | Returning a struct, no `==`, padding | Can a function hand back a whole struct? Can I compare structs with `==`? |
 | Pointers & and * | §11.1–11.2 (11.3 skipped) | What memory is, pointer types, `%p`, pointer assignment, uninitialised pointers | Why do pointers need a type? What does `int* a, b;` declare? |
-| Passing by pointer | §11.4, §16.2 (11.5 skipped) | `const` parameters, returning pointers, returning `&local`, output parameters, swap | How can a function return two values? Why can't I return `&local`? |
+| Passing by pointer | §11.4, §17.5 for `->` (11.5 skipped) | `const` parameters, returning pointers, returning `&local`, output parameters, swap | How can a function return two values? Why can't I return `&local`? |
 | NULL | §17.1, §11.5 | `if (p)`, other bad pointers can't be checked | What if `p` isn't NULL but already invalid? |
 | enum | §16.5, §5.3 | Explicit values, `_COUNT`, enums are ints | Can a `GameState` hold an unlisted value? Do I need `default:`? |
 | Headers and #pragma once | §14.2, §15.1–15.3 | How `#include` works, include guards, what not to put in a header, `extern` | Does `#include` copy text into my file? What if two files need one global? |
@@ -239,7 +241,7 @@ Columns: King sections · what King explains that our page skips · questions a 
 | _kbhit / _getch | §6.3–6.4, §7.3 | Keyboard queue, blocking vs non-blocking, chars as numbers | `\|\|` in the try-it |
 | Sleep | §14.3, §26.3 | Integer division in `1000/33`, FPS, timer resolution | `DWORD` typedef |
 | \r and fflush | §3.1, §22.1–22.3 | Streams and buffering, width flags | `stdout` as a `FILE *` |
-| Frame buffer | §8.1, §13.2, §23 | `memset`, out-of-bounds writes | — |
+| Frame buffer | §8.1, §13.2, §23.6 | `memset`, out-of-bounds writes | — |
 | Game loop | §5.1, §2.3 | Comparisons as values, state persisting across frames | `/* */` comments, comparison as value |
 | Sentinel values | §8.1, §6.4 | `break` exits one loop, `%` for timing, full slots | `break` |
 | State machines | §5.3, §16.5 | `default`, explicit values, why enum beats `#define` | — |
@@ -255,7 +257,7 @@ Columns: King sections · what King explains that our page skips · questions a 
 | Message loop | §6.1, §16.1 | Queue, `TranslateMessage`, modal loop | — |
 | GDI and InvalidateRect | §7.4, §20.1 | Coordinates, device contexts, resource cleanup, `RGB` | Integer-to-handle casts |
 | Linking libraries | §15.4 | `.lib` vs DLL, finding the library | — |
-| Frame time | §7.1–7.2, §16.4 | Ticks, 64-bit ints, union, first-frame spike | `long long`, unions |
+| Frame time | §7.1–7.2, §16.4, §20.3 | Ticks, 64-bit ints, union, first-frame spike | `long long`, unions |
 | Double buffering | §7.5 | Bitmaps, `SelectObject`, `SRCCOPY` | — |
 
 ### Phase 06 Prototype
