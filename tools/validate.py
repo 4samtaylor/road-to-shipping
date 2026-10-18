@@ -147,11 +147,32 @@ def main():
             for s in r.get('skills', []):
                 if gloss_ids and s not in gloss_ids:
                     errors.append(f'{name}: rung {rid} skill "{s}" is not in glossary.json')
+            # v23: optional "Learn it" section: {"parts": [[heading, html], ...], "king": "§2.4"}
+            if 'learn' in r:
+                L = r['learn']
+                parts = L.get('parts') if isinstance(L, dict) else None
+                if not isinstance(parts, list) or not parts:
+                    errors.append(f'{name}: rung {rid} "learn" needs a non-empty "parts" list')
+                else:
+                    words = 0
+                    for k, part in enumerate(parts):
+                        if not (isinstance(part, list) and len(part) == 2 and all(isinstance(x, str) for x in part)):
+                            errors.append(f'{name}: rung {rid} learn part {k + 1} must be [heading, html]')
+                            continue
+                        words += len(re.sub(r'<[^>]+>', ' ', part[1]).split())
+                    if words > 900:
+                        errors.append(f'{name}: rung {rid} "Learn it" is {words} words; over 900 means split the concept')
+                if isinstance(L, dict) and 'king' in L and not isinstance(L['king'], str):
+                    errors.append(f'{name}: rung {rid} learn "king" must be text like "§2.4"')
+        ids = [r.get('id') for r in rungs]
         for cp, nums in lad.get('goals', {}).items():
             if cp not in all_data_ids:
                 errors.append(f'{name}: goal {cp} is not a checkpoint data-id')
             for n in nums:
-                if not (1 <= n <= len(rungs)):
+                if isinstance(n, str):   # v23: goals by rung id survive reordering
+                    if n not in ids:
+                        errors.append(f'{name}: goal {cp} points at concept "{n}", which is not a rung id')
+                elif not (1 <= n <= len(rungs)):
                     errors.append(f'{name}: goal {cp} points at concept {n}, which does not exist')
 
     # v22: See It Run specs (content/play/<pid>.json) must point at real rungs and real lines,

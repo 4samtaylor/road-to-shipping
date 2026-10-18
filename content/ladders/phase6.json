@@ -3,11 +3,11 @@
  "phase": "phase6",
  "goals": {
   "cp-p6-1": [
-   3
+   "next-state"
   ],
   "cp-p6-2": [
-   2,
-   4
+   "delta-time",
+   "aabb"
   ]
  },
  "rungs": [

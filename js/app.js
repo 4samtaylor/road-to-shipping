@@ -1305,7 +1305,7 @@ function goalsHTML(s, d) {
   if (!s.cps.length) return '';
   var l = d ? ladState(s.id) : null;
   return '<div class="goals"><div class="goals-lbl">By the end of this phase</div><ul>' + s.cps.map(function (t) {
-    var nums = d ? (d.goals || {})[t[1]] : null, pills = '';
+    var nums = d ? ladGoalNums(d, (d.goals || {})[t[1]]) : null, pills = '';
     if (nums && nums.length) pills = '<span class="lad-pills">' + nums.map(function (n) {
       var x = d.rungs[n - 1]; if (!x) return '';
       return '<button class="lad-pill' + (l.done[x.id] ? ' done' : '') + '" data-lad-go="' + (n - 1) + '" title="' + esc(x.title) + '">' + n + '</button>';
@@ -2527,12 +2527,59 @@ document.addEventListener('input', function (e) {
    ───────────────────────────────────────────────────────────── */
 var LADDERS = {}, LAD_UI = {};
 window.RTS_LADDERS = LADDERS;   // the See It Run engine reads rung code from here
+/* v23: when a concept moves to another phase (Phase 2 split, Phase 3.5 split),
+   its tick moves with it. Each entry runs once per _ladder object; the flag
+   lives inside _ladder so a cloud copy from before the move is migrated too.
+   Format: { id: 'unique-name', from: 'phase2', to: 'phase2b', rungs: ['if', 'loops'] } */
+var LAD_MIGRATIONS = [];
+var ladMigSeen = null;
+function ladMigrate() {
+  var lad = state._ladder;
+  if (!lad || lad === ladMigSeen) return;
+  ladMigSeen = lad;
+  var mig = lad._mig && typeof lad._mig === 'object' ? lad._mig : (lad._mig = {}), changed = false;
+  LAD_MIGRATIONS.forEach(function (m) {
+    if (mig[m.id]) return;
+    var from = lad[m.from], to = lad[m.to] || (lad[m.to] = { done: {}, cur: 0 });
+    if (!to.done || typeof to.done !== 'object') to.done = {};
+    if (from && from.done) m.rungs.forEach(function (rid) {
+      if (from.done[rid]) { to.done[rid] = from.done[rid]; delete from.done[rid]; }
+    });
+    mig[m.id] = true; changed = true;
+  });
+  if (changed) save();
+}
+/* goals map a checkpoint to the concepts behind it, by rung id ("variables") or by
+   1-based position (older ladders). Ids survive reordering; positions don't. */
+function ladGoalNums(d, list) {
+  if (!list || !list.length) return null;
+  return list.map(function (g) {
+    if (typeof g === 'number') return g;
+    for (var k = 0; k < d.rungs.length; k++) if (d.rungs[k].id === g) return k + 1;
+    return 0;
+  }).filter(function (n) { return n > 0; });
+}
 function ladState(pid) {
   if (!state._ladder || typeof state._ladder !== 'object') state._ladder = {};
+  ladMigrate();
   var l = state._ladder[pid];
   if (!l || typeof l !== 'object') l = state._ladder[pid] = { done: {}, cur: 0 };
   if (!l.done || typeof l.done !== 'object') l.done = {};
   return l;
+}
+/* v23 "Learn it": the textbook explanation, between Why and the walkthrough.
+   r.learn = { parts: [[heading, html], ...], king: "§2.4, §2.7" }. Open until the
+   concept is passed, then folded so a return visit lands on the code. */
+function ladLearnHTML(r, passed) {
+  var L = r.learn, words = 0;
+  var body = L.parts.map(function (p) {
+    words += String(p[1]).replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
+    return (p[0] ? '<h4 class="lad-lh">' + esc(p[0]) + '</h4>' : '') + '<div class="lad-lt">' + p[1] + '</div>';
+  }).join('');
+  var mins = Math.max(1, Math.round(words / 200));
+  return '<section class="lad-part lad-learn"><details class="lad-lbox"' + (passed ? '' : ' open') + '>' +
+    '<summary class="lad-ph"><b>2</b>Learn it<span class="lad-lmin">~' + mins + ' min read</span></summary>' +
+    '<div class="lad-lbody">' + body + (L.king ? '<p class="lad-king">King’s version: <b>' + esc(L.king) + '</b></p>' : '') + '</div></details></section>';
 }
 function ladUI(pid) { return LAD_UI[pid] || (LAD_UI[pid] = { step: {}, ans: {}, rev: {} }); }
 function loadLadders() {
@@ -2603,11 +2650,13 @@ function renderLadder(pid) {
     '<h3 class="lad-title">' + esc(r.title) + '</h3><div class="lad-builds"><b>Builds on</b> ' + r.builds + '</div></div>' +
     (done || right ? '' : '<button class="lad-quiz" data-lad-quiz>I know this: quiz me</button>') + '</header>';
   h += '<section class="lad-part"><div class="lad-ph"><b>1</b>Why you need it</div><p class="lad-why">' + r.why + '</p></section>';
+  var off = r.learn && r.learn.parts && r.learn.parts.length ? 1 : 0;   // v23: "Learn it" pushes the later part numbers down one
+  if (off) h += ladLearnHTML(r, done || right);
 
   if (!hideWalk) {
     var at = step > 0 ? r.walk[Math.min(step, r.walk.length) - 1] : null;
     var watch = canPlay && ui.watch === r.id;   // one view: either the step-through or the player, never both
-    h += '<section class="lad-part"><div class="lad-ph lad-ph2"><span><b>2</b>See it, one line at a time</span>' +
+    h += '<section class="lad-part"><div class="lad-ph lad-ph2"><span><b>' + (2 + off) + '</b>See it, one line at a time</span>' +
       (canPlay ? '<span class="lad-seg" role="group" aria-label="How to see it"><button data-lad-mode="step" aria-pressed="' + !watch + '"' + (watch ? '' : ' class="on"') + '>Step through</button>' +
         '<button data-lad-mode="watch" aria-pressed="' + watch + '"' + (watch ? ' class="on"' : '') + '>▶ Watch it run</button></span>' : '') + '</div>' +
       (watch ? '<div class="lad-play-host"></div>' : ladCode(r.code, at ? at[0] : 0) +
@@ -2619,10 +2668,10 @@ function renderLadder(pid) {
   }
 
   if (!showCheck) {
-    h += '<section class="lad-part lad-wait"><div class="lad-ph"><b>3</b>Check, try, curious</div><p>These open when you finish the walkthrough' + (canPlay ? ' or watch it run to the end' : '') + ', or straight away with <b>I know this: quiz me</b>.</p></section>';
+    h += '<section class="lad-part lad-wait"><div class="lad-ph"><b>' + (3 + off) + '</b>Check, try, curious</div><p>These open when you finish the walkthrough' + (canPlay ? ' or watch it run to the end' : '') + ', or straight away with <b>I know this: quiz me</b>.</p></section>';
   } else {
     var c = r.check;
-    h += '<section class="lad-part" data-lad-check><div class="lad-ph"><b>3</b>Check: predict it</div><div class="lad-q">' + esc(c.q) + '</div><div class="lad-opts">' +
+    h += '<section class="lad-part" data-lad-check><div class="lad-ph"><b>' + (3 + off) + '</b>Check: predict it</div><div class="lad-q">' + esc(c.q) + '</div><div class="lad-opts">' +
       c.opts.map(function (o, k) {
         var st = tries.indexOf(k) >= 0 ? (k === c.a ? ' right' : ' wrong') : (done && k === c.a && !tries.length ? ' right' : '');
         return '<button class="lad-opt' + st + '" data-lad-opt="' + k + '"' + (right ? ' disabled' : '') + '>' + esc(o) + '</button>';
@@ -2640,9 +2689,9 @@ function renderLadder(pid) {
     h += '</section>';
     if (right || done) {
       var rev = ui.rev[r.id];
-      h += '<section class="lad-part"><div class="lad-ph"><b>4</b>Try it in VS Code</div><p class="lad-p">' + esc(r.tryit.task) + '</p>' + ladCode(r.tryit.code, 0) +
+      h += '<section class="lad-part"><div class="lad-ph"><b>' + (4 + off) + '</b>Try it in VS Code</div><p class="lad-p">' + esc(r.tryit.task) + '</p>' + ladCode(r.tryit.code, 0) +
         (rev ? '<div class="lad-ans"><small>One answer</small><pre>' + esc(r.tryit.answer) + '</pre></div>' : '<button class="lad-link" data-lad-reveal>Show one answer</button>') + '</section>';
-      h += '<section class="lad-part"><div class="lad-ph"><b>5</b>Curious? (optional)</div><div class="lad-qas">' +
+      h += '<section class="lad-part"><div class="lad-ph"><b>' + (5 + off) + '</b>Curious? (optional)</div><div class="lad-qas">' +
         r.qa.map(function (q) { return '<details class="lad-qa"><summary>' + esc(q[0]) + '</summary><div>' + q[1] + '</div></details>'; }).join('') + '</div></section>';
       var nextP = s.pages[pageIndex(s, String(i + 1)) + 1];
       h += '<div class="lad-bridge"><p>' + r.bridge + '</p>' + (nextP

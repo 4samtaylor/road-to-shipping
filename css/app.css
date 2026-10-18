@@ -2570,6 +2570,24 @@ pre, code, kbd, .cmd, .code-panel, .code-inset, .fw-code, .tp-ex, .keycap, .cs-t
 .lad-btn.go { border-color: var(--accent-line-strong); background: var(--accent-wash); color: var(--accent); }
 .lad-model { margin: 0; font-size: 13px; line-height: 1.6; color: var(--muted2); border-left: 2px solid var(--purple); padding: 2px 0 2px 12px; max-width: 64ch; }
 .lad-model b { color: var(--purple); font-weight: 500; }
+/* v23 "Learn it": the textbook explanation */
+.lad-lbox > summary { cursor: pointer; list-style: none; }
+.lad-lbox > summary::-webkit-details-marker { display: none; }
+.lad-lbox > summary::after { content: "▾"; margin-left: auto; color: var(--muted); transition: transform .15s; }
+.lad-lbox:not([open]) > summary::after { transform: rotate(-90deg); }
+.lad-lmin { margin-left: 10px; letter-spacing: .04em; text-transform: none; color: var(--muted); font-size: 11px; }
+.lad-lbody { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; max-width: 64ch; }
+.lad-lh { margin: 6px 0 0; font-size: 13px; font-weight: 600; color: var(--text); letter-spacing: .01em; }
+.lad-lt { font-size: 14px; line-height: 1.7; color: var(--text); }
+.lad-lt p { margin: 0 0 8px; }
+.lad-lt p:last-child { margin-bottom: 0; }
+.lad-lt ul, .lad-lt ol { margin: 0 0 8px; padding-left: 20px; }
+.lad-lt li { margin: 2px 0; }
+.lad-lt code { font-family: var(--font-mono, monospace); font-size: .92em; color: var(--accent); }
+.lad-lt pre { margin: 4px 0 8px; padding: 10px 12px; background: var(--surface2); border: 1px solid var(--border); overflow-x: auto; font-size: 12.5px; line-height: 1.55; }
+.lad-lt .warn { border-left: 2px solid var(--orange, var(--purple)); padding: 2px 0 2px 12px; color: var(--muted2); }
+.lad-king { margin: 4px 0 0; font-size: 12px; color: var(--muted2); }
+.lad-king b { color: var(--purple); font-weight: 500; }
 
 .lad-q { font-size: 14px; color: var(--text); }
 .lad-opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 6px; }

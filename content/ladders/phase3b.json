@@ -3,17 +3,17 @@
   "phase": "phase3b",
   "goals": {
     "cp-p3-1": [
-      2,
-      3,
-      4
+      "struct-copy",
+      "pointers",
+      "by-pointer"
     ],
     "cp-p3-2": [
-      7,
-      8
+      "headers",
+      "linker"
     ],
     "cp-p3-3": [
-      4,
-      7
+      "by-pointer",
+      "headers"
     ]
   },
   "rungs": [

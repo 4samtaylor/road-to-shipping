@@ -3,19 +3,19 @@
  "phase": "phase5",
  "goals": {
   "cp-p5-1": [
-   1,
-   4
+   "winmain-hwnd",
+   "gdi-invalidate"
   ],
   "cp-p5-2": [
-   2,
-   4
+   "wndproc",
+   "gdi-invalidate"
   ],
   "cp-p5-3": [
-   2,
-   3
+   "wndproc",
+   "message-loop"
   ],
   "cp-p5-4": [
-   6
+   "frame-time"
   ]
  },
  "rungs": [

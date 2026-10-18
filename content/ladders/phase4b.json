@@ -3,22 +3,22 @@
  "phase": "phase4b",
  "goals": {
   "cp-p4b-1": [
-   1,
-   2,
-   5
+   "kbhit-getch",
+   "sleep",
+   "game-loop"
   ],
   "cp-p4b-2": [
-   3,
-   4
+   "redraw-r",
+   "frame-buffer"
   ],
   "cp-p4b-3": [
-   5,
-   6
+   "game-loop",
+   "sentinel"
   ],
   "cp-p4b-4": [
-   7,
-   8,
-   9
+   "state-machine",
+   "const-ptr",
+   "lnk2005"
   ]
  },
  "rungs": [
