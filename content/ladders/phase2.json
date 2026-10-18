@@ -101,6 +101,14 @@
     [
      "Is a char really a number?",
      "Yes. 'q' is stored as 113. Rung 2 prints it both ways."
+    ],
+    [
+     "Which type for which game data?",
+     "Positions, speed and delta time are <code>float</code>. Health, score, lives and frame counts are <code>int</code>. A key pressed is a <code>char</code>. Alive or paused is a <code>bool</code>. Use <code>double</code> only when you need extra precision."
+    ],
+    [
+     "Why does 0.1f + 0.2f not print exactly 0.3?",
+     "Floats are stored in binary, and 0.1 has no exact binary form, just like 1/3 has no exact decimal form. You get the closest value the float can hold. That's why you never write <code>if (x == 0.3f)</code> with a float. For games it's fine: nobody can see a millionth of a pixel."
     ]
    ],
    "bridge": "You can store values. Next: <b>printing them with printf</b>, because %d only works for ints.",
@@ -326,6 +334,10 @@
     [
      "What if I write = instead of ==?",
      "It compiles. With /W4 you get C4706, and the if is now always true (or always false). The weekly “= vs ==” exercise breaks this on purpose."
+    ],
+    [
+     "Which test goes first in an else if chain?",
+     "The most specific one. C stops at the first true test, so <code>health &lt;= 0</code> goes before <code>health &lt; 25</code>, or the \"Low health\" branch would catch the dead player too."
     ]
    ],
    "bridge": "You can ask, listen and decide. Next: <b>doing it again and again</b> until they get it right. That’s a loop.",
@@ -404,6 +416,14 @@
     [
      "My program is stuck printing forever",
      "An infinite loop: the condition never becomes false. Press Ctrl+C in the terminal, then look for the line that should change the condition."
+    ],
+    [
+     "What is the game loop?",
+     "A game can't run once and exit. It repeats about 60 times a second: read input, update (move things, check collisions), draw. That's <code>while (running) { ... }</code>, and one pass is one frame. Spawning 10 enemies inside it is a <code>for</code>."
+    ],
+    [
+     "Why have both for and while, if for can do everything?",
+     "Because code is read more than it's written. <code>for (;running;)</code> is the same as <code>while (running)</code>, but a <code>for</code> tells the reader \"this counts\" and a <code>while</code> says \"this waits for something to change\", before they read a line inside."
     ]
    ],
    "bridge": "You can repeat things. Next: <b>switch</b>, a cleaner way to pick one of many options, like a menu.",
@@ -556,6 +576,14 @@
     [
      "Why %zu for sizeof?",
      "sizeof gives a size_t, an unsigned type for sizes. %zu is its slot. %d often works by luck, but /W4 may warn."
+    ],
+    [
+     "Why does my health bar stay empty?",
+     "<code>health / max_health</code> with two ints is 0 for every value below full. Cast first: <code>(float)health / max_health</code>. For a percentage, multiply first: <code>hp * 100 / max_hp</code> gives 25 for 30 out of 120, but <code>hp / max_hp * 100</code> gives 0."
+    ],
+    [
+     "What is % good for?",
+     "It gives the leftover after dividing. <code>n % 2 == 0</code> means even, and <code>(i + 1) % count</code> wraps back to 0 at the end of a list."
     ]
    ],
    "bridge": "You can trust your maths. Next and last: <b>random numbers</b>, so the guessing game has a secret you can’t predict.",
@@ -629,6 +657,14 @@
     [
      "Is it truly random?",
      "No, it’s pseudo-random: a formula. Fine for games, never for passwords."
+    ],
+    [
+     "What if I leave off the + 1?",
+     "<code>rand() % 100</code> gives 0 to 99, so 100 can never be the answer and 0 can. The pattern is <code>rand() % (how many) + (lowest)</code>, so a dice roll is <code>rand() % 6 + 1</code>."
+    ],
+    [
+     "Why does rand() % 100 favour small numbers slightly?",
+     "On MSVC rand() returns 0 to 32767, which is 32,768 values. That doesn't divide evenly by 100, so 0 to 67 come up a tiny bit more often than 68 to 99. It's called modulo bias. Nobody will notice in a guessing game."
     ]
    ],
    "bridge": "That’s every concept in Phase 2. Next: <b>the Phase 2 Trace</b>, predicting what whole programs do, then the frame counter and guessing game builds.",

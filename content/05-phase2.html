@@ -124,7 +124,6 @@
                 </ul>
               </div>
             </div>
-          </div>
             <div class="prose prose--sm t-muted2 mt-14">Commit each build when it passes, for example <span class="cmd">git add frame_loop.c</span>, <span class="cmd">git commit -m "feat: frame counter loop with a quit key"</span>, <span class="cmd">git push</span>.</div>
           </div>
         </div>
@@ -465,10 +464,6 @@ C 67
               <div class="stuck-item">
                 <div class="stuck-q">My while loop runs forever and I can't stop it</div>
                 <div class="stuck-a">Press Ctrl+C in the terminal to kill it. Then check: is your condition ever becoming false? Add a printf inside the loop to see what input is reading each iteration. Also confirm you're using != not = in your while condition.</div>
-              </div>
-              <div class="stuck-item">
-                <div class="stuck-q">When should I use for vs while?</div>
-                <div class="stuck-a">for = you know how many times (counting frames, iterating 10 enemies). while = you loop until something changes (waiting for input, game running until player dies). In your game: the main game loop is while. Spawning 5 enemies in a row is for.</div>
               </div>
             </div>
           </div>

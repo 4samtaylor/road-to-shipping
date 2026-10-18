@@ -113,6 +113,10 @@
     [
      "What are CW_USEDEFAULT and WS_OVERLAPPEDWINDOW?",
      "Named numbers. The first means “let Windows pick the position”. The second means a normal window with a title bar, border and the minimise/maximise/close buttons."
+    ],
+    [
+     "I don’t know half these type names (LRESULT, WPARAM, HINSTANCE). Is that okay?",
+     "Yes. They are renamed ordinary types: HWND is a pointer-like handle, WPARAM is a number. Win32 dates from 1993 and named everything twice. Understanding about a fifth of this file on the first read is normal. Spend your attention on the <code>switch</code> in WndProc and the loop in WinMain."
     ]
    ],
    "bridge": "You can create and show a window. Next: <b>the window procedure</b>, the function Windows calls with every event."
@@ -198,6 +202,10 @@
     [
      "Why is it called WindowProc here but WndProc everywhere?",
      "The name is yours to choose. “WndProc” is the traditional name, and the starter code calls it WindowProc. The function is the same thing."
+    ],
+    [
+     "Why does Windows call me, instead of me calling it?",
+     "A console program calls <code>scanf</code> and waits, so you are in charge. A window is one of many on the desktop, and Windows owns the mouse, keyboard and screen. It decides when you need a redraw or a key arrived. You hand it your WndProc once, like a phone number, and it rings whenever something happens."
     ]
    ],
    "bridge": "You can react to messages. Next: <b>the message loop and PeekMessage</b>, how messages get to WndProc, and how a game keeps running between them."
@@ -288,6 +296,10 @@
     [
      "Why does Windows say “Not Responding”?",
      "If you stop pulling messages for a few seconds, Windows assumes you’ve frozen. A slow frame or a missing loop causes it."
+    ],
+    [
+     "How does this compare to my Phase 2 and 4.5 loops?",
+     "It is the same shape. <code>GetMessage</code> is waiting like <code>scanf</code>, <code>PeekMessage</code> is checking without waiting like <code>_kbhit</code>, and WndProc is the “react to it” step. The job is still read input, update, draw."
     ]
    ],
    "bridge": "You can explain how messages flow. Next: <b>drawing with GDI and InvalidateRect</b>, putting a coloured rectangle on screen."
