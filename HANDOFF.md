@@ -24,6 +24,8 @@ A C game-dev learning roadmap (13 phases: C → terminal game → Win32 window �
 
 ## Open questions for Sam
 
+- **v23 (textbook depth + Phase 00):** the two top tasks in Next steps (A and B). Start with the King comparison map and show it to Sam before rewriting anything.
+
 - **Session notes:** S1/S2 are still static pages edited by PR. Proposed options: in-app journal entries (`user_state` `_jnl:<id>`), auto-draft from the week's activity, or Ask Claude prefill. Not chosen yet.
 - **King references:** reading lines were partly written from memory of the 2nd edition. Phase 3.5 has section numbers; other phases are mostly chapter-level. Ask Sam to spot-check against his copy.
 - **Section notes drawer:** built, but no phase uses it yet (content agents found nothing worth keeping that fit no page). Fine to leave.
@@ -133,6 +135,27 @@ privacy.html, sw.js, manifest.webmanifest, icons/, fonts/, setup.ps1, README.md
 - Inputs under 16px make iPhone zoom in.
 
 ## Next steps
+
+**A. Top priority: textbook depth, King as the guide (v23).** Sam's feedback after v22, 17 Oct 2026:
+
+> I love how well tailored the content is to making not just games but preparing me for my first project. The animations are excellent. The main component I see missing is the general textbook context on each concept we talk about. Our approach leaves the user wanting for more information. If we examine K.N. King's textbook for instance you see how it caters to a user with 0 experience because each concept is not introduced without really explaining the topic in detail. Let's take a more detailed approach using King's textbook as a guide. Maintain the goal of this is an introduction to programming with C but also a roadmap to get ready to start programming my game project. I want to compare each of our sections with the relevant topics in King's book and update how our phases and concepts flow. Let's try to eliminate questions that might arise from a new user by thoroughly explaining concepts more similar to how King's book does but again using the most up to date information where appropriate and trying to maintain the tailored approach we have.
+
+What that means in practice:
+- **Keep:** the game-project tailoring, the one-concept-per-page model, the checks, try-its and See It Run. v22 cut repetition; this adds depth, so it isn't a reversal. The extra explanation should live on the concept page as a proper "Learn it" section (or a collapsible "The full story" under "Why you need it"), not as a return of the old long Learn pages.
+- **Step 1, comparison map (do this first and show Sam):** for every phase and every concept, list the matching King chapters and sections (C Programming: A Modern Approach, 2nd ed.), what King explains that we don't, where our order differs from King's and whether it should, and the questions a zero-experience reader would still have after our page. Write it to `docs/KING_MAP.md`. Sam wants to review how phases and concepts flow before content is rewritten.
+- **Step 2, flow changes:** reorder, split or add concepts where the map shows gaps (for example, expressions and operator precedence, how types are stored, the full loop forms, how arrays sit in memory before pointers). Rung ids are progress keys: add new rungs, don't rename old ones. Keep `goals`, `data-id`s and play specs in step.
+- **Step 3, write the depth:** each concept gets a thorough explanation in plain language, in the order King would build it, answering the beginner's likely questions up front. Use current information where King (2008) is dated: C17/C23 notes where relevant, MSVC and VS Code specifics, `bool` and `stdint.h`, safer string functions, modern Windows behaviour. Paraphrase and cite chapters; never copy King's text or examples.
+- **Process:** same team pattern as v22. Sonnet agents draft one phase each, an Opus agent checks accuracy and beginner gaps per phase, a Haiku agent sweeps voice and consistency, then a click-through of the app at 1300 and 390 px. Show Sam one finished phase (Phase 2 is a good pilot) before rolling out.
+
+**B. New Phase 00: how computers work (crash course).** Also from Sam, 17 Oct 2026:
+
+> We also should have an overview section maybe phase 00 on how computers work with the goal of better explaining and visualizing the essential functions of a computer and preparing the user to understand context on why certain decisions in programming are made. Understanding the fundamentals of how computers work is a very common practice amongst computer science curriculum so let's include our own crash course.
+
+What that means in practice:
+- A new phase before Phase 01 with its own concept ladder, pages and See It Run scenes. Possible concepts: bits and bytes; binary and hex; memory as numbered boxes (addresses); the CPU's fetch, decode, execute loop; registers and the stack; how source code becomes machine code (compiler, linker, executable); the operating system, processes and files; input and output; and why these lead to C decisions like types and sizes, pointers, integer overflow and frame timing.
+- Every concept should tie forward to where it pays off later in the course ("this is why `int` has a range", "this is why pointers exist"), so later concept pages can link back to it.
+- Visual first: this is where the animation engine pays off most (a CPU stepping through instructions, memory boxes filling, bytes flowing to the screen). Reuse `p3b-mem`-style memory scenes where they fit.
+- Housekeeping: a new `content/NN-phase0.html` in `content/manifest.json` (Setup group or a new "Foundations" group), `content/ladders/phase0.json`, `content/play/phase0.json`, a `js/play/scenes-phase0.js` script tag, glossary entries for new terms, and dashboard/rail numbering checked. Environment Setup stays where it is (00 is taken by Setup today, so decide the label with Sam, e.g. "0.5" or renumber Setup to "Start").
 
 0. **v22 follow-ups (small):** watch Sam's first week on the pages for friction (page strip on phones, whether Overview needs the phase title repeated, whether 390 px canvas labels are readable enough). Phase 7 is the lightest-trimmed phase (−11%) because it had no repeated explanation blocks; leave it unless Sam asks. If a rung's `code` changes, re-check its `content/play/<phase>.json` spec (line numbers point into that code; validate.py catches out-of-range lines but not wrong ones).
 1. **Session notes:** see Open questions.
