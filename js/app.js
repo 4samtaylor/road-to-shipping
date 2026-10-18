@@ -876,7 +876,7 @@ function buildDock() {
     '<aside class="dock" id="dock">' +
     '<div class="dk-sec"><div class="dk-lbl"><span>This session</span><b id="dk-closed"></b></div>' +
     '<button class="dk-card dk-session" data-time title="Where your time went"><div class="dk-clock" id="dk-clock">0m</div><div class="dk-sub" id="dk-sub"></div></button></div>' +
-    '<div class="dk-sec"><div class="dk-lbl"><span>Cheat sheet</span><b id="dk-sheet-where"></b></div><div id="dk-sheet" class="dk-sheet"></div></div>' +
+    '<div class="dk-sec"><div class="dk-lbl"><span>Library</span><b id="dk-sheet-where"></b></div><div id="dk-sheet" class="dk-sheet"></div></div>' +
     '<div class="dk-sec"><div class="dk-lbl"><span>Session scratchpad</span></div>' +
     '<textarea id="dk-pad" placeholder="Loose thoughts, errors to chase, questions for next session."></textarea></div>' +
     '<div class="dk-sec"><div class="dk-lbl"><span>Next checkpoint</span></div><div class="dk-card dk-cp" id="dk-cp"></div></div>' +
@@ -1045,7 +1045,7 @@ function stagePhase(s) {
   html += '<nav class="stage-nav" aria-label="Stages in this phase">';
   var n = 0;
   STAGES.forEach(function (st) {
-    if (bins[st[0]].length) html += '<button data-stage="' + s.id + '-' + st[0] + '"><b>' + (++n) + '</b> ' + st[1] + '</button>';
+    if (bins[st[0]].length || (st[0] === 'learn' && s.el.dataset.ladder)) html += '<button data-stage="' + s.id + '-' + st[0] + '"><b>' + (++n) + '</b> ' + st[1] + '</button>';
   });
   if (bins.help.length) html += '<button class="stage-help" data-help="' + s.id + '">Stuck? Help</button>';
   inner.insertAdjacentHTML('afterbegin', html + '</nav><div class="ph-time" data-time role="button" tabindex="0" title="Where your time went"></div>');
@@ -1053,7 +1053,7 @@ function stagePhase(s) {
   n = 0;
   STAGES.forEach(function (st) {
     var els = bins[st[0]];
-    if (!els.length) return;
+    if (!els.length && !(st[0] === 'learn' && s.el.dataset.ladder)) return;   // a ladder phase always gets a Learn stage
     var sec = document.createElement('section');
     sec.className = 'stage';
     sec.id = s.id + '-' + st[0];
@@ -1065,6 +1065,7 @@ function stagePhase(s) {
       sec.insertAdjacentHTML('beforeend', '<div class="lad" data-ladder-mount="' + esc(lad) + '"><div class="lad-loading">Loading concepts…</div></div>' +
         '<div class="lad-notes"><button class="lad-notes-btn" aria-expanded="false"><span>Full notes for this phase</span><small>The long-form version: every concept on one page, plus the session plan</small></button><div class="lad-notes-body" hidden></div></div>');
       els.forEach(function (e) { $('.lad-notes-body', sec).appendChild(e); });
+      if (!els.length) $('.lad-notes', sec).hidden = true;
     } else els.forEach(function (e) { sec.appendChild(e); });
     inner.appendChild(sec);
   });
@@ -1206,6 +1207,7 @@ function setSkill(id, lv) {
     b.setAttribute('aria-pressed', on);
   });
   $$('.cs-count').forEach(function (c) { c.textContent = sheetCount(c.dataset.phase); });
+  libCounts();
   save();
 }
 function sheetCount(pid) {
@@ -1213,6 +1215,13 @@ function sheetCount(pid) {
   var solid = list.filter(function (e) { return +state._skills[e.id] === 2; }).length;
   var practiced = list.filter(function (e) { return +state._skills[e.id] === 1; }).length;
   return list.length + ' concepts · ' + solid + ' solid · ' + practiced + ' practiced';
+}
+function csItem(e) {
+  return '<div class="cs-item" data-cs="' + e.id + '">' +
+    '<button class="cs-row" aria-expanded="false"><span class="cs-chev" aria-hidden="true">▸</span><span class="cs-term">' + esc(e.term) + '</span></button>' +
+    skillHTML(e.id) +
+    '<div class="cs-more"><div class="cs-what">' + esc(e.what) + '</div>' +
+    '<button class="cs-explain" data-term="' + e.id + '">Explain it three ways ›</button></div></div>';
 }
 function sheetHTML(pid) {
   var list = (GLOSS && GLOSS.phases[pid]) || [];
@@ -1223,13 +1232,7 @@ function sheetHTML(pid) {
     var items = list.filter(function (e) { return e.kind === k; });
     if (!items.length) return;
     h += '<div class="cs-kind">' + esc(GLOSS.kinds[k] || k) + '</div>';
-    items.forEach(function (e) {
-      h += '<div class="cs-item" data-cs="' + e.id + '">' +
-        '<button class="cs-row" aria-expanded="false"><span class="cs-chev" aria-hidden="true">▸</span><span class="cs-term">' + esc(e.term) + '</span></button>' +
-        skillHTML(e.id) +
-        '<div class="cs-more"><div class="cs-what">' + esc(e.what) + '</div>' +
-        '<button class="cs-explain" data-term="' + e.id + '">Explain it three ways ›</button></div></div>';
-    });
+    items.forEach(function (e) { h += csItem(e); });
   });
   return h;
 }
@@ -1269,6 +1272,7 @@ function fwRender() {
   $('#fw-kick').textContent = v.kicker || '';
   $('#fw-title').textContent = v.title || '';
   $('#fw-body').innerHTML = v.html();
+  if ($('#fw-body .lib')) libRender();
   $('#fw-body').scrollTop = 0;
   $('#fw-back').hidden = fwStack.length < 2;
 }
@@ -1562,6 +1566,17 @@ document.addEventListener('click', function (e) {
     $$('[data-expanel]', $('#fw-body')).forEach(function (p) { p.hidden = p.dataset.expanel !== tab; });
     return;
   }
+  if ((el = e.target.closest('[data-lib-mode]'))) { e.stopPropagation(); libSet({ mode: el.dataset.libMode, ov: {} }); return; }
+  if ((el = e.target.closest('[data-lib-tog]'))) {
+    e.stopPropagation();
+    var lk = el.dataset.libTog, lo = el.getAttribute('aria-expanded') !== 'true';
+    LIB.ov[lk] = lo; libSave();
+    var lw = el.parentNode;
+    lw.classList.toggle('open', lo);
+    el.setAttribute('aria-expanded', lo);
+    return;
+  }
+  if ((el = e.target.closest('[data-library]'))) { e.stopPropagation(); closeMenu(); openLibrary(); return; }
   if ((el = e.target.closest('.cs-row'))) {
     e.stopPropagation();
     var item = el.closest('.cs-item'), open = !item.classList.contains('open');
@@ -1586,23 +1601,177 @@ document.addEventListener('click', function (e) {
     return;
   }
 }, true);
+document.addEventListener('input', function (e) {
+  if (e.target.classList && e.target.classList.contains('lib-q')) { LIB.q = e.target.value; libRender(e.target); }
+});
+document.addEventListener('change', function (e) {
+  if (e.target.classList && e.target.classList.contains('lib-sel')) libSet({ mode: 'phase', phase: e.target.value, ov: {} });
+});
 document.addEventListener('keydown', function (e) {
   if (e.key === 'Escape' && $('#fw') && !$('#fw').hidden) { e.stopPropagation(); fwClose(); }
 }, true);
 
-var dockSheetFor = '';
-function renderDockSheet(pid) {
+/* ─── LIBRARY (v21) ───────────────────────────────────────────
+   The right-hand panel (and ⋯ → Library on phones, in the floating
+   window) lists every glossary term, grouped by phase in roadmap
+   order and, inside a phase, by concept: the rung of
+   content/ladders/<pid>.json whose `skills` include the term's id
+   (first match wins; leftovers go under "More"). Phases with no
+   ladder file fall back to the KIND_ORDER grouping. Ladder files are
+   fetched for every glossary phase (404s ignored) so new ladders
+   show up without code changes.
+   Filter: Focus (default; all phases listed, only the phase you're on
+   open, with its current concept, state._ladder[pid].cur, open and
+   marked), This phase, All, or Phase… (pick one). The search box
+   matches term/what across all phases and auto-opens matches.
+   Mode, picked phase and manual open/close choices (LIB.ov) live in
+   localStorage "rts_library". Rows are the same .cs-item rows as the
+   single-phase cheat sheet, so skill dots and explainers just work.
+   ───────────────────────────────────────────────────────────── */
+var LIB = { mode: 'focus', phase: '', ov: {}, q: '' }, LIBLAD = {}, libFetched = false;
+(function () {
+  try {
+    var v = JSON.parse(lsGetv('rts_library', '{}')) || {};
+    if (['focus', 'this', 'all', 'phase'].indexOf(v.mode) >= 0) LIB.mode = v.mode;
+    if (typeof v.phase === 'string') LIB.phase = v.phase;
+    if (v.ov && typeof v.ov === 'object') LIB.ov = v.ov;
+  } catch (e) {}
+})();
+function libSave() { lsSetv('rts_library', JSON.stringify({ mode: LIB.mode, phase: LIB.phase, ov: LIB.ov })); }
+function libSet(o) { Object.keys(o).forEach(function (k) { LIB[k] = o[k]; }); libSave(); libRender(); }
+function libLad(pid) { return LIBLAD[pid] || LADDERS[pid] || null; }
+function libPhases() {
+  var out = [];
+  sections.forEach(function (s) { if (GLOSS.phases[s.id]) out.push(s.id); });
+  Object.keys(GLOSS.phases).forEach(function (p) { if (out.indexOf(p) < 0) out.push(p); });
+  return out;
+}
+function libFocus() {
+  var s = byId[currentView], order = libPhases(), i;
+  if (s && GLOSS.phases[s.id]) return s.id;
+  for (i = 0; i < order.length; i++) {
+    var d = libLad(order[i]);
+    if (d && d.rungs.some(function (r) { return !ladState(order[i]).done[r.id]; })) return order[i];
+  }
+  return GLOSS.phases.phase1 ? 'phase1' : order[0];
+}
+function libFetchLadders() {
+  if (libFetched || !GLOSS) return;
+  libFetched = true;
+  libPhases().forEach(function (pid) {
+    fetch('content/ladders/' + pid + '.json', { cache: 'no-cache' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { if (d && d.rungs && d.rungs.length) { LIBLAD[pid] = d; libRender(); } })
+      .catch(function () {});
+  });
+}
+function libGroups(pid, list) {
+  var d = libLad(pid);
+  if (!d) return null;
+  var seen = {}, groups = [];
+  d.rungs.forEach(function (r, i) {
+    var its = list.filter(function (e) { return !seen[e.id] && (r.skills || []).indexOf(e.id) >= 0; });
+    its.forEach(function (e) { seen[e.id] = 1; });
+    if (its.length) groups.push({ key: r.id, title: r.title, idx: i, items: its });
+  });
+  var rest = list.filter(function (e) { return !seen[e.id]; });
+  if (rest.length) groups.push({ key: '_more', title: 'More', idx: -1, items: rest });
+  return groups;
+}
+function libCount(pid) {
+  var list = GLOSS.phases[pid] || [];
+  var solid = list.filter(function (e) { return +state._skills[e.id] === 2; }).length;
+  return solid + '/' + list.length;
+}
+function libCounts() {
+  if (!GLOSS) return;
+  $$('.lib-n[data-phase]').forEach(function (n) { n.textContent = libCount(n.dataset.phase); });
+}
+function libHTML() {
+  var h = '<div class="lib"><div class="lib-ctl"><div class="lib-seg" role="group" aria-label="Show">' +
+    [['focus', 'Focus'], ['this', 'This phase'], ['all', 'All'], ['phase', 'Phase…']].map(function (m) {
+      return '<button class="lib-mode" data-lib-mode="' + m[0] + '">' + m[1] + '</button>';
+    }).join('') + '</div>' +
+    '<select class="lib-sel" aria-label="Phase">' + libPhases().map(function (p) {
+      var s = byId[p];
+      return '<option value="' + p + '">' + esc(s ? s.num + ' · ' + s.title : p) + '</option>';
+    }).join('') + '</select>' +
+    '<input class="lib-q" type="search" placeholder="Search terms" aria-label="Search terms" autocomplete="off" spellcheck="false">' +
+    '<span class="cs-legend"><i class="lv0"></i>not started <i class="lv1"></i>practiced <i class="lv2"></i>solid</span></div>' +
+    '<div class="lib-list"></div></div>';
+  return h;
+}
+function libListHTML() {
+  var q = LIB.q.trim().toLowerCase(), focus = libFocus(), mode = LIB.mode, order = libPhases(), h = '';
+  var pick = LIB.phase && GLOSS.phases[LIB.phase] ? LIB.phase : focus;
+  var shown = q ? order : mode === 'this' ? [focus] : mode === 'phase' ? [pick] : order;
+  var open = function (key, def) { return q ? true : (key in LIB.ov ? !!LIB.ov[key] : def); };
+  shown.forEach(function (pid) {
+    var all = GLOSS.phases[pid] || [], s = byId[pid];
+    var list = q ? all.filter(function (e) { return (e.term + ' ' + e.what + ' ' + (e.aliases || []).join(' ')).toLowerCase().indexOf(q) >= 0; }) : all;
+    if (!list.length) return;
+    var pOpen = open('p:' + pid, mode !== 'focus' || pid === focus);
+    h += '<section class="lib-ph' + (pOpen ? ' open' : '') + (pid === focus ? ' now' : '') + '" data-lib-phase="' + pid + '">' +
+      '<button class="lib-hd" data-lib-tog="p:' + pid + '" aria-expanded="' + pOpen + '"><span class="cs-chev" aria-hidden="true">▸</span>' +
+      '<span class="lib-num">' + esc(s ? s.num : pid) + '</span><span class="lib-ttl">' + esc(s ? s.title : pid) + '</span>' +
+      '<span class="lib-n" data-phase="' + pid + '" title="solid / total">' + libCount(pid) + '</span></button><div class="lib-body">';
+    var groups = libGroups(pid, list);
+    if (!groups) {
+      KIND_ORDER.forEach(function (k) {
+        var items = list.filter(function (e) { return e.kind === k; });
+        if (!items.length) return;
+        h += '<div class="cs-kind">' + esc(GLOSS.kinds[k] || k) + '</div>' + items.map(csItem).join('');
+      });
+    } else {
+      var cur = Math.max(0, +ladState(pid).cur || 0);
+      groups.forEach(function (g) {
+        var isCur = g.idx === cur && pid === focus && !!libLad(pid);
+        var gOpen = open('c:' + pid + ':' + g.key, mode !== 'focus' || pid !== focus ? true : isCur);
+        h += '<div class="lib-cn' + (gOpen ? ' open' : '') + (isCur ? ' cur' : '') + '">' +
+          '<button class="lib-cb" data-lib-tog="c:' + pid + ':' + g.key + '" aria-expanded="' + gOpen + '"><span class="cs-chev" aria-hidden="true">▸</span>' +
+          '<span class="lib-cname">' + esc(g.title) + '</span>' + (isCur ? '<span class="lib-now">now</span>' : '') +
+          '<span class="lib-cn-n">' + g.items.length + '</span></button><div class="lib-body">' + g.items.map(csItem).join('') + '</div></div>';
+      });
+    }
+    h += '</div></section>';
+  });
+  return h || '<div class="cs-empty">Nothing matches.</div>';
+}
+function libRender(skip) {
+  if (!GLOSS) return;
+  libFetchLadders();
+  $$('.lib').forEach(function (box) {
+    var list = $('.lib-list', box);
+    if (!list) return;
+    var scroller = box.closest('.dock, .fw-body'), top = scroller ? scroller.scrollTop : 0;
+    var opened = {};
+    $$('.cs-item.open', list).forEach(function (n) { opened[n.dataset.cs] = 1; });
+    list.innerHTML = libListHTML();
+    $$('.cs-item', list).forEach(function (n) {
+      if (opened[n.dataset.cs]) { n.classList.add('open'); $('.cs-row', n).setAttribute('aria-expanded', 'true'); }
+    });
+    $$('[data-lib-mode]', box).forEach(function (b) {
+      var on = b.dataset.libMode === LIB.mode;
+      b.classList.toggle('on', on);
+      b.setAttribute('aria-pressed', on);
+    });
+    var sel = $('.lib-sel', box);
+    sel.value = LIB.phase && GLOSS.phases[LIB.phase] ? LIB.phase : libFocus();
+    sel.hidden = LIB.mode !== 'phase';
+    var qi = $('.lib-q', box);
+    if (qi !== skip && qi.value !== LIB.q) qi.value = LIB.q;
+    if (scroller) scroller.scrollTop = top;
+  });
+}
+function openLibrary() {
+  fwOpen({ cls: 'fw--sheet fw--lib', kicker: 'Library', title: 'Terms by phase and concept', html: function () { return libHTML(); } }, false);
+  libRender();
+}
+function renderDockSheet() {
   var box = $('#dk-sheet');
   if (!box || !GLOSS) return;
-  if (!pid) {
-    var s = byId[currentView];
-    pid = s && GLOSS.phases[s.id] ? s.id : (dockSheetFor || 'phase1');
-  }
-  if (pid === dockSheetFor && box.innerHTML) return;
-  dockSheetFor = pid;
-  var sec = byId[pid];
-  $('#dk-sheet-where').textContent = sec ? sec.num : '';
-  box.innerHTML = sheetHTML(pid);
+  if (!$('.lib', box)) box.innerHTML = libHTML();
+  libRender();
 }
 
 /* ─── CONTENT EDITING ─────────────────────────────────────────
@@ -1610,7 +1779,7 @@ function renderDockSheet(pid) {
    innerHTML (with runtime UI stripped) under state._edits.
    ───────────────────────────────────────────────────────────── */
 if (!state._edits) state._edits = {};
-var INJECTED = '.wk-live, .lad, .lad-pills, .tn-btn, .tn-wrap, .ptoc, .ph-prog, .ph-est, .em-ctl, .em-add, .goals, .stage-nav, .stage-hd, .ph-time, .dash, .secbar, .secfoot, .prompt-ask, .stage-ask';
+var INJECTED = '.lib, .wk-live, .lad, .lad-pills, .tn-btn, .tn-wrap, .ptoc, .ph-prog, .ph-est, .em-ctl, .em-add, .goals, .stage-nav, .stage-hd, .ph-time, .dash, .secbar, .secfoot, .prompt-ask, .stage-ask';
 
 function markAnchors() {
   sections.forEach(function (s) {
@@ -2105,6 +2274,7 @@ function ladSkillNames(ids) {
   return ids.map(function (id) { return glossById[id] ? glossById[id].term : id; }).join(', ');
 }
 function renderLadder(pid) {
+  libRender(); // the Library highlights the current concept
   var d = LADDERS[pid], m = document.querySelector('[data-ladder-mount="' + pid + '"]');
   if (!d || !m || document.body.classList.contains('editing')) return;
   var l = ladState(pid), ui = ladUI(pid), rungs = d.rungs;
@@ -2322,6 +2492,7 @@ window.RTS_app = {
     Object.keys(LADDERS).forEach(renderLadder);
     $$('.skill[data-skill]').forEach(function (g) { var lv = +state._skills[g.dataset.skill] || 0; $$('button', g).forEach(function (b) { b.classList.toggle('on', +b.dataset.lv === lv); }); });
     $$('.cs-count').forEach(function (c) { c.textContent = sheetCount(c.dataset.phase); });
+    libRender();
     updateTimeUI();
     if (!currentView && $('#dash')) renderDash();
     try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}

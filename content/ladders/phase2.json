@@ -35,7 +35,7 @@
    "walk": [
     [
      2,
-     "<b>stdbool.h</b> unlocks <code>bool</code>, <code>true</code> and <code>false</code>. Without it, C doesn’t know those words."
+     "<b>stdbool.h</b> gives you <code>bool</code>, <code>true</code> and <code>false</code>. Without it, C doesn’t know those words."
     ],
     [
      5,
@@ -47,7 +47,7 @@
     ],
     [
      7,
-     "<b>char</b>: one character, in single quotes. Under the hood it’s a small number (q is 113)."
+     "<b>char</b>: one character, in single quotes. Inside, it’s a small number (q is 113)."
     ],
     [
      8,
@@ -70,17 +70,17 @@
    "check": {
     "q": "What does this program print?",
     "opts": [
-     "10 2",
-     "10 3",
      "10 2.9",
+     "10 3",
+     "10 2",
      "Nothing: it won’t compile"
     ],
-    "a": 0,
+    "a": 2,
     "hint": "Look at line 11. What happens to the part after the decimal point?",
     "why": "score becomes 10. lives gets 2.9 chopped to 2, never rounded up to 3. With /W4 you’ll also see warning C4244 on line 11: the compiler telling you something got chopped.",
     "miss": {
+     "0": "lives is an int, so it can’t hold .9. And %d prints whole numbers only.",
      "1": "Close, but C never rounds when it converts to int. It drops everything after the point.",
-     "2": "lives is an int, so it can’t hold .9. And %d prints whole numbers only.",
      "3": "It compiles. Converting a float to an int is allowed; you just get a warning (C4244) and a chopped value."
     }
    },
@@ -103,7 +103,8 @@
      "Yes. 'q' is stored as 113. Rung 2 prints it both ways."
     ]
    ],
-   "bridge": "You can store values. Next: <b>printing them with printf</b>, because %d only works for ints."
+   "bridge": "You can store values. Next: <b>printing them with printf</b>, because %d only works for ints.",
+   "lang": "c"
   },
   {
    "id": "printf",
@@ -142,16 +143,16 @@
    "check": {
     "q": "What does line 12 print?",
     "opts": [
-     "Key as a number: q",
      "Key as a number: 113",
+     "Key as a number: q",
      "Key as a number: 0",
      "A compile error"
     ],
-    "a": 1,
+    "a": 0,
     "hint": "Rung 1 said a char is a small number underneath. Which slot shows the letter, and which shows the number?",
     "why": "%d asks for the number, so you see 113, the code for lowercase q. %c would show the letter.",
     "miss": {
-     "0": "That’s what %c would print. %d shows the number underneath.",
+     "1": "That’s what %c would print. %d shows the number underneath.",
      "2": "The char isn’t empty. It holds q, which is 113.",
      "3": "Printing a char with %d is fine. A char is a small int."
     }
@@ -171,7 +172,8 @@
      "printf turns every float into a double before it prints, so %f covers both. scanf is stricter: a double needs %lf there."
     ]
    ],
-   "bridge": "You can print anything you store. Next: <b>reading what the player types</b>, so the numbers come from them instead of you."
+   "bridge": "You can print anything you store. Next: <b>reading what the player types</b>, so the numbers come from them instead of you.",
+   "lang": "c"
   },
   {
    "id": "scanf",
@@ -188,7 +190,7 @@
    "walk": [
     [
      1,
-     "MSVC calls scanf “unsafe” and, with /WX, stops the build (C4996). This line turns that warning off. It must come before any #include."
+     "<b>#define</b> lines are instructions to the compiler that run before it reads your code. This one stops MSVC calling scanf “unsafe”, which with /WX would stop the build (C4996). It must come before any #include. Phase 3 explains #define properly."
     ],
     [
      5,
@@ -219,18 +221,18 @@
    "check": {
     "q": "The player types 7 and presses Enter. What’s on screen after line 10?",
     "opts": [
-     "Guess a number: 7\nYou guessed 7",
+     "Guess a number: You guessed 0",
      "Guess a number:\n7\nYou guessed 7",
      "You guessed &guess",
-     "Guess a number: You guessed 0"
+     "Guess a number: 7\nYou guessed 7"
     ],
-    "a": 0,
+    "a": 3,
     "hint": "Line 8 has no \\n. Where does the cursor sit while the player types?",
     "why": "The 7 appears right after the question, on the same line, because line 8 didn’t end with \\n. Enter moves to the next line, and line 10 prints the result.",
     "miss": {
+     "0": "scanf waits for the player before line 10 runs, so guess holds 7 by then.",
      "1": "That would need a \\n at the end of line 8.",
-     "2": "The & is code, not text. printf prints the value of guess.",
-     "3": "scanf waits for the player before line 10 runs, so guess holds 7 by then."
+     "2": "The & is code, not text. printf prints the value of guess."
     }
    },
    "tryit": {
@@ -252,7 +254,8 @@
      "%d already skips spaces and Enters before a number. %c is the one that doesn’t, because a space or Enter is a character too."
     ]
    ],
-   "bridge": "Your program can ask and listen. Next: <b>doing something different depending on the answer</b>. That’s where it starts to feel like a game."
+   "bridge": "Your program can ask and listen. Next: <b>doing something different depending on the answer</b>. That’s where it starts to feel like a game.",
+   "lang": "c"
   },
   {
    "id": "if",
@@ -285,7 +288,7 @@
     ],
     [
      16,
-     "Exactly one of the three blocks runs. Never two."
+     "The end of the chain. Exactly one of the three blocks ran. Never two."
     ]
    ],
    "model": "<b>Mental model:</b> a row of doors checked top to bottom. You walk through the first one whose sign is true and skip the rest. else is the last door, always open.",
@@ -293,16 +296,16 @@
     "q": "The player types 50. What prints?",
     "opts": [
      "Got it!",
-     "Higher",
      "Lower",
+     "Higher",
      "Higher\nLower"
     ],
-    "a": 2,
-    "hint": "Check the doors in order. Is 50 equal to 42? Is 50 less than 42?",
+    "a": 1,
+    "hint": "Check the tests in order. Is 50 equal to 42? Is 50 less than 42?",
     "why": "50 isn’t 42, and 50 isn’t less than 42, so both tests fail and the else runs: Lower. Only one block ever runs.",
     "miss": {
      "0": "50 == 42 is false, so the first block is skipped.",
-     "1": "50 < 42 is false, so Higher is skipped too.",
+     "2": "50 < 42 is false, so Higher is skipped too.",
      "3": "An if / else if / else chain runs exactly one block. It stops at the first true one."
     }
    },
@@ -325,7 +328,8 @@
      "It compiles. With /W4 you get C4706, and the if is now always true (or always false). The weekly “= vs ==” exercise breaks this on purpose."
     ]
    ],
-   "bridge": "You can ask, listen and decide. Next: <b>doing it again and again</b> until they get it right. That’s a loop."
+   "bridge": "You can ask, listen and decide. Next: <b>doing it again and again</b> until they get it right. That’s a loop.",
+   "lang": "c"
   },
   {
    "id": "loops",
@@ -369,16 +373,16 @@
    "check": {
     "q": "How many times does “Lives:” print, and what’s the last number?",
     "opts": [
-     "3 times, last is 1",
      "3 times, last is 0",
+     "3 times, last is 1",
      "4 times, last is 0",
      "Forever"
     ],
-    "a": 0,
+    "a": 1,
     "hint": "lives starts at 3 and drops by 1 each lap. When does lives > 0 become false?",
     "why": "Lives: 3, 2, 1 print. Then lives is 0, the check fails before the next lap, and the loop ends without printing 0.",
     "miss": {
-     "1": "When lives is 0, lives > 0 is false, so the block doesn’t run again.",
+     "0": "When lives is 0, lives > 0 is false, so the block doesn’t run again.",
      "2": "The check happens before each lap. At 0 it stops before printing.",
      "3": "Line 7 lowers lives every lap, so it does reach 0 and stop."
     }
@@ -402,7 +406,8 @@
      "An infinite loop: the condition never becomes false. Press Ctrl+C in the terminal, then look for the line that should change the condition."
     ]
    ],
-   "bridge": "You can repeat things. Next: <b>switch</b>, a cleaner way to pick one of many options, like a menu."
+   "bridge": "You can repeat things. Next: <b>switch</b>, a cleaner way to pick one of many options, like a menu.",
+   "lang": "c"
   },
   {
    "id": "switch",
@@ -438,17 +443,17 @@
     "q": "You delete the break on line 12 and the player types 1. What prints?",
     "opts": [
      "Starting...",
-     "Starting...\nHigh scores",
+     "Nothing",
      "Starting...\nHigh scores\nBye\nNot an option",
-     "Nothing"
+     "Starting...\nHigh scores"
     ],
-    "a": 1,
+    "a": 3,
     "hint": "Without that break, where does C go after line 11? Where is the next break?",
     "why": "With no break after case 1, C falls through into case 2’s line and prints High scores too, then stops at case 2’s break on line 15. This fall-through is the classic switch bug.",
     "miss": {
      "0": "That needs the break on line 12.",
-     "2": "It falls through only until the next break, on line 15.",
-     "3": "case 1 still matches and runs its line."
+     "1": "case 1 still matches and runs its line.",
+     "2": "It falls through only until the next break, on line 15."
     }
    },
    "tryit": {
@@ -470,7 +475,8 @@
      "Sometimes, to let several cases share code: <code>case 'q': case 'Q':</code> above one block. If you mean it, add a comment saying so."
     ]
    ],
-   "bridge": "You can branch and repeat. Next: <b>maths</b>, where C quietly gives answers you don’t expect."
+   "bridge": "You can branch and repeat. Next: <b>maths</b>, where C quietly gives answers you don’t expect.",
+   "lang": "c"
   },
   {
    "id": "math",
@@ -519,16 +525,16 @@
    "check": {
     "q": "What does line 9 print?",
     "opts": [
-     "3.500000",
      "3.000000",
+     "3.500000",
      "3",
      "4.000000"
     ],
-    "a": 1,
+    "a": 0,
     "hint": "Do the part in brackets first. What is 7 / 2 in int maths?",
     "why": "(a / b) runs first as int maths and gives 3. Casting 3 to float gives 3.0, printed as 3.000000. The cast came too late to save the .5.",
     "miss": {
-     "0": "That’s line 8, where the cast happens before the division.",
+     "1": "That’s line 8, where the cast happens before the division.",
      "2": "%f always prints decimals, so it’s 3.000000.",
      "3": "Int division throws the remainder away. It never rounds up."
     }
@@ -552,7 +558,8 @@
      "sizeof gives a size_t, an unsigned type for sizes. %zu is its slot. %d often works by luck, but /W4 may warn."
     ]
    ],
-   "bridge": "You can trust your maths. Last: <b>random numbers</b>, so the guessing game has a secret you can’t predict."
+   "bridge": "You can trust your maths. Next and last: <b>random numbers</b>, so the guessing game has a secret you can’t predict.",
+   "lang": "c"
   },
   {
    "id": "rand",
@@ -576,7 +583,7 @@
     ],
     [
      6,
-     "<b>srand</b> picks the starting point of the random sequence. Seeding with the time gives a different start each run. Call it once, at the top. The (unsigned) cast from rung 7 stops warning C4244, which /WX would turn into an error."
+     "<b>srand</b> picks the starting point of the random sequence. <b>time(NULL)</b> asks for the current time in seconds (NULL just means “I don’t need it stored anywhere”), so each run starts somewhere different. Call it once, at the top. <b>(unsigned)</b> is a cast to an unsigned int, a whole number that can’t be negative, which is what srand wants. Without it, /W4 warns C4244 and /WX stops the build."
     ],
     [
      7,
@@ -592,16 +599,16 @@
     "q": "Before the + 1, what range can rand() % 100 give?",
     "opts": [
      "1 to 100",
-     "0 to 99",
      "0 to 100",
+     "0 to 99",
      "1 to 99"
     ],
-    "a": 1,
+    "a": 2,
     "hint": "% 100 is the remainder after dividing by 100. What’s the biggest remainder you can get?",
     "why": "Remainders by 100 run from 0 to 99. The + 1 shifts that to 1 to 100, which is why the guessing game adds it.",
     "miss": {
      "0": "That’s after the + 1.",
-     "2": "A remainder by 100 can’t be 100 itself.",
+     "1": "A remainder by 100 can’t be 100 itself.",
      "3": "0 is possible, whenever rand() is a multiple of 100."
     }
    },
@@ -624,7 +631,8 @@
      "No, it’s pseudo-random: a formula. Fine for games, never for passwords."
     ]
    ],
-   "bridge": "That’s every concept in Phase 2. Next: <b>Trace</b>, predicting what whole programs do, then the frame counter and guessing game builds."
+   "bridge": "That’s every concept in Phase 2. Next: <b>the Phase 2 Trace</b>, predicting what whole programs do, then the frame counter and guessing game builds.",
+   "lang": "c"
   }
  ]
 }

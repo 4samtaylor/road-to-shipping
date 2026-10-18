@@ -1,5 +1,5 @@
 <!-- PHASE 4.5 -->
-  <div class="phase" id="phase4b">
+  <div class="phase" id="phase4b" data-ladder="phase4b">
     <div class="phase-header">
       <div class="phase-n">4.5</div>
       <div class="phase-meta">
@@ -240,7 +240,7 @@ frame 2:  A...#.......#.....  score 13   <span class="c-cm">← drawn straight o
         <span class="c-cm">// \r sends the cursor back to column 0 without moving down, so the</span>
         <span class="c-cm">// next print lands on top of this one. That is the entire renderer.</span>
         <span class="c-fn">printf</span>(<span class="c-str">"\r%s  score %-4d"</span>, <span class="c-var">lane</span>, <span class="c-var">score</span>);
-        <span class="c-fn">fflush</span>(<span class="c-var">stdout</span>);   <span class="c-cm">// push it out now — no '\n' means it would sit in the buffer</span>
+        <span class="c-fn">fflush</span>(<span class="c-var">stdout</span>);   <span class="c-cm">// push it out now: no '\n', so some terminals would hold it in a buffer</span>
 
         <span class="c-cm">/* --- 4. WAIT — give the CPU back ---------------------------- */</span>
         <span class="c-fn">Sleep</span>(FRAME_MS);
@@ -274,7 +274,7 @@ frame 2:  A...#.......#.....  score 13   <span class="c-cm">← drawn straight o
               </div>
               <div class="stuck-item">
                 <div class="stuck-q">Nothing appears at all until I quit, then everything shows up at once</div>
-                <div class="stuck-a">Output buffering. <span class="cmd">stdout</span> normally holds characters until it sees a <span class="cmd">\n</span> or the buffer fills, and your render line deliberately has no newline in it — so it sits there. <span class="cmd">fflush(stdout)</span> immediately after the printf forces it out. It's already in the skeleton; if you rewrote the render step, you probably dropped it.</div>
+                <div class="stuck-a">Output buffering. On Mac, Linux, or when output goes to a file, <span class="cmd">stdout</span> can hold characters until it sees a <span class="cmd">\n</span> or the buffer fills, and your render line deliberately has no newline in it. The Windows console usually shows it straight away, but don't rely on that. <span class="cmd">fflush(stdout)</span> immediately after the printf forces it out. It's already in the skeleton; if you rewrote the render step, you probably dropped it.</div>
               </div>
               <div class="stuck-item">
                 <div class="stuck-q">Input feels laggy — I press duck and it happens a moment later, or several times</div>

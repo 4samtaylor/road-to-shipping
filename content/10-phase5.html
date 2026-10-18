@@ -1,5 +1,5 @@
 <!-- PHASE 5 -->
-  <div class="phase" id="phase5">
+  <div class="phase" id="phase5" data-ladder="phase5">
     <div class="phase-header">
       <div class="phase-n">05</div>
       <div class="phase-meta">
@@ -166,8 +166,11 @@ program ends when main ends      program ends when Windows says so</pre>
             <span class="c-type">PAINTSTRUCT</span> <span class="c-var">ps</span>;
             <span class="c-type">HDC</span> <span class="c-var">hdc</span> = <span class="c-fn">BeginPaint</span>(<span class="c-var">hwnd</span>, &amp;<span class="c-var">ps</span>);
             <span class="c-fn">FillRect</span>(<span class="c-var">hdc</span>, &amp;<span class="c-var">ps</span>.rcPaint, (<span class="c-type">HBRUSH</span>)(<span class="c-type">COLOR_WINDOW</span>+<span class="c-num">1</span>)); <span class="c-cm">// Clear</span>
-            <span class="c-type">RECT</span> <span class="c-var">r</span> = { <span class="c-var">g_rect_x</span>, <span class="c-var">g_rect_y</span>, <span class="c-var">g_rect_x</span>+<span class="c-num">50</span>, <span class="c-var">g_rect_y</span>+<span class="c-num">50</span> };
-            <span class="c-fn">FillRect</span>(<span class="c-var">hdc</span>, &amp;<span class="c-var">r</span>, <span class="c-fn">CreateSolidBrush</span>(<span class="c-fn">RGB</span>(<span class="c-num">0</span>,<span class="c-num">200</span>,<span class="c-num">100</span>)));
+            <span class="c-type">RECT</span> <span class="c-var">r</span>;
+            <span class="c-fn">SetRect</span>(&amp;<span class="c-var">r</span>, <span class="c-var">g_rect_x</span>, <span class="c-var">g_rect_y</span>, <span class="c-var">g_rect_x</span>+<span class="c-num">50</span>, <span class="c-var">g_rect_y</span>+<span class="c-num">50</span>); <span class="c-cm">// left, top, right, bottom</span>
+            <span class="c-type">HBRUSH</span> <span class="c-var">brush</span> = <span class="c-fn">CreateSolidBrush</span>(<span class="c-fn">RGB</span>(<span class="c-num">0</span>,<span class="c-num">200</span>,<span class="c-num">100</span>));
+            <span class="c-fn">FillRect</span>(<span class="c-var">hdc</span>, &amp;<span class="c-var">r</span>, <span class="c-var">brush</span>);
+            <span class="c-fn">DeleteObject</span>(<span class="c-var">brush</span>);   <span class="c-cm">// give the brush back, or every repaint leaks one</span>
             <span class="c-fn">EndPaint</span>(<span class="c-var">hwnd</span>, &amp;<span class="c-var">ps</span>);
         } <span class="c-kw">break</span>;
         <span class="c-kw">case</span> WM_DESTROY:
@@ -180,6 +183,8 @@ program ends when main ends      program ends when Windows says so</pre>
 }
 
 <span class="c-type">int WINAPI</span> <span class="c-fn">WinMain</span>(<span class="c-type">HINSTANCE</span> <span class="c-var">hInst</span>, <span class="c-type">HINSTANCE</span> <span class="c-var">hPrev</span>, <span class="c-type">LPSTR</span> <span class="c-var">lpCmd</span>, <span class="c-type">int</span> <span class="c-var">nShow</span>) {
+    (<span class="c-type">void</span>)<span class="c-var">hPrev</span>; (<span class="c-type">void</span>)<span class="c-var">lpCmd</span>;   <span class="c-cm">// unused: this line stops warning C4100 under /W4 /WX</span>
+
     <span class="c-cm">// Register the window class</span>
     <span class="c-type">WNDCLASS</span> <span class="c-var">wc</span> = {<span class="c-num">0</span>};
     <span class="c-var">wc</span>.lpfnWndProc   = <span class="c-fn">WindowProc</span>;

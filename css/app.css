@@ -2636,3 +2636,38 @@ pre, code, kbd, .cmd, .code-panel, .code-inset, .fw-code, .tp-ex, .keycap, .cs-t
 .lad-row.cur .lad-m { color: var(--accent); }
 .lad-row.done .lad-n { background: var(--accent); border-color: var(--accent); color: var(--bg); }
 .lad-row.done .lad-t { color: var(--muted2); }
+
+/* ─── v21: library ─── */
+.lib { font-family: var(--font-mono); }
+.lib-ctl { display: flex; flex-direction: column; gap: 8px; margin-bottom: 6px; }
+.lib-seg { display: grid; grid-template-columns: repeat(4, auto); border: 1px solid var(--border2); border-radius: 3px; overflow: hidden; }
+.lib-mode { font-family: var(--font-mono); font-size: 11px; padding: 6px 4px; background: none; color: var(--muted2); border: 0; border-left: 1px solid var(--border); cursor: pointer; white-space: nowrap; }
+.lib-mode:first-child { border-left: 0; }
+.lib-mode:hover { color: var(--text); }
+.lib-mode.on { background: var(--accent-dim); color: var(--accent); }
+.lib-sel, .lib-q { width: 100%; box-sizing: border-box; font-family: var(--font-mono); font-size: 12px; padding: 6px 8px; color: var(--text); background: var(--bg); border: 1px solid var(--border2); border-radius: 3px; }
+.lib-sel[hidden] { display: none; }
+.lib-q::placeholder { color: var(--muted); }
+.lib-q:focus, .lib-sel:focus { outline: none; border-color: var(--accent); }
+.lib .cs-legend { margin-top: 0; }
+.lib-list { margin-top: 6px; }
+.lib-hd, .lib-cb { display: flex; align-items: center; gap: 7px; width: 100%; background: none; border: 0; cursor: pointer; text-align: left; font-family: var(--font-mono); color: var(--text); }
+.lib-hd { padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 12px; min-height: 36px; }
+.lib-hd:hover .lib-ttl { color: var(--accent); }
+.lib-ph.now > .lib-hd .lib-num { color: var(--accent); }
+.lib-num { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); flex: none; }
+.lib-ttl { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lib-n, .lib-cn-n { flex: none; font-size: 10.5px; color: var(--muted2); }
+.lib-ph.open > .lib-hd .cs-chev, .lib-cn.open > .lib-cb .cs-chev { transform: rotate(90deg); color: var(--accent); }
+.lib-body { display: none; }
+.lib-ph.open > .lib-body, .lib-cn.open > .lib-body { display: block; }
+.lib-ph.open > .lib-body { padding: 4px 0 8px 6px; }
+.lib-cb { padding: 6px 0; font-size: 11px; color: var(--muted2); min-height: 30px; }
+.lib-cb:hover { color: var(--text); }
+.lib-cname { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lib-cn.cur > .lib-cb { color: var(--accent); border-left: 2px solid var(--accent); padding-left: 6px; background: var(--accent-dim); box-sizing: border-box; }
+.lib-now { flex: none; font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); border: 1px solid var(--ring); border-radius: 2px; padding: 0 4px; }
+.lib-cn .cs-item { padding-left: 4px; }
+.lib .cs-row { min-height: 30px; padding: 3px 0; }
+.lib .cs-kind { margin: 10px 0 2px; }
+@media (max-width: 1199px) { .fw--lib .lib-mode { padding: 9px 4px; font-size: 12px; } .fw--lib .lib-sel, .fw--lib .lib-q { font-size: 16px; padding: 9px 8px; } }

@@ -1,0 +1,501 @@
+{
+ "_about": "Concept ladder for the Learn stage. One concept per rung. Rung ids are progress keys: never rename. skills are glossary.json ids that move to Practiced when the check is passed. goals maps checkpoint data-ids to the rungs (1-based) that teach them. lang: c programs are compiled and run to verify each check.",
+ "phase": "phase4",
+ "goals": {
+  "cp-p4-1": [
+   1,
+   3,
+   4
+  ],
+  "cp-p4-2": [
+   5
+  ],
+  "cp-p4-3": [
+   6
+  ]
+ },
+ "rungs": [
+  {
+   "id": "clone-pull",
+   "title": "Clone and pull",
+   "kick": "git clone · git pull · git status",
+   "mins": 10,
+   "lang": "shell",
+   "skills": [
+    "git-clone"
+   ],
+   "builds": "Phase 1: you already have the repo on your PC and have pushed to it. Now Person A needs their own copy.",
+   "why": "You and Person A each keep a full copy of the game on your own PC. Clone makes that copy once. Pull brings in whatever the other person has pushed since. Skip the pull and you end up editing an old version of the game.",
+   "code": "rem Person A, once: copy Sam's repo to their PC\ncd %USERPROFILE%\\Documents\\Dev\ngit clone https://github.com/4samtaylor/game-dev-exercises\ncd game-dev-exercises\ngit log --oneline\nrem Every session, before touching anything:\ngit pull\nrem Already up to date.\ngit status\nrem On branch main\nrem Your branch is up to date with 'origin/main'.\nrem nothing to commit, working tree clean",
+   "walk": [
+    [
+     3,
+     "<b>git clone</b> downloads the whole repo, with its full history, into a new folder named after it. You do this once per PC. Person A must be added as a collaborator on GitHub (Settings, then Collaborators) and accept the email invite before they can push. If the repo is private, they need this to clone it too."
+    ],
+    [
+     4,
+     "The clone made a new folder. Step into it: git commands only work inside a repo folder."
+    ],
+    [
+     5,
+     "<b>git log --oneline</b> lists the commits, newest first, one per line. Your Phase 1 commit is in there."
+    ],
+    [
+     7,
+     "<b>git pull</b> asks GitHub for commits you don’t have yet and adds them to your copy. Make it the first command of every session."
+    ],
+    [
+     8,
+     "When nothing new has been pushed, pull just says so."
+    ],
+    [
+     9,
+     "<b>git status</b> tells you where you stand: which branch (branches come in rung 3), and whether you have changes."
+    ],
+    [
+     12,
+     "“working tree clean” means every file matches the last commit. A good place to start work from."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a shared notebook. Clone is photocopying it once. Pull is copying in the new pages your partner wrote since you last looked.",
+   "check": {
+    "q": "Person A pushes a new commit at 3pm. At 4pm you run git log --oneline and nothing else. Does their commit appear?",
+    "opts": [
+     "Yes, git log asks GitHub for the latest",
+     "Yes, because you cloned the repo earlier",
+     "No, not until you run git pull",
+     "No, not until you run git push"
+    ],
+    "a": 2,
+    "hint": "git log reads your own copy. Which command updates your copy?",
+    "why": "git log only looks at the copy on your PC. Their commit is on GitHub until you git pull it down. Push goes the other way: it sends your commits up.",
+    "miss": {
+     "0": "git log never contacts GitHub. It reads what’s already on your disk.",
+     "1": "Clone is a one-time copy. It doesn’t keep itself updated.",
+     "3": "Push sends your commits to GitHub. It doesn’t bring theirs down."
+    }
+   },
+   "tryit": {
+    "task": "Fill in the commands: get the repo onto a new PC, then update it at the start of a later session.",
+    "code": "____ https://github.com/4samtaylor/game-dev-exercises\ncd game-dev-exercises\nrem ...next day...\n____",
+    "answer": "git clone (with the URL), and later git pull"
+   },
+   "qa": [
+    [
+     "git status says “up to date” but Person A says they pushed.",
+     "status compares you with the last copy of GitHub your PC saw. It doesn’t check GitHub itself. Run <code>git pull</code> and it will catch up."
+    ],
+    [
+     "git pull says “Need to specify how to reconcile divergent branches”.",
+     "You and Person A both have commits the other lacks. Git needs a one-time setting to merge them. Rung 5 shows it, and what happens next."
+    ],
+    [
+     "Clone asks me to sign in or says not found.",
+     "Person A isn’t a collaborator yet, hasn’t accepted the invite, or isn’t signed in to GitHub on that PC. Check Settings, then Collaborators, on the repo page."
+    ]
+   ],
+   "bridge": "You can get the repo and keep it current. Next: <b>writing good commit messages</b>, so the history makes sense to both of you."
+  },
+  {
+   "id": "commit-messages",
+   "title": "Writing good commit messages",
+   "kick": "type: summary · feat · fix · refactor · docs",
+   "mins": 8,
+   "lang": "shell",
+   "skills": [
+    "commit-msg"
+   ],
+   "builds": "Phase 1: git add, git commit -m and git push. You wrote one message already.",
+   "why": "Once two people share a repo, the commit list becomes how you talk to each other. “fixed stuff” tells your partner nothing. A message that says what changed lets them know what to test, and lets you find a bug’s start weeks later.",
+   "code": "git status -s\nrem  M runner.c\ngit add runner.c\ngit commit -m \"fix: ducking now dodges obstacles at column 0\"\ngit log --oneline\nrem 3f2a1c9 fix: ducking now dodges obstacles at column 0\nrem 8b1e4d2 update\nrem c07a9e5 stuff",
+   "walk": [
+    [
+     1,
+     "<b>-s</b> gives the short form of status: one line per changed file."
+    ],
+    [
+     2,
+     "The M in the second column means “modified, not yet staged”."
+    ],
+    [
+     4,
+     "The pattern is <b>type: short description</b>. <b>feat</b> is a new feature, <b>fix</b> a bug fix, <b>refactor</b> a restructure that changes nothing visible, <b>docs</b> readme changes. Use double quotes in cmd."
+    ],
+    [
+     6,
+     "Reads well: you can tell what changed and what to test without opening the code."
+    ],
+    [
+     7,
+     "What not to do. “update” could mean anything."
+    ],
+    [
+     8,
+     "Same problem. In a month nobody can find which commit broke the jump."
+    ]
+   ],
+   "model": "<b>Mental model:</b> the caption on a photo. In a year, someone who wasn’t there should still know what the picture shows.",
+   "check": {
+    "q": "You fixed a bug where the player can jump twice in mid-air. Which message helps Person A most when they pull your commit?",
+    "opts": [
+     "fixed the jump bug from yesterday",
+     "fix: player can no longer double-jump",
+     "Fix",
+     "feat: changed some stuff in player.c"
+    ],
+    "a": 1,
+    "hint": "Pick the one that says what changed and what to test.",
+    "why": "It has a type (fix) and says exactly what behaviour changed, so Person A knows what to try after pulling. It also reads clearly in git log months later.",
+    "miss": {
+     "0": "Better than nothing, but no type and no detail: fixed it how, and what should Person A test?",
+     "2": "One word. The log would be a column of these.",
+     "3": "It’s wrong as well as vague: this is a bug fix, not a feature."
+    }
+   },
+   "tryit": {
+    "task": "You added a Player struct to the game code. Write the commit command with a good message.",
+    "code": "git commit -m \"____: ____\"",
+    "answer": "e.g. git commit -m \"feat: add Player struct with x, y and lives\""
+   },
+   "qa": [
+    [
+     "I made a typo in the message. Can I fix it?",
+     "Before you push, yes: <code>git commit --amend -m \"new message\"</code> replaces the last message. After a push, leave it. Rewriting shared history causes trouble."
+    ],
+    [
+     "Is there a rule about length?",
+     "Keep it to one line under about 70 characters. If you need more, a short message now and a note in the pull request (rung 4) works better."
+    ],
+    [
+     "Are there other types?",
+     "Teams add their own. <code>chore</code> (housekeeping like .gitignore) and <code>test</code> are common. Pick a short list with Person A and stick to it."
+    ]
+   ],
+   "bridge": "You can write messages worth reading. Next: <b>branches</b>, so new work doesn’t break the game both of you run."
+  },
+  {
+   "id": "branches",
+   "title": "Branches",
+   "kick": "git switch -c · git switch · git branch",
+   "mins": 12,
+   "lang": "shell",
+   "skills": [
+    "git-branch"
+   ],
+   "builds": "Rungs 1 and 2: a repo with a clean main, and commits that say what they do.",
+   "why": "If you both edit main directly, one half-finished feature can stop the game building for the other. The team rule is “main always builds”. Features get their own branch, and only come back when they work.",
+   "code": "git switch -c feature/jump\nrem Edit and save jump.c, then:\ngit add jump.c\ngit commit -m \"feat: add jump\"\ndir /b\nrem jump.c\nrem runner.c\ngit switch main\ndir /b\nrem runner.c\ngit branch\nrem   feature/jump\nrem * main",
+   "walk": [
+    [
+     1,
+     "<b>git switch -c</b> creates a new branch and moves you onto it. The name <code>feature/jump</code> says what the work is. Both branches start identical."
+    ],
+    [
+     3,
+     "Staging the new file, exactly as in Phase 1."
+    ],
+    [
+     4,
+     "This commit goes onto <b>feature/jump</b> only. main hasn’t moved."
+    ],
+    [
+     5,
+     "<b>dir /b</b> lists just the file names."
+    ],
+    [
+     8,
+     "<b>git switch main</b> jumps back to main. Git rewrites your folder to match it."
+    ],
+    [
+     9,
+     "jump.c is gone from the folder. It isn’t deleted: it’s safe in the feature/jump commit."
+    ],
+    [
+     11,
+     "<b>git branch</b> lists branches. The * marks the one you’re on."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a parallel draft of the story. Write freely in your copy. The published book (main) stays readable until your draft is ready.",
+   "check": {
+    "q": "Same session, but you save jump.c and forget git add and git commit. Then you run git switch main and dir /b. What do you see?",
+    "opts": [
+     "jump.c and runner.c",
+     "runner.c only",
+     "Git refuses to switch",
+     "jump.c only"
+    ],
+    "a": 0,
+    "hint": "A branch holds commits. Is jump.c in any commit yet?",
+    "why": "A file Git has never added to a commit belongs to no branch, so it just stays in your folder when you switch. The danger: it looks like main has jump.c. Commit your work before switching so it stays with its branch.",
+    "miss": {
+     "1": "That’s what you’d see if jump.c had been committed on the branch. It wasn’t.",
+     "2": "Git only refuses when a switch would overwrite your uncommitted changes. A brand-new file doesn’t clash with anything.",
+     "3": "main’s files don’t disappear. runner.c is still there too."
+    }
+   },
+   "tryit": {
+    "task": "Make a branch called feature/score, then go back to main.",
+    "code": "git ____ ____ feature/score\nrem ...work and commit...\ngit ____ main",
+    "answer": "git switch -c feature/score, then git switch main"
+   },
+   "qa": [
+    [
+     "Can I commit straight to main?",
+     "Git lets you. The team rule is not to: main is always buildable and changes arrive through pull requests (next rung)."
+    ],
+    [
+     "My Git says “switch is not a git command”.",
+     "Your Git is older than 2.23. Update Git for Windows, or use the old form <code>git checkout -b feature/jump</code>."
+    ],
+    [
+     "Does the branch exist on GitHub?",
+     "Not yet. It lives only on your PC until you push it. Rung 4 does that."
+    ]
+   ],
+   "bridge": "You can work on a branch. Next: <b>pull requests</b>, the way a finished branch gets back into main."
+  },
+  {
+   "id": "pull-requests",
+   "title": "Pull requests",
+   "kick": "git push -u · open PR · review · merge",
+   "mins": 12,
+   "lang": "shell",
+   "skills": [
+    "pull-request"
+   ],
+   "builds": "Rung 3: your feature/jump branch with a commit on it. Switch back to it if you’re on main.",
+   "why": "A branch is only on your PC until you share it. A pull request is the review step: Person A sees exactly what changed, plays it, comments, and merges it into main. That’s how main stays buildable with two people working.",
+   "code": "git switch feature/jump\nrem ...edit, git add, git commit as usual...\ngit push -u origin feature/jump\nrem GitHub prints a link. Open it and click Create pull request.\nrem Person A reads the changes, plays the build, clicks Merge.\ngit switch main\ngit pull\ngit branch -d feature/jump",
+   "walk": [
+    [
+     3,
+     "<b>git push -u origin feature/jump</b> sends the branch to GitHub. <code>origin</code> is the name Git gives GitHub’s copy of the repo. <code>-u</code> links your branch to its twin there, so later a plain <code>git push</code> is enough."
+    ],
+    [
+     4,
+     "The <b>pull request</b> is made on the GitHub website, not in the terminal. You describe what the branch does and pick Person A as reviewer."
+    ],
+    [
+     5,
+     "The reviewer sees the diff (every changed line), can comment on lines, and when happy clicks <b>Merge pull request</b>. GitHub does the merge."
+    ],
+    [
+     6,
+     "Back on your PC, move to main. Your local main is still the old one."
+    ],
+    [
+     7,
+     "<b>git pull</b> brings down the merged result, so your main now has jump.c."
+    ],
+    [
+     8,
+     "<b>-d</b> deletes your local copy of the branch. Git refuses if the branch has commits that exist nowhere else, so it’s a safe cleanup."
+    ]
+   ],
+   "model": "<b>Mental model:</b> handing Person A your draft and saying “read this before it goes in the book.” Nothing enters main until they’ve looked.",
+   "check": {
+    "q": "Person A clicks Merge on GitHub. Which step gets the new jump.c into the main on your PC?",
+    "opts": [
+     "Nothing, GitHub updates your PC automatically",
+     "git push -u origin feature/jump",
+     "git switch main, then git pull",
+     "git pull while still on feature/jump"
+    ],
+    "a": 2,
+    "hint": "GitHub merged into its main. Your main is a separate copy. How do you update it?",
+    "why": "The merge happened on GitHub. To get it, be on main and pull. Your PC never updates itself.",
+    "miss": {
+     "0": "GitHub never reaches into your PC. You pull when you’re ready.",
+     "1": "That sends your branch up. It’s already there.",
+     "3": "That updates feature/jump, not main. The merged code lands on main."
+    }
+   },
+   "tryit": {
+    "task": "After your PR is merged, update your PC and delete the branch.",
+    "code": "git ____ main\ngit ____\ngit branch ____ feature/jump",
+    "answer": "git switch main, git pull, git branch -d feature/jump"
+   },
+   "qa": [
+    [
+     "Do I have to wait for Person A every time?",
+     "For the shared game code, yes: that’s the point. For small notes or experiments you can agree to skip it. Settle that rule before you start."
+    ],
+    [
+     "git branch -d says “not fully merged”.",
+     "It means the branch has commits Git can’t find anywhere else, usually work you committed but never pushed. Push it first. If you’re sure you don’t need it (for example GitHub “squashed” the PR and deleted the branch), <code>-D</code> forces the delete."
+    ],
+    [
+     "Is there a way to open the PR from the terminal?",
+     "Yes, with GitHub’s gh tool: <code>gh pr create --fill</code>. You need to install gh first. The website is fine to start with."
+    ]
+   ],
+   "bridge": "You can get a branch reviewed and merged. Next: <b>merge conflicts</b>, which happen when you both change the same line."
+  },
+  {
+   "id": "merge-conflicts",
+   "title": "Merge conflicts",
+   "kick": "<<<<<<< · ======= · >>>>>>> · add · commit",
+   "mins": 15,
+   "lang": "shell",
+   "skills": [
+    "merge-conflict"
+   ],
+   "builds": "Rungs 1 and 3: pulling, and two copies that drift apart.",
+   "why": "Git merges most changes by itself. When you both change the same line, it can’t guess whose is right and stops. It’s normal, not a disaster. Practise on purpose now, so the first real one doesn’t feel like an emergency.",
+   "code": "git config --global pull.rebase false\ngit pull\nrem CONFLICT (content): Merge conflict in runner.c\nrem Automatic merge failed; fix conflicts and then commit the result.\ntype runner.c\nrem <<<<<<< HEAD\nrem #define FRAME_MS 20\nrem =======\nrem #define FRAME_MS 16\nrem >>>>>>> cb284f65b60eec7847a6ee9ebcc097c1b9354948\nrem Edit runner.c: keep one line, delete all three marker lines\ngit add runner.c\ngit commit -m \"merge: keep 16ms frame time\"\ngit push",
+   "walk": [
+    [
+     1,
+     "One-time setting so <code>git pull</code> merges. Without it, newer Git refuses when both sides have new commits. Git for Windows usually sets this at install; running it again is harmless."
+    ],
+    [
+     3,
+     "Git tells you which file clashed and that the merge is paused. Nothing is lost."
+    ],
+    [
+     5,
+     "<b>type</b> shows the file. Git has written both versions into it."
+    ],
+    [
+     6,
+     "<b>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</b> starts <b>your</b> version: what you had committed locally."
+    ],
+    [
+     8,
+     "<b>=======</b> is the divider between the two versions."
+    ],
+    [
+     10,
+     "<b>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</b> ends <b>their</b> version, the one from GitHub. After it you’ll see a commit id or branch name."
+    ],
+    [
+     11,
+     "The fix is by hand: pick one line (or write a blend) and delete the marker lines. VS Code shows buttons for this."
+    ],
+    [
+     12,
+     "<b>git add</b> tells Git “this file is resolved”. <b>git commit</b> finishes the merge, then push shares it."
+    ]
+   ],
+   "model": "<b>Mental model:</b> two editors rewrote the same sentence. Git can’t pick the wording, so it pastes both and asks you to choose.",
+   "check": {
+    "q": "In the conflicted runner.c above, which line is the one you committed on your own PC?",
+    "opts": [
+     "#define FRAME_MS 16",
+     "Both lines, they’re both yours",
+     "The <<<<<<< HEAD line itself",
+     "#define FRAME_MS 20"
+    ],
+    "a": 3,
+    "hint": "Which marker starts the block with your commit?",
+    "why": "The line between <<<<<<< HEAD and ======= is your side. Below ======= is the incoming change from Person A. If you left the markers in, the file wouldn’t compile.",
+    "miss": {
+     "0": "That’s below the =======: the incoming side, Person A’s commit.",
+     "1": "Only one is yours. The other is theirs, which is why they clash.",
+     "2": "That line is a marker, not code. It just starts your block."
+    }
+   },
+   "tryit": {
+    "task": "You chose to keep Person A’s value. Finish the steps after editing runner.c.",
+    "code": "rem runner.c now has only #define FRAME_MS 16\ngit ____ runner.c\ngit ____ -m \"merge: keep 16ms frame time\"\ngit ____",
+    "answer": "git add runner.c, git commit -m \"...\", git push"
+   },
+   "qa": [
+    [
+     "I’m scared I’ll lose work. How do I back out?",
+     "Run <code>git merge --abort</code>. It puts everything back as it was before the pull. You can try again calmly."
+    ],
+    [
+     "What if I leave the markers in and build?",
+     "The compiler stops with errors, because <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> isn’t C. Search the file for it before you commit."
+    ],
+    [
+     "How do I avoid conflicts?",
+     "Pull often, keep commits small, and tell each other which file you’re in. You can’t avoid them forever, and that’s fine."
+    ]
+   ],
+   "bridge": "You can resolve a conflict. Next: <b>.gitignore</b>, so compiled files never cause one."
+  },
+  {
+   "id": "gitignore",
+   "title": ".gitignore",
+   "kick": "*.exe · *.obj · git rm --cached",
+   "mins": 10,
+   "lang": "shell",
+   "skills": [
+    "gitignore"
+   ],
+   "builds": "Phase 1: cl and build.bat produce .exe, .obj and .pdb files in your project folder.",
+   "why": "Every build rewrites your .exe, .obj and .pdb files. If those are in Git, you and Person A will constantly conflict over files neither of you can read. A .gitignore tells Git to leave them alone.",
+   "code": "echo *.exe> .gitignore\necho *.obj>> .gitignore\necho *.pdb>> .gitignore\ntype .gitignore\nrem *.exe\nrem *.obj\nrem *.pdb\ngit add .gitignore\ngit commit -m \"chore: ignore build output\"\nrem runner.exe was committed before .gitignore existed:\ngit rm --cached runner.exe\ngit commit -m \"chore: stop tracking runner.exe\"\ndir /b runner.exe",
+   "walk": [
+    [
+     1,
+     "This writes one pattern per line into a file called <b>.gitignore</b> in the repo root. <code>&gt;</code> creates the file, <code>&gt;&gt;</code> adds to it. In VS Code you can just create the file instead. Run this in the Developer Command Prompt, not PowerShell: PowerShell’s echo writes a file format Git can’t read."
+    ],
+    [
+     4,
+     "<b>type</b> shows what you wrote."
+    ],
+    [
+     5,
+     "<b>*.exe</b> means “any file ending in .exe”. Same for .obj and .pdb."
+    ],
+    [
+     8,
+     "The .gitignore is itself committed, so Person A gets the same rules when they pull."
+    ],
+    [
+     10,
+     "The catch: .gitignore only affects files Git <b>isn’t tracking yet</b>. A file already committed keeps being tracked."
+    ],
+    [
+     11,
+     "<b>git rm --cached</b> removes it from Git’s tracking but leaves the real file on your disk."
+    ],
+    [
+     13,
+     "The .exe is still in your folder. Git just stopped caring about it."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a “don’t photocopy these” list taped to the notebook. It works for pages not yet copied. Pages already in the book have to be taken out by hand.",
+   "check": {
+    "q": "runner.exe was committed in Phase 1. You now add *.exe to .gitignore and rebuild. What does git status -s show for runner.exe?",
+    "opts": [
+     "Nothing",
+     " M runner.exe",
+     "?? runner.exe",
+     " D runner.exe"
+    ],
+    "a": 1,
+    "hint": "Think about which files .gitignore applies to.",
+    "why": "Git already tracks runner.exe, so the ignore rule doesn’t apply to it. The rebuild changed it, so it shows as modified. git rm --cached stops the tracking.",
+    "miss": {
+     "0": "That’s what you’d get for an .exe that was never committed. This one was, so Git still watches it.",
+     "2": "?? is for files Git has never seen. This one is in history.",
+     "3": "The rebuild replaced the file. Nothing deleted it."
+    }
+   },
+   "tryit": {
+    "task": "Stop Git tracking game.pdb (already committed) without deleting the file.",
+    "code": "git ____ ____ game.pdb\ngit commit -m \"chore: stop tracking game.pdb\"",
+    "answer": "git rm --cached game.pdb"
+   },
+   "qa": [
+    [
+     "What happens on Person A’s PC when they pull the “stop tracking” commit?",
+     "Git deletes runner.exe from their folder, since the commit removed it from the repo. They just rebuild with build.bat."
+    ],
+    [
+     "What else should be in it?",
+     "The starter list on the Phase 4 page also covers .ilk, .exp, .lib, .dll and build folders like Debug/. Paste it in your repo root."
+    ],
+    [
+     "I added a rule and nothing changed.",
+     "Check the file is named exactly <code>.gitignore</code> (no .txt on the end) and sits in the repo’s top folder. Then check whether the file was tracked before."
+    ]
+   ],
+   "bridge": "That’s every concept in Phase 4. Next: <b>Phase 4.5</b>, the ASCII Runner."
+  }
+ ]
+}
