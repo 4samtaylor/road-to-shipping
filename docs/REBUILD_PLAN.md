@@ -52,12 +52,12 @@ Skills are `glossary.json` ids; passing a concept's check moves them to Practice
 | 01 Hello World | Your first C program · Compiling and running with cl · Escape sequences and %d · Reading compiler errors · build.bat and compiler flags · Saving your work with Git | **Written (v20)** |
 | 02 Input, Loops & Conditionals | Variables and types · printf · scanf · if / else · while and for · switch · Integer maths and casting · Random numbers | **Live (v19)** |
 | 03 Functions, Arrays & Strings | Functions · void and prototypes · Scope · #define · Arrays · Strings and '\0' · fgets · strcmp · 2D arrays · Files | **Written (v20)** |
-| 3.5 Pointers & Structs | Structs and the dot · Structs are copied · Pointers: & and * · Passing by pointer and -> · NULL · enum · Header files and #pragma once · Linker errors · The debugger | Next |
-| 04 Git & Your Partner | Clone and pull · Commit messages · Branches · Pull requests · Merge conflicts · .gitignore | Next |
-| 4.5 ASCII Runner | Input without waiting (_kbhit) · Frame timing with Sleep · Redrawing in place (\r, fflush) · The frame buffer · The game loop · Sentinel values · State machines · const pointers · Multiple files and LNK2005 | Next |
-| 05 Win32 Window | WinMain and HWND · The window procedure · The message loop and PeekMessage · Drawing and InvalidateRect · Linking libraries · Frame time · Double buffering | Later |
-| 06 Prototype | update vs render · Delta time · State machine with next_state · AABB collision · Text on screen | Later |
-| 07 Directing Claude Code | Name the signature · Read every line · Ask for explanations · Push back on complexity · You own the architecture (checks are "which prompt is better?") | Later |
+| 3.5 Pointers & Structs | Structs and the dot · Structs are copied · Pointers: & and * · Passing by pointer and -> · NULL · enum · Header files and #pragma once · Linker errors · The debugger | **Written (v21)** |
+| 04 Git & Your Partner | Clone and pull · Commit messages · Branches · Pull requests · Merge conflicts · .gitignore | **Written (v21)** |
+| 4.5 ASCII Runner | Input without waiting (_kbhit) · Frame timing with Sleep · Redrawing in place (\r, fflush) · The frame buffer · The game loop · Sentinel values · State machines · const pointers · Multiple files and LNK2005 | **Written (v21)** |
+| 05 Win32 Window | WinMain and HWND · The window procedure · The message loop and PeekMessage · Drawing and InvalidateRect · Linking libraries · Frame time · Double buffering | **Written (v21)** |
+| 06 Prototype | update vs render · Delta time · State machine with next_state · AABB collision · Text on screen | **Written (v21)** |
+| 07 Directing Claude Code | Name the signature · Read every line · Ask for explanations · Push back on complexity · You own the architecture (checks are "which prompt is better?") | **Written (v21)** |
 
 Godot Bridge and the Session pages stay as reference pages (Session notes become in-app entries if Sam picks that option).
 
@@ -93,8 +93,10 @@ Built in the app (Claude's Motion artifact type isn't available on this account)
 | Release | Contents |
 |---|---|
 | v20 | Concept table of contents (no slider) · Phase 1 and 3 ladders · this plan |
-| v21 | Phase 3.5, 4 and 4.5 ladders |
-| v22 | Phase 5, 6 and 7 ladders |
+| v21 | Ladders for Phases 3.5, 4, 4.5, 5, 6 and 7 (all phases done) · Library by phase and concept with filter |
 | v23 | Pages inside phases + the cuts above (after Sam's week with the ladders) |
-| v24 | Library by phase and concept, with the filter |
 | v25 | Play-button visuals: one prototype, then all concepts |
+
+## Review process used for v21
+
+Six Sonnet agents wrote one ladder each and self-verified with `verify2.py` (gcc for portable C, MinGW cross-compile for Windows code, real git runs for Phase 4). Each ladder then got an independent Opus technical review and a Haiku consistency sweep; the authors applied every finding, and a final Opus gate checked the fixed files. The same sweep was run over Phases 1 to 3.

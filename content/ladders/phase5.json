@@ -1,0 +1,636 @@
+{
+ "_about": "Concept ladder for the Learn stage. One concept per rung. Rung ids are progress keys: never rename. skills are glossary.json ids that move to Practiced when the check is passed. goals maps checkpoint data-ids to the rungs (1-based) that teach them. lang: c programs are compiled and run to verify each check.",
+ "phase": "phase5",
+ "goals": {
+  "cp-p5-1": [
+   1,
+   4
+  ],
+  "cp-p5-2": [
+   2,
+   4
+  ],
+  "cp-p5-3": [
+   2,
+   3
+  ],
+  "cp-p5-4": [
+   6
+  ]
+ },
+ "rungs": [
+  {
+   "id": "winmain-hwnd",
+   "title": "WinMain and the window handle (HWND)",
+   "kick": "WinMain · WNDCLASS · CreateWindowEx · HWND",
+   "mins": 14,
+   "lang": "c-win",
+   "skills": [
+    "winmain",
+    "hwnd"
+   ],
+   "builds": "Phase 1: <code>main</code> is where a program starts. Phase 3.5: a pointer is a value that stands for something else.",
+   "why": "A console program just runs. A window has to be created, and Windows hands you back a handle for it: the HWND. Every later call (show it, draw on it, close it) needs that ticket. This is the boilerplate you fill in once per game.",
+   "code": "#include <windows.h>\n\nstatic HWND g_hwnd = NULL;\n\nLRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {\n    return DefWindowProc(hwnd, msg, wp, lp);\n}\n\nint WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmd, int nShow) {\n    (void)hPrev; (void)lpCmd;\n    WNDCLASS wc = {0};\n    wc.lpfnWndProc   = WindowProc;\n    wc.hInstance     = hInst;\n    wc.lpszClassName = \"GameWindow\";\n    RegisterClass(&wc);\n\n    g_hwnd = CreateWindowEx(0, \"GameWindow\", \"My First Window\",\n                   WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,\n                   800, 600, NULL, NULL, hInst, NULL);\n    ShowWindow(g_hwnd, nShow);\n\n    MSG msg;\n    while (GetMessage(&msg, NULL, 0, 0)) {\n        TranslateMessage(&msg);\n        DispatchMessage(&msg);\n    }\n    return 0;\n}",
+   "walk": [
+    [
+     3,
+     "<b>HWND</b> is a “handle to a window”: a pointer-sized number Windows gives you. You never look inside it, you just hand it back in later calls. NULL means “no window yet”. <code>static</code> keeps this variable private to this file."
+    ],
+    [
+     5,
+     "Windows will call this function for every event on the window. For now it passes everything to Windows’ default handling. Rung 2 fills it in."
+    ],
+    [
+     9,
+     "<b>WinMain</b> is main for a windowed program. Windows passes in <code>hInst</code> (this program’s own handle) and <code>nShow</code> (how the window should first appear)."
+    ],
+    [
+     10,
+     "The other two parameters are unused. Under <code>/W4 /WX</code> an unused parameter is a warning (C4100) turned into an error, so “use” them with a <code>(void)</code> cast."
+    ],
+    [
+     11,
+     "A form describing a <i>kind</i> of window. <code>= {0}</code> zeroes every field (Phase 3.5 structs) so you only fill in the ones you care about."
+    ],
+    [
+     12,
+     "The important field: the address of your callback. Windows rings this number whenever something happens."
+    ],
+    [
+     15,
+     "Hands the form to Windows under the name “GameWindow”. (No <code>UNICODE</code> defined, so these calls use plain char strings.)"
+    ],
+    [
+     17,
+     "<b>CreateWindowEx</b> builds the window from that class name and returns its HWND. 800 and 600 are the size. The window exists now but is not visible."
+    ],
+    [
+     18,
+     "Named numbers: <code>WS_OVERLAPPEDWINDOW</code> means a normal window with a title bar, border and minimise/maximise/close buttons. <code>CW_USEDEFAULT</code> twice means “let Windows pick the position”."
+    ],
+    [
+     20,
+     "Makes it appear. Without this line the window exists but nobody can see it."
+    ],
+    [
+     23,
+     "The message loop keeps the program alive: GetMessage waits for the next message, then TranslateMessage and DispatchMessage pass it on to WindowProc. It gets its own rung (3). Without it, WinMain would end and the window would vanish at once."
+    ]
+   ],
+   "model": "<b>Mental model:</b> registering a class is filling in a form for a type of window. CreateWindowEx is ordering one from that form, and the HWND is the claim ticket. Every later call says “about window number…” using that ticket.",
+   "check": {
+    "q": "You delete the ShowWindow line and run the program. What happens?",
+    "opts": [
+     "The window appears anyway, because CreateWindowEx makes it visible",
+     "The program refuses to compile, because ShowWindow is required",
+     "Nothing is visible, but the program keeps running",
+     "The program exits straight away, because there is no window to show"
+    ],
+    "a": 2,
+    "hint": "CreateWindowEx builds the window. What does ShowWindow add?",
+    "why": "CreateWindowEx makes the window but, without the WS_VISIBLE style, hides it. ShowWindow is what puts it on screen. The message loop still runs, so the process sits there with nothing to look at.",
+    "miss": {
+     "0": "This style of CreateWindowEx call doesn’t include WS_VISIBLE, so the window stays hidden until ShowWindow.",
+     "1": "ShowWindow is just a function call. Leaving it out compiles fine.",
+     "3": "The program ends when the message loop ends, not when the window is missing. GetMessage keeps waiting."
+    }
+   },
+   "tryit": {
+    "task": "Change the title bar text and the window size to 640 by 480.",
+    "code": "g_hwnd = CreateWindowEx(0, \"GameWindow\", \"____\",\n               WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,\n               ____, ____, NULL, NULL, hInst, NULL);",
+    "answer": "Any title you like, then 640, 480"
+   },
+   "qa": [
+    [
+     "Why doesn’t clicking X end the program?",
+     "X destroys the window, but nothing tells the message loop to stop, so the process keeps running with no window. Rung 2 fixes this with WM_DESTROY."
+    ],
+    [
+     "Why WinMain and not main?",
+     "Windows hands a GUI program things a console program never needs, like its own instance handle. The C runtime sets everything up and then calls your WinMain, the way it calls main in a console program."
+    ],
+    [
+     "What are CW_USEDEFAULT and WS_OVERLAPPEDWINDOW?",
+     "Named numbers. The first means “let Windows pick the position”. The second means a normal window with a title bar, border and the minimise/maximise/close buttons."
+    ]
+   ],
+   "bridge": "You can create and show a window. Next: <b>the window procedure</b>, the function Windows calls with every event."
+  },
+  {
+   "id": "wndproc",
+   "title": "The window procedure (WndProc) and messages",
+   "kick": "WindowProc · switch (msg) · WM_KEYDOWN · WM_DESTROY",
+   "mins": 14,
+   "lang": "c-win",
+   "skills": [
+    "wndproc"
+   ],
+   "builds": "Rung 1 (the callback address you handed Windows) and Phase 2 (<code>switch</code>).",
+   "why": "Everything that happens to your window arrives here as a numbered message: a key, a click, a repaint request, the close button. Your whole game’s reaction to the outside world is a <code>switch</code> inside this one function.",
+   "code": "#include <windows.h>\n\nstatic HWND g_hwnd = NULL;\n\nLRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {\n    switch (msg) {\n        case WM_KEYDOWN:\n            if (wp == VK_ESCAPE) DestroyWindow(hwnd);\n            break;\n        case WM_DESTROY:\n            PostQuitMessage(0);\n            break;\n        default:\n            return DefWindowProc(hwnd, msg, wp, lp);\n    }\n    return 0;\n}\n\nint WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmd, int nShow) {\n    (void)hPrev; (void)lpCmd;\n    WNDCLASS wc = {0};\n    wc.lpfnWndProc   = WindowProc;\n    wc.hInstance     = hInst;\n    wc.lpszClassName = \"GameWindow\";\n    RegisterClass(&wc);\n\n    g_hwnd = CreateWindowEx(0, \"GameWindow\", \"My First Window\",\n                   WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,\n                   800, 600, NULL, NULL, hInst, NULL);\n    ShowWindow(g_hwnd, nShow);\n\n    MSG msg;\n    while (GetMessage(&msg, NULL, 0, 0)) {\n        TranslateMessage(&msg);\n        DispatchMessage(&msg);\n    }\n    return (int)msg.wParam;\n}",
+   "walk": [
+    [
+     5,
+     "This is the <b>WndProc</b>. You never call it. Windows does, with the window (<code>hwnd</code>), the message number (<code>msg</code>) and two extra values (<code>wp</code>, <code>lp</code>)."
+    ],
+    [
+     6,
+     "A plain Phase 2 <code>switch</code>, choosing by message number. WM_ names are just constants for those numbers."
+    ],
+    [
+     7,
+     "A key went down. <code>wp</code> says which one: here, a virtual-key code like <code>VK_ESCAPE</code>."
+    ],
+    [
+     8,
+     "Asks Windows to tear the window down. That makes Windows send you WM_DESTROY."
+    ],
+    [
+     11,
+     "On WM_DESTROY the window is going away. <b>PostQuitMessage</b> drops a WM_QUIT message in the queue so the loop in WinMain can stop (rung 3)."
+    ],
+    [
+     14,
+     "In the default case: every message you don’t handle must go to <b>DefWindowProc</b>. It does the standard behaviour: dragging, resizing, the X button, and so on."
+    ],
+    [
+     16,
+     "Returning 0 tells Windows “handled”."
+    ],
+    [
+     37,
+     "After the loop ends, wParam holds the 0 you gave PostQuitMessage. It becomes the program’s exit code."
+    ]
+   ],
+   "model": "<b>Mental model:</b> WndProc is your window’s receptionist. Every event knocks on the door with a message number. You handle the ones you care about and send everything else to Windows’ own front desk, DefWindowProc.",
+   "check": {
+    "q": "You delete the whole WM_DESTROY case, then run the program and click the X. What happens?",
+    "opts": [
+     "The window vanishes but the program keeps running",
+     "The window refuses to close, because nothing handles the click",
+     "The program crashes with an access violation when you click X",
+     "Nothing visible changes: Windows ends the program for you"
+    ],
+    "a": 0,
+    "hint": "Who tells the message loop to stop?",
+    "why": "DefWindowProc still closes and destroys the window, so it vanishes. But nobody calls PostQuitMessage, so no quit message is ever posted and the message loop never finishes. You get an invisible program stuck in Task Manager.",
+    "miss": {
+     "1": "DefWindowProc handles the close button fine, so the window does go away.",
+     "2": "Nothing here is invalid. The program just never stops.",
+     "3": "Windows doesn’t end your process when your window closes. Only your own loop ending (via WM_QUIT) does that."
+    }
+   },
+   "tryit": {
+    "task": "Make the program end when the window is destroyed.",
+    "code": "case ____:\n    ____(0);\n    break;",
+    "answer": "WM_DESTROY, then PostQuitMessage"
+   },
+   "qa": [
+    [
+     "What are wp and lp?",
+     "Extra details whose meaning depends on the message. For WM_KEYDOWN, wp is the key. For a mouse click, lp holds the position. WPARAM and LPARAM are just integer types."
+    ],
+    [
+     "Why return DefWindowProc in the default case?",
+     "DefWindowProc does the standard work for messages you ignore (moving, resizing, the X button) and gives back the result Windows expects. Returning your own 0 for everything would break all of that."
+    ],
+    [
+     "Why is it called WindowProc here but WndProc everywhere?",
+     "The name is yours to choose. “WndProc” is the traditional name, and the starter code calls it WindowProc. The function is the same thing."
+    ]
+   ],
+   "bridge": "You can react to messages. Next: <b>the message loop and PeekMessage</b>, how messages get to WndProc, and how a game keeps running between them."
+  },
+  {
+   "id": "message-loop",
+   "title": "The message loop and PeekMessage",
+   "kick": "GetMessage · PeekMessage · PM_REMOVE · WM_QUIT",
+   "mins": 15,
+   "lang": "c-win",
+   "skills": [
+    "message-loop",
+    "peekmessage"
+   ],
+   "builds": "Phase 4.5: the game loop with <code>_kbhit</code> and <code>Sleep</code>. This is the same loop one level down.",
+   "why": "The loop is how your program collects its messages and hands them to WndProc. A normal app uses GetMessage and waits. A game can’t wait, because enemies must move even when nobody presses a key, so it uses PeekMessage and runs a frame whether or not a message arrived.",
+   "code": "#include <windows.h>\n\nstatic HWND g_hwnd = NULL;\n\nLRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {\n    if (msg == WM_DESTROY) {\n        PostQuitMessage(0);\n        return 0;\n    }\n    return DefWindowProc(hwnd, msg, wp, lp);\n}\n\nint WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmd, int nShow) {\n    (void)hPrev; (void)lpCmd;\n    WNDCLASS wc = {0};\n    wc.lpfnWndProc   = WindowProc;\n    wc.hInstance     = hInst;\n    wc.lpszClassName = \"GameWindow\";\n    RegisterClass(&wc);\n\n    g_hwnd = CreateWindowEx(0, \"GameWindow\", \"My First Window\",\n                   WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,\n                   800, 600, NULL, NULL, hInst, NULL);\n    ShowWindow(g_hwnd, nShow);\n\n    MSG msg = {0};\n    int running = 1;\n    int frame = 0;\n    char title[32];\n    while (running) {\n        while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {\n            if (msg.message == WM_QUIT) running = 0;\n            TranslateMessage(&msg);\n            DispatchMessage(&msg);\n        }\n        frame++;\n        wsprintf(title, \"Frame %d\", frame);\n        SetWindowText(g_hwnd, title);\n        Sleep(16);\n    }\n    return (int)msg.wParam;\n}",
+   "walk": [
+    [
+     26,
+     "A <code>MSG</code> struct (Phase 3.5) that each retrieved message is copied into. Zeroed so it’s safe to read at the end."
+    ],
+    [
+     30,
+     "The outer loop is your game loop from Phase 4.5: one pass per frame."
+    ],
+    [
+     31,
+     "<b>PeekMessage</b> asks “anything waiting?”. It returns right away: nonzero if there was a message (copied into msg and removed, thanks to PM_REMOVE), 0 if the queue was empty. This inner loop empties the queue each frame."
+    ],
+    [
+     32,
+     "<code>msg.message</code> is the message number (WM_QUIT, WM_KEYDOWN, and so on). Unlike GetMessage, PeekMessage does <i>not</i> return 0 for WM_QUIT. It hands it over like any message, so you must check for it and stop yourself."
+    ],
+    [
+     34,
+     "Sends the message to the right window’s WindowProc. This is the moment Windows calls your function. TranslateMessage just turns raw key presses into character messages."
+    ],
+    [
+     36,
+     "The queue is empty, so run the frame: update and draw. Here the “game” just counts frames."
+    ],
+    [
+     37,
+     "Works like printf, but writes the text (“Frame 1”, “Frame 2”…) into the <code>title</code> array instead of the screen."
+    ],
+    [
+     38,
+     "Puts that text in the window’s title bar, so you can watch the loop run."
+    ],
+    [
+     39,
+     "Without this the loop would spin as fast as it can and use a whole CPU core. Rung 6 replaces this guess with real timing."
+    ]
+   ],
+   "model": "<b>Mental model:</b> GetMessage is standing at the post office until a letter arrives. PeekMessage is glancing in the mailbox on your way past: letter or no letter, you carry on with your day. A game needs the glance.",
+   "check": {
+    "q": "You delete the line <code>if (msg.message == WM_QUIT) running = 0;</code> and run the program. You click the X. What happens?",
+    "opts": [
+     "The window closes and the program exits as normal, as it did before",
+     "The program crashes because WM_QUIT is never handled anywhere",
+     "PeekMessage returns 0 forever, so the title stops changing",
+     "The window goes, but the loop carries on counting frames"
+    ],
+    "a": 3,
+    "hint": "With GetMessage, WM_QUIT makes the call return 0. Does PeekMessage do that?",
+    "why": "The X button leads to WM_DESTROY, then PostQuitMessage puts WM_QUIT in the queue. PeekMessage just returns it like any message, so only your own check can end the loop. Without it, running stays 1 and the outer loop never stops.",
+    "miss": {
+     "0": "Nothing else sets running to 0. The loop only ends because of that line.",
+     "1": "An unhandled message isn’t a crash. DispatchMessage with WM_QUIT does nothing harmful.",
+     "2": "PeekMessage returns 0 when the queue is empty, which is how the inner loop ends each frame. It doesn’t stop the outer loop."
+    }
+   },
+   "tryit": {
+    "task": "Fill in the PeekMessage call so it checks any window, any message, and removes what it finds.",
+    "code": "while (PeekMessage(&msg, ____, 0, 0, ____)) {",
+    "answer": "NULL and PM_REMOVE"
+   },
+   "qa": [
+    [
+     "When would I use GetMessage instead?",
+     "For a normal app (editor, calculator) that only needs to do something when an event arrives. It sleeps until then, which uses no CPU. Games use PeekMessage."
+    ],
+    [
+     "Why is the inner loop a while, not an if?",
+     "Several messages can pile up between frames. A while handles all of them before you draw. An if would handle one per frame and the input would lag."
+    ],
+    [
+     "Why does Windows say “Not Responding”?",
+     "If you stop pulling messages for a few seconds, Windows assumes you’ve frozen. A slow frame or a missing loop causes it."
+    ]
+   ],
+   "bridge": "You can explain how messages flow. Next: <b>drawing with GDI and InvalidateRect</b>, putting a coloured rectangle on screen."
+  },
+  {
+   "id": "gdi-invalidate",
+   "title": "Drawing with GDI and InvalidateRect",
+   "kick": "WM_PAINT · BeginPaint · FillRect · InvalidateRect",
+   "mins": 15,
+   "lang": "c-win",
+   "skills": [
+    "invalidate"
+   ],
+   "builds": "Rung 2 (messages in WindowProc) and Phase 2 (updating variables, then showing them).",
+   "why": "In a window you don’t print. You draw when Windows asks you to, inside WM_PAINT. To move something you change your variables, then tell Windows “this is out of date, ask me to redraw”. That’s InvalidateRect. This rung gets you the coloured rectangle and the arrow keys.",
+   "code": "#include <windows.h>\n\nstatic int g_rect_x = 100;\nstatic int g_rect_y = 100;\nstatic HWND g_hwnd = NULL;\n\nLRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {\n    switch (msg) {\n        case WM_KEYDOWN:\n            if (wp == VK_LEFT)  g_rect_x -= 5;\n            if (wp == VK_RIGHT) g_rect_x += 5;\n            InvalidateRect(hwnd, NULL, TRUE);\n            break;\n        case WM_PAINT: {\n            PAINTSTRUCT ps;\n            HDC hdc = BeginPaint(hwnd, &ps);\n            FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));\n            RECT r;\n            SetRect(&r, g_rect_x, g_rect_y, g_rect_x + 50, g_rect_y + 50);\n            HBRUSH brush = CreateSolidBrush(RGB(0, 200, 100));\n            FillRect(hdc, &r, brush);\n            DeleteObject(brush);\n            EndPaint(hwnd, &ps);\n        } break;\n        case WM_DESTROY:\n            PostQuitMessage(0);\n            break;\n        default:\n            return DefWindowProc(hwnd, msg, wp, lp);\n    }\n    return 0;\n}\n\nint WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmd, int nShow) {\n    (void)hPrev; (void)lpCmd;\n    WNDCLASS wc = {0};\n    wc.lpfnWndProc   = WindowProc;\n    wc.hInstance     = hInst;\n    wc.lpszClassName = \"GameWindow\";\n    RegisterClass(&wc);\n\n    g_hwnd = CreateWindowEx(0, \"GameWindow\", \"My First Window\",\n                   WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,\n                   800, 600, NULL, NULL, hInst, NULL);\n    ShowWindow(g_hwnd, nShow);\n\n    MSG msg;\n    while (GetMessage(&msg, NULL, 0, 0)) {\n        TranslateMessage(&msg);\n        DispatchMessage(&msg);\n    }\n    return (int)msg.wParam;\n}",
+   "walk": [
+    [
+     3,
+     "The rectangle’s position lives in plain variables, like the player x in your console game."
+    ],
+    [
+     9,
+     "Arrow keys arrive here. Change the position only, no drawing yet. (Up and down are your tryit.)"
+    ],
+    [
+     12,
+     "“This window’s picture is out of date.” Windows answers later by sending WM_PAINT. NULL means the whole window, TRUE means erase the background first."
+    ],
+    [
+     14,
+     "The one place you draw. Windows sends it on first show, after the window is uncovered or restored, and after InvalidateRect. The { } after the case are needed because you declare variables inside it."
+    ],
+    [
+     15,
+     "A struct (Phase 3.5) that Windows fills in when painting starts. Its <code>rcPaint</code> field is the area that needs repainting."
+    ],
+    [
+     16,
+     "Starts drawing and gives you <code>hdc</code>, a “device context”: the thing you draw onto. EndPaint must follow."
+    ],
+    [
+     17,
+     "Clears the area to the window colour first. <code>(HBRUSH)(COLOR_WINDOW + 1)</code> is the standard way to ask for “the normal window colour” as a brush. Without this clear, the old rectangle stays behind and you smear."
+    ],
+    [
+     19,
+     "A RECT holds left, top, right, bottom. SetRect fills them in: a 50 by 50 square at the current position."
+    ],
+    [
+     20,
+     "A brush is a colour you paint with, here RGB(0, 200, 100), green. It lives in gdi32 (rung 5)."
+    ],
+    [
+     22,
+     "You made the brush, so you delete it. Forget this and Windows slowly runs out of GDI objects."
+    ]
+   ],
+   "model": "<b>Mental model:</b> your variables are the truth, the window is a painting of them. Changing a variable doesn’t change the painting. InvalidateRect is the “wet paint, redo me” sign, and WM_PAINT is you redoing it from the variables.",
+   "check": {
+    "q": "You delete the InvalidateRect line and press the right arrow a few times. What do you see?",
+    "opts": [
+     "The rectangle moves exactly as before, since the variable still changes",
+     "It does not move until a repaint is forced, such as minimise and restore",
+     "The program crashes inside WM_PAINT because nothing was invalidated",
+     "The rectangle jumps to the far right edge of the window at once"
+    ],
+    "a": 1,
+    "hint": "Does changing g_rect_x draw anything by itself?",
+    "why": "g_rect_x does change, but nothing asks Windows to repaint, so WM_PAINT isn’t sent and the screen still shows the old picture. Minimise and restore the window and WM_PAINT fires and the rectangle suddenly appears at its new place.",
+    "miss": {
+     "0": "The variable changes, but drawing only happens in WM_PAINT, and nothing triggers it.",
+     "2": "Nothing is invalid. WM_PAINT simply doesn’t run.",
+     "3": "The position still changes by 5 per key press. It just isn’t drawn."
+    }
+   },
+   "tryit": {
+    "task": "Add the up arrow so it moves the rectangle up.",
+    "code": "if (wp == ____) g_rect_y ____ 5;",
+    "answer": "VK_UP, and -="
+   },
+   "qa": [
+    [
+     "Why is there flicker?",
+     "FillRect clears the real window, then the rectangle is drawn on top, and the user can catch the in-between. Rung 7 (double buffering) fixes it."
+    ],
+    [
+     "What does the TRUE do in InvalidateRect?",
+     "It asks Windows to erase the background first. This class has no background brush, so the FillRect in WM_PAINT does the clearing. Pass FALSE if you only want the repaint."
+    ],
+    [
+     "Why not draw straight in WM_KEYDOWN?",
+     "Windows can ask for a repaint at any time (another window moved away). If drawing only happens on key presses, those repaints show garbage. One place, WM_PAINT, always draws from the variables."
+    ]
+   ],
+   "bridge": "You can draw and move a rectangle. Next: <b>linking libraries</b>, why the build line needs user32.lib and gdi32.lib."
+  },
+  {
+   "id": "link-libs",
+   "title": "Linking libraries (user32.lib, gdi32.lib)",
+   "kick": "cl · user32.lib · gdi32.lib · LNK2019",
+   "mins": 9,
+   "lang": "bat",
+   "skills": [
+    "link-libs"
+   ],
+   "builds": "Phase 3.5: the compiler turns files into <code>.obj</code>, the <b>linker</b> joins them and finds each function’s real code.",
+   "why": "<code>windows.h</code> only <i>declares</i> CreateWindowEx and FillRect, like a menu. The real code lives in Windows’ own libraries. If you don’t tell the linker which ones, your build dies with LNK2019 even though every line compiled.",
+   "code": "REM build.bat: the Win32 build line (REM starts a comment line in a .bat file)\ncl /W4 /WX /Zi /Od win32_window.c user32.lib gdi32.lib\n\nREM If gdi32.lib is left off, it compiles, then fails to link:\nREM   win32_window.obj : error LNK2019: unresolved external symbol\nREM       __imp__CreateSolidBrush@4 referenced in function _WindowProc@16\nREM   win32_window.exe : fatal error LNK1120: 2 unresolved externals\nREM (the count is how many gdi32 functions your file calls)\nREM\nREM If user32.lib is left off, the same error names a user32 function:\nREM   unresolved external symbol __imp__CreateWindowExA@48",
+   "walk": [
+    [
+     2,
+     "Your usual flags, plus two library names at the end. <b>user32.lib</b> covers windows, messages and input (CreateWindowEx, GetMessage, FillRect). <b>gdi32.lib</b> covers drawing objects (CreateSolidBrush, DeleteObject, BitBlt)."
+    ],
+    [
+     4,
+     "Missing library: the <i>compile</i> step passes, because the header declared the function. The <i>link</i> step fails."
+    ],
+    [
+     5,
+     "“Unresolved external symbol”: the linker was told to call a function and can’t find its code. Phase 3.5 showed the same family of error for your own files."
+    ],
+    [
+     6,
+     "The name in the error is the function with decoration. Strip the <code>__imp__</code> and the <code>@4</code> and you can read it: CreateSolidBrush. It’s a GDI function, so the fix is gdi32.lib."
+    ],
+    [
+     7,
+     "The summary line: it counts how many symbols were missing. Fix the first one and the rest usually go too."
+    ]
+   ],
+   "model": "<b>Mental model:</b> windows.h is the menu, the .lib files are the kitchens. The menu lists CreateWindowEx, but the linker needs to know which kitchen (user32 or gdi32) actually cooks it.",
+   "check": {
+    "q": "Your build fails with: <code>unresolved external symbol __imp__CreateSolidBrush@4</code>. What is the fix?",
+    "opts": [
+     "Add <code>#include &lt;wingdi.h&gt;</code> at the top of the file",
+     "Add user32.lib to the cl line after the file name",
+     "Add gdi32.lib to the cl line after the file name",
+     "Rename CreateSolidBrush, because it is misspelled"
+    ],
+    "a": 2,
+    "hint": "Which step reports missing code: the compiler or the linker? Then ask which library holds drawing objects like brushes.",
+    "why": "A linker error with the function’s name means the code was declared but not found. CreateSolidBrush is a GDI (drawing) function, so it lives in gdi32.lib. windows.h already pulls in the GDI header, which is why it compiled.",
+    "miss": {
+     "0": "The header is already included through windows.h. A missing declaration would be a compile error, not LNK2019.",
+     "1": "user32.lib holds window and input functions. Brushes are GDI, so they live in gdi32.lib.",
+     "3": "A misspelled name would be caught by the compiler. LNK2019 means the name was fine but the code wasn’t linked."
+    }
+   },
+   "tryit": {
+    "task": "Write the full build line for win32_window.c with your usual flags and both libraries.",
+    "code": "cl /W4 /WX /Zi /Od ____ ____ ____",
+    "answer": "win32_window.c user32.lib gdi32.lib"
+   },
+   "qa": [
+    [
+     "Is there a way to put this in the source file instead?",
+     "Yes: <code>#pragma comment(lib, \"user32.lib\")</code> in MSVC. This roadmap keeps the libraries on the build line so build.bat shows everything the program needs."
+    ],
+    [
+     "Why did gcc/MinGW use -luser32 instead?",
+     "Different compiler, same idea: <code>-luser32 -lgdi32</code> tell its linker which libraries to use. You only need the cl form."
+    ],
+    [
+     "What are the @4 and @16 on the names?",
+     "On 32-bit Windows, the number is how many bytes of arguments the function takes. It’s decoration the compiler adds to __stdcall function names. You can ignore it when reading an error."
+    ]
+   ],
+   "bridge": "You can fix the link errors. Next: <b>frame time</b>, measuring how long each frame really takes."
+  },
+  {
+   "id": "frame-time",
+   "title": "Frame time (QueryPerformanceCounter)",
+   "kick": "QueryPerformanceCounter · frequency · dt · Sleep",
+   "mins": 14,
+   "lang": "c-win",
+   "skills": [
+    "frame-time"
+   ],
+   "builds": "Phase 4.5: <code>Sleep</code> in the game loop. Phase 2: <code>double</code> and casts.",
+   "why": "Sleep(16) asks for a wait of about 16 ms, but the real wait varies and the frame’s own work adds more. To move things at the same speed on every PC, and to know how fast your loop really runs, you measure each frame with a high-resolution timer.",
+   "code": "#define _CRT_SECURE_NO_WARNINGS\n#include <windows.h>\n#include <stdio.h>\n\nstatic HWND g_hwnd = NULL;\n\nLRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {\n    if (msg == WM_DESTROY) {\n        PostQuitMessage(0);\n        return 0;\n    }\n    return DefWindowProc(hwnd, msg, wp, lp);\n}\n\nint WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmd, int nShow) {\n    (void)hPrev; (void)lpCmd;\n    AllocConsole();\n    freopen(\"CONOUT$\", \"w\", stdout);\n    WNDCLASS wc = {0};\n    wc.lpfnWndProc   = WindowProc;\n    wc.hInstance     = hInst;\n    wc.lpszClassName = \"GameWindow\";\n    RegisterClass(&wc);\n\n    g_hwnd = CreateWindowEx(0, \"GameWindow\", \"My First Window\",\n                   WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,\n                   800, 600, NULL, NULL, hInst, NULL);\n    ShowWindow(g_hwnd, nShow);\n\n    LARGE_INTEGER freq, last, now;\n    QueryPerformanceFrequency(&freq);\n    QueryPerformanceCounter(&last);\n\n    MSG msg = {0};\n    int running = 1;\n    while (running) {\n        while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {\n            if (msg.message == WM_QUIT) running = 0;\n            TranslateMessage(&msg);\n            DispatchMessage(&msg);\n        }\n        Sleep(16);\n        QueryPerformanceCounter(&now);\n        double ms = (double)(now.QuadPart - last.QuadPart) * 1000.0 / (double)freq.QuadPart;\n        last = now;\n        printf(\"Frame: %.1f ms\\n\", ms);\n    }\n    return (int)msg.wParam;\n}",
+   "walk": [
+    [
+     1,
+     "MSVC calls <code>freopen</code> unsafe (warning C4996, which /WX turns into an error). This line, placed first, turns that off."
+    ],
+    [
+     17,
+     "A windowed program has no console by default, so printf shows nothing. AllocConsole opens one, and <code>freopen</code> points stdout at it. Plumbing: copy it as is."
+    ],
+    [
+     30,
+     "The counter is a 64-bit number, stored in the <code>.QuadPart</code> field of a LARGE_INTEGER. <code>freq</code> is how many ticks it makes per second (it depends on the PC), <code>last</code> and <code>now</code> are readings."
+    ],
+    [
+     31,
+     "Fills in freq once. It never changes while the program runs."
+    ],
+    [
+     32,
+     "The first reading: the stopwatch starts here. The number itself means nothing, only the <i>difference</i> between two readings does."
+    ],
+    [
+     42,
+     "The old guess. Now we measure what it really did."
+    ],
+    [
+     44,
+     "Ticks elapsed, times 1000 for milliseconds, divided by ticks per second. Cast to <code>double</code> first so the maths isn’t whole-number division."
+    ],
+    [
+     45,
+     "The end of this frame is the start of the next one."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a stopwatch you press at the end of every lap. You don’t trust that the lap was “about 16 ms”. You read the stopwatch, write it down, and press it again.",
+   "check": {
+    "q": "On a typical Windows PC, with the default timer settings, roughly what does this program print each frame?",
+    "opts": [
+     "Exactly 16.0 ms on every line, because that is what Sleep was told",
+     "At least about 16 ms, usually 16 to 32, varying a little line to line",
+     "About 1 ms on every line, since the loop itself does almost no work",
+     "About 60 on every line, because 1000 divided by 16 is roughly 60"
+    ],
+    "a": 1,
+    "hint": "Sleep(16) is a request, not a promise. And the number printed is milliseconds, not frames.",
+    "why": "Sleep wakes on Windows’ timer ticks (about 15.6 ms by default), so Sleep(16) often lands on a steady ~31 ms, or ~16–17 ms if the timer resolution has been raised. The measured value includes that, plus message handling, and wobbles. That wobble is the whole reason to measure.",
+    "miss": {
+     "0": "Sleep isn’t exact. The timer ticks about every 15.6 ms, so the real wait varies.",
+     "2": "The loop itself is fast, but Sleep(16) still waits about 16 ms or more each frame.",
+     "3": "That’s frames per second, and the program prints milliseconds per frame. 60 would be an fps, not an ms."
+    }
+   },
+   "tryit": {
+    "task": "Turn ms into seconds (dt), the number you multiply speeds by.",
+    "code": "double dt = (double)(now.QuadPart - last.QuadPart) / (double)____.QuadPart;",
+    "answer": "freq"
+   },
+   "qa": [
+    [
+     "Why not just GetTickCount?",
+     "It only counts whole milliseconds and updates on the same coarse timer tick, so it’s too jumpy for 60 fps frame timing. QueryPerformanceCounter has a resolution well under a microsecond (typically 100 ns)."
+    ],
+    [
+     "How do I hold 60 fps properly?",
+     "Compare the frame time to a target of about 16.67 ms and only Sleep for what’s left, instead of a fixed Sleep(16). That’s the task in the Phase 5 build spec."
+    ],
+    [
+     "What is dt?",
+     "Delta time: how long the last frame took, in seconds. Move by <code>speed * dt</code> and the game runs the same on a slow and a fast PC."
+    ]
+   ],
+   "bridge": "You can measure your loop. Next: <b>double buffering</b>, ending the flicker."
+  },
+  {
+   "id": "double-buffer",
+   "title": "Double buffering",
+   "kick": "CreateCompatibleDC · off-screen bitmap · BitBlt",
+   "mins": 14,
+   "lang": "c-win",
+   "skills": [
+    "double-buffer"
+   ],
+   "builds": "Phase 4.5: the runner built each frame in a <code>char</code> array and printed it in one go. Rung 4: the WM_PAINT drawing.",
+   "why": "Drawing straight to the window means the user can catch the half-drawn frame: cleared, but the rectangle not yet there. That’s flicker. Draw the whole frame somewhere hidden, then copy it to the window in one step. It’s your Phase 4.5 frame buffer, made of pixels.",
+   "code": "#include <windows.h>\n\nstatic int g_rect_x = 100;\nstatic int g_rect_y = 100;\nstatic HWND g_hwnd = NULL;\n\nLRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {\n    switch (msg) {\n        case WM_KEYDOWN:\n            if (wp == VK_LEFT)  g_rect_x -= 5;\n            if (wp == VK_RIGHT) g_rect_x += 5;\n            InvalidateRect(hwnd, NULL, TRUE);\n            break;\n        case WM_PAINT: {\n            PAINTSTRUCT ps;\n            HDC hdc = BeginPaint(hwnd, &ps);\n            RECT rc;\n            GetClientRect(hwnd, &rc);\n            int w = rc.right, h = rc.bottom;\n            HDC back = CreateCompatibleDC(hdc);\n            HBITMAP bmp = CreateCompatibleBitmap(hdc, w, h);\n            HGDIOBJ old = SelectObject(back, bmp);\n\n            FillRect(back, &rc, (HBRUSH)(COLOR_WINDOW + 1));\n            RECT r;\n            SetRect(&r, g_rect_x, g_rect_y, g_rect_x + 50, g_rect_y + 50);\n            HBRUSH brush = CreateSolidBrush(RGB(0, 200, 100));\n            FillRect(back, &r, brush);\n            DeleteObject(brush);\n\n            BitBlt(hdc, 0, 0, w, h, back, 0, 0, SRCCOPY);\n            SelectObject(back, old);\n            DeleteObject(bmp);\n            DeleteDC(back);\n            EndPaint(hwnd, &ps);\n        } break;\n        case WM_DESTROY:\n            PostQuitMessage(0);\n            break;\n        default:\n            return DefWindowProc(hwnd, msg, wp, lp);\n    }\n    return 0;\n}\n\nint WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmd, int nShow) {\n    (void)hPrev; (void)lpCmd;\n    WNDCLASS wc = {0};\n    wc.lpfnWndProc   = WindowProc;\n    wc.hInstance     = hInst;\n    wc.lpszClassName = \"GameWindow\";\n    RegisterClass(&wc);\n\n    g_hwnd = CreateWindowEx(0, \"GameWindow\", \"My First Window\",\n                   WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,\n                   800, 600, NULL, NULL, hInst, NULL);\n    ShowWindow(g_hwnd, nShow);\n\n    MSG msg;\n    while (GetMessage(&msg, NULL, 0, 0)) {\n        TranslateMessage(&msg);\n        DispatchMessage(&msg);\n    }\n    return (int)msg.wParam;\n}",
+   "walk": [
+    [
+     18,
+     "Asks Windows for the drawable size. It fills your RECT through the pointer (the <code>&amp;</code> from Phase 3.5). <code>rc.right</code> and <code>rc.bottom</code> are the width and height."
+    ],
+    [
+     20,
+     "Makes a second device context, <code>back</code>, that is <i>not</i> attached to the screen. Think of it as an off-screen drawing surface."
+    ],
+    [
+     21,
+     "The actual pixels for the hidden canvas, same size and format as the window."
+    ],
+    [
+     22,
+     "Puts the bitmap into the off-screen DC so drawing on <code>back</code> goes into it. It hands back the previous object (<code>HGDIOBJ</code> is just a generic handle for any GDI object: bitmap, brush, pen) so you can restore it later."
+    ],
+    [
+     24,
+     "Same clear as before, but onto <code>back</code>. Nothing here touches the screen yet."
+    ],
+    [
+     28,
+     "Same rectangle, also drawn on <code>back</code>. The whole frame is now built off-screen."
+    ],
+    [
+     31,
+     "The only drawing line that touches the visible window: copy the finished picture across in one go. SRCCOPY means “copy exactly”."
+    ],
+    [
+     32,
+     "Puts the original object back into the DC. A bitmap that is still selected can’t be deleted."
+    ],
+    [
+     34,
+     "Delete the bitmap and the DC, because you made them. Skipping this leaks GDI objects every frame."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a painter who sets up the whole scene behind a curtain, then pulls the curtain back. The audience never sees half-finished work (the curtain is the off-screen bitmap).",
+   "check": {
+    "q": "In this program, you delete the <code>BitBlt</code> line and leave everything else. What do you see?",
+    "opts": [
+     "The same green rectangle as before, but now with no flicker at all",
+     "The rectangle drawn directly on the window, flickering as before",
+     "A compile error, because the variable back is never used anywhere",
+     "No rectangle: it was all drawn on the bitmap and never copied over"
+    ],
+    "a": 3,
+    "hint": "Which line moves pixels from the hidden bitmap to the window?",
+    "why": "All the FillRect calls draw into back, an off-screen bitmap. BitBlt is the only thing that copies it to hdc, the real window. Without it, the window never gets the picture.",
+    "miss": {
+     "0": "The picture never reaches the window, so there’s nothing to be flicker-free.",
+     "1": "The drawing no longer targets the window at all. Only BitBlt does that.",
+     "2": "back is used (by FillRect and SelectObject), so it compiles fine. It just never gets shown."
+    }
+   },
+   "tryit": {
+    "task": "Fill in what you copy from, so the finished frame lands on the window.",
+    "code": "BitBlt(hdc, 0, 0, w, h, ____, 0, 0, SRCCOPY);",
+    "answer": "back"
+   },
+   "qa": [
+    [
+     "Why does it still flicker a tiny bit sometimes?",
+     "It shouldn’t here. The class has no background brush, so Windows erases nothing, and BitBlt replaces every pixel in one go. If you later set <code>hbrBackground</code>, Windows erases before WM_PAINT and flicker returns. Then return 1 from <code>WM_ERASEBKGND</code>, or pass FALSE to InvalidateRect."
+    ],
+    [
+     "Isn’t creating a bitmap every frame wasteful?",
+     "Yes. Real code creates the back buffer once and reuses it, recreating it only on resize. Here it’s inside WM_PAINT to keep the rung short."
+    ],
+    [
+     "Is this the same as the runner’s char array?",
+     "Same idea, different material. Build the whole frame in a buffer in memory, then put it on screen in one operation."
+    ]
+   ],
+   "bridge": "That’s every concept in Phase 5. Next: <b>the prototype build</b>, putting all of this into your own game."
+  }
+ ]
+}

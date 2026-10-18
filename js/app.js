@@ -1045,7 +1045,7 @@ function stagePhase(s) {
   html += '<nav class="stage-nav" aria-label="Stages in this phase">';
   var n = 0;
   STAGES.forEach(function (st) {
-    if (bins[st[0]].length) html += '<button data-stage="' + s.id + '-' + st[0] + '"><b>' + (++n) + '</b> ' + st[1] + '</button>';
+    if (bins[st[0]].length || (st[0] === 'learn' && s.el.dataset.ladder)) html += '<button data-stage="' + s.id + '-' + st[0] + '"><b>' + (++n) + '</b> ' + st[1] + '</button>';
   });
   if (bins.help.length) html += '<button class="stage-help" data-help="' + s.id + '">Stuck? Help</button>';
   inner.insertAdjacentHTML('afterbegin', html + '</nav><div class="ph-time" data-time role="button" tabindex="0" title="Where your time went"></div>');
@@ -1053,7 +1053,7 @@ function stagePhase(s) {
   n = 0;
   STAGES.forEach(function (st) {
     var els = bins[st[0]];
-    if (!els.length) return;
+    if (!els.length && !(st[0] === 'learn' && s.el.dataset.ladder)) return;   // a ladder phase always gets a Learn stage
     var sec = document.createElement('section');
     sec.className = 'stage';
     sec.id = s.id + '-' + st[0];
@@ -1065,6 +1065,7 @@ function stagePhase(s) {
       sec.insertAdjacentHTML('beforeend', '<div class="lad" data-ladder-mount="' + esc(lad) + '"><div class="lad-loading">Loading concepts…</div></div>' +
         '<div class="lad-notes"><button class="lad-notes-btn" aria-expanded="false"><span>Full notes for this phase</span><small>The long-form version: every concept on one page, plus the session plan</small></button><div class="lad-notes-body" hidden></div></div>');
       els.forEach(function (e) { $('.lad-notes-body', sec).appendChild(e); });
+      if (!els.length) $('.lad-notes', sec).hidden = true;
     } else els.forEach(function (e) { sec.appendChild(e); });
     inner.appendChild(sec);
   });

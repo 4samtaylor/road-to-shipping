@@ -1,6 +1,6 @@
 # Road to Shipping: session handoff
 
-Last updated: 13 October 2026 (v20). Owner: Sam (GitHub `4samtaylor`). Read this first in a new session.
+Last updated: 13 October 2026 (v21). Owner: Sam (GitHub `4samtaylor`). Read this first in a new session.
 
 ## What this is
 
@@ -27,7 +27,8 @@ A C game-dev learning roadmap (13 phases: C → terminal game → Win32 window �
 | v17: Weekly Practice page (self-study checklist that resets Mondays, 3 progress-based exercise picks from `content/exercises.json`) | Live (PR #12, includes ☰ layout fix) |
 | v18: Settings window (tabs: Appearance, Account, Editing, Progress data, Shortcuts) + account footer in the rail; ⋯ trimmed to quick actions; Person A block removed from Weekly Practice; VS Code steps 7–12 in Environment Setup | Live (PR #13) |
 | v19: Concept ladder for Phase 2's Learn stage (8 concepts, one at a time); old Learn blocks folded into "Full notes" | Live (PR #14) |
-| v20: Concept table of contents (no slider); Phase 1 and 3 ladders; `docs/REBUILD_PLAN.md` | PR #15 |
+| v20: Concept table of contents (no slider); Phase 1 and 3 ladders; `docs/REBUILD_PLAN.md` | Live (PR #15) |
+| v21: Ladders for every phase (1 to 7); Library by phase and concept with Focus / This phase / All / Phase… filter and search; Phase 5 starter fixed for /W4 /WX (C4100, C4204, brush leak) | PR #16 |
 | Supabase | Tables `profiles`, `progress`, `notes`, `user_state`, `skills`; RLS on all; newest-wins triggers; `delete_my_account()`. Migrations: `init_progress_sync`, `harden_functions`, `skills_and_admin_views`. Security advisor: only the intentional `delete_my_account` and a "leaked password protection" suggestion |
 | Admin views | `admin.user_overview`, `admin.user_activity` (Table Editor → schema dropdown → `admin`). Not exposed to the API |
 | Auth settings | Confirm email off, min password 8, new sign-ups off (Sam did these) |
