@@ -1,6 +1,6 @@
 # Road to Shipping: session handoff
 
-Last updated: 13 October 2026 (v19). Owner: Sam (GitHub `4samtaylor`). Read this first in a new session.
+Last updated: 13 October 2026 (v20). Owner: Sam (GitHub `4samtaylor`). Read this first in a new session.
 
 ## What this is
 
@@ -11,6 +11,8 @@ A C game-dev learning roadmap (13 phases: C → terminal game → Win32 window �
 - **Local copy:** `C:\Users\4samt\.claude\Claude Workspace\Game Project\road-to-shipping`
 - **Supabase project:** `qvrpzycindlchwjzoqph` (Supabase connector available)
 - **Design canvas (themes):** https://claude.ai/artifact/1XxjpMqMMEmW1iDa9f5CgC, pinned in Sam's claude.ai sidebar; snapshot in `design/theme-workshop/`
+
+**Rebuild in progress:** `docs/REBUILD_PLAN.md` is the plan for ladders in every phase, pages inside phases, content cuts, the library filter and play-button visuals. Read it before touching phase content.
 
 ## Where things stand
 
@@ -24,7 +26,8 @@ A C game-dev learning roadmap (13 phases: C → terminal game → Win32 window �
 | v16: theme picker (6 themes) + reading/code font picker | Live (PR #10) |
 | v17: Weekly Practice page (self-study checklist that resets Mondays, 3 progress-based exercise picks from `content/exercises.json`) | Live (PR #12, includes ☰ layout fix) |
 | v18: Settings window (tabs: Appearance, Account, Editing, Progress data, Shortcuts) + account footer in the rail; ⋯ trimmed to quick actions; Person A block removed from Weekly Practice; VS Code steps 7–12 in Environment Setup | Live (PR #13) |
-| v19: Concept ladder for Phase 2's Learn stage (8 concepts, one at a time); old Learn blocks folded into "Full notes" | PR #14 |
+| v19: Concept ladder for Phase 2's Learn stage (8 concepts, one at a time); old Learn blocks folded into "Full notes" | Live (PR #14) |
+| v20: Concept table of contents (no slider); Phase 1 and 3 ladders; `docs/REBUILD_PLAN.md` | PR #15 |
 | Supabase | Tables `profiles`, `progress`, `notes`, `user_state`, `skills`; RLS on all; newest-wins triggers; `delete_my_account()`. Migrations: `init_progress_sync`, `harden_functions`, `skills_and_admin_views`. Security advisor: only the intentional `delete_my_account` and a "leaked password protection" suggestion |
 | Admin views | `admin.user_overview`, `admin.user_activity` (Table Editor → schema dropdown → `admin`). Not exposed to the API |
 | Auth settings | Confirm email off, min password 8, new sign-ups off (Sam did these) |
