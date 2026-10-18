@@ -101,7 +101,7 @@
      "<code>_getch</code> deliberately doesn’t echo. If it did, every letter you pressed would land in the middle of your game screen. <code>_getche</code> is the echoing version, and a game never wants it."
     ],
     [
-     "Why does this need a keyboard check on every frame, not just a single if?",
+     "Why <code>while (_kbhit())</code> and not a single <code>if</code>?",
      "Keys queue up. Hold one and Windows repeats it far faster than 30 times a second. A single <code>if</code> takes one key per frame and falls behind; <code>while (_kbhit())</code> drains the queue and keeps the latest key."
     ],
     [

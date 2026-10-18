@@ -37,7 +37,7 @@
               <div class="task" data-id="p3-pointers">
                 <div class="task-cb">✓</div>
                 <div class="task-content">
-                  <div class="task-text">Learn pointers — what the * and &amp; operators do and why they exist <span class="task-tag t-crucial">Crucial</span></div>
+                  <div class="task-text">Learn pointers, what the * and &amp; operators do and why they exist <span class="task-tag t-crucial">Crucial</span></div>
                   <div class="task-note">Don't rush past this. Pointers appear in all game code. <span class="task-time">~1.5 hrs</span></div>
                 </div>
               </div>
@@ -52,7 +52,7 @@
               <div class="task" data-id="p3-header-files">
                 <div class="task-cb">✓</div>
                 <div class="task-content">
-                  <div class="task-text">Separate into .h and .c files — understand declarations vs definitions</div>
+                  <div class="task-text">Separate into .h and .c files, understand declarations vs definitions</div>
                   <div class="task-note"><span class="task-time">~45 min</span></div>
                 </div>
               </div>
@@ -68,7 +68,7 @@
           <div class="acc-body">
             <div class="code-wrap">
               <div class="code-label">
-                <span>player.h — the declaration (what exists)</span>
+                <span>player.h, the declaration (what exists)</span>
                 <button class="copy-btn">Copy</button>
               </div>
 <pre><span class="c-pp">#pragma once</span>
@@ -91,7 +91,7 @@
             </div>
             <div class="code-wrap mt-2">
               <div class="code-label">
-                <span>player.c — the definitions (the actual code)</span>
+                <span>player.c, the definitions (the actual code)</span>
                 <button class="copy-btn">Copy</button>
               </div>
 <pre><span class="c-pp">#include</span> <span class="c-str">"player.h"</span>
@@ -133,10 +133,16 @@
             </div>
           </div>
         </div>
+        <div class="section-block" data-page="build">
+          <div class="section-block-body">
+            <div class="prose prose--sm t-muted2">Build both files with the multi-file build.bat from Phase 1: <span class="cmd">set SOURCES=main.c player.c</span>, so one word builds everything.</div>
+          </div>
+        </div>
+
         <!-- DEBUGGER SETUP -->
         <div class="section-block acc-section open" data-page="build">
           <div class="section-block-header">
-            <span class="badge badge-yellow">Tooling</span>&nbsp;&nbsp;Debugger setup in VS Code
+            <span class="badge badge-yellow">Setup</span>&nbsp;&nbsp;Debugger setup in VS Code
             <span class="acc-toggle-icon">▼</span>
           </div>
           <div class="acc-body section-block-body">
@@ -145,16 +151,16 @@
               <div class="callout callout--blue callout--bar">
                 <div class="eyebrow eyebrow--lg t-blue mb-10">// Four steps, once, forever</div>
                 <div class="prose t-muted2" style="display:grid;grid-template-columns:22px 1fr;gap:8px 12px">
-                  <div class="t-blue">1</div><div>In VS Code, install the <strong class="t-text">C/C++</strong> extension from Microsoft (<span class="cmd">ms-vscode.cpptools</span>). That's what provides the <span class="cmd">cppvsdbg</span> debug type — the one that speaks MSVC and PDB.</div>
+                  <div class="t-blue">1</div><div>In VS Code, install the <strong class="t-text">C/C++</strong> extension from Microsoft (<span class="cmd">ms-vscode.cpptools</span>). That's what provides the <span class="cmd">cppvsdbg</span> debug type, the one that speaks MSVC and PDB.</div>
                   <div class="t-blue">2</div><div>Open your repo <strong class="t-text">as a folder</strong> (File → Open Folder), not as a single file. <span class="cmd">${workspaceFolder}</span> only means something if VS Code has a folder open.</div>
-                  <div class="t-blue">3</div><div>Create <span class="cmd">.vscode/launch.json</span> in the repo root and paste the config below. Commit it — your partner gets debugging for free.</div>
+                  <div class="t-blue">3</div><div>Create <span class="cmd">.vscode/launch.json</span> in the repo root and paste the config below. Commit it, your partner gets debugging for free.</div>
                   <div class="t-blue">4</div><div><strong class="t-accent">Run <span class="cmd upright">build</span> first, every single time.</strong> F5 launches the exe that's on disk. It does not compile for you. This is the number one reason breakpoints "don't work."</div>
                 </div>
               </div>
 
               <div class="code-wrap">
                 <div class="code-label">
-                  <span>.vscode/launch.json — minimal MSVC config</span>
+                  <span>.vscode/launch.json, minimal MSVC config</span>
                   <button class="copy-btn">Copy</button>
                 </div>
 <pre>{
@@ -175,28 +181,6 @@
 }</pre>
               </div>
 
-              <div class="code-wrap">
-                <div class="code-label">
-                  <span>.vscode/launch.json — minimal MSVC config</span>
-                  <button class="copy-btn">Copy</button>
-                </div>
-<pre>{
-  <span class="c-str">"version"</span>: <span class="c-str">"0.2.0"</span>,
-  <span class="c-str">"configurations"</span>: [
-    {
-      <span class="c-str">"name"</span>: <span class="c-str">"Debug game.exe"</span>,
-      <span class="c-str">"type"</span>: <span class="c-str">"cppvsdbg"</span>,
-      <span class="c-str">"request"</span>: <span class="c-str">"launch"</span>,
-      <span class="c-str">"program"</span>: <span class="c-str">"${workspaceFolder}/game.exe"</span>,
-      <span class="c-str">"args"</span>: [],
-      <span class="c-str">"stopAtEntry"</span>: <span class="c-kw">false</span>,
-      <span class="c-str">"cwd"</span>: <span class="c-str">"${workspaceFolder}"</span>,
-      <span class="c-str">"environment"</span>: [],
-      <span class="c-str">"console"</span>: <span class="c-str">"integratedTerminal"</span>
-    }
-  ]
-}</pre>
-              </div>
 
             </div>
           </div>
@@ -211,19 +195,19 @@
               <div class="callout callout--purple callout--bar">
               <div class="eyebrow eyebrow--lg t-purple mb-10">// Watch a pointer change, live</div>
               <div class="prose prose--loose t-text mb-12">
-                The analogies were metaphors. This is the thing itself. Ten minutes, using player.c from the Build page.
+                The mental models were metaphors. This is the thing itself. Ten minutes, once your main.c (Build Spec) creates hero and damages it with <span class="cmd">player_take_damage(&amp;hero, ...)</span>.
               </div>
               <div class="prose t-muted2" style="display:grid;grid-template-columns:22px 1fr;gap:8px 12px">
                 <div class="t-purple">1</div><div>Run <span class="cmd">build</span>. Make sure it succeeded before you touch F5.</div>
                 <div class="t-purple">2</div><div>Open player.c. Put the cursor on the first line inside <span class="cmd">player_take_damage</span> and press <span class="cmd">F9</span>.</div>
                 <div class="t-purple">3</div><div>Press <span class="cmd">F5</span>. The program starts, then freezes on that line with a yellow arrow the first time damage is dealt.</div>
                 <div class="t-purple">4</div><div>Open the Watch panel and add three expressions: <span class="cmd">p</span>, <span class="cmd">*p</span>, and <span class="cmd">p-&gt;health</span>.</div>
-                <div class="t-purple">5</div><div>Look at them before you step. <span class="cmd">p</span> is a number like <span class="cmd">0x00affc10</span> — that's the address, the piece of paper with the house number on it. <span class="cmd">*p</span> expands into the whole Player. <span class="cmd">p-&gt;health</span> is one field inside it.</div>
-                <div class="t-purple">6</div><div>Press <span class="cmd">F10</span> once. Watch <span class="cmd">p-&gt;health</span> drop. <strong class="t-accent">Nothing in this function is named "hero" — and hero's health just changed anyway.</strong> That is what a pointer does, and you are watching it happen.</div>
+                <div class="t-purple">5</div><div>Look at them before you step. <span class="cmd">p</span> is a number like <span class="cmd">0x00affc10</span>, that's the address, the piece of paper with the house number on it. <span class="cmd">*p</span> expands into the whole Player. <span class="cmd">p-&gt;health</span> is one field inside it.</div>
+                <div class="t-purple">6</div><div>Press <span class="cmd">F10</span> once. Watch <span class="cmd">p-&gt;health</span> drop. <strong class="t-accent">Nothing in this function is named "hero", and hero's health just changed anyway.</strong> That is what a pointer does, and you are watching it happen.</div>
                 <div class="t-purple">7</div><div>Now go up to <span class="cmd">main</span>, add <span class="cmd">&amp;hero</span> to the Watch panel, and compare it to <span class="cmd">p</span>. Same number. Same house.</div>
               </div>
               <div class="prose t-text mt-12">
-                Do the same thing with the broken version from session G — <span class="cmd">player_move(Player p, ...)</span>, no asterisk. Watch <span class="cmd">p.x</span> change inside the function, then step out and watch <span class="cmd">hero.x</span> sit there untouched. <strong class="t-accent">The copy dying at the closing brace, on screen.</strong>
+                Do the same thing with the photocopy version from the Break it experiments on the Build page, <span class="cmd">player_move(Player p, ...)</span>, no asterisk. Watch <span class="cmd">p.x</span> change inside the function, then step out and watch <span class="cmd">hero.x</span> sit there untouched. <strong class="t-accent">The copy dying at the closing brace, on screen.</strong>
               </div>
             </div>
           </div>
@@ -253,7 +237,7 @@
                 </div>
                 <div style="border-left:2px solid var(--accent);padding:8px 12px;background:var(--accent-wash)">
                   <div class="eyebrow eyebrow--tight eyebrow--md t-accent mb-4">✓ Good: you own the architecture</div>
-                  <div class="t-text">"I have a Player struct with fields: float x, float y, int health, bool alive. Write ONLY the body of player_heal(Player* p, int amount) — it should add amount to p-&gt;health, cap it at 100, and not change alive. Declaration already exists in player.h."</div>
+                  <div class="t-text">"I have a Player struct with fields: float x, float y, int health, bool alive. Write ONLY the body of player_heal(Player* p, int amount): it should add amount to p-&gt;health, cap it at 100, and not change alive. Declaration already exists in player.h."</div>
                   <div class="t-muted fs-10 mt-4">The struct and the signature are yours. AI wrote the 3 lines inside.</div>
                 </div>
               </div>
@@ -266,11 +250,11 @@
               </div>
               <div class="prompt-item">
                 <div class="prompt-label">Design a new struct: get the fields, not the code</div>
-                <div class="prompt-text">I'm building a 2D game in C. I need an Enemy struct. The enemy has a position, health, a type (melee or ranged as an enum), and a flag for whether it's alive. List the fields with types only — no functions, no code, no extra fields I didn't ask for. I'll write the rest.</div>
+                <div class="prompt-text">I'm building a 2D game in C. I need an Enemy struct. The enemy has a position, health, a type (melee or ranged as an enum), and a flag for whether it's alive. List the fields with types only, no functions, no code, no extra fields I didn't ask for. I'll write the rest.</div>
               </div>
               <div class="prompt-item">
                 <div class="prompt-label">Review your struct design before writing code</div>
-                <div class="prompt-text">Before I write any code, review this struct design for my 2D C game: [describe your struct and its fields]. Tell me: (1) are the types correct for how I described using them, (2) is anything missing that will obviously cause problems later, (3) anything I should split into a separate struct. Don't add features — just flag problems.</div>
+                <div class="prompt-text">Before I write any code, review this struct design for my 2D C game: [describe your struct and its fields]. Tell me: (1) are the types correct for how I described using them, (2) is anything missing that will obviously cause problems later, (3) anything I should split into a separate struct. Don't add features, just flag problems.</div>
               </div>
             </div>
 
@@ -312,7 +296,7 @@
                   <summary>Reveal answer</summary>
                   <div class="quiz-a"><span class="cmd">50 50</span><br><br>
                   <span class="cmd">p-&gt;health</span> is nothing more than shorthand for <span class="cmd">(*p).health</span>. Both mean "go to the address, then take the health field." And <span class="cmd">hero.health</span> is that same field reached the direct way.<br><br>
-                  Three spellings, one box in memory. The two printed numbers are identical because there is only one Player in this entire program — <span class="cmd">p</span> is a note with hero's address written on it, not a second player.</div>
+                  Three spellings, one box in memory. The two printed numbers are identical because there is only one Player in this entire program, <span class="cmd">p</span> is a note with hero's address written on it, not a second player.</div>
                 </details>
               </div>
 
@@ -342,7 +326,7 @@
                   <summary>Reveal answer</summary>
                   <div class="quiz-a"><pre class="p-12 fs-12 mb-10">x 2.7  steps 2
 5</pre>
-                  The float field keeps its fraction. The int field throws it away — truncated toward zero, so 2.7 adds 2 and 5.4 comes out 5. Session 1's C4244 lesson, now happening one field away from another field that behaves differently.<br><br>
+                  The float field keeps its fraction. The int field throws it away, truncated toward zero, so 2.7 adds 2 and 5.4 comes out 5. Session 1's C4244 lesson, now happening one field away from another field that behaves differently.<br><br>
                   <strong class="t-text">The game bug:</strong> keep a position as an int and every fractional movement is lost, so a player moving 2.7 per frame actually moves 2 and drifts further behind the truth every frame. Positions stay <span class="cmd">float</span>. You truncate once, at the moment you draw, and never store the result back.</div>
                 </details>
               </div>
@@ -351,55 +335,33 @@
           </div>
         </div>
 
-        <!-- QUIZ -->
-        <div class="section-block acc-section" data-page="review">
+                <div class="section-block acc-section" data-page="review">
           <div class="section-block-header">
-            <span class="badge badge-purple">Quiz Yourself</span>&nbsp;&nbsp;2 questions: answer out loud before revealing
+            <span class="badge badge-purple">Mixed Review</span>&nbsp;&nbsp;two from earlier phases, one from this one
             <span class="acc-toggle-icon">▼</span>
           </div>
           <div class="acc-body section-block-body">
-            <div class="quiz-items">
-
-              <div class="quiz-item">
-                <div class="quiz-q">1. In one sentence each: what does <span class="cmd">&amp;x</span> give you, and what does <span class="cmd">*p</span> give you?</div>
-                <details>
-                  <summary>Reveal answer</summary>
-                  <div class="quiz-a"><span class="cmd">&amp;x</span> gives the address where x lives — the house number, not what's inside. <span class="cmd">*p</span> goes to the address p is holding and reads what's there. Same <span class="cmd">&amp;</span> you were already using in <span class="cmd">scanf(" %c", &amp;input)</span> back in Phase 2 — you were handing scanf an address the whole time.</div>
-                </details>
-              </div>
-
-              <div class="quiz-item">
-                <div class="quiz-q">2. What belongs in player.h and what belongs in player.c?</div>
-                <details>
-                  <summary>Reveal answer</summary>
-                  <div class="quiz-a">The .h holds declarations — the struct definition and the function signatures. It's the "what exists" list that other files include. The .c holds the definitions — the actual bodies. That split is what lets you and your partner work in separate files without reading each other's implementations, and it's the reason a header change forces a rebuild while a .c change doesn't.</div>
-                </details>
-              </div>
-
-            </div>
-          </div>
-        </div>
-
-        <div class="section-block acc-section" data-page="review">
-          <div class="section-block-header">
-            <span class="badge badge-purple">Mixed Review</span>&nbsp;&nbsp;one from Phase 02, one from Phase 03
-            <span class="acc-toggle-icon">▼</span>
-          </div>
-          <div class="acc-body section-block-body">
-            <div class="prose prose--sm t-muted2 mb-14">Two questions from earlier phases. Remembering something after a gap is what makes it stay — answer out loud first.</div>
+            <div class="prose prose--sm t-muted2 mb-14">Three questions, two from earlier phases. Remembering something after a gap is what makes it stay, answer out loud first.</div>
             <div class="quiz-items">
               <div class="quiz-item">
                 <div class="quiz-q">1. <span class="t-muted">[Phase 03]</span> What's wrong with <span class="cmd">#define MAX_SCORES 5;</span>?</div>
                 <details>
                   <summary>Reveal answer</summary>
-                  <div class="quiz-a">The semicolon. <span class="cmd">#define</span> is find-and-replace, so every <span class="cmd">MAX_SCORES</span> becomes <span class="cmd">5;</span> — and <span class="cmd">int scores[MAX_SCORES];</span> turns into <span class="cmd">int scores[5;];</span>. The error points at the array line, not the define, which is what makes it nasty.</div>
+                  <div class="quiz-a">The semicolon. <span class="cmd">#define</span> is find-and-replace, so every <span class="cmd">MAX_SCORES</span> becomes <span class="cmd">5;</span>, and <span class="cmd">int scores[MAX_SCORES];</span> turns into <span class="cmd">int scores[5;];</span>. The error points at the array line, not the define, which is what makes it nasty.</div>
                 </details>
               </div>
               <div class="quiz-item">
                 <div class="quiz-q">2. <span class="t-muted">[Phase 02]</span> What do <span class="cmd">7 % 3</span> and <span class="cmd">-7 / 2</span> give you in C?</div>
                 <details>
                   <summary>Reveal answer</summary>
-                  <div class="quiz-a"><span class="cmd">1</span> and <span class="cmd">-3</span>. Integer division truncates <em>toward zero</em>, so -3.5 becomes -3, not -4. Same rule as casting a float to an int — it chops, it never rounds.</div>
+                  <div class="quiz-a"><span class="cmd">1</span> and <span class="cmd">-3</span>. Integer division truncates <em>toward zero</em>, so -3.5 becomes -3, not -4. Same rule as casting a float to an int, it chops, it never rounds.</div>
+                </details>
+              </div>
+              <div class="quiz-item">
+                <div class="quiz-q">3. In one sentence each: what does <span class="cmd">&amp;x</span> give you, and what does <span class="cmd">*p</span> give you?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a"><span class="cmd">&amp;x</span> gives the address where x lives, the house number, not what's inside. <span class="cmd">*p</span> goes to the address p is holding and reads what's there. Same <span class="cmd">&amp;</span> you were already using in <span class="cmd">scanf(" %c", &amp;input)</span> back in Phase 2, you were handing scanf an address the whole time.</div>
                 </details>
               </div>
             </div>
@@ -439,18 +401,18 @@
             <span class="acc-toggle-icon">▼</span>
           </div>
           <div class="acc-body section-block-body">
-            <div class="prose prose--sm t-muted2 mb-14">Three requirements per build, written <strong class="t-text">before</strong> you open the editor. Each line is something you can test: run the program and answer yes or no. This is the <span class="cmd">It should:</span> list from the Phase 07 "implement this" prompt — writing it for yourself now is practice for writing it for Claude later. Tick the build when all three pass.</div>
+            <div class="prose prose--sm t-muted2 mb-14">Three requirements per build, written <strong class="t-text">before</strong> you open the editor. Each line is something you can test: run the program and answer yes or no. This is the <span class="cmd">It should:</span> list from the Phase 07 "implement this" prompt, writing it for yourself now is practice for writing it for Claude later. Tick the build when all three pass.</div>
             <div class="spec">
               <div class="spec-item">
-                <h4><span>player.h + player.c</span> — it should:</h4>
+                <h4><span>player.h + player.c</span>: it should:</h4>
                 <ul>
                   <li>keep only the struct and the declarations in <span class="cmd">player.h</span>, the bodies in <span class="cmd">player.c</span>, and include nothing but <span class="cmd">player.h</span> from main.c</li>
                   <li>never let <span class="cmd">player_take_damage</span> push health below 0 (and set <span class="cmd">alive</span> to false at 0), and never let <span class="cmd">player_heal</span> push it above 100</li>
-                  <li>create a Player in main, move it, damage it and heal it, printing after each step — and the printed values change</li>
+                  <li>create a Player in main, move it, damage it and heal it, printing after each step, and the printed values change</li>
                 </ul>
               </div>
               <div class="spec-item">
-                <h4><span>guess.c refactor</span> — it should:</h4>
+                <h4><span>guess.c refactor</span>: it should:</h4>
                 <ul>
                   <li>play exactly like Phase 2's guessing game from the outside</li>
                   <li>keep the round's state (secret, guess count, limit) in one struct, passed to functions by pointer</li>
@@ -470,14 +432,29 @@
             <div class="stack gap-8 prose prose--sm t-muted2">
               <div><strong class="t-text">The photocopy.</strong> Change <span class="cmd">player_move(Player* p, ...)</span> to <span class="cmd">player_move(Player p, ...)</span>, swap the arrows for dots so it compiles, and run it. The player refuses to move.</div>
               <div><strong class="t-text">The double include.</strong> Delete <span class="cmd">#pragma once</span> from player.h and <span class="cmd">#include "player.h"</span> twice in main.c. Predict the failure, then read the real error (<span class="cmd">C2011</span>).</div>
-              <div><strong class="t-text">The missing file.</strong> Take <span class="cmd">game.c</span> out of the <span class="cmd">SOURCES</span> line and build. Read the <span class="cmd">LNK2019</span> error and say why the compiler was happy but the linker wasn't.</div>
+              <div><strong class="t-text">The missing file.</strong> Take <span class="cmd">player.c</span> out of the <span class="cmd">SOURCES</span> line and build. Read the <span class="cmd">LNK2019</span> error and say why the compiler was happy but the linker wasn't.</div>
             </div>
           </div>
         </div>
 
         <div class="section-block acc-section" data-page="build">
           <div class="section-block-header">
-            <span class="badge badge-blue">Stretch Goal</span>&nbsp;&nbsp;a row of enemies — an array of structs
+            <span class="badge badge-green">Ship it</span>&nbsp;&nbsp;Commit what you built
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="prose prose--sm t-muted2 stack gap-8">
+              <div><span class="cmd">git add player.h player.c main.c build.bat .vscode/launch.json</span></div>
+              <div><span class="cmd">git commit -m "feat: Player struct with pointer-based move and damage"</span></div>
+              <div><span class="cmd">git push</span></div>
+              <div>After the guessing game refactor, <span class="cmd">git add .</span> and commit again.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block acc-section" data-page="build">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Stretch Goal</span>&nbsp;&nbsp;a row of enemies, an array of structs
             <span class="acc-toggle-icon">▼</span>
           </div>
           <div class="acc-body section-block-body">
@@ -486,14 +463,14 @@
               <div class="task" data-id="p3b-stretch-enemies" data-optional>
                 <div class="task-cb">✓</div>
                 <div class="task-content">
-                  <div class="task-text">Stretch: Enemy array — five enemies, damage one by index, print the survivors <span class="task-tag t-stretch">Stretch</span></div>
+                  <div class="task-text">Stretch: Enemy array, five enemies, damage one by index, print the survivors <span class="task-tag t-stretch">Stretch</span></div>
                   <div class="task-note">Small, and it's the exact shape Phase 6 runs on. <span class="task-time">~1 hr</span></div>
                 </div>
               </div>
             </div>
             <div class="spec mt-14">
               <div class="spec-item">
-                <h4><span>Requirements</span> — it should:</h4>
+                <h4><span>Requirements</span>: it should:</h4>
                 <ul>
                   <li>define an <span class="cmd">Enemy</span> struct (x, health, alive) and fill <span class="cmd">Enemy enemies[MAX_ENEMIES]</span> in a loop</li>
                   <li>damage enemies through <span class="cmd">damage_enemy(Enemy* e, int amount)</span>, called as <span class="cmd">damage_enemy(&amp;enemies[i], 40)</span></li>
@@ -503,7 +480,7 @@
             </div>
             <div class="callout callout--yellow mt-14">
               <div class="eyebrow eyebrow--md t-yellow mb-8">// The one new idea</div>
-              <div class="prose prose--sm t-muted2"><span class="cmd">&amp;enemies[2]</span> is the address of the third enemy — exactly like <span class="cmd">&amp;hero</span>, just with an index first. Inside <span class="cmd">damage_enemy</span> you use the arrow as normal. Put a breakpoint in it and compare <span class="cmd">e</span> with <span class="cmd">&amp;enemies[2]</span> in the Watch panel: same number.</div>
+              <div class="prose prose--sm t-muted2"><span class="cmd">&amp;enemies[2]</span> is the address of the third enemy, exactly like <span class="cmd">&amp;hero</span>, just with an index first. Inside <span class="cmd">damage_enemy</span> you use the arrow as normal. Put a breakpoint in it and compare <span class="cmd">e</span> with <span class="cmd">&amp;enemies[2]</span> in the Watch panel: same number.</div>
             </div>
           </div>
         </div>
@@ -515,12 +492,12 @@
           </div>
           <div class="acc-body section-block-body">
             <dl class="king">
-              <dt>Concepts 1 and 2</dt><dd>Structs and copying: ch 16, §16.1 to §16.3 (structure variables, typedef'd types, structures as arguments).</dd>
+              <dt>Concepts 1 and 2</dt><dd>Structs and copying: ch 16, §16.1 to §16.3 (structure variables, typedef'd types, structures as arguments, arrays of structures).</dd>
               <dt>Concepts 3 and 4</dt><dd>Pointers: ch 11, especially §11.2 (<span class="cmd">&amp;</span> and <span class="cmd">*</span>) and §11.4 (pointers as arguments). Ch 12 only far enough to see why array parameters aren't copies.</dd>
-              <dt>Concept 5</dt><dd>NULL: look it up in King's index. It turns up beside the pointer chapters.</dd>
+              <dt>Concept 5</dt><dd>NULL: ch 17, just the short null-pointers part (§17.1); skip the rest.</dd>
               <dt>Concept 6</dt><dd>Enumerations: ch 16, §16.5.</dd>
               <dt>Concepts 7 to 9</dt><dd>Headers and the linker are ch 15 (<em>Writing Large Programs</em>), which is fine to save for Phase 4.5. King doesn't cover the debugger.</dd>
-              <dt>Skip</dt><dd>Unions, ch 17 <em>Advanced Uses of Pointers</em> (malloc, pointers to pointers, function pointers) and ch 20's bit work.</dd>
+              <dt>Skip</dt><dd>Unions, the rest of ch 17 <em>Advanced Uses of Pointers</em> (malloc, pointers to pointers, function pointers) and ch 20's bit work.</dd>
             </dl>
             <div class="fs-11 t-muted mt-12">Chapter numbers are from the 2nd edition.</div>
           </div>
