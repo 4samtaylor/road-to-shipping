@@ -418,7 +418,7 @@
     ],
     [
      "Will the compiler warn me about scores[5]?",
-     "Sometimes. With a literal index like <code>scores[5]</code>, MSVC usually warns (C6201 or C4789) and <code>/WX</code> stops the build. With a variable index it can’t know, so it stays quiet. The bounds are your job."
+     "Sometimes. Don’t count on it. A plain /W4 build often stays quiet even for <code>scores[5]</code>, and never warns for <code>scores[i]</code>. The bounds are your job."
     ],
     [
      "Where do games use arrays?",
@@ -427,6 +427,10 @@
     [
      "Why can’t I copy an array with a = b;?",
      "An array name isn’t a box you can assign to (MSVC says C2106). Copy element by element with a loop. A whole struct can be assigned with <code>=</code>, which you’ll meet in Phase 3.5."
+    ],
+    [
+     "Does passing an array to a function copy it?",
+     "No. Write the parameter as <code>int scores[]</code> and pass the count separately. The function works on main’s real array, so <code>insert_score</code> changes it. Phase 3.5 explains why."
     ]
    ],
    "bridge": "You can store a row of numbers. Next: <b>strings</b>, which are arrays of characters with one twist."

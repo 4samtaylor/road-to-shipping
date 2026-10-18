@@ -1237,8 +1237,8 @@ function showPage(pid, key, o) {
     }
   }
   if (!o.keepScroll) {
-    var anchor = $('.pg-top', s.el) || pg.el;
-    window.scrollTo(0, Math.max(0, window.pageYOffset + anchor.getBoundingClientRect().top - (TOPBAR + 12)));
+    var anchor = $('.pg-top', s.el) || pg.el, hd = $('.phase-header', s.el);   // the phase header is sticky: land just under it
+    window.scrollTo(0, Math.max(0, window.pageYOffset + anchor.getBoundingClientRect().top - (TOPBAR + (hd ? hd.offsetHeight : 0) + 10)));
   }
   libRender();
   save();
@@ -1315,7 +1315,7 @@ function renderOverview(pid) {
   if (!gen || !d) return;
   var l = ladState(pid), rungs = d.rungs, doneN = rungs.filter(function (x) { return l.done[x.id]; }).length;
   var mins = rungs.reduce(function (a, r) { return a + (+r.mins || 0); }, 0);
-  var tasks = counts(s), tag = (($('.phase-tag', s.el) || {}).textContent || '').trim();
+  var tasks = counts(s);
   // Start / Continue: first unfinished concept (the one you were on if it's unfinished), else the first later page
   var cur = Math.max(0, Math.min(rungs.length - 1, +l.cur || 0)), target = null, started = doneN > 0 || (state._pages && state._pages[pid] && state._pages[pid] !== 'overview');
   if (!l.done[rungs[cur].id]) target = String(cur + 1);
@@ -1324,8 +1324,8 @@ function renderOverview(pid) {
   var label;
   if (target) label = (started ? 'Continue' : 'Start') + ' · Concept ' + target + ' ›';
   else { target = laterPages[0] ? laterPages[0].key : '1'; label = 'Continue · ' + (laterPages[0] ? laterPages[0].label : 'Concept 1') + ' ›'; }
-  var h = '<header class="pg-ov-hd"><div class="pg-kick">' + esc(s.num) + (tag ? ' · ' + esc(tag) : '') + '</div>' +
-    '<h2 class="pg-ov-title">' + esc(s.title) + '</h2>' +
+  // the sticky phase header above already shows number, tag and title, so the overview adds only the numbers and the one button
+  var h = '<header class="pg-ov-hd">' +
     '<div class="pg-ov-meta"><span>' + plural(rungs.length, 'concept') + ' · ~' + mins + ' min</span>' +
     (tasks.tasks ? '<span>' + plural(tasks.tasks, 'task') + ' · ≈' + fmtMins(tasks.tasks * MIN_PER_TASK) + '</span>' : '') +
     '<span>' + doneN + ' of ' + rungs.length + ' concepts done</span></div>' +
