@@ -1,5 +1,7 @@
 # King comparison map (v23, step 1)
 
+> **Superseded for planning by `docs/V23_PLAN.md` (18 Oct 2026),** which re-checked everything below against the book text. Section 7 of the plan lists this file's errors.
+
 Written 17 Oct 2026. Compares every phase and concept with K. N. King, *C Programming: A Modern Approach*, 2nd ed. (2008), and proposes how phases and concepts should flow before any content is rewritten. Nothing in the app has changed yet.
 
 **How this was made:** one reviewer per phase read the ladder JSON, the phase HTML and `docs/pages/<phase>.md`, then listed King's matching sections, what King explains that we skip, and the questions a zero-experience reader would still have. This file merges those reports.
