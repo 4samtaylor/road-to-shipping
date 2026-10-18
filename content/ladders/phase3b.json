@@ -95,6 +95,10 @@
     [
      "Can a struct hold an array?",
      "Yes. A field can be an int, a float, an array, even another struct. The Runner in Phase 4.5 holds its whole obstacle array this way."
+    ],
+    [
+     "How do arrays and structs fit together?",
+     "Put them together and you get the shape nearly every game runs on: <code>Enemy enemies[MAX_ENEMIES];</code>, one array, one loop, one struct per thing on screen. Phase 6 is built from exactly this, and the stretch goal on the Build page is your first go at it."
     ]
    ],
    "bridge": "You can bundle data into a struct. Next: <b>what happens when you hand a struct to a function</b>."
@@ -176,6 +180,10 @@
     [
      "Why did insert_score change my real array in Phase 3?",
      "Arrays are the exception: passing an array hands over its address, not a copy. A struct has no such shortcut, so it’s copied."
+    ],
+    [
+     "Does <code>b = a</code> behave the same in GDScript?",
+     "No. In GDScript objects are references, so <code>b = a</code> gives two names for one object and setting <code>b.health</code> changes <code>a.health</code> too. In C a struct is a value, so you get two separate players."
     ]
    ],
    "bridge": "You’ve seen the problem: a copy can’t change the original. Next: <b>pointers</b>, a way to hold where something lives."
@@ -255,6 +263,10 @@
     [
      "What does a pointer actually print as?",
      "A big number like 0x00affc10, the address. You’ll see one in the debugger’s Watch window in the last concept."
+    ],
+    [
+     "GDScript has no pointers. Why does C make me deal with them?",
+     "GDScript has them, it just hides them: objects are passed by reference, which is a pointer with the asterisk filed off. C makes you choose between copying a whole struct every frame and handing over one address."
     ]
    ],
    "bridge": "You can hold an address and follow it. Next: <b>passing a pointer to a function</b>, and the <b>-></b> shortcut for structs."
@@ -337,6 +349,10 @@
     [
      "Does this fix Phase 3’s array behaviour too?",
      "It explains it. An array’s name already acts like the address of its first box, which is why insert_score changed your real array all along."
+    ],
+    [
+     "When do I use the arrow and when the dot?",
+     "Holding a pointer? Use the arrow: <code>p->health</code>. Holding the actual struct? Use the dot: <code>player.health</code>."
     ]
    ],
    "bridge": "You can hand a function the real thing. Next: <b>NULL</b>, the address that points nowhere, and why you check for it."
@@ -735,6 +751,14 @@
     [
      "How do I set the debugger up?",
      "A one-time config file called launch.json tells VS Code which .exe to run. The Build page for this phase has the four steps."
+    ],
+    [
+     "What are the other debugger keys and the Watch panel?",
+     "<code>Shift+F5</code> stops the program, <code>Shift+F11</code> steps back out, and <code>Ctrl+Shift+D</code> opens the Run and Debug sidebar. The Watch panel re-evaluates any expression you type (<code>p</code>, <code>*p</code>, <code>p->health</code>) after every step, and hovering a variable works too."
+    ],
+    [
+     "Breakpoints are still hollow after I rebuilt.",
+     "Check the <code>\"program\"</code> path in launch.json points at the exe your build.bat actually makes (<code>${workspaceFolder}/game.exe</code> if it builds into the repo root). Also open the repo as a folder, not a single file, or <code>${workspaceFolder}</code> means nothing."
     ]
    ],
    "bridge": "That’s every concept in Phase 3.5. Next: <b>Phase 4, Git &amp; Your Partner</b>, sharing this code without stepping on each other."

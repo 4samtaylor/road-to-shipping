@@ -1,0 +1,473 @@
+{
+ "loops": {
+  "scene": "loops",
+  "steps": [
+   {
+    "line": 4,
+    "ms": 1100,
+    "note": "lives starts at 3: three hearts.",
+    "do": [
+     {
+      "a": "lives",
+      "to": 3
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 800,
+    "note": "Check first: is 3 > 0? Yes, so the block runs.",
+    "do": [
+     {
+      "a": "check",
+      "t": "lives > 0",
+      "v": "3 > 0",
+      "r": true
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 1000,
+    "out": "Lives: 3\n",
+    "outAt": 0.3,
+    "note": "printf prints the current lives.",
+    "do": [
+     {
+      "a": "run",
+      "from": 0,
+      "to": 0.5,
+      "ease": "start"
+     },
+     {
+      "a": "say",
+      "t": "Lives: 3",
+      "at": 0.25,
+      "len": 0.7
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 1000,
+    "note": "lives drops by 1: 3 becomes 2. Then back to the start line for the next check.",
+    "do": [
+     {
+      "a": "run",
+      "from": 0.5,
+      "to": 1,
+      "ease": "end"
+     },
+     {
+      "a": "lives",
+      "to": 2,
+      "at": 0.1,
+      "len": 0.6
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 800,
+    "note": "Check first: is 2 > 0? Yes, so the block runs.",
+    "do": [
+     {
+      "a": "check",
+      "t": "lives > 0",
+      "v": "2 > 0",
+      "r": true
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 1000,
+    "out": "Lives: 2\n",
+    "outAt": 0.3,
+    "note": "printf prints the current lives.",
+    "do": [
+     {
+      "a": "run",
+      "from": 0,
+      "to": 0.5,
+      "ease": "start"
+     },
+     {
+      "a": "say",
+      "t": "Lives: 2",
+      "at": 0.25,
+      "len": 0.7
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 1000,
+    "note": "lives drops by 1: 2 becomes 1. Then back to the start line for the next check.",
+    "do": [
+     {
+      "a": "run",
+      "from": 0.5,
+      "to": 1,
+      "ease": "end"
+     },
+     {
+      "a": "lives",
+      "to": 1,
+      "at": 0.1,
+      "len": 0.6
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 800,
+    "note": "Check first: is 1 > 0? Yes, so the block runs.",
+    "do": [
+     {
+      "a": "check",
+      "t": "lives > 0",
+      "v": "1 > 0",
+      "r": true
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 1000,
+    "out": "Lives: 1\n",
+    "outAt": 0.3,
+    "note": "printf prints the current lives.",
+    "do": [
+     {
+      "a": "run",
+      "from": 0,
+      "to": 0.5,
+      "ease": "start"
+     },
+     {
+      "a": "say",
+      "t": "Lives: 1",
+      "at": 0.25,
+      "len": 0.7
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 1000,
+    "note": "lives drops by 1: 1 becomes 0. Then back to the start line for the next check.",
+    "do": [
+     {
+      "a": "run",
+      "from": 0.5,
+      "to": 1,
+      "ease": "end"
+     },
+     {
+      "a": "lives",
+      "to": 0,
+      "at": 0.1,
+      "len": 0.6
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 1000,
+    "note": "0 > 0 is false. The block is skipped and the loop is over.",
+    "do": [
+     {
+      "a": "check",
+      "t": "lives > 0",
+      "v": "0 > 0",
+      "r": false
+     }
+    ]
+   },
+   {
+    "line": 9,
+    "ms": 1300,
+    "out": "Game over\n",
+    "outAt": 0.4,
+    "note": "Runs once, after the loop is done.",
+    "do": [
+     {
+      "a": "walk",
+      "to": [
+       46,
+       214
+      ],
+      "len": 0.75
+     },
+     {
+      "a": "over",
+      "on": true,
+      "at": 0.2
+     }
+    ]
+   },
+   {
+    "line": 11,
+    "ms": 900,
+    "note": "for sets i = 1, then checks i <= 3.",
+    "do": [
+     {
+      "a": "over",
+      "on": false
+     },
+     {
+      "a": "slots"
+     },
+     {
+      "a": "hud",
+      "name": "i",
+      "val": 1
+     },
+     {
+      "a": "check",
+      "t": "i <= 3",
+      "v": "1 <= 3",
+      "r": true
+     }
+    ]
+   },
+   {
+    "line": 12,
+    "ms": 1100,
+    "out": "Wave 1\n",
+    "outAt": 0.3,
+    "note": "Wave 1 spawns.",
+    "do": [
+     {
+      "a": "spawn",
+      "n": 1
+     }
+    ]
+   },
+   {
+    "line": 11,
+    "ms": 900,
+    "note": "i++ makes i 2. Check i <= 3: yes.",
+    "do": [
+     {
+      "a": "hud",
+      "name": "i",
+      "val": 2
+     },
+     {
+      "a": "check",
+      "t": "i <= 3",
+      "v": "2 <= 3",
+      "r": true
+     }
+    ]
+   },
+   {
+    "line": 12,
+    "ms": 1100,
+    "out": "Wave 2\n",
+    "outAt": 0.3,
+    "note": "Wave 2 spawns.",
+    "do": [
+     {
+      "a": "spawn",
+      "n": 2
+     }
+    ]
+   },
+   {
+    "line": 11,
+    "ms": 900,
+    "note": "i++ makes i 3. Check i <= 3: yes.",
+    "do": [
+     {
+      "a": "hud",
+      "name": "i",
+      "val": 3
+     },
+     {
+      "a": "check",
+      "t": "i <= 3",
+      "v": "3 <= 3",
+      "r": true
+     }
+    ]
+   },
+   {
+    "line": 12,
+    "ms": 1100,
+    "out": "Wave 3\n",
+    "outAt": 0.3,
+    "note": "Wave 3 spawns.",
+    "do": [
+     {
+      "a": "spawn",
+      "n": 3
+     }
+    ]
+   },
+   {
+    "line": 11,
+    "ms": 900,
+    "note": "i++ makes i 4. 4 <= 3 is false, so the loop ends.",
+    "do": [
+     {
+      "a": "hud",
+      "name": "i",
+      "val": 4
+     },
+     {
+      "a": "check",
+      "t": "i <= 3",
+      "v": "4 <= 3",
+      "r": false
+     }
+    ]
+   },
+   {
+    "line": 14,
+    "ms": 900,
+    "note": "Done. The program ends.",
+    "do": [
+     {
+      "a": "check",
+      "t": "return 0",
+      "v": "program ends",
+      "r": "exit 0"
+     },
+     {
+      "a": "hop"
+     }
+    ]
+   }
+  ]
+ },
+ "types": {
+  "scene": "boxes",
+  "steps": [
+   {
+    "line": 2,
+    "ms": 1000,
+    "note": "stdbool.h gives you bool, true and false.",
+    "do": [
+     {
+      "a": "unlock",
+      "slot": 3
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 1100,
+    "note": "int: a whole-number box (square lid). It starts at 0.",
+    "do": [
+     {
+      "a": "drop",
+      "slot": 0,
+      "shape": "sq",
+      "text": "0",
+      "val": "0"
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 1100,
+    "note": "float: a decimal box (round lid).",
+    "do": [
+     {
+      "a": "drop",
+      "slot": 1,
+      "shape": "ci",
+      "text": "2.5",
+      "val": "2.5"
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 1100,
+    "note": "char: one character (triangle lid). 'q' is stored as 113.",
+    "do": [
+     {
+      "a": "drop",
+      "slot": 2,
+      "shape": "tr",
+      "text": "q",
+      "val": "'q'",
+      "sub": "113"
+     }
+    ]
+   },
+   {
+    "line": 8,
+    "ms": 1100,
+    "note": "bool: true or false (diamond lid).",
+    "do": [
+     {
+      "a": "drop",
+      "slot": 3,
+      "shape": "di",
+      "text": "T",
+      "val": "true"
+     }
+    ]
+   },
+   {
+    "line": 10,
+    "ms": 1200,
+    "note": "Take score (0), add 10, put 10 back in score.",
+    "do": [
+     {
+      "a": "drop",
+      "slot": 0,
+      "shape": "sq",
+      "text": "+10",
+      "val": "10"
+     }
+    ]
+   },
+   {
+    "line": 11,
+    "ms": 2600,
+    "note": "A float into an int box: the .9 does not fit and is chopped off. C does not round.",
+    "do": [
+     {
+      "a": "appear",
+      "slot": 4,
+      "len": 0.22
+     },
+     {
+      "a": "chop",
+      "slot": 4,
+      "at": 0.24,
+      "val": "2"
+     },
+     {
+      "a": "cap",
+      "t": "chopped, not rounded",
+      "at": 0.6,
+      "len": 0.2
+     }
+    ]
+   },
+   {
+    "line": 12,
+    "ms": 1400,
+    "out": "10 2\n",
+    "outAt": 0.4,
+    "note": "Two %d slots, filled left to right by score and lives.",
+    "do": [
+     {
+      "a": "pick",
+      "slots": [
+       0,
+       4
+      ]
+     }
+    ]
+   }
+  ]
+ }
+}
