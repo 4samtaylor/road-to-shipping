@@ -1,6 +1,6 @@
 # Road to Shipping: session handoff
 
-Last updated: v22 (pages inside phases). Owner: Sam (GitHub `4samtaylor`). Read this first in a new session.
+Last updated: 17 Oct 2026, after v22 shipped (PR #17). Owner: Sam (GitHub `4samtaylor`). Read this first in a new session.
 
 ## What this is
 
@@ -12,7 +12,21 @@ A C game-dev learning roadmap (13 phases: C → terminal game → Win32 window �
 - **Supabase project:** `qvrpzycindlchwjzoqph` (Supabase connector available)
 - **Design canvas (themes):** https://claude.ai/artifact/1XxjpMqMMEmW1iDa9f5CgC, pinned in Sam's claude.ai sidebar; snapshot in `design/theme-workshop/`
 
-**Rebuild in progress:** `docs/REBUILD_PLAN.md` is the plan for ladders in every phase, pages inside phases, content cuts, the library filter and play-button visuals. Read it before touching phase content.
+**Rebuild done (v19 to v22):** every phase now has a concept ladder, pages (Overview → one page per concept → Trace → Build → Practice → Review), trimmed content and See It Run animations. `docs/REBUILD_PLAN.md` records the plan and the review process; `docs/pages/<phase>.md` records where every old block went. Read both before touching phase content.
+
+## Start here (new session)
+
+1. `cd` into the repo, `git checkout main && git pull`. Branch for any change; PRs go through `gh api repos/4samtaylor/road-to-shipping/pulls` (GraphQL is blocked, so `gh pr create` fails), merge with `gh api -X PUT .../pulls/N/merge -f merge_method=squash`. Branch deletes are blocked; leave merged branches.
+2. Run `python3 tools/validate.py` before every PR (CI runs it too).
+3. Test locally with `python3 -m http.server 8000` and Playwright/Chromium at 1300 and 390 px. Click through the page you changed, including ▶ Watch it run if it's a concept.
+4. Sam likes drafts before big UX changes (show a screenshot or artifact first), then "push it" means PR + merge + confirm the deploy.
+5. For big content jobs the pattern that worked: Sonnet agents execute (one per phase), Opus agents review independently, a Haiku agent sweeps style or clicks through the app, then fixes go back to the authors.
+
+## Open questions for Sam
+
+- **Session notes:** S1/S2 are still static pages edited by PR. Proposed options: in-app journal entries (`user_state` `_jnl:<id>`), auto-draft from the week's activity, or Ask Claude prefill. Not chosen yet.
+- **King references:** reading lines were partly written from memory of the 2nd edition. Phase 3.5 has section numbers; other phases are mostly chapter-level. Ask Sam to spot-check against his copy.
+- **Section notes drawer:** built, but no phase uses it yet (content agents found nothing worth keeping that fit no page). Fine to leave.
 
 ## Where things stand
 
@@ -29,7 +43,7 @@ A C game-dev learning roadmap (13 phases: C → terminal game → Win32 window �
 | v19: Concept ladder for Phase 2's Learn stage (8 concepts, one at a time); old Learn blocks folded into "Full notes" | Live (PR #14) |
 | v20: Concept table of contents (no slider); Phase 1 and 3 ladders; `docs/REBUILD_PLAN.md` | Live (PR #15) |
 | v21: Ladders for every phase (1 to 7); Library by phase and concept with Focus / This phase / All / Phase… filter and search; Phase 5 starter fixed for /W4 /WX (C4100, C4204, brush leak) | Live (PR #16) |
-| v22: Pages inside phases (Overview → one page per concept → Trace → Build → Practice → Review), Section notes drawer, content cut ~45% and re-homed per concept (maps in `docs/pages/`), See It Run animations for all 60 concepts in Phases 1 to 6 | PR #17 |
+| v22: Pages inside phases (Overview → one page per concept → Trace → Build → Practice → Review), Section notes drawer, content cut ~45% and re-homed per concept (maps in `docs/pages/`), See It Run animations for all 60 concepts in Phases 1 to 6 | Live (PR #17) |
 | Supabase | Tables `profiles`, `progress`, `notes`, `user_state`, `skills`; RLS on all; newest-wins triggers; `delete_my_account()`. Migrations: `init_progress_sync`, `harden_functions`, `skills_and_admin_views`. Security advisor: only the intentional `delete_my_account` and a "leaked password protection" suggestion |
 | Admin views | `admin.user_overview`, `admin.user_activity` (Table Editor → schema dropdown → `admin`). Not exposed to the API |
 | Auth settings | Confirm email off, min password 8, new sign-ups off (Sam did these) |
@@ -120,15 +134,16 @@ privacy.html, sw.js, manifest.webmanifest, icons/, fonts/, setup.ps1, README.md
 
 ## Next steps
 
-0. **Session notes (proposed, awaiting Sam's choice):** make S1/S2 addable in-app instead of PR-only. Options in chat: in-app journal stored in `user_state` (`_jnl:<id>` rows), auto-draft from the week's activity, or Ask Claude prefill.
+0. **v22 follow-ups (small):** watch Sam's first week on the pages for friction (page strip on phones, whether Overview needs the phase title repeated, whether 390 px canvas labels are readable enough). Phase 7 is the lightest-trimmed phase (−11%) because it had no repeated explanation blocks; leave it unless Sam asks. If a rung's `code` changes, re-check its `content/play/<phase>.json` spec (line numbers point into that code; validate.py catches out-of-range lines but not wrong ones).
+1. **Session notes:** see Open questions.
 
-1. **Pilot (running):** two weeks on PC + iPhone. Check ticks, notes, skills and time match across devices, and offline edits survive.
-2. **Ask Claude:** confirm with Sam that the claude.ai prefill works while signed in.
-3. **Themes:** Sam may keep iterating on the design canvas. Port any changes into `css/app.css` and `THEMES`. A theme could become the default for new devices once he picks a favourite.
-4. **Collaboration (proposed, awaiting Sam's choice):** (a) read-only share with a friend by email; (b) comments + mentor "verified" checkpoints + mentor skill ratings; (c) editor role (personal tasks, weekly goals); (d) notifications. Each step is a small table plus RLS policies.
-5. **Checked code exercises (proposed, awaiting choice):** a free "type the exact output" check for Predict-the-Output drills first. Then optionally run code on a hosted runner (Judge0/Piston) for pass/fail, with Claude feedback through a Supabase Edge Function (needs an Anthropic API key, which Sam doesn't want for now). Windows-only code (conio, Win32) can't run there.
-6. **Android (paused):** install JDK 21 (`winget install --id EclipseAdoptium.Temurin.21.JDK -e`, about 170 MB; ask first), point `JAVA_HOME` at it, then `npm run build && npx cap sync android && cd android && gradlew.bat assembleDebug`, and test on emulator `Medium_Phone_API_37.0`. iOS later via a cloud Mac build (Codemagic or GitHub Actions macOS) + TestFlight; needs the Apple Developer account ($99/yr).
-7. **Store-ready later:** Sign in with Apple, custom domain (Universal Links), content bundled with over-the-air updates, notifications.
+2. **Pilot (running):** two weeks on PC + iPhone. Check ticks, notes, skills and time match across devices, and offline edits survive.
+3. **Ask Claude:** confirm with Sam that the claude.ai prefill works while signed in.
+4. **Themes:** Sam may keep iterating on the design canvas. Port any changes into `css/app.css` and `THEMES`. A theme could become the default for new devices once he picks a favourite.
+5. **Collaboration (proposed, awaiting Sam's choice):** (a) read-only share with a friend by email; (b) comments + mentor "verified" checkpoints + mentor skill ratings; (c) editor role (personal tasks, weekly goals); (d) notifications. Each step is a small table plus RLS policies.
+6. **Checked code exercises (proposed, awaiting choice):** a free "type the exact output" check for Predict-the-Output drills first. Then optionally run code on a hosted runner (Judge0/Piston) for pass/fail, with Claude feedback through a Supabase Edge Function (needs an Anthropic API key, which Sam doesn't want for now). Windows-only code (conio, Win32) can't run there.
+7. **Android (paused):** install JDK 21 (`winget install --id EclipseAdoptium.Temurin.21.JDK -e`, about 170 MB; ask first), point `JAVA_HOME` at it, then `npm run build && npx cap sync android && cd android && gradlew.bat assembleDebug`, and test on emulator `Medium_Phone_API_37.0`. iOS later via a cloud Mac build (Codemagic or GitHub Actions macOS) + TestFlight; needs the Apple Developer account ($99/yr).
+8. **Store-ready later:** Sign in with Apple, custom domain (Universal Links), content bundled with over-the-air updates, notifications.
 
 ## Working with Sam
 
