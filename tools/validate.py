@@ -154,6 +154,38 @@ def main():
                 if not (1 <= n <= len(rungs)):
                     errors.append(f'{name}: goal {cp} points at concept {n}, which does not exist')
 
+    # v22: See It Run specs (content/play/<pid>.json) must point at real rungs and real lines,
+    # and every scene they name must be registered by a js/play/scenes-*.js file
+    scene_src = ''.join(f.read_text(encoding='utf-8') for f in (ROOT / 'js' / 'play').glob('scenes-*.js'))
+    index_html = (ROOT / 'index.html').read_text(encoding='utf-8')
+    for f in (ROOT / 'js' / 'play').glob('scenes-*.js'):
+        if f'js/play/{f.name}' not in index_html:
+            errors.append(f'js/play/{f.name} is not loaded by index.html')
+    for p in sorted((ROOT / 'content' / 'play').glob('*.json')):
+        name = f'content/play/{p.name}'
+        try:
+            specs = json.loads(p.read_text(encoding='utf-8'))
+            lad = json.loads((ROOT / 'content' / 'ladders' / p.name).read_text(encoding='utf-8'))
+        except Exception as e:
+            errors.append(f'{name}: cannot read spec or its ladder ({e})')
+            continue
+        rungs = {r['id']: r for r in lad.get('rungs', [])}
+        for rid, spec in specs.items():
+            if rid not in rungs:
+                errors.append(f'{name}: "{rid}" is not a rung in content/ladders/{p.name}')
+                continue
+            code = spec.get('code') or rungs[rid].get('code', '')
+            n = len(code.split('\n'))
+            sc = spec.get('scene', '')
+            if not re.search(r"""['"]""" + re.escape(sc) + r"""['"]""", scene_src) and sc not in ('loops', 'boxes'):
+                errors.append(f'{name}: {rid} uses scene "{sc}", which no scenes-*.js registers')
+            steps = spec.get('steps', [])
+            if not steps:
+                errors.append(f'{name}: {rid} has no steps')
+            for k, st in enumerate(steps):
+                if not (1 <= st.get('line', 0) <= n):
+                    errors.append(f'{name}: {rid} step {k + 1} points at line {st.get("line")}, but the code has {n} lines')
+
     for p in (ROOT / 'progress').glob('*.json'):
         try:
             doc = json.loads(p.read_text(encoding='utf-8'))
