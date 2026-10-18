@@ -74,7 +74,7 @@
               <div class="task" data-id="p6-code-review">
                 <div class="task-cb">✓</div>
                 <div class="task-content">
-                  <div class="task-text">Weekly code review with your partner — read each other's code, ask questions <span class="task-tag t-crucial">Crucial</span></div>
+                  <div class="task-text">Weekly code review with your partner: read each other's code, ask questions <span class="task-tag t-crucial">Crucial</span></div>
                   <div class="task-note"><span class="task-time">~30 min</span></div>
                 </div>
               </div>
@@ -89,12 +89,12 @@
             <span class="acc-toggle-icon">▼</span>
           </div>
           <div class="acc-body section-block-body">
-            <div class="prose prose--sm t-muted2 mb-14">Three requirements per build, written <strong class="t-text">before</strong> you open the editor. Each line is something you can test: run the program and answer yes or no. This is the <span class="cmd">It should:</span> list from the Phase 07 "implement this" prompt — writing it for yourself now is practice for writing it for Claude later. Tick the build when all three pass.</div>
+            <div class="prose prose--sm t-muted2 mb-14">Three requirements per build, written <strong class="t-text">before</strong> you open the editor. Each line is something you can test: run the program and answer yes or no. This is the <span class="cmd">It should:</span> list from the Phase 07 "implement this" prompt. Writing it for yourself now is practice for writing it for Claude later. Tick the build when all three pass.</div>
             <div class="spec">
               <div class="spec-item">
-                <h4><span>the prototype</span> — it should:</h4>
+                <h4><span>the prototype</span>: it should:</h4>
                 <ul>
-                  <li>run in a window with at least three states — MENU, PLAYING, GAME_OVER — and move between them with keys</li>
+                  <li>run in a window with at least three states (MENU, PLAYING, GAME_OVER) and move between them with keys</li>
                   <li>move your Player struct with the keyboard at the same speed whatever the frame rate (<span class="cmd">speed * dt</span>)</li>
                   <li>end the run when the player's box overlaps an obstacle's box, and restart from GAME_OVER without relaunching</li>
                 </ul>
@@ -112,7 +112,7 @@
           <div class="acc-body">
             <div class="code-wrap">
               <div class="code-label">
-                <span>game_state.h — state machine pattern</span>
+                <span>game_state.h: state machine pattern</span>
                 <button class="copy-btn">Copy</button>
               </div>
 <pre><span class="c-pp">#pragma once</span>
@@ -154,33 +154,33 @@
         <!-- STRETCH -->
         <div data-page="build" class="section-block acc-section">
           <div class="section-block-header">
-            <span class="badge badge-blue">Stretch Goal</span>&nbsp;&nbsp;prototype v2 — something worth playing twice
+            <span class="badge badge-blue">Stretch Goal</span>&nbsp;&nbsp;prototype v2: something worth playing twice
             <span class="acc-toggle-icon">▼</span>
           </div>
           <div class="acc-body section-block-body">
-            <div class="prose prose--sm t-muted2 mb-14">Optional, and it doesn't count toward your progress. Do it while the base build is still fresh in your head — the second version is where it sticks.</div>
+            <div class="prose prose--sm t-muted2 mb-14">Optional, and it doesn't count toward your progress. Do it while the base build is still fresh in your head. The second version is where it sticks.</div>
             <div class="tasks">
               <div class="task" data-id="p6-stretch-prototype" data-optional>
                 <div class="task-cb">✓</div>
                 <div class="task-content">
-                  <div class="task-text">Stretch: prototype v2 — moving enemies, a score on screen, a best score that survives <span class="task-tag t-stretch">Stretch</span></div>
+                  <div class="task-text">Stretch: prototype v2: moving enemies, a score on screen, a best score that survives <span class="task-tag t-stretch">Stretch</span></div>
                   <div class="task-note">This is where it starts to feel like a game. Pick the order yourself. <span class="task-time">~3 hrs</span></div>
                 </div>
               </div>
             </div>
             <div class="spec mt-14">
               <div class="spec-item">
-                <h4><span>Requirements</span> — it should:</h4>
+                <h4><span>Requirements</span>: it should:</h4>
                 <ul>
                   <li>spawn enemies from an array of structs that move on their own, and are removed when they leave the screen</li>
                   <li>draw the score on screen in the window (GDI's <span class="cmd">TextOut</span> or <span class="cmd">DrawText</span>), not in the console</li>
-                  <li>save the best score to a file and show it on the menu — your Phase 3 and 4.5 code, a third time</li>
+                  <li>save the best score to a file and show it on the menu (your Phase 3 and 4.5 code, a third time)</li>
                 </ul>
               </div>
             </div>
             <div class="callout callout--yellow mt-14">
               <div class="eyebrow eyebrow--md t-yellow mb-8">// Then play it with your partner</div>
-              <div class="prose prose--sm t-muted2">Watch them play without saying anything. Every time they hesitate or get it wrong, write it down. That list is your next week of work — and it's the most useful thing you'll learn before the Godot handoff.</div>
+              <div class="prose prose--sm t-muted2">Watch them play without saying anything. Every time they hesitate or get it wrong, write it down. That list is your next week of work, and it's the most useful thing you'll learn before the Godot handoff.</div>
             </div>
           </div>
         </div>
@@ -192,13 +192,13 @@
             <span class="acc-toggle-icon">▼</span>
           </div>
           <div class="acc-body section-block-body">
-            <div class="prose prose--sm t-muted2 mb-14">One question from an earlier phase. Remembering something after a gap is what makes it stay — answer out loud first.</div>
+            <div class="prose prose--sm t-muted2 mb-14">One question from an earlier phase. Remembering something after a gap is what makes it stay. Answer out loud first.</div>
             <div class="quiz-items">
               <div class="quiz-item">
                 <div class="quiz-q">1. <span class="t-muted">[Phase 4.5]</span> Why write the reset as one function and call it from both the start and the restart?</div>
                 <details>
                   <summary>Reveal answer</summary>
-                  <div class="quiz-a">So there's exactly one place that defines "a fresh game". With two copies, you'll add a new variable, reset it in one place and forget the other — and the bug only shows up on the <em>second</em> run. One function, one source of truth.</div>
+                  <div class="quiz-a">So there's exactly one place that defines "a fresh game". With two copies, you'll add a new variable, reset it in one place and forget the other, and the bug only shows up on the <em>second</em> run. One function, one source of truth.</div>
                 </details>
               </div>
             </div>
@@ -227,34 +227,34 @@
           <div class="acc-body section-block-body">
 
             <div class="callout callout--purple callout--bar mb-16">
-              <div class="eyebrow eyebrow--md t-purple mb-8">// Two people, one codebase, one AI — how this changes everything</div>
+              <div class="eyebrow eyebrow--md t-purple mb-8">// Two people, one codebase, one AI: how this changes everything</div>
               <div class="prose t-muted2 italic">
-                By Phase 6 you and your partner are both writing code. AI doesn't know what your partner wrote last week. It doesn't know your naming conventions, your struct layout, or which functions already exist. If you don't give it that context, it will invent its own — and your partner's code won't connect to it.<br><br>
+                By Phase 6 you and your partner are both writing code. AI doesn't know what your partner wrote last week. It doesn't know your naming conventions, your struct layout, or which functions already exist. If you don't give it that context, it will invent its own, and your partner's code won't connect to it.<br><br>
                 <strong class="t-text">Always give AI the relevant context from your actual codebase before asking it to write anything.</strong> Paste the struct definition. Paste the function signatures. Tell it what already exists. The more context it has, the better the output fits.
               </div>
             </div>
 
             <div class="callout callout--orange mb-16">
-              <div class="eyebrow eyebrow--md t-orange mb-8">// The context block — paste this before every implementation prompt</div>
+              <div class="eyebrow eyebrow--md t-orange mb-8">// The context block: paste this before every implementation prompt</div>
               <div class="prose t-text mb-10">Before asking AI to implement anything in Phase 6+, open with:</div>
               <div class="prose t-text" style="background:var(--bg);border:1px solid var(--border2);padding:12px 14px">
                 "Here is the relevant context from my game:<br>
-                — Game struct: [paste Game struct]<br>
-                — Existing functions: [list function signatures]<br>
-                — Naming convention: snake_case, prefixed by system (player_, game_, enemy_)<br>
-                — No new dependencies, no new files unless I ask<br><br>
+                Game struct: [paste Game struct]<br>
+                Existing functions: [list function signatures]<br>
+                Naming convention: snake_case, prefixed by system (player_, game_, enemy_)<br>
+                No new dependencies, no new files unless I ask<br><br>
                 Now implement: [specific request]"
               </div>
             </div>
 
             <div class="prompt-items">
               <div class="prompt-item">
-                <div class="prompt-label">Implement game_update — with full context provided</div>
+                <div class="prompt-label">Implement game_update, with full context provided</div>
                 <div class="prompt-text">I'm building a game in C. Here is my Game struct: [paste struct]. Existing functions: game_init, game_handle_input, game_render. Naming: snake_case, game_ prefix. No new dependencies. Write ONLY game_update(Game* g) that: switches on state, updates player position from input when PLAYING, transitions to GAME_OVER when player.alive is false. Match my existing style exactly.</div>
               </div>
               <div class="prompt-item">
                 <div class="prompt-label">Plan a system before implementing it</div>
-                <div class="prompt-text">I want to add a state machine to my C game with states: MENU, PLAYING, PAUSED, GAME_OVER. Before I write any code, describe: (1) how to represent this in a typedef enum, (2) where the state variable should live (in my Game struct or global), (3) what a clean transition looks like. Don't write the implementation — I want to understand the design first.</div>
+                <div class="prompt-text">I want to add a state machine to my C game with states: MENU, PLAYING, PAUSED, GAME_OVER. Before I write any code, describe: (1) how to represent this in a typedef enum, (2) where the state variable should live (in my Game struct or global), (3) what a clean transition looks like. Don't write the implementation. I want to understand the design first.</div>
               </div>
               <div class="prompt-item">
                 <div class="prompt-label">Review code your partner wrote</div>
@@ -262,7 +262,7 @@
               </div>
               <div class="prompt-item">
                 <div class="prompt-label">Debug a system that's not behaving right</div>
-                <div class="prompt-text">My C game system has a bug. Context: [paste relevant structs and functions]. Expected behaviour: [describe]. Actual behaviour: [describe]. I've already checked: [what you've tried]. Walk me through your reasoning about what could cause this — don't just give me the fix, I want to understand why it's happening.</div>
+                <div class="prompt-text">My C game system has a bug. Context: [paste relevant structs and functions]. Expected behaviour: [describe]. Actual behaviour: [describe]. I've already checked: [what you've tried]. Walk me through your reasoning about what could cause this. Don't just give me the fix, I want to understand why it's happening.</div>
               </div>
             </div>
 
@@ -271,7 +271,7 @@
               <div class="stack gap-10 fs-11">
                 <div class="kv kv--80">
                   <div class="t-yellow fw-500">Phase 1</div>
-                  <div class="t-muted2">Explain this to me. What does this error mean? You're learning to read code — AI is a tutor.</div>
+                  <div class="t-muted2">Explain this to me. What does this error mean? You're learning to read code. AI is a tutor.</div>
                 </div>
                 <div class="kv kv--80">
                   <div class="t-yellow fw-500">Phase 2</div>

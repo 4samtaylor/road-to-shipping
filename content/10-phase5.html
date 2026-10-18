@@ -186,10 +186,10 @@
             <div class="prose prose--sm t-muted2 mb-14">Write these before you open the editor. Each line is something you can test: run the program and answer yes or no. It is the <span class="cmd">It should:</span> list from the Phase 07 "implement this" prompt, so writing it for yourself now is practice for writing it for Claude later.</div>
             <div class="spec">
               <div class="spec-item">
-                <h4><span>win32_window.c</span> — it should:</h4>
+                <h4><span>win32_window.c</span>: it should</h4>
                 <ul>
                   <li>open a window with your game's name in the title bar, and quit completely when you click the X (nothing left running in Task Manager)</li>
-                  <li>draw a filled rectangle that the arrow keys move — and that can't leave the window</li>
+                  <li>draw a filled rectangle that the arrow keys move, and that can't leave the window</li>
                   <li>print the frame time to the console once a second, holding about 60 fps without pinning a CPU core</li>
                 </ul>
               </div>
@@ -244,7 +244,7 @@
               </div>
               <div class="prompt-item">
                 <div class="prompt-label">Add one specific thing without touching the rest</div>
-                <div class="prompt-text">I have a working Win32 window in C with a message loop. I want to add WASD movement alongside the existing arrow key controls. Show me ONLY the 4 lines to add inside the WM_KEYDOWN case — don't rewrite my whole file, don't add new functions, don't change the structure.</div>
+                <div class="prompt-text">I have a working Win32 window in C with a message loop. I want to add WASD movement alongside the existing arrow key controls. Show me ONLY the 4 lines to add inside the WM_KEYDOWN case, don't rewrite my whole file, don't add new functions, don't change the structure.</div>
               </div>
               <div class="prompt-item">
                 <div class="prompt-label">Add a frame timer, surgical insertion</div>
