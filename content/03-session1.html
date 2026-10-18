@@ -29,7 +29,7 @@
     <span class="c-kw">return</span> <span class="c-var">x</span>;  <span class="c-cm">// WARNING: float → int conversion, decimal gets chopped</span>
 }
 
-<span class="c-type">int</span> <span class="c-fn">main</span>() {
+<span class="c-type">int</span> <span class="c-fn">main</span>(<span class="c-type">void</span>) {
     <span class="c-fn">printf</span>(<span class="c-str">"Hello, Sam!\nHow old are you?\n"</span>);
     <span class="c-fn">printf</span>(<span class="c-str">"I am %d years old\n"</span>, <span class="c-fn">var</span>(<span class="c-num">1.8f</span>));   <span class="c-cm">// prints 1, not 1.8</span>
     <span class="c-fn">printf</span>(<span class="c-str">"Lets\r party up!\n"</span>);               <span class="c-cm">// \r caused the "Lets" to disappear</span>
