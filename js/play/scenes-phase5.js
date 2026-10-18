@@ -602,7 +602,7 @@
         c.save(); c.translate(76, 18); c.scale(k, k); txt(c, String(V.gx), 0, 0, { size: 12, w: 700, col: C.purple, align: 'left' }); c.restore(); }
       if (V.msg) { var mk = 1 + .15 * (V.msgPop || 0); env(c, C, V.msg, '', 356, 21, .8 * mk, 1); txt(c, 'now handling', 292, 21, { size: 8, col: C.muted, align: 'right' }); }
       /* left panel: the window */
-      txt(c, 'THE WINDOW', PL.x, 46, { size: 8, w: 700, col: C.muted2, align: 'left' }); txt(c, '(what the player sees)', PL.x + 66, 46, { size: 8, col: C.muted, align: 'left' });
+      txt(c, 'THE WINDOW', PL.x, 40, { size: 8, w: 700, col: C.muted2, align: 'left' }); txt(c, '(what the player sees)', PL.x + 66, 40, { size: 8, col: C.muted, align: 'left' });
       winFrame(c, C, PL.x, PL.y - 2, PL.w, PL.h + 2, 'My First Window', {});
       var cx = PL.x + 2, cy = PL.y + 16, cw = PL.w - 4, ch = PL.h - 18;
       c.save(); c.beginPath(); c.rect(cx, cy, cw, ch); c.clip();
@@ -616,7 +616,7 @@
         c.moveTo(cx + 5, cy + 3); c.lineTo(cx + 5, cy + ch - 3); c.moveTo(cx + 2, cy + ch - 8); c.lineTo(cx + 5, cy + ch - 3); c.lineTo(cx + 8, cy + ch - 8); c.stroke();
         txt(c, 'w', cx + cw / 2, cy + 14, { size: 9, w: 700, col: C.orange }); txt(c, 'h', cx + 14, cy + ch / 2, { size: 9, w: 700, col: C.orange }); c.restore(); }
       /* right panel: the back card */
-      txt(c, 'BACK CARD', PR.x, 46, { size: 8, w: 700, col: C.muted2, align: 'left' }); txt(c, '(off screen, hidden)', PR.x + 58, 46, { size: 8, col: C.muted, align: 'left' });
+      txt(c, 'BACK CARD', PR.x, 40, { size: 8, w: 700, col: C.muted2, align: 'left' }); txt(c, '(off screen, hidden)', PR.x + 58, 40, { size: 8, col: C.muted, align: 'left' });
       var card = V.card, cardA = 1;
       if (card === 'none') {
         if (V.dropP != null && V.dropP > 0 && V.dropP < 1 && V.dropW === 'dc') { cardA = 1 - V.dropP; }

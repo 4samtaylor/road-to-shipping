@@ -110,8 +110,7 @@
      {
       "a": "say",
       "p": 0,
-      "t": "Dev folder",
-      "x": 250
+      "t": "Dev folder"
      }
     ]
    },
@@ -187,8 +186,7 @@
      {
       "a": "say",
       "p": 0,
-      "t": "start of session",
-      "x": 250
+      "t": "start of session"
      }
     ]
    },
@@ -218,7 +216,6 @@
       "a": "say",
       "p": 0,
       "t": "Already up to date.",
-      "x": 250,
       "at": 0,
       "len": 0.9
      }
@@ -272,8 +269,7 @@
      {
       "a": "say",
       "p": 0,
-      "t": "clean",
-      "x": 250
+      "t": "clean"
      }
     ]
    }
@@ -1031,7 +1027,6 @@
       "a": "say",
       "p": 1,
       "t": "Create pull request",
-      "x": 270,
       "at": 0.1,
       "len": 0.8
      }
@@ -1140,8 +1135,7 @@
      {
       "a": "say",
       "p": 0,
-      "t": "flag gone, work kept",
-      "x": 270,
+      "t": "flag removed",
       "at": 0.2,
       "len": 0.8
      }

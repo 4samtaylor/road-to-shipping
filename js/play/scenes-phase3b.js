@@ -229,7 +229,7 @@ function popScale(k) { return 1 + .22 * Math.sin(Math.PI * clamp(k)); }
         if (it.kind === 'group') {
           rrect(c, it.x, it.y, it.w, it.h, 5); c.fillStyle = rgba(col, .07 + .2 * fk); c.fill(); c.strokeStyle = rgba(col, .75); c.lineWidth = 1.5; c.stroke();
           txt(c, it.type + ' ' + it.name, it.x + 8, it.y + 10, { size: 9.5, w: 700, col, align: 'left' });
-          if (it.addr) txt(c, '@' + it.addr, it.x + it.w - 7, it.y + 10, { size: 8.5, col: C.muted, align: 'right' });
+          if (it.addr && it.w >= 150) txt(c, '@' + it.addr, it.x + it.w - 7, it.y + 10, { size: 8.5, col: C.muted, align: 'right' });
         } else {
           rrect(c, it.x, it.y, it.w, it.h, 4); c.fillStyle = rgba(col, .14 + .34 * fk); c.fill(); c.strokeStyle = rgba(fk > 0 ? C.yellow : col, fk > 0 ? .5 + .5 * fk : .9); c.lineWidth = 1.5 + fk; c.stroke();
           const small = it.h < 50;
@@ -348,7 +348,7 @@ function popScale(k) { return 1 + .22 * Math.sin(Math.PI * clamp(k)); }
 (function () {
   const CODE = [[7, 'void damage(Player* p, int amount) {'], [8, '  p->health = p->health - amount;'], [9, '}'], [10, ''], [11, 'int main() {'], [12, '  Player hero;'], [13, '  hero.health = 100;'],
     [14, '  damage(&hero, 30);'], [15, '  damage(&hero, 30);'], [16, '  printf("health %d\\n", hero.health);'], [17, '  return 0;']];
-  const PX = 6, PY = 24, PW = 232, PH = 150, RH = 13.2, TOP = PY + 8;
+  const PX = 6, PY = 24, PW = 232, PH = 158, RH = 13.2, TOP = PY + 9;
   const lineY = L => TOP + (L - 7) * RH + RH / 2;
   const KEYS = [['F9', 'breakpoint'], ['F5', 'run / go'], ['F10', 'step over'], ['F11', 'step into']];
   const STAT = { idle: 'not running', paused: 'PAUSED', running: 'RUNNING', exited: 'EXITED' };
@@ -406,7 +406,7 @@ function popScale(k) { return 1 + .22 * Math.sin(Math.PI * clamp(k)); }
         const v = r[1]; c.save(); c.translate(RX + RW - 8, y); const ps = hot > 0 ? 1 + .12 * hot : 1; c.scale(ps, ps); txt(c, v, 0, 0, { size: 9, w: 700, col: hot > 0 ? C.yellow : C.accent, align: 'right', al }); c.restore();
       });
       // call stack
-      rrect(c, RX, 128, RW, 46, 4); c.fillStyle = rgba(C.border, .35); c.fill(); c.strokeStyle = C.border2; c.lineWidth = 1; c.stroke();
+      rrect(c, RX, 128, RW, 54, 4); c.fillStyle = rgba(C.border, .35); c.fill(); c.strokeStyle = C.border2; c.lineWidth = 1; c.stroke();
       txt(c, 'Call Stack', RX + 8, 138, { size: 9, w: 700, col: C.blue, align: 'left' });
       V.stack.forEach((nm, i) => {
         const y = 152 + i * 14, on = V.sel === i;
@@ -416,9 +416,9 @@ function popScale(k) { return 1 + .22 * Math.sin(Math.PI * clamp(k)); }
       if (!V.stack.length) txt(c, '-', RX + RW / 2, 156, { size: 9, col: C.muted });
       // keys
       KEYS.forEach(([k, d], i) => {
-        const x = 6 + i * 98.5, y = 184, on = V.key === k, kk = on ? V.keyK || 0 : 0;
-        c.save(); c.translate(x + 45, y + 29); const s = 1 + .08 * kk; c.scale(s, s);
-        rrect(c, -45, -26, 90, 54, 5); c.fillStyle = on ? rgba(C.yellow, .12 + .2 * kk) : rgba(C.border, .3); c.fill(); c.strokeStyle = on ? C.yellow : C.border2; c.lineWidth = on ? 2 : 1; c.stroke();
+        const x = 6 + i * 98.5, y = 188, on = V.key === k, kk = on ? V.keyK || 0 : 0;
+        c.save(); c.translate(x + 45, y + 27); const s = 1 + .08 * kk; c.scale(s, s);
+        rrect(c, -45, -25, 90, 52, 5); c.fillStyle = on ? rgba(C.yellow, .12 + .2 * kk) : rgba(C.border, .3); c.fill(); c.strokeStyle = on ? C.yellow : C.border2; c.lineWidth = on ? 2 : 1; c.stroke();
         rrect(c, -20, -19, 40, 26, 4); c.fillStyle = on ? C.yellow : C.surface2; c.fill(); c.strokeStyle = on ? C.yellow : C.muted2; c.lineWidth = 1.5; c.stroke();
         txt(c, k, 0, -5.5, { size: 13, w: 800, col: on ? C.ink : C.text });
         txt(c, d, 0, 17, { size: 9, w: 600, col: on ? C.yellow : C.muted2 }); c.restore();
@@ -525,8 +525,8 @@ function popScale(k) { return 1 + .22 * Math.sin(Math.PI * clamp(k)); }
    p3b-link  (compile to .obj, then the linker matches names)
    ===================================================================== */
 (function () {
-  const OBJ = { main: { x: 70, y: 98, w: 120 }, player: { x: 230, y: 98, w: 120 } }, OH = 62;
-  const SRC = { main: { x: 70, y: 30 }, player: { x: 230, y: 30 } }, SW = 120, SH = 34;
+  const OBJ = { main: { x: 62, y: 98, w: 128 }, player: { x: 222, y: 98, w: 128 } }, OH = 62;
+  const SRC = { main: { x: 62, y: 30 }, player: { x: 222, y: 30 } }, SW = 128, SH = 34;
   RTSPlay.scene('p3b-link', {
     W, H,
     init: () => ({ cmd: '', inb: { main: false, player: false }, obj: { main: 0, player: 0 }, err1: 0, err2: 0, linked: 0 }),
@@ -555,14 +555,14 @@ function popScale(k) { return 1 + .22 * Math.sin(Math.PI * clamp(k)); }
       // command strip
       rrect(c, 6, 4, 388, 20, 4); c.fillStyle = rgba(C.border, .45); c.fill(); c.strokeStyle = C.border2; c.lineWidth = 1; c.stroke();
       txt(c, V.cmd ? '> ' + V.cmd : '> ', 14, 14.5, { size: 10, w: 600, col: C.text, align: 'left', al: V.cmd ? 1 : .5 });
-      const dock = V.linked * 28;
+      const dock = V.linked * 24;
       // sources
       ['main', 'player'].forEach(f => {
         const s = SRC[f], on = V.inb[f], col = f === 'main' ? C.accent : C.blue, isC = V.cmpF === f && V.cmpK > 0 && V.cmpK < 1;
         c.save(); c.globalAlpha *= on ? 1 : .55; rrect(c, s.x, s.y, SW, SH, 4); c.fillStyle = rgba(col, on ? .12 : .04); c.fill();
         if (!on) c.setLineDash([4, 3]); c.strokeStyle = on ? col : C.muted; c.lineWidth = 1.5; c.stroke(); c.setLineDash([]);
         txt(c, f + '.c', s.x + 8, s.y + 10, { size: 10.5, w: 700, col: on ? col : C.muted2, align: 'left' });
-        txt(c, on ? (f === 'main' ? 'calls player_heal()' : 'has player_heal()') : 'not on the command line', s.x + 8, s.y + 24, { size: 8.5, col: on ? C.muted2 : C.orange, align: 'left' });
+        txt(c, on ? (f === 'main' ? 'calls player_heal()' : 'has player_heal()') : 'not in this build', s.x + 8, s.y + 24, { size: 8.5, col: on ? C.muted2 : C.orange, align: 'left' });
         c.restore();
         // compile arrow
         const k = V.obj[f] > 0 ? 1 : 0, cx = s.x + SW / 2;
@@ -578,7 +578,7 @@ function popScale(k) { return 1 + .22 * Math.sin(Math.PI * clamp(k)); }
         txt(c, V.inb.player ? 'player.obj' : 'player.obj ???', p.x + p.w / 2, p.y + OH / 2, { size: 10, col: C.muted, w: 600 }); c.restore(); }
       const drawObj = (o, x, y, title, has, needs, col, al, plug) => {
         c.save(); c.globalAlpha *= clamp(al); c.translate(0, (1 - clamp(al)) * -8);
-        rrect(c, x, y, 120, OH, 5); c.fillStyle = rgba(col, .14); c.fill(); c.strokeStyle = col; c.lineWidth = 1.75; c.stroke();
+        rrect(c, x, y, 128, OH, 5); c.fillStyle = rgba(col, .14); c.fill(); c.strokeStyle = col; c.lineWidth = 1.75; c.stroke();
         txt(c, title, x + 8, y + 11, { size: 10.5, w: 700, col, align: 'left' });
         txt(c, 'has:   ' + has, x + 8, y + 27, { size: 8.5, col: C.text, align: 'left' });
         if (needs) txt(c, 'needs: ' + needs, x + 8, y + 44, { size: 8.5, w: 700, col: V.linked > .5 ? C.accent : C.orange, align: 'left' });
@@ -592,7 +592,7 @@ function popScale(k) { return 1 + .22 * Math.sin(Math.PI * clamp(k)); }
         if (open && !po && (V.err1 > 0)) { const pk = rm ? 1 : .5 + .5 * Math.sin(T / 160); c.beginPath(); c.arc(m.x + m.w, socketY, 11 + 3 * pk, 0, 7); c.strokeStyle = rgba(C.orange, .5 * pk + .2); c.lineWidth = 2; c.stroke(); }
         c.restore(); }
       if (po > 0) { c.save(); c.globalAlpha *= clamp(po); c.beginPath(); c.arc(py, socketY, 7, 0, Math.PI * 2); c.fillStyle = rgba(C.blue, .5); c.fill(); c.strokeStyle = C.blue; c.lineWidth = 2; c.stroke();
-        txt(c, 'gives _player_heal', py + 60, p.y + OH + 10, { size: 8.5, col: C.blue }); c.restore(); }
+        c.restore(); }
       if (V.linkFlash > 0 && po > 0) { c.save(); c.beginPath(); c.arc(m.x + m.w, socketY, 10 + 12 * V.linkFlash, 0, 7); c.strokeStyle = rgba(C.accent, 1 - V.linkFlash); c.lineWidth = 3; c.stroke(); c.restore(); }
       // probe (the linker looking for the name)
       if (V.scanK > 0 && V.scanK < 1) { const k = EZ.io(V.scanK), x = lerp(m.x + m.w + 6, p.x + 40, Math.min(1, k * 1.2)), y = socketY + 4 * Math.sin(k * 14);
@@ -603,7 +603,7 @@ function popScale(k) { return 1 + .22 * Math.sin(Math.PI * clamp(k)); }
       if (mo > 0 || po > 0) { c.save(); c.strokeStyle = ok > .5 ? C.accent : C.muted; c.lineWidth = 1.5; c.setLineDash(ok > .5 ? [] : [3, 3]);
         const e1 = [ex + 36, ey - 2];
         if (mo > 0) { c.beginPath(); c.moveTo(m.x + 40, m.y + OH + 2); c.lineTo(e1[0], e1[1]); c.stroke(); }
-        if (po > 0) { c.beginPath(); c.moveTo(py + 80, p.y + OH + 18); c.lineTo(ex + 84, ey - 2); c.stroke(); }
+        if (po > 0) { c.beginPath(); c.moveTo(py + 90, p.y + OH + 2); c.lineTo(ex + 84, ey - 2); c.stroke(); }
         c.setLineDash([]); c.restore();
         txt(c, 'link', 110, 172, { size: 8.5, col: C.muted, align: 'right' }); }
       c.save(); if (ok < .5) c.setLineDash([5, 4]);
@@ -612,7 +612,7 @@ function popScale(k) { return 1 + .22 * Math.sin(Math.PI * clamp(k)); }
       if (ok > .5) { const k = EZ.back(seg(ok, .5, 1)); c.save(); c.translate(ex + ew - 10, ey + 8); c.scale(k, k); c.beginPath(); c.arc(0, 0, 9, 0, 7); c.fillStyle = C.accent; c.fill(); c.strokeStyle = C.ink; c.lineWidth = 2.5; c.beginPath(); c.moveTo(-4, 0); c.lineTo(-1, 3.5); c.lineTo(4.5, -3.5); c.stroke(); c.restore(); }
       if (V.err2 > 0) { c.save(); c.globalAlpha *= clamp(V.err2); c.strokeStyle = C.orange; c.lineWidth = 3; c.beginPath(); c.moveTo(ex + 20, ey + 10); c.lineTo(ex + ew - 20, ey + eh - 10); c.moveTo(ex + ew - 20, ey + 10); c.lineTo(ex + 20, ey + eh - 10); c.stroke(); c.restore();
         txt(c, 'LNK1120: 1 unresolved external', W / 2, 242, { size: 9, w: 700, col: C.orange, al: clamp(V.err2) }); }
-      if (V.err1 > 0) { const k = Math.max(V.err1, .01); c.save(); c.translate(280, 170); c.rotate(-.08); c.scale(k, k); c.globalAlpha *= clamp(k);
+      if (V.err1 > 0) { const k = Math.max(V.err1, .01); c.save(); c.translate(314, 178); c.rotate(-.08); c.scale(k, k); c.globalAlpha *= clamp(k);
         rrect(c, -54, -22, 108, 44, 5); c.fillStyle = C.surface2; c.fill(); c.strokeStyle = C.orange; c.lineWidth = 2.5; c.stroke();
         txt(c, 'LNK2019', 0, -8, { size: 14, w: 800, col: C.orange }); txt(c, 'no body for', 0, 6, { size: 8.5, col: C.text }); txt(c, '_player_heal', 0, 16, { size: 8.5, w: 700, col: C.text }); c.restore(); }
     }

@@ -421,9 +421,9 @@
         for (var k = 0; k < 6; k++) { var an = -Math.PI + k * Math.PI / 5, d1 = 4 + f * 4, d2 = 8 + f * 12; c.beginPath(); c.moveTo(cx + Math.cos(an) * d1, gy - 4 + Math.sin(an) * d1); c.lineTo(cx + Math.cos(an) * d2, gy - 4 + Math.sin(an) * d2); c.stroke(); }
         c.restore();
       }
-      txt(c, b.msg || 'blocked', r.x + r.w / 2, gy - 38, { size: 8.5, w: 700, col: C.orange, al: seg(b.t, .35, .5) * (1 - seg(b.t, .85, 1)) });
+      txt(c, b.msg || 'blocked', r.x - 7, r.y + r.h / 2, { size: 8.5, w: 700, col: C.orange, align: 'right', al: seg(b.t, .35, .5) * (1 - seg(b.t, .85, 1)) });
     } else {
-      txt(c, b.msg || 'still tracked', r.x + r.w / 2, gy + 18, { size: 8.5, w: 700, col: C.yellow, al: seg(b.t, .3, .5) * (1 - seg(b.t, .85, 1)) });
+      txt(c, b.msg || 'still tracked', r.x + r.w / 2, r.y - 9, { size: 8.5, w: 700, col: C.yellow, al: seg(b.t, .3, .5) * (1 - seg(b.t, .85, 1)) });
     }
   }
 
@@ -443,7 +443,7 @@
 
   function transient(c, V, T, C, rm, L) {
     var s = V.say; if (s && s.lp > 0 && s.lp < 1) {
-      var y = L.y[s.p] + L.h[s.p] * .68 - 10 * EZ.out(s.lp), x = s.x == null ? 270 : s.x, w = s.t.length * 5.4 + 14, al = seg(s.lp, 0, .15) * (1 - seg(s.lp, .8, 1));
+      var y = L.y[s.p] + L.h[s.p] * .68 - 10 * EZ.out(s.lp), x = s.x == null ? 332 : s.x, w = s.t.length * 5.4 + 14, al = seg(s.lp, 0, .15) * (1 - seg(s.lp, .8, 1));
       c.save(); c.globalAlpha = al; rr(c, x - w / 2, y - 8, w, 16, 5); c.fillStyle = rgba(C.bg, .92); c.fill(); c.strokeStyle = C.accent; c.lineWidth = 1; c.stroke();
       txt(c, s.t, x, y + .5, { size: 9, w: 700, col: C.accent }); c.restore();
     }

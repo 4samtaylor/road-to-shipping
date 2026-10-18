@@ -265,7 +265,7 @@
         switch (a.a) {
           case 'read': S.read = a.row; break;
           case 'wait': S.wait = a.row; break;
-          case 'halt': S.err = a.row; break;
+          case 'halt': S.err = a.row; S.wait = 0; break;
           case 'blame': S.blame = a.row; break;
           case 'msg': S.msg = true; break;
           case 'fix': S.fixed = true; S.wait = 0; S.err = 0; S.blame = 0; S.msg = false; S.read = 8; break;
@@ -275,7 +275,7 @@
         switch (a.a) {
           case 'read': { var e = EZ.io(lp); V.bandY = lerp(S.read ? rowY(S.read) : rowY(a.row), rowY(a.row), e); V.read = a.row; V.readLp = lp; break; }
           case 'wait': V.wait = a.row; V.waitK = EZ.back(lp); break;
-          case 'halt': V.err = a.row; V.errK = EZ.back(lp); break;
+          case 'halt': V.err = a.row; V.errK = EZ.back(lp); if (lp > .3) V.wait = 0; break;
           case 'blame': V.blame = a.row; V.blameK = lp; V.wait = 0; break;
           case 'msg': V.msg = true; V.msgK = EZ.out(lp); break;
           case 'fix': { V.fixK = lp; V.fixed = lp >= .35; V.wait = lp >= .35 ? 0 : S.wait; V.err = lp >= .35 ? 0 : S.err; V.blame = lp >= .35 ? 0 : S.blame; V.msg = lp < .35 ? S.msg : true; V.read = lp >= .5 ? 8 : S.read; V.bandY = lerp(S.read ? rowY(S.read) : rowY(1), rowY(7), EZ.io(lp)); V.okMsg = lp >= .5; V.msgK = EZ.out(seg(lp, .5, 1)); break; }

@@ -448,7 +448,7 @@
         for (var i = 0; i < 5; i++) {
           var x = 222 + i * 34, cur = V.cur === i;
           rrect(c, x, 142, 30, 26, 3); c.fillStyle = cur ? rgba(C.yellow, .25) : rgba(C.border2, .5); c.fill(); c.lineWidth = cur ? 2 : 1; c.strokeStyle = cur ? C.yellow : C.border2; c.stroke();
-          txt(c, ks[i], x + 15, 156, { size: 15, w: 700, col: ks[i] === 'd' ? C.yellow : C.muted2 });
+          txt(c, ks[i], x + 15, ks[i] === '.' ? 153 : 156, { size: ks[i] === '.' ? 24 : 15, w: 800, col: ks[i] === 'd' ? C.yellow : C.muted2 });
           txt(c, String(i), x + 15, 177, { size: 7.5, col: C.muted });
         }
       }
@@ -580,7 +580,7 @@
           txt(c, 'frame ' + i, x + 19, 12, { size: 7, col: cur ? C.text : C.muted });
           c.save(); c.translate(x + 19, 31); c.scale(pk, pk);
           rrect(c, -19, -12, 38, 24, 3); c.fillStyle = cur ? rgba(C.yellow, .25) : rgba(C.border2, .5); c.fill(); c.lineWidth = cur ? 2 : 1; c.strokeStyle = cur ? C.yellow : C.border2; c.stroke();
-          txt(c, ks[i], 0, 1, { size: 15, w: 700, col: ks[i] === '.' ? C.muted : C.text }); c.restore();
+          txt(c, ks[i], 0, ks[i] === '.' ? -3 : 1, { size: ks[i] === '.' ? 24 : 15, w: 800, col: ks[i] === '.' ? C.muted2 : C.text }); c.restore();
         }
       }
       /* arrows */
@@ -636,7 +636,7 @@
         case 'write': V.f = Object.assign({}, V.f); V.f[a.name] = lp >= .45 ? a.v : S.f[a.name]; V.hot = { n: a.name, k: pulse(seg(lp, .2, 1)), m: 'write' }; break;
         case 'read': V.hot = { n: a.names, k: pulse(lp), m: 'read' }; break;
         case 'pass': V.pass = true; V.passK = pulse(seg(lp, 0, .8)); break;
-        case 'ret': V.retK = 1 - seg(lp, 0, .7); V.call = lp < .7 ? S.call : null; break;
+        case 'ret': V.retK = 1 - seg(lp, 0, .7); V.call = lp < .7 ? S.call : null; if (lp >= .7) V.pass = false; break;
       }
     },
     draw: function (c, V, T, C, rm) {
@@ -679,12 +679,12 @@
         var ex = lerp(sx, tx, k2), ey = lerp(sy, ty, k2);
         c.save(); c.globalAlpha = rk; c.fillStyle = col2; c.beginPath(); c.arc(sx, sy, 3.5, 0, 7); c.fill(); arrow(c, col2, sx, sy, ex, ey, 2.2);
         txt(c, 'r', lerp(sx, tx, .45) + (V.call === 'update' ? -9 : 9), lerp(sy, ty, .45), { size: 10, w: 800, col: col2 });
-        if (V.pass) { var pk = 1 + .2 * (V.passK || 0); c.translate(lerp(sx, tx, .6), lerp(sy, ty, .6)); c.scale(pk, pk); c.translate(V.call === 'update' ? -40 : 40, 4); rrect(c, -44, -9, 88, 18, 3); c.fillStyle = rgba(C.blue, .2); c.fill(); c.lineWidth = 1; c.strokeStyle = C.blue; c.stroke(); txt(c, 'const = look only', 0, 1, { size: 8.5, w: 700, col: C.text }); }
+        if (V.pass) { var pk = 1 + .2 * (V.passK || 0); c.translate(334, 172); c.scale(pk, pk); rrect(c, -50, -9, 100, 18, 3); c.fillStyle = rgba(C.blue, .2); c.fill(); c.lineWidth = 1; c.strokeStyle = C.blue; c.stroke(); txt(c, 'const = look only', 0, 1, { size: 8.5, w: 700, col: C.text }); }
         c.restore();
       }
       if (V.pass) {
         /* padlock on the card */
-        var lx = 258, ly = 126; c.save(); c.translate(lx, ly); c.strokeStyle = C.muted2; c.lineWidth = 2.5; c.beginPath(); c.arc(0, -3, 5, PI, 0); c.stroke(); c.fillStyle = C.yellow; c.fillRect(-8, -3, 16, 12); c.fillStyle = C.ink; c.fillRect(-1.5, 1, 3, 4); c.restore();
+        var lx = 262, ly = 134; c.save(); c.translate(lx, ly); c.strokeStyle = C.muted2; c.lineWidth = 2.5; c.beginPath(); c.arc(0, -3, 5, PI, 0); c.stroke(); c.fillStyle = C.yellow; c.fillRect(-8, -3, 16, 12); c.fillStyle = C.ink; c.fillRect(-1.5, 1, 3, 4); c.restore();
       }
     }
   });
@@ -713,7 +713,7 @@
         case 'paste': V.rowsF = 1 + 5 * EZ.lin(seg(lp, .1, .9)); break;
         case 'mark': V.kinds = Object.assign({}, V.kinds); V.kinds[a.row] = lp >= .2 ? a.kind : S.kinds[a.row]; V.focus = a.row; V.fk = pulse(seg(lp, 0, 1)); break;
         case 'obj': V.objK = EZ.back(seg(lp, .2, 1)); V.obj = lp > 0; V.focus = -1; break;
-        case 'link': V.linkK = lp; V.link = lp > 0 ? 1 : 0; break;
+        case 'link': V.linkK = lp; V.link = lp > 0 ? 1 : 0; V.focus = 4; V.fk = pulse(lp); break;
         case 'fix': V.fixK = lp; V.fixed = lp >= .4; V.link = lp >= .7 ? 2 : S.link; V.okK = EZ.back(seg(lp, .7, 1)); if (lp >= .4) V.kinds = Object.assign({}, V.kinds, { 4: 'ok' }); break;
       }
     },
@@ -725,7 +725,7 @@
         win(c, C, fx, 6, 182, 124, titles[fi]);
         for (var r = 0; r < LROWS.length; r++) {
           if (r + 1 > rowsF + .001 && r > 0) continue;
-          var ry = 30 + r * 14.5, al = r === 0 ? 1 : clamp(rowsF - r), kind = V.kinds[r], foc = V.focus === r;
+          var ry = 28 + r * 13.5, al = r === 0 ? 1 : clamp(rowsF - r), kind = V.kinds[r], foc = V.focus === r;
           var txtv = LROWS[r].t, col = r === 0 ? C.muted2 : C.text;
           if (r === 4 && fixed) txtv = 'extern int best_score;';
           if (kind === 'bad') col = C.orange; else if (kind === 'ok') col = C.accent; else if (kind === 'shield') col = C.blue;
@@ -735,9 +735,8 @@
         }
         if (fi === 1 && fixed) {
           var ak = clamp(V.fixK == null ? 1 : seg(V.fixK, .3, .7));
-          c.fillStyle = rgba(C.accent, .16 * ak); c.fillRect(fx + 4, 30 + 6.6 * 14.5 - 7, 174, 14);
-          txt(c, 'int best_score = 0;', fx + 20, 30 + 6.6 * 14.5 + .5, { size: 7.8, w: 700, col: C.accent, align: 'left', al: ak });
-          txt(c, 'the one definition', fx + 176, 30 + 6.6 * 14.5 + 12, { size: 7, col: C.accent, align: 'right', al: ak });
+          c.fillStyle = rgba(C.accent, .16 * ak); c.fillRect(fx + 4, 28 + 6.4 * 13.5 - 7, 174, 14);
+          txt(c, 'int best_score = 0;', fx + 20, 28 + 6.4 * 13.5 + .5, { size: 7.8, w: 700, col: C.accent, align: 'left', al: ak });
         }
       });
       /* arrows + objects */
@@ -759,13 +758,13 @@
       rrect(c, 10, ly, 380, 38, 4); c.fillStyle = lk === 1 ? rgba(C.orange, .12) : lk === 2 ? rgba(C.accent, .12) : C.surface2; c.fill(); c.lineWidth = 1.8; c.strokeStyle = lk === 1 ? C.orange : lk === 2 ? C.accent : C.border2; c.stroke();
       txt(c, 'linker', 20, ly + 11, { size: 8.5, col: C.muted2, align: 'left' });
       if (lk === 0) txt(c, 'waits for every .obj, then joins them', 200, ly + 24, { size: 9, col: C.muted });
-      if (lk === 1) { var k = V.linkK == null ? 1 : EZ.back(seg(V.linkK, .3, .7)); c.save(); c.translate(200, ly + 22); c.scale(k, k);
+      if (lk === 1) { var k = V.linkK == null ? 1 : EZ.back(seg(V.linkK, .5, .85)); c.save(); c.translate(200, ly + 22); c.scale(k, k);
         txt(c, 'two best_score found: LNK2005', 0, -3, { size: 11, w: 800, col: C.orange }); txt(c, 'it cannot pick one, so it stops (LNK1169)', 0, 11, { size: 8.5, col: C.text }); c.restore(); }
       if (lk === 2) { var k2 = V.okK == null ? 1 : V.okK; c.save(); c.translate(200, ly + 22); c.scale(clamp(k2, 0, 1.2), clamp(k2, 0, 1.2));
         txt(c, 'one definition: linked', 0, -3, { size: 11, w: 800, col: C.accent }); txt(c, 'every other file just points at it', 0, 11, { size: 8.5, col: C.text }); c.restore(); }
-      if (lk === 1 && ok > 0 && V.linkK > 0 && V.linkK < .6) {
+      if (lk === 1 && ok > 0 && V.linkK > 0 && V.linkK < .55) {
         var t = EZ.io(seg(V.linkK, 0, .5));
-        [[101, 176], [299, 176]].forEach(function (p, i) { c.fillStyle = C.orange; c.beginPath(); c.arc(lerp(p[0], 200, t), lerp(p[1], 222, t), 5, 0, 7); c.fill(); });
+        [[101, 176], [299, 176]].forEach(function (p, i) { c.fillStyle = C.orange; c.beginPath(); c.arc(lerp(p[0], 200, t), lerp(p[1], 214, t), 5, 0, 7); c.fill(); });
       }
     }
   });

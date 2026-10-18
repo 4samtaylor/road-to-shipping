@@ -684,5 +684,294 @@
     "outAt": 0.4
    }
   ]
+ },
+ "git": {
+  "scene": "git-graph",
+  "steps": [
+   {
+    "line": 1,
+    "ms": 1800,
+    "note": "Three places hold the same first snapshot: your PC, GitHub and Person A's PC. git status looks at your folder for changes.",
+    "out": "> git status\nOn branch main\nYour branch is up to date with 'origin/main'.\n\n",
+    "outAt": 0.4,
+    "do": [
+     {
+      "a": "show",
+      "vis": [
+       1,
+       1,
+       1
+      ],
+      "names": [
+       "Your PC",
+       "GitHub",
+       "Person A's PC"
+      ],
+      "at": 0,
+      "len": 0.1
+     },
+     {
+      "a": "world",
+      "p": 0,
+      "cs": [
+       [
+        "c1",
+        0,
+        0,
+        [],
+        {
+         "hash": "3a9f0d1"
+        }
+       ]
+      ],
+      "br": [
+       [
+        "main",
+        "c1"
+       ],
+       [
+        "origin/main",
+        "c1",
+        1
+       ]
+      ],
+      "head": "main",
+      "files": [],
+      "at": 0,
+      "len": 0.3
+     },
+     {
+      "a": "world",
+      "p": 1,
+      "cs": [
+       [
+        "c1",
+        0,
+        0,
+        [],
+        {
+         "hash": "3a9f0d1"
+        }
+       ]
+      ],
+      "br": [
+       [
+        "main",
+        "c1"
+       ]
+      ],
+      "head": "main",
+      "files": [],
+      "at": 0.05,
+      "len": 0.3
+     },
+     {
+      "a": "world",
+      "p": 2,
+      "cs": [
+       [
+        "c1",
+        0,
+        0,
+        [],
+        {
+         "hash": "3a9f0d1"
+        }
+       ]
+      ],
+      "br": [
+       [
+        "main",
+        "c1"
+       ],
+       [
+        "origin/main",
+        "c1",
+        1
+       ]
+      ],
+      "head": "main",
+      "files": [],
+      "at": 0.1,
+      "len": 0.3
+     }
+    ]
+   },
+   {
+    "line": 1,
+    "ms": 1500,
+    "note": "Two new files, not yet in any snapshot. Git lists them as untracked.",
+    "out": "Untracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\tbuild.bat\n\thello_world.c\n\nnothing added to commit but untracked files present (use \"git add\" to track)\n",
+    "outAt": 0.2,
+    "do": [
+     {
+      "a": "files",
+      "p": 0,
+      "list": [
+       [
+        "hello_world.c",
+        "??"
+       ],
+       [
+        "build.bat",
+        "??"
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "line": 2,
+    "ms": 1200,
+    "note": "git add picks files for the next snapshot, like putting photos in an envelope. hello_world.c goes in first.",
+    "out": "> git add hello_world.c build.bat\n",
+    "do": [
+     {
+      "a": "files",
+      "p": 0,
+      "list": [
+       [
+        "hello_world.c",
+        "S"
+       ],
+       [
+        "build.bat",
+        "??"
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "line": 2,
+    "ms": 1100,
+    "note": "Then build.bat. Both are in the envelope. Nothing is saved yet.",
+    "do": [
+     {
+      "a": "files",
+      "p": 0,
+      "list": [
+       [
+        "hello_world.c",
+        "S"
+       ],
+       [
+        "build.bat",
+        "S"
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "line": 3,
+    "ms": 1800,
+    "note": "git commit seals the envelope with a label. The new dot appears on your PC only.",
+    "out": "> git commit -m \"Add hello world and build.bat\"\n[main 40bcc83] Add hello world and build.bat\n 2 files changed, 2 insertions(+)\n create mode 100644 build.bat\n create mode 100644 hello_world.c\n",
+    "outAt": 0.2,
+    "do": [
+     {
+      "a": "files",
+      "p": 0,
+      "list": [],
+      "at": 0,
+      "len": 0.4
+     },
+     {
+      "a": "commit",
+      "p": 0,
+      "id": "c2",
+      "col": 1,
+      "par": [
+       "c1"
+      ],
+      "hash": "40bcc83",
+      "lab": "Add hello world and build.bat",
+      "at": 0.3,
+      "len": 0.7
+     }
+    ]
+   },
+   {
+    "line": 3,
+    "ms": 1500,
+    "note": "GitHub and Person A do not have it. If your laptop died now, this snapshot would be gone.",
+    "do": [
+     {
+      "a": "hl",
+      "p": 0,
+      "id": "c2"
+     },
+     {
+      "a": "say",
+      "p": 1,
+      "t": "no new dot here yet",
+      "at": 0.2,
+      "len": 0.7
+     }
+    ]
+   },
+   {
+    "line": 4,
+    "ms": 2200,
+    "note": "git push posts the snapshot to GitHub. Watch the dot fly up.",
+    "out": "> git push\nTo https://github.com/4samtaylor/game-dev-exercises\n   3a9f0d1..40bcc83  main -> main\n",
+    "outAt": 0.6,
+    "do": [
+     {
+      "a": "fly",
+      "from": 0,
+      "to": 1,
+      "ids": [
+       "c2"
+      ],
+      "mv": [
+       [
+        "main",
+        "c2"
+       ]
+      ],
+      "at": 0,
+      "len": 0.8
+     },
+     {
+      "a": "flag",
+      "p": 0,
+      "n": "origin/main",
+      "h": "c2",
+      "r": 1,
+      "at": 0.85,
+      "len": 0.15
+     }
+    ]
+   },
+   {
+    "line": 4,
+    "ms": 1800,
+    "note": "Now it is backed up on GitHub, and Person A can get it with git pull. The dashed dot is where it will land.",
+    "do": [
+     {
+      "a": "commit",
+      "p": 2,
+      "id": "c2",
+      "col": 1,
+      "par": [
+       "c1"
+      ],
+      "kind": "ghost",
+      "br": false,
+      "at": 0,
+      "len": 0.5
+     },
+     {
+      "a": "say",
+      "p": 2,
+      "t": "can pull it now",
+      "at": 0.3,
+      "len": 0.6
+     }
+    ]
+   }
+  ]
  }
 }
