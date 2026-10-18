@@ -2760,3 +2760,6 @@ body.editing .pg[hidden] { display: block; margin-top: 26px; }
 .lad-seg button.on { background: var(--accent-dim); color: var(--accent); }
 .lad-play-host .rtsp-hd { display: none; }
 @media (max-width: 600px) { .lad-seg button { min-height: 36px; padding: 6px 10px; } }
+
+/* v22: never draw -> <= != as ligature glyphs; beginners type what they see */
+pre, code, .cmd, .lad-code, .code-panel, .code-wrap, kbd { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
