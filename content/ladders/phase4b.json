@@ -1,0 +1,720 @@
+{
+ "_about": "Concept ladder for the Learn stage. One concept per rung. Rung ids are progress keys: never rename. skills are glossary.json ids that move to Practiced when the check is passed. goals maps checkpoint data-ids to the rungs (1-based) that teach them. lang: c programs are compiled and run to verify each check.",
+ "phase": "phase4b",
+ "goals": {
+  "cp-p4b-1": [
+   1,
+   2,
+   5
+  ],
+  "cp-p4b-2": [
+   3,
+   4
+  ],
+  "cp-p4b-3": [
+   5,
+   6
+  ],
+  "cp-p4b-4": [
+   7,
+   8,
+   9
+  ]
+ },
+ "rungs": [
+  {
+   "id": "kbhit-getch",
+   "title": "Input without waiting: _kbhit and _getch",
+   "kick": "_kbhit · _getch · conio.h · for (;;)",
+   "mins": 12,
+   "lang": "c-win",
+   "skills": [
+    "kbhit"
+   ],
+   "builds": "Phase 2: while loops and if. Every program so far used scanf, which stops and waits for Enter.",
+   "why": "A game can’t freeze while you decide what to press. The obstacles have to keep moving either way. <code>_kbhit</code> asks “is a key waiting?” and answers straight away, yes or no. Only then do you take the key with <code>_getch</code>.",
+   "code": "#include <conio.h>\n#include <stdio.h>\n\nint main(void) {\n    int key;\n    int count = 0;\n\n    for (;;) {\n        key = 0;\n        while (_kbhit()) {\n            key = _getch();\n        }\n        if (key == 'q') {\n            break;\n        }\n        count++;\n        if (key != 0) {\n            printf(\"key %c at loop %d\\n\", key, count);\n        }\n    }\n    return 0;\n}",
+   "walk": [
+    [
+     1,
+     "<b>conio.h</b> is a Microsoft header for console input. It isn’t standard C, which is why the names start with an underscore. It won’t compile on Mac or Linux."
+    ],
+    [
+     8,
+     "<b>for (;;)</b> is a loop with no condition: it runs forever until something hits <code>break</code>. Many game loops look like this. The starter uses <code>while (running)</code>, which does the same job with a flag."
+    ],
+    [
+     9,
+     "Start each pass with “no key”. If nothing is typed, key stays 0."
+    ],
+    [
+     10,
+     "<b>_kbhit()</b> returns non-zero if a keystroke is waiting, and zero if not. It <i>never waits</i>. The while keeps going until the buffer is empty, so a held-down key can’t build up a backlog."
+    ],
+    [
+     11,
+     "<b>_getch()</b> takes one waiting key. No Enter needed, and it isn’t echoed to the screen. Keeping only the last one means you react to what’s pressed <i>now</i>."
+    ],
+    [
+     13,
+     "No scanf anywhere. Press q to leave the loop."
+    ],
+    [
+     16,
+     "This runs on every pass whether or not you touched the keyboard. That’s the point: <code>count</code> keeps climbing while you do nothing."
+    ]
+   ],
+   "model": "<b>Mental model:</b> glancing at the letterbox instead of waiting at the door. scanf stands at the door until someone knocks. _kbhit looks, sees post or doesn’t, and carries on either way.",
+   "check": {
+    "q": "You run this and leave the keyboard alone for five seconds. What is the program doing?",
+    "opts": [
+     "Standing still on line 11, waiting for a key, like scanf",
+     "Looping round and round, count climbing, printing nothing",
+     "Printing “key 0 at loop …” over and over",
+     "It has already exited"
+    ],
+    "a": 1,
+    "hint": "When _kbhit says no key is waiting, does the while loop body run? And does the for loop stop?",
+    "why": "_kbhit returns 0 straight away, so the while body is skipped and key stays 0. The if on line 13 is false, count goes up, and the line 17 check is false so nothing prints. The loop just keeps spinning.",
+    "miss": {
+     "0": "That’s what scanf would do. _getch is only called when _kbhit says a key is already there, so it never has to wait.",
+     "2": "Line 17 only prints when key isn’t 0. With no key pressed it stays 0.",
+     "3": "Only q breaks out of the loop. Nothing else ends it."
+    }
+   },
+   "tryit": {
+    "task": "Make the loop also stop when you press Q (capital) as well as q.",
+    "code": "if (key == 'q' ____ key == 'Q') {\n    break;\n}",
+    "answer": "||"
+   },
+   "qa": [
+    [
+     "Why does it use the CPU flat out?",
+     "There’s no pause in the loop, so it runs very many times a second. The next concept, <code>Sleep</code>, fixes that."
+    ],
+    [
+     "Why is key an int, not a char?",
+     "<code>_getch</code> returns an int because values like 224 don’t fit in a signed char. Special keys (arrows, PgDn) arrive as two values: 224 first, then a code. Watch out: the second value can look like a letter. PgDn sends 224 then 81, which is ‘Q’."
+    ],
+    [
+     "Why does the key I press not show on screen?",
+     "<code>_getch</code> deliberately doesn’t echo. If it did, every letter you pressed would land in the middle of your game screen. <code>_getche</code> is the echoing version, and a game never wants it."
+    ]
+   ],
+   "bridge": "You can read keys without stopping the program. Next: <b>Sleep</b>, so the loop runs at a speed a person can follow."
+  },
+  {
+   "id": "sleep",
+   "title": "Frame timing with Sleep",
+   "kick": "Sleep(ms) · FRAME_MS · windows.h",
+   "mins": 10,
+   "lang": "c-win",
+   "skills": [
+    "sleep"
+   ],
+   "builds": "Concept 1: a loop that never stops. Phase 3: #define constants.",
+   "why": "Left alone, your loop would run very many times a second. The obstacles would cross the screen before you could see them. <code>Sleep(33)</code> hands the processor back to Windows for a moment, which gives roughly 30 frames a second.",
+   "code": "#define WIN32_LEAN_AND_MEAN\n#include <windows.h>\n#include <stdio.h>\n\n#define FRAME_MS 33\n\nint main(void) {\n    int frame;\n\n    for (frame = 1; frame <= 30; frame++) {\n        printf(\"frame %d\\n\", frame);\n        Sleep(FRAME_MS);\n    }\n    printf(\"Done.\\n\");\n    return 0;\n}",
+   "walk": [
+    [
+     1,
+     "<b>WIN32_LEAN_AND_MEAN</b> tells windows.h to skip the rarely used parts. It builds faster and avoids some clashes. Put it before the include."
+    ],
+    [
+     2,
+     "<b>windows.h</b> is where <code>Sleep</code> lives. Capital S: C is case-sensitive."
+    ],
+    [
+     5,
+     "One named constant for the frame length, so you can tune it in one place. 1000 ms divided by 33 is about 30 frames a second."
+    ],
+    [
+     11,
+     "Ordinary work for the frame. In the runner this is the input, update and render."
+    ],
+    [
+     12,
+     "<b>Sleep(33)</b> pauses this program for about 33 milliseconds (FRAME_MS here). Other programs get the CPU meanwhile, so your fan stays quiet."
+    ]
+   ],
+   "model": "<b>Mental model:</b> telling the CPU “wake me in about 33 milliseconds”. About, not exactly: Windows only checks its alarm clock every 15.6 ms or so, so you can wake a little early or quite a bit late.",
+   "check": {
+    "q": "The loop runs 30 times with Sleep(33). How long does the whole run take?",
+    "opts": [
+     "Exactly 990 milliseconds",
+     "Almost no time: Sleep only delays the printf",
+     "Roughly a second, usually a bit more: Sleep isn’t exact",
+     "At most 990 milliseconds: Sleep is a maximum"
+    ],
+    "a": 2,
+    "hint": "Can Sleep wake between timer ticks?",
+    "why": "Sleep can only wake on a timer tick of about 15.6 ms, so each Sleep(33) lands somewhere around 31 to 47 ms. 30 frames take roughly a second, often more. Fine for an ASCII game, and it’s why Phase 5 measures real elapsed time.",
+    "miss": {
+     "0": "Sleep can only wake on a timer tick, so it almost never lands exactly on 33.",
+     "1": "Sleep stops the whole program for that time, not just the line before it.",
+     "3": "Sleep isn’t a promised maximum either. It’s approximate in both directions."
+    }
+   },
+   "tryit": {
+    "task": "Change the loop to run at about 60 frames a second. 1000 / 60 is about 16.",
+    "code": "#define FRAME_MS ____",
+    "answer": "16   (but Sleep(16) often lands nearer 31, so you won’t really get 60 fps)"
+   },
+   "qa": [
+    [
+     "Does Sleep(1) wait one millisecond?",
+     "Rarely. It usually costs 1 to 15 ms, depending on where the timer tick falls. Sleep(16) often lands nearer 31."
+    ],
+    [
+     "What if windows.h makes /WX fail?",
+     "Add <code>/external:anglebrackets /external:W0</code> to the cl line in build.bat. That stops MSVC applying your warning level to headers you didn’t write."
+    ],
+    [
+     "Why not just count to a big number to waste time?",
+     "It burns the CPU at 100% and runs at different speeds on different PCs. Sleep gives the CPU back."
+    ]
+   ],
+   "bridge": "You can pace a loop. Next: <b>redrawing in place</b>, using \\r so each frame paints over the last."
+  },
+  {
+   "id": "redraw-r",
+   "title": "Redrawing in place: \\r and fflush",
+   "kick": "\\r · no \\n · fflush(stdout) · %-3d",
+   "mins": 12,
+   "lang": "c",
+   "skills": [
+    "redraw-r",
+    "fflush"
+   ],
+   "builds": "Phase 1: escape sequences. You met \\r in Session 1 when “Lets” vanished. That was this technique.",
+   "why": "A terminal game has no screen to clear and redraw. Instead it prints one line starting with <code>\\r</code> and no newline, so each frame lands on top of the last. The cursor goes back to the start of the line and the new text overwrites the old.",
+   "code": "#include <stdio.h>\n\nint main(void) {\n    int score;\n\n    for (score = 11; score >= 9; score--) {\n        printf(\"\\rscore %d\", score);\n        fflush(stdout);\n    }\n    printf(\"\\n\");\n    return 0;\n}",
+   "walk": [
+    [
+     6,
+     "Counts 11, 10, 9. In the game this would be one frame per pass."
+    ],
+    [
+     7,
+     "<b>\\r</b> sends the cursor back to column 0 <i>without moving down</i>. There’s no <code>\\n</code>, so the next print starts on the same line and overwrites it."
+    ],
+    [
+     8,
+     "<b>fflush(stdout)</b> pushes the text out now. MSVC’s console usually shows it straight away, but Linux/Mac terminals and output redirected to a file hold text without a newline in a buffer. fflush makes it work everywhere."
+    ],
+    [
+     10,
+     "Only after the last frame do we move down with <code>\\n</code>, so the shell prompt doesn’t land on top of the score."
+    ]
+   ],
+   "model": "<b>Mental model:</b> rewinding a typewriter to the start of the line and typing over it. Anything you typed earlier that the new line is too short to cover stays on the paper.",
+   "check": {
+    "q": "This loop ends. What does the line on screen finally say?",
+    "opts": [
+     "score 90",
+     "score 9",
+     "score 11",
+     "Three separate lines: score 11, score 10 and score 9"
+    ],
+    "a": 0,
+    "hint": "After the last print, which characters from the earlier line are still on the screen?",
+    "why": "“score 9” covers the first seven characters of “score 10”, but the final 0 is still there. The terminal shows <b>score 90</b>. Fix it by padding every frame to the same width, like <code>%-3d</code> (left-aligned, at least 3 wide), which is what the starter does with <code>%-4d</code>.",
+    "miss": {
+     "1": "That would be true if the lines were cleared first. \\r only moves the cursor. It doesn’t erase anything.",
+     "2": "Each print overwrites the last, so the first one doesn’t survive.",
+     "3": "That would need a \\n after each score. There’s none in the loop."
+    }
+   },
+   "tryit": {
+    "task": "Stop the leftover 0: pad the number to at least 3 characters, left-aligned, so every frame is the same width.",
+    "code": "printf(\"\\rscore %____d\", score);",
+    "answer": "-3, so the format is %-3d. The - means left-aligned and the 3 is the minimum width; shorter numbers get trailing spaces."
+   },
+   "qa": [
+    [
+     "Why not use system(\"cls\")?",
+     "It clears the whole console and starts a separate process every frame. You’d see a flash each time, and it’s very slow. \\r costs nothing."
+    ],
+    [
+     "The frame prints on a new line every time. Why?",
+     "There’s a <code>\\n</code> somewhere in the frame. One newline moves the cursor down for good, and \\r can only get back to the start of the <i>current</i> line."
+    ],
+    [
+     "Nothing shows until I quit. Why?",
+     "On Mac/Linux, or when output goes to a file, text without a newline can sit in a buffer. <code>fflush(stdout)</code> forces it out."
+    ]
+   ],
+   "bridge": "You can repaint one line in place. Next: <b>the frame buffer</b>, building the whole line in memory first."
+  },
+  {
+   "id": "frame-buffer",
+   "title": "The frame buffer",
+   "kick": "char array · memset · draw order · print once",
+   "mins": 12,
+   "lang": "c",
+   "skills": [
+    "frame-buffer"
+   ],
+   "builds": "Phase 3: arrays and strings, including the ’\\0’ at the end. Concept 3: one printf per frame.",
+   "why": "The runner’s track is a row of characters. To draw it you start with a row of dots, stamp the obstacles on top, stamp the player on top of that, and only then print. Doing it in memory first means the frame appears all at once, with no flicker.",
+   "code": "#include <stdio.h>\n#include <string.h>\n\n#define LANE_LEN   12\n#define PLAYER_COL 2\n\nint main(void) {\n    char lane[LANE_LEN + 1];\n    int obs_col = 8;\n\n    memset(lane, '.', LANE_LEN);\n    lane[LANE_LEN] = '\\0';\n    lane[obs_col] = '#';\n    lane[PLAYER_COL] = 'A';\n    printf(\"%s\\n\", lane);\n    return 0;\n}",
+   "walk": [
+    [
+     8,
+     "The frame buffer: 12 characters plus one spare slot for the <code>\\0</code> that ends a string."
+    ],
+    [
+     11,
+     "<b>memset</b> fills the first LANE_LEN slots with dots. This is the blank road. From <code>string.h</code>."
+    ],
+    [
+     12,
+     "The <code>\\0</code> goes in the last slot, so printf knows where the string ends."
+    ],
+    [
+     13,
+     "Stamp an obstacle on top. Indexing is the same as any array: column 8 gets a #."
+    ],
+    [
+     14,
+     "Stamp the player. This line comes <i>after</i> the obstacle, so if both want the same slot, the player wins."
+    ],
+    [
+     15,
+     "<b>One</b> printf for the whole frame. Not one per character."
+    ]
+   ],
+   "model": "<b>Mental model:</b> painting the picture backstage, then rolling it out. The audience never sees a half-painted canvas. Later brush strokes cover earlier ones.",
+   "check": {
+    "q": "You change obs_col to 2, the same column as PLAYER_COL. What does this print?",
+    "opts": [
+     "..#.........",
+     "..A#........",
+     "..#A........",
+     "..A........."
+    ],
+    "a": 3,
+    "hint": "One slot holds one character. Which line writes to it last?",
+    "why": "Column 2 gets a # on line 13, then an A on line 14. The A overwrites it, because one slot holds one character, and the last write wins. The result is <b>..A.........</b>. This draw order is how the runner decides what you see.",
+    "miss": {
+     "0": "The # is written first, then overwritten by the A.",
+     "1": "A slot can’t hold two characters, and nothing gets inserted. Each write replaces what was there.",
+     "2": "Nothing moves to the next column. Both writes target the same slot."
+    }
+   },
+   "tryit": {
+    "task": "Add a second obstacle at column 5 so the track shows two #.",
+    "code": "lane[____] = '#';",
+    "answer": "5   (lane[5] = '#';  before the player line)"
+   },
+   "qa": [
+    [
+     "What if I forget the \\0 slot?",
+     "The array is one slot too small and printf runs past the end, printing junk. That’s the +1 rule from Phase 3."
+    ],
+    [
+     "Why not draw straight to the screen?",
+     "Each print takes a moment, so you’d watch the line build up piece by piece. That’s flicker. Phase 5 does the same with pixels: draw to a back buffer, show it once."
+    ],
+    [
+     "What if an obstacle is off the end of the track?",
+     "<code>lane[obs_col]</code> would write outside the array. The starter guards it with <code>if (obs[i] &gt;= 0 &amp;&amp; obs[i] &lt; LANE_LEN)</code>."
+    ]
+   ],
+   "bridge": "You can draw a frame in memory. Next: <b>the game loop</b>, which strings input, update, render and wait together."
+  },
+  {
+   "id": "game-loop",
+   "title": "The game loop: input, update, render, wait",
+   "kick": "four steps · every frame · pretend keyboard",
+   "mins": 12,
+   "lang": "c",
+   "skills": [
+    "game-loop-4"
+   ],
+   "builds": "Concepts 1 to 4: keys, Sleep, \\r and the frame buffer, now in one place.",
+   "why": "Every game ever made repeats the same four steps: look at input, update the world, draw it, wait a moment. Once you can see those four steps in code, Phase 5’s window and Phase 6’s game are just the same loop with different guts.",
+   "code": "#include <stdio.h>\n\nint main(void) {\n    char keys[] = \"..d..\";   /* a pretend keyboard: one key per frame */\n    int frame;\n    int key;\n    int ducking;\n    int pos = 0;\n\n    for (frame = 0; frame < 5; frame++) {\n        key = keys[frame];                 /* 1. input  */\n        ducking = (key == 'd');            /* 2. update */\n        pos++;\n        printf(\"frame %d: pos %d ducking %d\\n\", frame, pos, ducking);  /* 3. render */\n        /* 4. wait: the real game calls Sleep(FRAME_MS) here */\n    }\n    return 0;\n}",
+   "walk": [
+    [
+     4,
+     "Standing in for <code>_kbhit</code> and <code>_getch</code> so this runs anywhere. Frame 2 gets a <code>d</code>."
+    ],
+    [
+     11,
+     "<b>1. Input.</b> Read this frame’s key. In the real game this is the while (_kbhit()) loop from Concept 1."
+    ],
+    [
+     12,
+     "<b>2. Update.</b> Work out the new state of the world. <code>(key == ‘d’)</code> is 1 if true, 0 if false. It’s recalculated <i>every frame</i>, so ducking lasts only while the key is down."
+    ],
+    [
+     13,
+     "Still update: the player moves along one step per frame."
+    ],
+    [
+     14,
+     "<b>3. Render.</b> Show the result. The real game builds the lane and prints it with \\r."
+    ],
+    [
+     15,
+     "<b>4. Wait.</b> The real game sleeps here for FRAME_MS, then loops back to step 1."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a heartbeat. Look, think, draw, breathe. The world only moves when the loop goes round, so the loop <i>is</i> time.",
+   "check": {
+    "q": "Which frames print “ducking 1”?",
+    "opts": [
+     "Frames 2, 3 and 4: once you duck, you stay ducked",
+     "Only frame 2, the one that holds the d",
+     "Frames 0 and 1",
+     "None: the d is never read"
+    ],
+    "a": 1,
+    "hint": "Line 12 runs fresh each frame. What is key on frame 3?",
+    "why": "The d is in slot 2 only. On frame 3, key is ‘.’ again, so <code>key == ‘d’</code> is false and ducking goes back to 0. Only frame 2 shows <b>ducking 1</b>. In the runner you set <code>ducking = 0</code> at the top of PLAYING for the same reason.",
+    "miss": {
+     "0": "ducking is recomputed each frame from that frame’s key. Nothing remembers it.",
+     "2": "Those frames read ’.’, not ’d’.",
+     "3": "Line 11 reads keys[2] on frame 2, which is a d."
+    }
+   },
+   "tryit": {
+    "task": "Order the four steps as comments. Fill in what each one does in the runner.",
+    "code": "/* 1. ____ */  key = read_key();\n/* 2. ____ */  runner_update(&r, key);\n/* 3. ____ */  runner_render(&r);\n/* 4. ____ */  Sleep(FRAME_MS);",
+    "answer": "1 input, 2 update, 3 render, 4 wait"
+   },
+   "qa": [
+    [
+     "Why is update before render?",
+     "So you draw the world as it is <i>now</i>. Render only looks at the state and never changes it, which a later rung formalises with const."
+    ],
+    [
+     "What if render takes longer than the wait?",
+     "Frames get slower and the game feels sluggish. That’s why real games measure elapsed time, as Phase 5 does."
+    ],
+    [
+     "Where does this loop end up?",
+     "In main.c after the split: about four lines inside <code>while (running)</code> or <code>for (;;)</code>, calling runner_update and runner_render."
+    ]
+   ],
+   "bridge": "You can run the whole four-step frame. Next: <b>sentinel values</b>, how the runner keeps track of obstacles that come and go."
+  },
+  {
+   "id": "sentinel",
+   "title": "Sentinel values: -1 for an empty slot",
+   "kick": "-1 = free · find a free slot · break",
+   "mins": 14,
+   "lang": "c",
+   "skills": [
+    "sentinel"
+   ],
+   "builds": "Phase 3: arrays, loops over arrays, break.",
+   "why": "The runner can have up to 8 obstacles at once, but most frames have fewer. Rather than growing and shrinking the array, you keep a fixed one and mark unused slots with -1. Spawning means finding a -1 and filling it. Dodging means setting a slot back to -1.",
+   "code": "#include <stdio.h>\n\n#define MAX_OBS 4\n\nint main(void) {\n    int obs[MAX_OBS];\n    int frame, i;\n    int score = 0;\n\n    for (i = 0; i < MAX_OBS; i++) {\n        obs[i] = -1;\n    }\n\n    for (frame = 0; frame < 5; frame++) {\n        for (i = 0; i < MAX_OBS; i++) {\n            if (obs[i] != -1) {\n                obs[i]--;\n                if (obs[i] < 0) {\n                    obs[i] = -1;\n                    score++;\n                }\n            }\n        }\n        if (frame % 2 == 0) {\n            for (i = 0; i < MAX_OBS; i++) {\n                if (obs[i] == -1) {\n                    obs[i] = 2;\n                    break;\n                }\n            }\n        }\n    }\n    printf(\"%d %d %d %d  score %d\\n\", obs[0], obs[1], obs[2], obs[3], score);\n    return 0;\n}",
+   "walk": [
+    [
+     10,
+     "Start with every slot empty. -1 can never be a real column, so it’s safe to mean “nothing here”. (0 is the player’s end of the road, so 0 would <i>not</i> be safe.)"
+    ],
+    [
+     16,
+     "Only touch slots that are in use. Skipping -1 stops an empty slot from being moved or counted."
+    ],
+    [
+     17,
+     "Move the obstacle one column toward the player."
+    ],
+    [
+     18,
+     "Below column 0 means it got past: dodged."
+    ],
+    [
+     19,
+     "Put the slot back to -1 (free again) and score a point. No memory is freed or allocated."
+    ],
+    [
+     24,
+     "A new obstacle every second frame, to keep this short. The starter does it every 20."
+    ],
+    [
+     26,
+     "Search for the <b>first</b> free slot. Always stop after finding one:"
+    ],
+    [
+     28,
+     "<b>break</b> leaves the search. Without it, one spawn would fill every free slot at once."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a car park with a fixed number of bays. An empty bay has a cone in it (-1). A car arriving takes the first bay with a cone. A car leaving puts the cone back. You never build or demolish a bay.",
+   "check": {
+    "q": "What does the final printf show?",
+    "opts": [
+     "-1 0 -1 -1  score 1",
+     "2 0 2 -1  score 1",
+     "2 0 -1 -1  score 1",
+     "2 0 -1 -1  score 0"
+    ],
+    "a": 2,
+    "hint": "Slot 0 is freed on frame 3. On frame 4 the spawn looks for the first free slot, starting from slot 0.",
+    "why": "Frame 0 fills slot 0. Frame 2 fills slot 1. On frame 3 slot 0 drops below 0, is freed and scores 1. On frame 4 the spawn finds slot 0 free again and reuses it, so slot 0 is 2 and slot 1 has moved to 0. Result: <b>2 0 -1 -1  score 1</b>.",
+    "miss": {
+     "0": "The frame 4 spawn does happen, and it reuses the freed slot 0, so slot 0 isn’t -1.",
+     "1": "The spawn takes the <i>first</i> free slot and then breaks. It would land in slot 0, not slot 2.",
+     "3": "The obstacle in slot 0 did pass the player on frame 3, so the score is 1."
+    }
+   },
+   "tryit": {
+    "task": "Write the test that says “this slot is free”.",
+    "code": "if (obs[i] ____ -1) {\n    obs[i] = LANE_LEN - 1;\n    break;\n}",
+    "answer": "==   (== compares; a single = would assign and wipe the slot)"
+   },
+   "qa": [
+    [
+     "What if all slots are full?",
+     "The search finds nothing and the spawn quietly doesn’t happen. That’s the careful bit: always stop at the end of the array and don’t assume you found a slot."
+    ],
+    [
+     "Why -1 and not 0?",
+     "0 is a real column, the one next to the player. A sentinel must be a value that can never be real data."
+    ],
+    [
+     "Why not allocate memory for each obstacle as it appears?",
+     "Not needed (that’s what malloc and free do, covered much later). A small fixed array is simpler, can’t leak, and is how most games handle bullets and enemies. Phase 7 shows the bigger version."
+    ]
+   ],
+   "bridge": "You can track a changing set of things in a fixed array. Next: <b>state machines</b>: MENU, PLAYING and GAME_OVER in one switch."
+  },
+  {
+   "id": "state-machine",
+   "title": "State machines: enum and switch",
+   "kick": "enum · switch · case · break · transitions",
+   "mins": 14,
+   "lang": "c",
+   "skills": [
+    "state-machine"
+   ],
+   "builds": "Phase 3.5: enum. Phase 2: switch and if. Concept 5: the loop calls the same code every frame, so something has to remember where the game is up to.",
+   "why": "The runner behaves three different ways: waiting on the menu, running, or dead. Rather than a pile of flags, you keep one variable holding the current state and one switch that does that state’s work. Phase 6 uses exactly this shape.",
+   "code": "#include <stdio.h>\n\ntypedef enum { STATE_MENU, STATE_PLAYING, STATE_GAME_OVER } GameState;\n\nint main(void) {\n    char keys[] = \".x.hxr\";   /* '.' means no key */\n    GameState state = STATE_MENU;\n    int frame;\n\n    for (frame = 0; frame < 6; frame++) {\n        int key = keys[frame];\n        switch (state) {\n        case STATE_MENU:\n            if (key != '.') state = STATE_PLAYING;\n            break;\n        case STATE_PLAYING:\n            if (key == 'h') state = STATE_GAME_OVER;\n            break;\n        case STATE_GAME_OVER:\n            if (key == 'r') state = STATE_PLAYING;\n            break;\n        }\n        printf(\"frame %d: state %d\\n\", frame, state);\n    }\n    return 0;\n}",
+   "walk": [
+    [
+     3,
+     "An <b>enum</b> gives the three states names. Underneath they’re 0, 1 and 2, in order."
+    ],
+    [
+     7,
+     "The game starts on the menu. This one variable is the whole machine’s memory."
+    ],
+    [
+     12,
+     "<b>switch</b> jumps to the case that matches the current state. Only that case’s code runs this frame."
+    ],
+    [
+     14,
+     "A <b>transition</b>: any key leaves the menu. Assigning a new value to state is all it takes."
+    ],
+    [
+     17,
+     "While playing, an h (a hit, in the real game) ends the run."
+    ],
+    [
+     20,
+     "Game over only responds to r. Every other key does nothing, so state stays put."
+    ],
+    [
+     21,
+     "<b>break</b> ends each case. Forget one and the code falls into the next case."
+    ]
+   ],
+   "model": "<b>Mental model:</b> the phases of a board game: setup, your turn, game over. Each phase has its own rules, and one event moves you to the next. The switch is the rulebook.",
+   "check": {
+    "q": "What does the frame 4 line print? (Frame 3 sent the game to game over, and frame 4’s key is x.)",
+    "opts": [
+     "frame 4: state 2",
+     "frame 4: state 1",
+     "frame 4: state 0",
+     "No line: x skips the frame"
+    ],
+    "a": 0,
+    "hint": "Which case runs on frame 4, and which key does it react to?",
+    "why": "State is STATE_GAME_OVER (2), so only the third case runs. It reacts to r, not x, so state doesn’t change: <b>frame 4: state 2</b>. Frame 5’s r then restarts the game to state 1.",
+    "miss": {
+     "1": "That would need an r. x only starts a game from the menu, and we are not in the menu.",
+     "2": "Nothing sends the game back to the menu. Only the three transitions in the code exist.",
+     "3": "The printf is after the switch, outside it, so it runs every frame."
+    }
+   },
+   "tryit": {
+    "task": "Fill in the GAME_OVER case: it should restart on r, and not fall into any other case.",
+    "code": "case ____:\n    if (key == 'r') state = STATE_PLAYING;\n    ____;",
+    "answer": "STATE_GAME_OVER, then break"
+   },
+   "qa": [
+    [
+     "What does state 2 mean when I print it?",
+     "The enum value, which is just a number. Printing the name takes a lookup; for now the number is enough."
+    ],
+    [
+     "Why not just use if statements?",
+     "You could, but with three or more states they tangle. A switch on one variable makes “what does this state do?” a single place to read."
+    ],
+    [
+     "Where does the reset go?",
+     "When the state moves into PLAYING, you reset the board. Write it once as <code>runner_reset</code> and call it from both the start and the restart, as the TODOs say."
+    ]
+   ],
+   "bridge": "You can drive a program with a state variable. Next: <b>const pointers</b>, promising a function it only gets to look."
+  },
+  {
+   "id": "const-ptr",
+   "title": "const pointers: const Runner* r",
+   "kick": "const Runner* · read-only · r->field",
+   "mins": 10,
+   "lang": "c",
+   "skills": [
+    "const-ptr"
+   ],
+   "builds": "Phase 3.5: structs, pointers and r->field. Concept 5: render only draws, update changes things.",
+   "why": "When the runner’s state moves into a struct, each function takes a pointer to it. Update needs to change the score. Render should never touch it. Marking render’s pointer <code>const</code> makes the compiler enforce that, so a stray change fails to build instead of silently breaking the game.",
+   "code": "#include <stdio.h>\n\ntypedef struct {\n    int score;\n    int frame;\n} Runner;\n\nvoid runner_update(Runner* r) {\n    r->score++;\n    r->frame++;\n}\n\nvoid runner_render(const Runner* r) {\n    printf(\"score %d, frame %d\\n\", r->score, r->frame);\n}\n\nint main(void) {\n    Runner r;\n    r.score = 0;\n    r.frame = 0;\n    runner_update(&r);\n    runner_update(&r);\n    runner_render(&r);\n    return 0;\n}",
+   "walk": [
+    [
+     8,
+     "A normal pointer: update can read and change whatever it points at."
+    ],
+    [
+     9,
+     "<code>r-&gt;score++</code> changes the real Runner in main, because r points at it."
+    ],
+    [
+     13,
+     "<b>const Runner* r</b> reads “r points at a Runner I’m not allowed to change”. Reading through it is fine, writing through it is an error."
+    ],
+    [
+     14,
+     "Only reads here: r-&gt;score and r-&gt;frame appear as values. That’s all render needs."
+    ],
+    [
+     24,
+     "Passing <code>&amp;r</code> to a const parameter is fine. A normal pointer converts to a read-only one automatically."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a visitor’s pass. You can walk around the house and look at everything, but you can’t move the furniture.",
+   "check": {
+    "q": "You add r->score = 0; as a new last line of runner_render. What happens?",
+    "opts": [
+     "It builds, prints score 2, frame 2, and the score is reset afterwards",
+     "It builds and prints score 0, frame 2",
+     "It builds with a warning, then works as normal",
+     "The build fails: you can’t assign through a const pointer"
+    ],
+    "a": 3,
+    "hint": "What did const promise the compiler about what r points at?",
+    "why": "const Runner* r promises that render won’t modify the Runner, and r->score = 0 breaks that promise. The compiler stops with an error (MSVC says the l-value specifies a const object), so nothing is built. That’s the point: the mistake is caught at build time, not discovered as a mysteriously wrong score.",
+    "miss": {
+     "0": "Without const that would be true. With const the build never gets as far as running.",
+     "1": "The line is after the printf, and the build fails anyway.",
+     "2": "It isn’t just a warning. Writing through a pointer-to-const is an error."
+    }
+   },
+   "tryit": {
+    "task": "Mark the render prototype in runner.h so it promises not to change the Runner.",
+    "code": "void runner_render(____ Runner* r);",
+    "answer": "const"
+   },
+   "qa": [
+    [
+     "Does const make the Runner itself read-only?",
+     "No, only access <i>through that pointer</i>. The Runner in main is still changeable, and update still changes it through its own non-const pointer."
+    ],
+    [
+     "Do I need const everywhere?",
+     "No. Use it when a function only looks, as render does. It documents intent and catches slips."
+    ],
+    [
+     "Is const Runner* the same as Runner* const?",
+     "No. const before the * means the thing pointed at is read-only (what we want). const after the * would mean the pointer itself can’t be moved. It’s rare; ignore it for now."
+    ]
+   ],
+   "bridge": "You can protect data with const. Next: <b>multiple files and LNK2005</b>, splitting the runner into runner.h, runner.c and main.c."
+  },
+  {
+   "id": "lnk2005",
+   "title": "Multiple files and LNK2005",
+   "kick": "declarations in .h · bodies in .c · LNK2005",
+   "mins": 12,
+   "lang": "text",
+   "skills": [
+    "lnk2005"
+   ],
+   "builds": "Phase 3.5: header files and LNK2019 (declared but never defined). This is the opposite problem: defined twice.",
+   "why": "When you split the runner into main.c and runner.c, both files <code>#include \"runner.h\"</code>. An include is a copy and paste. So anything with a <i>body</i> or a variable that lives in the header gets pasted into both, and the linker finds two of it.",
+   "code": "// runner.h\n#pragma once\n\n#define LANE_LEN 50\n\ntypedef struct { int score; } Runner;\n\nint best_score = 0;\n\nvoid runner_reset(Runner* r);",
+   "walk": [
+    [
+     2,
+     "<code>#pragma once</code> doesn’t save you here. It stops the header being included twice in <i>one</i> .c file. Two separate .c files still each get one copy."
+    ],
+    [
+     4,
+     "A <code>#define</code> makes no code of its own. It’s a text replacement, so copying it into two files is harmless."
+    ],
+    [
+     6,
+     "A <code>typedef</code> only describes a shape. It makes nothing in memory, so it’s safe in a header."
+    ],
+    [
+     8,
+     "<b>This is the problem.</b> It <i>creates</i> a variable. main.c and runner.c each get their own copy, and the linker reports <code>runner.obj : error LNK2005: _best_score already defined in main.obj</code>, followed by LNK1169."
+    ],
+    [
+     10,
+     "A prototype is a declaration: “this exists somewhere”. Any number of files can say it. This is what headers are for."
+    ]
+   ],
+   "model": "<b>Mental model:</b> two kitchens both claim to cook the same dish. A menu (header) that <i>lists</i> dishes is fine. If the menu also contains the recipe, every kitchen that copies it starts cooking, and the waiter doesn’t know which to serve.",
+   "check": {
+    "q": "Both main.c and runner.c include this header. Which line causes LNK2005?",
+    "opts": [
+     "Line 4: #define LANE_LEN 50",
+     "Line 8: int best_score = 0;",
+     "Line 6: the typedef",
+     "Line 10: the prototype"
+    ],
+    "a": 1,
+    "hint": "Which line creates something in memory, rather than describing or announcing something?",
+    "why": "Line 8 defines a variable, so each .obj file gets its own best_score and the linker sees the same name twice. The #define, typedef and prototype only describe things, so duplicates are harmless. The same goes for a function <i>body</i> in a header.",
+    "miss": {
+     "0": "A #define is replaced before compiling and leaves nothing behind for the linker.",
+     "2": "A typedef creates no variable and no code, just a new type name.",
+     "3": "A prototype is a declaration. Repeating it in many files is exactly what it’s for."
+    }
+   },
+   "tryit": {
+    "task": "Fix it without a global: move best_score into the struct so every Runner carries its own.",
+    "code": "typedef struct {\n    int score;\n    int ____;\n} Runner;",
+    "answer": "best_score   (and delete the int best_score = 0; line from the header)"
+   },
+   "qa": [
+    [
+     "What is the rule?",
+     "Headers hold declarations only: prototypes, #defines, the enum and the struct type. Bodies and variables live in exactly one .c file."
+    ],
+    [
+     "How is this different from LNK2019?",
+     "LNK2019 means a function was declared but never defined anywhere. LNK2005 means it was defined <i>more than once</i>. Missing versus doubled."
+    ],
+    [
+     "Why did my variable link fine without the = 0?",
+     "For plain C, MSVC may treat an uninitialised global as a shared “common” symbol and link without an error. Don’t rely on it: keep variables out of headers either way."
+    ],
+    [
+     "What do I change in build.bat?",
+     "List both source files: <code>set SOURCES=main.c runner.c</code>. cl compiles each one and links them together."
+    ]
+   ],
+   "bridge": "That’s every concept in Phase 4.5. Next: <b>the starter code</b>. Write the six TODOs yourself, rebuilding after each one, then split it."
+  }
+ ]
+}

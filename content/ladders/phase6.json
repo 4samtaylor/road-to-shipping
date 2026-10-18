@@ -1,0 +1,404 @@
+{
+ "_about": "Concept ladder for the Learn stage. One concept per rung. Rung ids are progress keys: never rename. skills are glossary.json ids that move to Practiced when the check is passed. goals maps checkpoint data-ids to the rungs (1-based) that teach them. lang: c programs are compiled and run to verify each check.",
+ "phase": "phase6",
+ "goals": {
+  "cp-p6-1": [
+   3
+  ],
+  "cp-p6-2": [
+   2,
+   4
+  ]
+ },
+ "rungs": [
+  {
+   "id": "update-render",
+   "title": "Update vs render",
+   "kick": "update changes · render draws · pause",
+   "mins": 10,
+   "lang": "c",
+   "skills": [
+    "update-render"
+   ],
+   "builds": "Phase 5: the message loop and drawing a frame. Phase 3.5: structs and pointers.",
+   "why": "Every frame your game does two different jobs: decide what happened, then draw it. Keep them in separate functions and you can pause, slow down or debug one without touching the other. Mix them and every change breaks something.",
+   "code": "#include <stdio.h>\n\ntypedef struct { int x; int paused; } Game;\n\nvoid update(Game *g) {\n    g->x += 10;\n}\n\nvoid render(const Game *g) {\n    printf(\"x = %d\\n\", g->x);\n}\n\nint main() {\n    Game g = {0, 0};\n    for (int frame = 1; frame <= 5; frame++) {\n        g.paused = (frame == 3 || frame == 4);\n        if (!g.paused) update(&g);\n        render(&g);\n    }\n    return 0;\n}",
+   "walk": [
+    [
+     3,
+     "The whole game state lives in one struct: where the player is, and whether we’re paused. Here that’s just <code>x</code> and a flag."
+    ],
+    [
+     5,
+     "<b>update</b> is the only function that changes the game. It takes a pointer so the change sticks (Phase 3.5)."
+    ],
+    [
+     9,
+     "<b>render</b> only reads. The <code>const</code> promise means the compiler stops you if you try to change <code>g</code> in here."
+    ],
+    [
+     16,
+     "Frames 3 and 4 are “paused”. The <code>||</code> means “or”, so the flag is 1 on those two frames and 0 on the others."
+    ],
+    [
+     17,
+     "<b>Pause = skip update.</b> If paused is 0, update runs and x moves."
+    ],
+    [
+     18,
+     "Render runs <b>every</b> frame, paused or not, so the screen keeps drawing."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a referee and a camera. The referee (update) decides what happened. The camera (render) only films it. Pausing the game sends the referee home but leaves the camera running.",
+   "check": {
+    "q": "What are the five lines this program prints?",
+    "opts": [
+     "x = 10, 20, 30, 40, 50",
+     "x = 10, 20, nothing, nothing, 30",
+     "x = 10, 20, 20, 20, 30",
+     "x = 10, 20, 0, 0, 30"
+    ],
+    "a": 2,
+    "hint": "On frames 3 and 4 update is skipped. Is render skipped too?",
+    "why": "Update runs on frames 1, 2 and 5, so x goes 10, 20, then 30. On the paused frames x stays 20, but render still runs and prints it. Skipping update froze the game, and rendering still drew it.",
+    "miss": {
+     "0": "That ignores the pause. On frames 3 and 4 update doesn’t run, so x doesn’t move.",
+     "1": "Only update is skipped when paused. Render is outside the if, so it prints on every frame.",
+     "3": "Nothing resets x. Skipping update just leaves it at 20."
+    }
+   },
+   "tryit": {
+    "task": "Make the game pause properly: update only runs when not paused, but render always runs.",
+    "code": "if (____ g.paused) update(&g);\n____(&g);",
+    "answer": "!, render"
+   },
+   "qa": [
+    [
+     "Why not draw inside update?",
+     "Because then you can’t pause without freezing the picture too, and you can’t draw twice per update. Each function changes for its own reasons."
+    ],
+    [
+     "Why pass a pointer to update but const pointer to render?",
+     "update has to change the game, so it needs the real thing. render only looks, so <code>const</code> lets the compiler catch a mistake."
+    ],
+    [
+     "Does Godot do this too?",
+     "Yes. <code>_process</code> and <code>_physics_process</code> are where you update; the engine draws for you (or in <code>_draw</code> for custom drawing). Same split, different names."
+    ]
+   ],
+   "bridge": "You can keep logic and drawing apart. Next: <b>Delta time</b>, so update moves things the same distance on a slow PC and a fast one."
+  },
+  {
+   "id": "delta-time",
+   "title": "Delta time: speed times dt",
+   "kick": "dt · pixels per second · same speed at any fps",
+   "mins": 12,
+   "lang": "c",
+   "skills": [
+    "delta-time"
+   ],
+   "builds": "Phase 5: frame time (how long the last frame took). Phase 2: float.",
+   "why": "If you write <code>x += 5;</code>, a PC running 144 frames a second moves the player more than twice as far as one running 60. Multiply by the frame time instead and the speed is the same on every machine.",
+   "code": "#include <stdio.h>\n\nfloat run(int fps, float speed) {\n    float x = 0.0f;\n    float dt = 1.0f / fps;\n    for (int frame = 0; frame < fps; frame++) {\n        x += speed * dt;\n    }\n    return x;\n}\n\nint main() {\n    printf(\"30 fps: %.1f\\n\", run(30, 120.0f));\n    printf(\"60 fps: %.1f\\n\", run(60, 120.0f));\n    return 0;\n}",
+   "walk": [
+    [
+     3,
+     "This pretends to play one second of game at a given frame rate. <code>speed</code> is in <b>pixels per second</b>."
+    ],
+    [
+     5,
+     "<b>dt</b> is the time one frame takes, in seconds. At 30 fps it’s 1/30. At 60 fps it’s 1/60. In the real game you measure it, as in Phase 5."
+    ],
+    [
+     6,
+     "One second always contains <code>fps</code> frames, so the loop runs 30 times, or 60 times."
+    ],
+    [
+     7,
+     "<b>The key line.</b> speed × dt is how far to move in <i>this</i> frame. Slow frames are long, so they move further. Fast frames are short, so they move less."
+    ],
+    [
+     13,
+     "30 frames of a 1/30 second each: 120 pixels."
+    ],
+    [
+     14,
+     "60 frames of a 1/60 second each: also 120 pixels. Same distance."
+    ]
+   ],
+   "model": "<b>Mental model:</b> paying by the hour, not by the visit. A fast PC visits more often, but each visit pays less, so you earn the same per hour.",
+   "check": {
+    "q": "Change line 5 to float dt = 1.0f / 60; (dt hard-coded as if every machine ran at 60 fps). What prints?",
+    "opts": [
+     "30 fps: 120.0 and 60 fps: 120.0",
+     "30 fps: 60.0 and 60 fps: 120.0",
+     "30 fps: 120.0 and 60 fps: 240.0",
+     "30 fps: 2.0 and 60 fps: 2.0"
+    ],
+    "a": 1,
+    "hint": "The loop still runs fps times, but each step is now always 120 × 1/60. How many frames are in one second at each rate?",
+    "why": "With dt stuck at 1/60, each step is 2 pixels. 30 frames × 2 = 60, and 60 frames × 2 = 120. The slower machine moved half as far in the same second. dt has to be the real frame time, not a guess.",
+    "miss": {
+     "0": "That only happens when dt matches the real frame time. A hard-coded dt gets the 30 fps run wrong.",
+     "2": "The 30 fps run takes only 30 steps of 2 pixels, which is 60.0, not 120.0.",
+     "3": "x is added to on every frame, not set. It keeps growing for the whole second."
+    }
+   },
+   "tryit": {
+    "task": "Move the player 300 pixels per second using dt (seconds since the last frame).",
+    "code": "player.x += ____ * ____;",
+    "answer": "300.0f * dt (the speed in pixels per second, times the frame time)"
+   },
+   "qa": [
+    [
+     "Is dt always 1/60?",
+     "No, that’s the point. It’s whatever the last frame really took, so it wobbles a little. Use it as measured."
+    ],
+    [
+     "What if the game freezes for a second and dt becomes huge?",
+     "The player would leap across the level. Many games cap dt, for example at 0.05 seconds, so a hiccup can’t teleport anything."
+    ],
+    [
+     "Why f after 120.0?",
+     "<code>120.0</code> is a double. <code>120.0f</code> is a float. With /W4 /WX, mixing them can warn about losing precision."
+    ]
+   ],
+   "bridge": "You can move things at a steady speed. Next: <b>A state machine with next_state</b>: menu, playing and game over, changed in one place."
+  },
+  {
+   "id": "next-state",
+   "title": "A state machine with next_state",
+   "kick": "enum state · switch · change at the end of the frame",
+   "mins": 14,
+   "lang": "c",
+   "skills": [
+    "next-state"
+   ],
+   "builds": "Phase 3.5: enum. Phase 2: switch. Phase 4.5: your first state-machine menu.",
+   "why": "Menu, playing and game over each behave differently, and you switch between them all the time. If you change state in the middle of a frame, later code in the same frame runs under the new state and things happen twice. Write the change into <code>next_state</code> and apply it at the very end.",
+   "code": "#include <stdio.h>\n\ntypedef enum { MENU, PLAYING, GAME_OVER } State;\nconst char *names[] = { \"MENU\", \"PLAYING\", \"GAME_OVER\" };\n\nint main() {\n    State state = MENU;\n    for (int frame = 1; frame <= 5; frame++) {\n        State next_state = state;\n        switch (state) {\n        case MENU:\n            if (frame == 2) next_state = PLAYING;\n            break;\n        case PLAYING:\n            if (frame == 4) next_state = GAME_OVER;\n            break;\n        case GAME_OVER:\n            break;\n        }\n        printf(\"frame %d: %s\\n\", frame, names[state]);\n        state = next_state;\n    }\n    return 0;\n}",
+   "walk": [
+    [
+     3,
+     "The three states the game can be in. An enum gives them names, but underneath they’re the numbers 0, 1 and 2."
+    ],
+    [
+     4,
+     "A list of text, one per state, so we can print the name. <code>names[PLAYING]</code> works because PLAYING is 1."
+    ],
+    [
+     9,
+     "At the top of every frame, <code>next_state</code> starts as “stay where we are”."
+    ],
+    [
+     10,
+     "The switch looks at the <b>current</b> state and runs only that state’s code."
+    ],
+    [
+     12,
+     "Frame 2 in MENU: we <i>ask</i> to go to PLAYING by setting next_state. The current state hasn’t changed."
+    ],
+    [
+     20,
+     "This frame still prints the old state. Everything in the frame ran under one state."
+    ],
+    [
+     21,
+     "<b>The one place the state changes</b>: the end of the frame. Next frame starts in the new state."
+    ]
+   ],
+   "model": "<b>Mental model:</b> finish the current turn before switching players. You write the next player’s name on a sticky note during your turn, and swap only once the turn is over.",
+   "check": {
+    "q": "What does the frame 2 line print?",
+    "opts": [
+     "frame 2: PLAYING",
+     "frame 2: GAME_OVER",
+     "frame 2: 1",
+     "frame 2: MENU"
+    ],
+    "a": 3,
+    "hint": "Line 12 sets next_state. When is state assigned from it?",
+    "why": "next_state becomes PLAYING during frame 2, but state doesn’t change until line 21, after the printf. So frame 2 still prints MENU, and frame 3 is the first to print PLAYING.",
+    "miss": {
+     "0": "That would happen if line 12 changed state directly. It only sets next_state.",
+     "1": "GAME_OVER is only requested on frame 4, from PLAYING.",
+     "2": "The printf uses %s with the name from the list, so it prints text, not the number."
+    }
+   },
+   "tryit": {
+    "task": "The player died. Request game over without switching in the middle of the frame.",
+    "code": "case PLAYING:\n    if (player_hp <= 0) ____ = ____;\n    break;",
+    "answer": "next_state = GAME_OVER"
+   },
+   "qa": [
+    [
+     "Why not just write state = GAME_OVER where it happens?",
+     "You can, and for tiny games it works. But anything below that line in the same frame now runs as GAME_OVER, which is where “it happened twice” bugs come from."
+    ],
+    [
+     "Can next_state be set more than once in a frame?",
+     "Yes, and the last one wins. That is usually fine. Decide which event should win if two can fire at once."
+    ],
+    [
+     "Why enum and not 0, 1, 2?",
+     "GAME_OVER says what it means. A bare 2 doesn’t, and the debugger’s Watch window shows the name too."
+    ]
+   ],
+   "bridge": "You can change screens safely. Next: <b>AABB collision</b>, the four comparisons that tell you whether two boxes touch."
+  },
+  {
+   "id": "aabb",
+   "title": "AABB collision",
+   "kick": "two boxes · four comparisons · overlap on x and y",
+   "mins": 12,
+   "lang": "c",
+   "skills": [
+    "aabb"
+   ],
+   "builds": "Phase 3.5: structs. Phase 2: if, &&, comparisons.",
+   "why": "“Did the bullet hit the enemy?” is really “do these two rectangles overlap?”. Four comparisons answer it. It’s the collision test behind pickups, enemies and platforms in your runner.",
+   "code": "#include <stdio.h>\n\ntypedef struct { int x, y, w, h; } Box;\n\nint overlap(Box a, Box b) {\n    return a.x < b.x + b.w && a.x + a.w > b.x &&\n           a.y < b.y + b.h && a.y + a.h > b.y;\n}\n\nint main() {\n    Box player = {10, 10, 20, 20};\n    Box corner = {25, 25, 20, 20};\n    Box touching = {30, 10, 20, 20};\n    Box far_away = {50, 50, 10, 10};\n    Box inside = {15, 15, 5, 5};\n    printf(\"%d\\n\", overlap(player, corner));\n    printf(\"%d\\n\", overlap(player, touching));\n    printf(\"%d\\n\", overlap(player, far_away));\n    printf(\"%d\\n\", overlap(player, inside));\n    return 0;\n}",
+   "walk": [
+    [
+     3,
+     "A box is its top-left corner (<code>x</code>, <code>y</code>) plus a width and height. Windows draws from the top-left too."
+    ],
+    [
+     5,
+     "Returns 1 if the boxes overlap and 0 if they don’t. All four conditions have to be true, which is why they’re joined with <code>&amp;&amp;</code>."
+    ],
+    [
+     6,
+     "<b>x axis:</b> A’s left edge is left of B’s right edge, <i>and</i> A’s right edge is right of B’s left edge. Neither box is fully to one side."
+    ],
+    [
+     7,
+     "<b>y axis:</b> the same test, up and down."
+    ],
+    [
+     11,
+     "The player covers x 10 to 30 and y 10 to 30."
+    ],
+    [
+     13,
+     "This box starts at x = 30, exactly where the player ends. Their edges meet but they don’t overlap, because <code>a.x + a.w &gt; b.x</code> is <code>30 &gt; 30</code>, which is false."
+    ]
+   ],
+   "model": "<b>Mental model:</b> shadows. Two boxes touch only if their shadows overlap on the floor <i>and</i> their shadows overlap on the wall. If either shadow misses, there is no hit.",
+   "check": {
+    "q": "What do the four printed lines show, in order?",
+    "opts": [
+     "1, 0, 0, 1",
+     "1, 1, 0, 1",
+     "1, 0, 0, 0",
+     "0, 0, 0, 1"
+    ],
+    "a": 0,
+    "hint": "Check each box against x 10 to 30 and y 10 to 30. Then look at whether edges that only meet count.",
+    "why": "The corner box overlaps in both axes: 1. The touching box only meets at x = 30, and the test uses &lt; and &gt;, so 0. The far one misses: 0. The small one is entirely inside the player: 1. A box inside another still overlaps.",
+    "miss": {
+     "1": "Edges that only meet don’t count. <code>a.x + a.w &gt; b.x</code> is 30 &gt; 30, which is false, so the x test fails.",
+     "2": "A box completely inside another does overlap. Both axis tests pass.",
+     "3": "The corner box overlaps on both axes: x 25 to 45 meets 10 to 30, and y does too."
+    }
+   },
+   "tryit": {
+    "task": "Finish the vertical half of the test.",
+    "code": "a.y < b.y + b.h && a.y + a.h ____ b.____",
+    "answer": "> and y: A’s bottom edge is below B’s top edge"
+   },
+   "qa": [
+    [
+     "What if I want touching edges to count as a hit?",
+     "Change the four &lt; and &gt; to &lt;= and &gt;=. Most games leave them strict."
+    ],
+    [
+     "What about circles and rotated shapes?",
+     "AABB can’t do them, but for most 2D games the boxes are close enough. The player rarely notices the corners."
+    ],
+    [
+     "Why pass Box by value here?",
+     "It’s four ints, so copying is cheap and overlap can’t change the originals. Larger structs usually go by pointer."
+    ]
+   ],
+   "bridge": "You can detect hits. Next: <b>Text on screen</b>, drawing the score in your Win32 window instead of the console."
+  },
+  {
+   "id": "textout",
+   "title": "Text on screen: TextOut",
+   "kick": "TextOut · snprintf · draw inside WM_PAINT",
+   "mins": 14,
+   "lang": "c-win",
+   "skills": [
+    "textout"
+   ],
+   "builds": "Phase 5: WinMain, WndProc, WM_PAINT and the device context. Phase 3: strings and strlen.",
+   "why": "In the console you used printf. A Windows window has no console, so the score has to be drawn like everything else. TextOut draws a string at a position in the window, using the same device context you drew the rectangle with.",
+   "code": "#include <windows.h>\n#include <stdio.h>\n#include <string.h>\n\nint score = 12;\n\nLRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {\n    if (msg == WM_PAINT) {\n        PAINTSTRUCT ps;\n        HDC hdc = BeginPaint(hwnd, &ps);\n        char buf[32];\n        snprintf(buf, sizeof buf, \"Score: %d\", score);\n        TextOut(hdc, 10, 10, buf, (int)strlen(buf));\n        EndPaint(hwnd, &ps);\n        return 0;\n    }\n    if (msg == WM_DESTROY) { PostQuitMessage(0); return 0; }\n    return DefWindowProc(hwnd, msg, wp, lp);\n}\n\nint WINAPI WinMain(HINSTANCE hi, HINSTANCE hp, LPSTR cmd, int show) {\n    WNDCLASS wc = {0};\n    MSG m;\n    (void)hp; (void)cmd; (void)show;\n    wc.lpfnWndProc = WndProc;\n    wc.hInstance = hi;\n    wc.lpszClassName = \"ScoreWin\";\n    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);\n    RegisterClass(&wc);\n    CreateWindow(\"ScoreWin\", \"Score\", WS_OVERLAPPEDWINDOW | WS_VISIBLE, 100, 100, 320, 200, NULL, NULL, hi, NULL);\n    while (GetMessage(&m, NULL, 0, 0)) DispatchMessage(&m);\n    return 0;\n}",
+   "walk": [
+    [
+     8,
+     "Drawing belongs in <b>WM_PAINT</b>, the same place as your rectangle in Phase 5."
+    ],
+    [
+     10,
+     "<b>BeginPaint</b> gives us the device context <code>hdc</code>, the surface we draw on."
+    ],
+    [
+     12,
+     "TextOut wants plain text, not a number. <b>snprintf</b> is printf that writes into a buffer. It builds “Score: 12” in <code>buf</code> and never writes past its 32 characters."
+    ],
+    [
+     13,
+     "<b>TextOut(hdc, x, y, text, length)</b>. Draws at 10 pixels across and 10 down. The last argument is how many characters to draw, and <code>strlen</code> counts them. The <code>(int)</code> cast keeps /W4 quiet, since strlen returns size_t."
+    ],
+    [
+     14,
+     "Always match BeginPaint with EndPaint."
+    ],
+    [
+     21,
+     "A cut-down version of the Phase 5 window set-up. Only the snprintf and TextOut lines (12, 13) are new inside WM_PAINT. New in the set-up: <code>WS_OVERLAPPEDWINDOW | WS_VISIBLE</code> uses <code>|</code> to combine two window style flags into one value."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a label printer for your window. You give it the words, where to stick them, and how many letters to print.",
+   "check": {
+    "q": "You change the last TextOut argument from (int)strlen(buf) to 5. What appears in the window?",
+    "opts": [
+     "Score: 12",
+     "Nothing, the window is blank",
+     "Score:",
+     "Score"
+    ],
+    "a": 3,
+    "hint": "The last argument is the number of characters to draw. Count “Score: 12”.",
+    "why": "TextOut draws only the first 5 characters of buf: S, c, o, r, e. The string is 9 characters long, and the count tells TextOut where to stop.",
+    "miss": {
+     "0": "That needs a length of 9, which is what strlen gives.",
+     "1": "It still draws. A short length just cuts the text.",
+     "2": "The colon is the 6th character, so a length of 5 stops just before it. You’d need 6 to get “Score:”."
+    }
+   },
+   "tryit": {
+    "task": "Draw “Lives: 3” from a variable called lives, at x = 10, y = 30.",
+    "code": "snprintf(buf, sizeof buf, \"Lives: %d\", ____);\nTextOut(hdc, 10, ____, buf, (int)strlen(buf));",
+    "answer": "lives, then 30"
+   },
+   "qa": [
+    [
+     "What is DrawText?",
+     "A cousin of TextOut that draws inside a rectangle, so it can centre or wrap text. TextOut is the simpler one to start with."
+    ],
+    [
+     "My text flickers when the score changes",
+     "That’s the redraw problem from Phase 5. Draw into a back buffer first (double buffering) and copy it to the window once."
+    ],
+    [
+     "Why is my score not updating?",
+     "WM_PAINT only runs when Windows asks. After changing the score, call InvalidateRect(hwnd, NULL, TRUE) so the window repaints."
+    ]
+   ],
+   "bridge": "That’s every concept in Phase 6. Next: <b>The prototype build</b>: wire states, movement, collision and the score into one window, with your partner."
+  }
+ ]
+}

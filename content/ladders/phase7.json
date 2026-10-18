@@ -1,0 +1,378 @@
+{
+ "_about": "Concept ladder for the Learn stage. One concept per rung. Rung ids are progress keys: never rename. skills are glossary.json ids that move to Practiced when the check is passed. goals maps checkpoint data-ids to the rungs (1-based) that teach them. lang: c programs are compiled and run to verify each check.",
+ "phase": "phase7",
+ "goals": {},
+ "rungs": [
+  {
+   "id": "prompt-signature",
+   "title": "Name the function signature in your prompt",
+   "kick": "return type · name · parameters · scope",
+   "mins": 10,
+   "builds": "Phase 3: functions, parameters and return values. Phase 3.5: the Player struct.",
+   "why": "Claude fills every gap in your prompt with a guess. A guess that compiles looks right until it doesn’t match your code. Writing the signature yourself, the way you’d write a function prototype, closes the biggest gap before any code exists.",
+   "model": "<b>Mental model:</b> ordering at a counter. “Something with chicken” gets you anything. “A small chicken wrap, no mayo” gets you what you wanted. The signature is the order.",
+   "check": {
+    "q": "You want a jump function for your ASCII runner. Which prompt is most likely to give you exactly that?",
+    "opts": [
+     "Add jumping to my runner game. Make it feel good and handle everything it needs.",
+     "Write int player_jump(Player p) that makes the player jump when they’re on the ground.",
+     "Write void player_jump(Player *p): if p->y is 0, set p->vy to 3. Only this function, no new structs.",
+     "I’m making a runner in C. Write all the movement code: jump, duck, gravity and collision."
+    ],
+    "a": 2,
+    "hint": "Which prompt tells Claude what the function takes, what it does, and where it stops?",
+    "why": "The third prompt fixes the signature, the number and the scope. There’s almost nothing left to guess, and you can check the answer against your own words.",
+    "miss": {
+     "0": "“Feel good” and “everything it needs” hand all the decisions to Claude. You’ll get its design, not yours.",
+     "1": "It names a signature, but with the wrong details: it returns an int you didn’t ask for and takes a copy of the Player, so a jump would never reach your real one. It also leaves “jump” and the height for Claude to guess.",
+     "3": "Four systems in one prompt means a pile of code you didn’t design and can’t review in one sitting. Ask for one function at a time."
+    }
+   },
+   "tryit": {
+    "task": "Fill the blanks so this prompt names the signature and fences the scope.",
+    "code": "I’m building a guessing game in C.\nWrite ____ check_guess(int guess, int secret).\nIt returns -1 if guess is below secret, 1 if above, 0 if equal.\nWrite only this function. Don’t add ____ or ____.",
+    "answer": "int (the return type). Then any two things you don’t want, for example: printf calls, scanf input, new structs, other functions."
+   },
+   "qa": [
+    [
+     "Do I have to know the answer before I ask?",
+     "You need to know the shape: name, inputs, output. That’s a design decision, and it’s yours. Claude writes the body."
+    ],
+    [
+     "What if I’m not sure what the parameters should be?",
+     "Ask Claude to critique your plan first (the “is my approach right?” template), then write the signature yourself."
+    ],
+    [
+     "Isn’t this just writing the code myself?",
+     "It’s writing the one line that matters. The signature is the contract. The body is detail you can check against it."
+    ]
+   ],
+   "bridge": "You can pin down what you want. Next: <b>reading every line</b> of what comes back, before you run it.",
+   "code": "Vague prompt:\n  Make the player jump.\n\nBetter prompt:\n  I’m building an ASCII runner in C. My Player struct has int y and int vy.\n  Write void player_jump(Player *p). If p->y is 0 (on the ground), set p->vy to 3. Otherwise do nothing.\n  Write only this function. No new structs, no new files.",
+   "walk": [
+    [
+     2,
+     "Claude has to guess everything here: the name, what it takes, what it returns, what “jump” means in numbers. Every guess is a place the code can come out wrong."
+    ],
+    [
+     5,
+     "Context first: the language, the game, and the fields that already exist. Claude can use your <code>y</code> and <code>vy</code> instead of inventing its own."
+    ],
+    [
+     6,
+     "The <b>signature</b>: return type, name, parameters. You learned in Phase 3 that this one line fixes how the function is called. If you write it, you’ll notice straight away if Claude’s code doesn’t match it. <code>Player *p</code> is a pointer to your real Player, and <code>p-&gt;y</code> reaches a field through it (both from Phase 3.5)."
+    ],
+    [
+     6,
+     "The exact behaviour, with exact numbers. “On the ground” is turned into a test Claude can code."
+    ],
+    [
+     7,
+     "The fence. Without it you often get three helper functions and a new struct you never asked for."
+    ]
+   ],
+   "skills": [],
+   "lang": "text"
+  },
+  {
+   "id": "read-every-line",
+   "title": "Read every line before you run it",
+   "kick": "trace it · check bounds · off-by-one",
+   "mins": 12,
+   "builds": "Phase 3: the high-score table, arrays and loops. Concept 1: asking for exact functions.",
+   "why": "Code that compiles and looks tidy can still be wrong. Your name is on the commit, and an out-of-bounds write may print fine today and crash next week. The only defence is reading each line and tracing it with a real number.",
+   "model": "<b>Mental model:</b> proofreading a contract before you sign. The font is nice and every sentence sounds fine, but you’re the one who’s bound by it.",
+   "check": {
+    "q": "Claude’s add_score builds with no warnings under /W4 /WX. Which line should you question before you run it?",
+    "opts": [
+     "for (int j = 5; j > i; j--)",
+     "for (int i = 0; i < 5; i++)",
+     "table[i] = score;",
+     "return;"
+    ],
+    "a": 0,
+    "hint": "Count the slots, then check where the first shift writes.",
+    "why": "Valid indexes are 0 to 4. With j starting at 5, the first shift writes table[5], past the end of the array. The compiler can’t see it. Trace it with a small table and you’ll spot it.",
+    "miss": {
+     "1": "Looks right, and it is: i &lt; 5 visits indexes 0 to 4. The bug is elsewhere.",
+     "2": "Once the gap is open, putting the score at index i is right.",
+     "3": "return stops after one insert so the score isn’t added twice. That’s needed."
+    }
+   },
+   "tryit": {
+    "task": "Fix the one line so the shift stays inside the array.",
+    "code": "for (int j = ____; j > i; j--) {\n    table[j] = table[j - 1];\n}",
+    "answer": "4. The last valid index of a 5-slot array."
+   },
+   "qa": [
+    [
+     "It compiled with no warnings. Isn’t that proof?",
+     "No. The compiler checks grammar, not meaning. An out-of-bounds write compiles, but it’s undefined behaviour: C doesn’t check it, so anything can happen."
+    ],
+    [
+     "How do I check code I can’t follow?",
+     "Pick a small real input, like a table of 50 40 30 20 10 and a score of 45, and step through with a pencil. Concept 3 covers asking Claude to explain the parts you can’t trace."
+    ],
+    [
+     "Should I read the code even for tiny functions?",
+     "Yes, those are the quickest to read. The habit matters more than the size."
+    ]
+   ],
+   "bridge": "You can catch a bad line. Next: <b>asking for explanations</b> when a line is something you don’t recognise yet.",
+   "code": "// Prompt: Write void add_score(int table[5], int score).\n// Keep it sorted high to low. If score beats an entry, insert it and drop the lowest.\n// Claude’s answer:\nvoid add_score(int table[5], int score) {\n    for (int i = 0; i < 5; i++) {\n        if (score > table[i]) {\n            for (int j = 5; j > i; j--) {\n                table[j] = table[j - 1];\n            }\n            table[i] = score;\n            return;\n        }\n    }\n}",
+   "walk": [
+    [
+     4,
+     "The signature matches what you asked for. Good start, but a right signature doesn’t mean a right body."
+    ],
+    [
+     5,
+     "The outer loop walks the five slots, 0 to 4. Check the bounds: <code>i &lt; 5</code> stops at index 4. Fine."
+    ],
+    [
+     6,
+     "Finds the first entry the new score beats. Because the table is sorted, that’s the right place to insert."
+    ],
+    [
+     7,
+     "<b>Question this line.</b> The table has indexes 0 to 4. This starts at <code>j = 5</code>, so the next line writes <code>table[5]</code>, one past the end. It should start at 4."
+    ],
+    [
+     8,
+     "Shifts entries down to make room. With j = 5 this writes outside the array. C won’t stop you."
+    ],
+    [
+     10,
+     "Drops the new score into the gap. This part is right."
+    ]
+   ],
+   "skills": [],
+   "lang": "text"
+  },
+  {
+   "id": "ask-explain",
+   "title": "Ask for explanations of code you don’t understand",
+   "kick": "explain first · pick the edge case · then decide",
+   "mins": 10,
+   "builds": "Concept 2: reading every line. Phase 3.5: addresses with &.",
+   "why": "Claude will happily use functions you’ve never met. Running code you can’t explain is how bugs get into the project and stay there. A good question costs one message and turns a mystery line into something you own.",
+   "model": "<b>Mental model:</b> a mechanic who shows you the old part. You don’t need to rebuild the engine, but you want to hear what broke and why before you pay.",
+   "check": {
+    "q": "Claude’s code uses memmove, which you’ve never seen. What do you send back?",
+    "opts": [
+     "Looks fine to me, so I’m running it now.",
+     "Rewrite the whole function without memmove, using only things I’ve already learned.",
+     "Explain the whole add_score function to me from the very start.",
+     "Explain the memmove line and what happens when i is 4."
+    ],
+    "a": 3,
+    "hint": "Which reply is about the exact line you’re stuck on and gives you something to check?",
+    "why": "A targeted question gets a targeted answer. You learn memmove, and you can test the “i is 4” answer yourself. You stay in charge of what goes in.",
+    "miss": {
+     "0": "You’d be running a line you can’t explain. That’s the habit this rung is about breaking.",
+     "1": "You throw away working code and learn nothing about memmove. Sometimes simpler is right (Concept 4), but ask for that on purpose, not as a reflex.",
+     "2": "Too broad. You’ll get a long answer and still not know the one line you asked about."
+    }
+   },
+   "tryit": {
+    "task": "Write the follow-up question. Name the line, the thing you don’t know, and a case to test.",
+    "code": "Explain the line ____ in add_score.\nWhat does ____ mean there?\nWhat happens when ____?",
+    "answer": "For example: memmove(...), the third argument (4 - i) * sizeof(int), i is 0."
+   },
+   "qa": [
+    [
+     "Won’t asking questions make me look like I don’t know C?",
+     "The only person looking is you. Asking is how you learn it, and you’re the one who has to maintain this code."
+    ],
+    [
+     "How do I know the explanation is right?",
+     "Test it. Write a tiny program with a 5-slot table and run it. If the output matches the explanation, you’re set."
+    ],
+    [
+     "Should I ask for explanations every time?",
+     "Every time there’s a line you couldn’t explain to someone else. Familiar code, skip it."
+    ]
+   ],
+   "bridge": "You can get a line explained. Next: <b>pushing back</b> when the answer is more than you asked for.",
+   "code": "// Prompt: Before I use this, explain each line in plain English, what happens when i is 4, and what could go wrong.\n// Claude’s code, with one line you haven’t seen:\nvoid add_score(int table[5], int score) {\n    for (int i = 0; i < 5; i++) {\n        if (score > table[i]) {\n            memmove(&table[i + 1], &table[i], (4 - i) * sizeof(int));\n            table[i] = score;\n            return;\n        }\n    }\n}",
+   "walk": [
+    [
+     1,
+     "Three questions in one prompt: what it does, one edge case you choose (<code>i</code> is 4), and what could break. Picking the edge case yourself makes the answer concrete."
+    ],
+    [
+     6,
+     "<b>memmove</b> is new to you. It copies a block of memory from one place to another, and it’s safe when the two blocks overlap. Here it replaces the inner shift loop."
+    ],
+    [
+     6,
+     "First argument: where to copy <i>to</i>, the slot after i. The <code>&amp;</code> means “the address of” (Phase 3.5)."
+    ],
+    [
+     6,
+     "Second argument: where to copy <i>from</i>, slot i itself."
+    ],
+    [
+     6,
+     "Third argument: how many <i>bytes</i> to copy. <code>(4 - i)</code> is the number of entries that move, and <code>sizeof(int)</code> turns that into bytes. When i is 4, nothing moves."
+    ]
+   ],
+   "skills": [],
+   "lang": "text"
+  },
+  {
+   "id": "push-back",
+   "title": "Push back when code is overcomplicated",
+   "kick": "simplify · “I don’t need X yet” · smallest thing that works",
+   "mins": 10,
+   "builds": "Phase 3: functions and return values, the guessing game. Concept 2: reading every line.",
+   "why": "Claude tends to build for needs you haven’t got. Extra structs, allocation and callbacks look professional but give you more to read, more to break and more you don’t understand. You can tell it to cut them, and it will.",
+   "model": "<b>Mental model:</b> asking for a bike and being handed a motorcycle. It does the job and more, but you have to learn the engine just to get to the shops.",
+   "check": {
+    "q": "You asked for check_guess and got the struct-and-callback version above. What do you say back?",
+    "opts": [
+     "Great, I’ll learn from it and move on to the next function.",
+     "Simplify: int check_guess(guess, secret) returning -1, 0 or 1.",
+     "This is all wrong, so start from scratch and do it properly this time.",
+     "Add comments explaining each part so I can follow how it all works."
+    ],
+    "a": 1,
+    "hint": "Which reply names what to remove and what you want instead?",
+    "why": "Naming the signature and the things to cut gives Claude a clear target. You end up with code you can read, and you remember that the complexity was optional.",
+    "miss": {
+     "0": "Accepting more than you asked for means owning code you don’t need. Features you don’t need still have bugs.",
+     "2": "“Do it properly” leaves the same gaps that caused this. Claude will guess again, maybe worse.",
+     "3": "Comments make the extra code easier to read, but it’s still extra. You asked for less, not for it to be explained."
+    }
+   },
+   "tryit": {
+    "task": "Write the push-back. Name the signature to keep and two things to remove.",
+    "code": "Simplify this. I only need ____.\nRemove the ____ and the ____. I don’t need them yet.",
+    "answer": "For example: int check_guess(int guess, int secret). Then the struct and the callback (or malloc, or the enum)."
+   },
+   "qa": [
+    [
+     "What if I might need the callback later?",
+     "Then add it later, when you do. Code is easy to extend and hard to untangle. “I don’t need X yet” is a complete reason."
+    ],
+    [
+     "How do I know it’s overcomplicated?",
+     "If you can’t say in one sentence what each piece is for, or it uses things this course skipped (malloc, function pointers), push back."
+    ],
+    [
+     "Will Claude be offended?",
+     "No. “Simplify” is a normal instruction and it works well."
+    ]
+   ],
+   "bridge": "You can cut code down to size. Next: <b>owning the architecture</b>, deciding the shape of the game before Claude writes any of it.",
+   "code": "// Prompt: Write check_guess for my guessing game.\n// Claude’s answer:\ntypedef enum { TOO_LOW, TOO_HIGH, CORRECT } Verdict;\ntypedef void (*ResultCallback)(Verdict v);\n\ntypedef struct {\n    Verdict verdict;\n    ResultCallback on_result;\n} GuessResult;\n\nGuessResult *check_guess(int guess, int secret, ResultCallback cb) {\n    GuessResult *r = malloc(sizeof(GuessResult));\n    if (guess < secret) r->verdict = TOO_LOW;\n    else if (guess > secret) r->verdict = TOO_HIGH;\n    else r->verdict = CORRECT;\n    r->on_result = cb;\n    cb(r->verdict);\n    return r;\n}\n\n// What you needed:\nint check_guess(int guess, int secret) {\n    if (guess < secret) return -1;\n    if (guess > secret) return 1;\n    return 0;\n}",
+   "walk": [
+    [
+     1,
+     "A vague prompt (Concept 1) is how this happens. Claude guessed you wanted something “extensible”."
+    ],
+    [
+     3,
+     "An enum you didn’t ask for. Something else to read and keep consistent."
+    ],
+    [
+     4,
+     "A function pointer holds a function to call later. You don’t need this yet."
+    ],
+    [
+     6,
+     "A struct to wrap the result, also not asked for."
+    ],
+    [
+     12,
+     "<b>malloc</b> hands you memory you now have to <code>free</code> later. Forget and the game leaks. For comparing two ints, that’s a heavy price."
+    ],
+    [
+     13,
+     "The <code>-&gt;</code> arrow reaches a field through a pointer (Phase 3.5). It’s only needed because the result lives in allocated memory."
+    ],
+    [
+     17,
+     "A callback that fires from inside the function. Now check_guess has a side effect, and the order things happen in is harder to follow."
+    ],
+    [
+     22,
+     "The same job in three lines. No allocation, no new types. You can read it in one pass and you already know every piece."
+    ]
+   ],
+   "skills": [],
+   "lang": "text"
+  },
+  {
+   "id": "own-architecture",
+   "title": "Design the structs and prototypes first",
+   "kick": "design first · prototypes as a plan · one piece at a time",
+   "mins": 12,
+   "builds": "Phase 3.5: structs. Phase 4.5: the ASCII runner. Concepts 1 to 4 of this phase.",
+   "why": "Claude can write code quickly, but the design is your job. If it picks the structs and the function list, you maintain a design you don’t understand. If you pick them, every piece it writes fits a plan you can explain.",
+   "model": "<b>Mental model:</b> you’re the architect with the blueprint, Claude is the builder. A builder will happily improvise a house. It just won’t be the house you wanted.",
+   "check": {
+    "q": "You want to build the ASCII runner with Claude Code. What do you do first?",
+    "opts": [
+     "Ask: build me an ASCII runner game in C.",
+     "Ask Claude to design the structs and every function, then accept it.",
+     "Write the structs and prototypes yourself, then ask for one function.",
+     "Ask for all the functions in one prompt so they match each other."
+    ],
+    "a": 2,
+    "hint": "Who should decide what the Player struct contains and which functions exist?",
+    "why": "The design is yours. Prototypes are a plan you can read, and asking for one function at a time keeps each reply small enough to check line by line.",
+    "miss": {
+     "0": "Claude will pick the design for you, including things you won’t understand. You’ll own code you can’t explain.",
+     "1": "It’s fine to ask Claude to critique your plan. Handing the plan over entirely isn’t. You’d still be taking its design on trust.",
+     "3": "One huge reply is too much to read properly (Concept 2). Pieces that match come from your shared design, not from asking for everything at once."
+    }
+   },
+   "tryit": {
+    "task": "Write one prototype for your runner’s design, and the scope line of the prompt that asks for it.",
+    "code": "bool ____(const Player *p, const Obstacle *o);\n\nPrompt: Here are my structs and prototypes. Write only ____.",
+    "answer": "For example: hits_obstacle, then “hits_obstacle”. The name in the prototype and in the prompt must match."
+   },
+   "qa": [
+    [
+     "Can I ask Claude for ideas on the design?",
+     "Yes. Use the “is my approach right?” template: describe your plan and ask for a critique, with no code yet. You decide what to keep."
+    ],
+    [
+     "What if my design turns out wrong?",
+     "Then change it, and you’ll know why. That’s better than finding out a design you never chose has a problem."
+    ],
+    [
+     "Do I redo this for every feature?",
+     "Yes, in small. A new feature gets a few lines of design (the struct field, the prototype) before the prompt."
+    ]
+   ],
+   "bridge": "That’s every concept in Phase 7. Next: <b>keep using these habits</b> in every phase from here. The goal is code you can explain.",
+   "code": "// My design, written by me before asking Claude:\ntypedef struct { int x; int y; int vy; bool alive; } Player;\ntypedef struct { int x; int width; } Obstacle;\n\nvoid player_jump(Player *p);\nvoid player_update(Player *p);\nbool hits_obstacle(const Player *p, const Obstacle *o);\nvoid draw_frame(const Player *p, const Obstacle *o);\n\n// Prompt: Here are my structs and prototypes. Write only\n// player_update(Player *p): apply vy to y, subtract 1 from vy each\n// frame, and when y lands back on 0 clamp it there and set vy to 0.\n// Match my style.",
+   "walk": [
+    [
+     1,
+     "You wrote this part, not Claude. It took ten minutes and it’s the part that decides how the whole game fits together."
+    ],
+    [
+     2,
+     "Your data. Every function Claude writes will use these exact fields, so nothing is invented."
+    ],
+    [
+     5,
+     "The list of jobs, as prototypes (Phase 3). The <code>*</code> parameters are pointers (Phase 3.5): the function works on your real Player, not a copy. Each is small enough to ask for on its own and to check on its own."
+    ],
+    [
+     7,
+     "Even the return types are your decisions. A yes/no question returns <code>bool</code>. <code>const</code> promises the function only looks at the Player and Obstacle and won’t change them (Phase 4.5 covers const pointers)."
+    ],
+    [
+     10,
+     "One piece at a time, with your design pasted in as context. Claude fills in a body that has to fit your pieces."
+    ]
+   ],
+   "skills": [],
+   "lang": "text"
+  }
+ ]
+}
