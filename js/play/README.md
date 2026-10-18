@@ -25,6 +25,7 @@ The engine (`engine.js`) does everything else: code panel with line highlight, c
 - `scene`: key in `RTSPlay.SCENES`. A spec whose scene is not registered is ignored (the button never shows).
 - `code`: **omit it.** The player uses the rung's own `code` (from `window.RTS_LADDERS[pid]`), so `line` numbers are 1-based lines of that exact code. Only set `code` for a rung with no ladder code.
 - `title`: optional; defaults to the rung title.
+- `prompt`: optional console header line, default `> game.exe` (the course is Windows). Set `""` to hide the line.
 
 Step fields (one step per line executed, in run order; a loop revisits the same `line` many times):
 
@@ -33,7 +34,7 @@ Step fields (one step per line executed, in run order; a loop revisits the same 
 | `line` | 1-based line of the rung code to highlight (required) |
 | `ms` | duration at 1x speed, default 1000. 800-1300 is typical; 2000+ only for a showpiece |
 | `note` | plain-English caption under the canvas for this step. Keep it to one or two short sentences |
-| `out` | exact text this step writes to the console, including `\n` (printf output) |
+| `out` | exact text this step writes to the console, including `\n` (printf output). `\r` returns to the start of the current line and later characters overwrite it char by char, like a real terminal (`"Lets go\rparty\n"` shows `partygo`) |
 | `outAt` | fraction of the step (0..1) at which `out` appears, default 0.5 |
 | `do` | array of actions (below), run in parallel inside the step |
 

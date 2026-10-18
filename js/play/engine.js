@@ -288,6 +288,17 @@
     btn('speed').onclick = function () { speed = speed === 1 ? .5 : 1; render(); };
     root.addEventListener('keydown', function (e) { if (e.key === 'ArrowRight' && !e.altKey && !e.ctrlKey && !e.metaKey && e.target.tagName !== 'BUTTON') { e.preventDefault(); step(); } });
 
+    var prompt = spec.prompt == null ? '> game.exe' : String(spec.prompt);
+    function term(str) {   // terminal model: \n = new line, \r = back to column 0, chars overwrite in place
+      var lines = [[]], col = 0;
+      for (var i = 0; i < str.length; i++) {
+        var ch = str[i], L = lines[lines.length - 1];
+        if (ch === '\n') { lines.push([]); col = 0; }
+        else if (ch === '\r') col = 0;
+        else { while (L.length < col) L.push(' '); L[col++] = ch; }
+      }
+      return lines.map(function (l) { return l.join(''); }).join('\n');
+    }
     function consoleText() {
       var s = ''; for (var k = 0; k < idx; k++) s += spec.steps[k].out || '';
       if (idx >= 0) { var st = spec.steps[idx]; if (st.out && (reduced.matches || p >= (st.outAt == null ? .5 : st.outAt))) s += st.out; }
@@ -310,7 +321,7 @@
       }
       var out = consoleText();
       if (out !== lastOut) { lastOut = out;
-        conEl.innerHTML = '<span class="pr">$ ./game</span>\n' + esc(out).replace(/\n$/, '') + (out ? '\n' : '') + '<span class="cur"></span>';
+        conEl.innerHTML = (prompt ? '<span class="pr">' + esc(prompt) + '</span>\n' : '') + esc(term(out)) + '<span class="cur"></span>';
         conEl.scrollTop = conEl.scrollHeight; }
     }
     function draw(T) {
