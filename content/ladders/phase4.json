@@ -322,7 +322,7 @@
     ],
     [
      "git branch -d says “not fully merged”.",
-     "Either the PR isn’t merged yet, or GitHub “squashed” it (combined all its commits into one new commit) and deleted the branch on GitHub, so Git can’t tell. If you’re sure it’s merged, <code>-D</code> forces the delete."
+     "It means the branch has commits Git can’t find anywhere else, usually work you committed but never pushed. Push it first. If you’re sure you don’t need it (for example GitHub “squashed” the PR and deleted the branch), <code>-D</code> forces the delete."
     ],
     [
      "Is there a way to open the PR from the terminal?",

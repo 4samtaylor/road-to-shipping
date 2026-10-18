@@ -509,7 +509,7 @@
     "q": "On a typical Windows PC, with the default timer settings, roughly what does this program print each frame?",
     "opts": [
      "Exactly 16.0 ms on every line, because that is what Sleep was told",
-     "At least about 16 ms, usually 16 to 32, varying a little line to line",
+     "Roughly 16 to 32 ms, varying a little line to line",
      "About 1 ms on every line, since the loop itself does almost no work",
      "About 60 on every line, because 1000 divided by 16 is roughly 60"
     ],

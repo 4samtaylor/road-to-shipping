@@ -596,7 +596,7 @@
      "Only reads here: r-&gt;score and r-&gt;frame appear as values. That’s all render needs."
     ],
     [
-     24,
+     23,
      "Passing <code>&amp;r</code> to a const parameter is fine. A normal pointer converts to a read-only one automatically."
     ]
    ],
