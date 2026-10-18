@@ -313,7 +313,7 @@
    {
     "line": 12,
     "ms": 1700,
-    "note": "Sleep(33) hands the CPU back to Windows. The clock fills for 33 ms while other programs get a turn.",
+    "note": "Sleep(33) hands the CPU back to Windows. The clock fills for about 33 ms while other programs get a turn.",
     "do": [
      {
       "a": "sleep"
@@ -347,7 +347,7 @@
    {
     "line": 12,
     "ms": 1500,
-    "note": "Sleep again. The same 33 ms nap every frame is what keeps the speed steady.",
+    "note": "Sleep again. About 33 ms each time, never exact: Windows wakes you on its next timer tick.",
     "do": [
      {
       "a": "sleep"
@@ -445,7 +445,7 @@
    {
     "line": 7,
     "ms": 1300,
-    "note": "printf puts \\r and then 'score 11' in the stdout buffer. It waits there; nothing is on screen yet.",
+    "note": "printf hands \\r and 'score 11' to stdout. Some terminals hold it until a newline, so fflush makes sure it shows.",
     "do": [
      {
       "a": "print",
@@ -769,28 +769,30 @@
     ]
    },
    {
-    "line": 11,
-    "ms": 1200,
-    "note": "Frame 1, input: keys[1] is '.', no key again.",
+    "line": 10,
+    "ms": 900,
+    "note": "frame++ makes frame 1. 1 < 5, so round again.",
     "do": [
      {
       "a": "set",
       "k": "frame",
-      "v": 1,
-      "len": 0.4
-     },
+      "v": 1
+     }
+    ]
+   },
+   {
+    "line": 11,
+    "ms": 1100,
+    "note": "Frame 1, input: keys[1] is '.', no key again.",
+    "do": [
      {
       "a": "beat",
-      "n": 0,
-      "at": 0.2,
-      "len": 0.8
+      "n": 0
      },
      {
       "a": "set",
       "k": "key",
-      "v": ".",
-      "at": 0.4,
-      "len": 0.6
+      "v": "."
      }
     ]
    },
@@ -847,28 +849,30 @@
     ]
    },
    {
+    "line": 10,
+    "ms": 900,
+    "note": "frame++ makes frame 2. 2 < 5, so round again.",
+    "do": [
+     {
+      "a": "set",
+      "k": "frame",
+      "v": 2
+     }
+    ]
+   },
+   {
     "line": 11,
     "ms": 1200,
     "note": "Frame 2, input: keys[2] is 'd'. A key press!",
     "do": [
      {
-      "a": "set",
-      "k": "frame",
-      "v": 2,
-      "len": 0.4
-     },
-     {
       "a": "beat",
-      "n": 0,
-      "at": 0.2,
-      "len": 0.8
+      "n": 0
      },
      {
       "a": "set",
       "k": "key",
-      "v": "d",
-      "at": 0.4,
-      "len": 0.6
+      "v": "d"
      }
     ]
    },
@@ -1639,7 +1643,7 @@
    {
     "line": 24,
     "ms": 1000,
-    "note": "Done. The pointer was handed back and the card is unchanged since the last update.",
+    "note": "Done. render only read the card, so it still says score 2, frame 2.",
     "do": [
      {
       "a": "ret"
@@ -1650,6 +1654,7 @@
  },
  "lnk2005": {
   "scene": "p4b-link",
+  "prompt": "",
   "steps": [
    {
     "line": 1,
@@ -1747,10 +1752,9 @@
       "a": "fix"
      }
     ],
-    "out": "Build succeeded.\n",
+    "out": "BUILD OK\n",
     "outAt": 0.8
    }
-  ],
-  "prompt": ""
+  ]
  }
 }

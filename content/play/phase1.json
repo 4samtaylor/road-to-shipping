@@ -693,7 +693,7 @@
    {
     "line": 1,
     "ms": 1800,
-    "note": "Three places hold the same first snapshot: your PC, GitHub and Person A's PC. git status looks at your folder for changes.",
+    "note": "Your PC and GitHub hold the same first snapshot. Person A has no copy yet. git status looks at your folder for changes.",
     "out": "> git status\nOn branch main\nYour branch is up to date with 'origin/main'.\n\n",
     "outAt": 0.4,
     "do": [
@@ -765,36 +765,6 @@
       "head": "main",
       "files": [],
       "at": 0.05,
-      "len": 0.3
-     },
-     {
-      "a": "world",
-      "p": 2,
-      "cs": [
-       [
-        "c1",
-        0,
-        0,
-        [],
-        {
-         "hash": "3a9f0d1"
-        }
-       ]
-      ],
-      "br": [
-       [
-        "main",
-        "c1"
-       ],
-       [
-        "origin/main",
-        "c1",
-        1
-       ]
-      ],
-      "head": "main",
-      "files": [],
-      "at": 0.1,
       "len": 0.3
      }
     ]
@@ -950,27 +920,14 @@
    {
     "line": 4,
     "ms": 1800,
-    "note": "Now it is backed up on GitHub, and Person A can get it with git pull. The dashed dot is where it will land.",
+    "note": "Now it's backed up on GitHub, where Person A can see it. In Phase 4 they clone it onto their PC.",
     "do": [
      {
-      "a": "commit",
-      "p": 2,
+      "a": "hl",
+      "p": 1,
       "id": "c2",
-      "col": 1,
-      "par": [
-       "c1"
-      ],
-      "kind": "ghost",
-      "br": false,
       "at": 0,
-      "len": 0.5
-     },
-     {
-      "a": "say",
-      "p": 2,
-      "t": "can pull it now",
-      "at": 0.3,
-      "len": 0.6
+      "len": 0.7
      }
     ]
    }

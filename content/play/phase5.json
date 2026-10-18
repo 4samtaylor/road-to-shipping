@@ -178,7 +178,7 @@
    {
     "line": 23,
     "ms": 1300,
-    "note": "Back to waiting. Only a quit message ends this loop and this version never gets one, so the program keeps running until you close it. We stop the film here.",
+    "note": "Back to waiting. Nothing in this version ever posts a quit message, so even after you click X the program keeps running, hidden. The next concept fixes that.",
     "do": [
      {
       "a": "loop",
@@ -371,7 +371,7 @@
    {
     "line": 16,
     "ms": 900,
-    "note": "return 0 tells Windows the message was handled.",
+    "note": "return 0 ends the WM_DESTROY call. DestroyWindow returns, and the WM_KEYDOWN call breaks and returns 0 too.",
     "do": [
      {
       "a": "hl",
@@ -633,8 +633,14 @@
    {
     "line": 31,
     "ms": 2000,
-    "note": "Now the user closes the window. Closing ran WM_DESTROY in WindowProc, which called PostQuitMessage, so a WM_QUIT envelope is in the queue. PeekMessage finds it.",
+    "note": "The user clicks X. The click messages were dispatched, WindowProc got WM_DESTROY and called PostQuitMessage, so WM_QUIT is waiting. PeekMessage finds it.",
     "do": [
+     {
+      "a": "win",
+      "s": "gone",
+      "at": 0,
+      "len": 0.3
+     },
      {
       "a": "post",
       "m": "WM_QUIT",
@@ -701,14 +707,9 @@
    },
    {
     "line": 38,
-    "ms": 800,
-    "note": "The title bar says Frame 3.",
-    "do": [
-     {
-      "a": "title",
-      "t": "Frame 3"
-     }
-    ]
+    "ms": 900,
+    "note": "SetWindowText runs, but the window is already gone, so nothing shows.",
+    "do": []
    },
    {
     "line": 39,
@@ -1299,7 +1300,7 @@
    {
     "line": 44,
     "ms": 1500,
-    "note": "now minus last is 168,213 ticks. Times 1000, divided by ticks per second, makes milliseconds: 16.8.",
+    "note": "now minus last is 168,213 ticks. Times 1000, divided by ticks per second, makes milliseconds: 16.8. This PC has a fine-grained timer; with Windows' default timer, Sleep(16) often measures about 31 ms.",
     "do": [
      {
       "a": "calc",

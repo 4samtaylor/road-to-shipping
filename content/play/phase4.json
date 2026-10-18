@@ -118,7 +118,7 @@
     "line": 3,
     "ms": 2600,
     "note": "Clone copies everything from GitHub, the whole history, onto this PC. Watch the dots fly down.",
-    "out": "> git clone https://github.com/4samtaylor/game-dev-exercises\nCloning into 'game-dev-exercises'...\ndone.\n",
+    "out": "> git clone https://github.com/4samtaylor/game-dev-exercises\nCloning into 'game-dev-exercises'...\nReceiving objects: 100% (6/6), done.\n",
     "outAt": 0.15,
     "do": [
      {
@@ -158,7 +158,7 @@
    {
     "line": 5,
     "ms": 1500,
-    "note": "git log lists the commits, newest first. Your Phase 1 commit is in there.",
+    "note": "git log lists the commits, newest first. Sam's Phase 1 commit is in there.",
     "out": "> git log --oneline\n40bcc83 Add hello world and build.bat\n3a9f0d1 Initial commit\n",
     "outAt": 0.1,
     "do": [
@@ -273,8 +273,7 @@
      }
     ]
    }
-  ],
-  "prompt": ""
+  ]
  },
  "commit-messages": {
   "scene": "git-graph",
@@ -381,7 +380,7 @@
     "line": 4,
     "ms": 1800,
     "note": "Commit takes the snapshot. The message is the caption on it, and it lands on top of the history.",
-    "out": "> git commit -m \"fix: ducking now dodges obstacles at column 0\"\n[main 3f2a1c9] fix: ducking now dodges obstacles at column 0\n 1 file changed, 1 insertion(+)\n",
+    "out": "> git commit -m \"fix: ducking now dodges obstacles at column 0\"\n[main 3f2a1c9] fix: ducking now dodges obstacles at column 0\n 1 file changed, 1 insertion(+), 1 deletion(-)\n",
     "outAt": 0.2,
     "do": [
      {
@@ -499,8 +498,7 @@
      }
     ]
    }
-  ],
-  "prompt": ""
+  ]
  },
  "branches": {
   "scene": "git-graph",
@@ -821,8 +819,7 @@
      }
     ]
    }
-  ],
-  "prompt": ""
+  ]
  },
  "pull-requests": {
   "scene": "git-graph",
@@ -1049,8 +1046,9 @@
       ],
       "mv": [
        [
-        "feature/jump",
-        "j3"
+        "origin/feature/jump",
+        "j3",
+        1
        ]
       ],
       "at": 0,
@@ -1084,7 +1082,7 @@
    {
     "line": 6,
     "ms": 1300,
-    "note": "Back to main on your PC. Your main is still the old one, two dots behind GitHub's.",
+    "note": "Back to main on your PC. Your main is still the old one, two dots behind GitHub's. Git still says up to date because it hasn't asked GitHub yet.",
     "out": "> git switch main\nSwitched to branch 'main'\nYour branch is up to date with 'origin/main'.\n",
     "do": [
      {
@@ -1144,8 +1142,7 @@
      }
     ]
    }
-  ],
-  "prompt": ""
+  ]
  },
  "merge-conflicts": {
   "scene": "git-graph",
@@ -1563,8 +1560,7 @@
      }
     ]
    }
-  ],
-  "prompt": ""
+  ]
  },
  "gitignore": {
   "scene": "git-graph",
@@ -1985,7 +1981,6 @@
      }
     ]
    }
-  ],
-  "prompt": ""
+  ]
  }
 }

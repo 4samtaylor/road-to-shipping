@@ -392,7 +392,7 @@
       panel(c, 270, 108, 120, 124, rgba(C.text, .03), C.border2, 1.2);
       txt(c, 'TextOut', 330, 121, { size: 10, w: 700, col: C.accent }); txt(c, 'the label printer', 330, 133, { size: 8, col: C.muted });
       var dp2 = V.drawP > 0 && V.drawP < 1 ? V.drawP : (V.drawn ? 1 : 0);
-      [['hdc', 'where: the window'], ['10, 10', 'how far across, down'], ['buf, 9', 'the words + count']].forEach(function (r, i) {
+      [['hdc', 'where: the window'], ['10, 10', 'how far across, down'], ['buf, ' + (V.len ? '9' : '?'), 'the words + count']].forEach(function (r, i) {
         var y = 152 + i * 26, lit = dp2 > i * .25 && dp2 > 0;
         rrect(c, 278, y - 10, 104, 22, 3); c.fillStyle = lit ? rgba(C.accent, .16) : rgba(C.text, .04); c.fill(); c.strokeStyle = lit ? C.accent : C.border2; c.lineWidth = 1.1; c.stroke();
         txt(c, r[0], 286, y - 2, { size: 9, w: 700, col: lit ? C.accent : C.muted2, align: 'left' }); txt(c, r[1], 286, y + 7, { size: 7, col: C.muted, align: 'left' });

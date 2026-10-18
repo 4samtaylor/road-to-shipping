@@ -1120,7 +1120,7 @@
    {
     "line": 11,
     "ms": 1000,
-    "note": "buf is 32 empty character boxes, ready for text.",
+    "note": "buf is 32 character boxes, holding junk for now.",
     "do": [
      {
       "a": "cells"
