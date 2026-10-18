@@ -2725,3 +2725,10 @@ body.editing .pg[hidden] { display: block; margin-top: 26px; }
   .lad-row { min-height: 44px; }
   .pg-later .lad-m { max-width: 90px; }
 }
+.pg-b.pg-n { font-family: var(--font-mono); font-weight: 600; }
+.pg-top .stage-nav { margin: 0; padding: 0; flex-wrap: wrap; overflow: visible; }
+.phase-inner > .ph-time { margin: 0 0 12px; }
+@media (max-width: 600px) {
+  .pg-top .stage-nav button { padding: 8px 12px; }
+  .pg-top { margin-bottom: 14px; }
+}
