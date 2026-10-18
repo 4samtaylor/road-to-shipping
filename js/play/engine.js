@@ -106,12 +106,15 @@
     return P;
   }
 
-  /* ---------- ligature guard: the code font fuses -> <= >= != == into one glyph; a zero-width
-     non-joiner between the characters stops that (canvas has no font-variant-ligatures) ---------- */
+  /* ---------- ligature guard: the code font fuses -> <= >= != == into one glyph. Canvas has no
+     font-variant-ligatures, but a non-zero letterSpacing turns ligatures off (Chrome/Safari/Firefox);
+     where letterSpacing is unsupported, fall back to a zero-width non-joiner between the characters ---------- */
   function nl(t) { return typeof t === 'string' ? t.replace(/->|<=|>=|!=|==/g, function (m) { return m[0] + '\u200C' + m[1]; }) : t; }
   function noLig(c) {
-    ['fillText', 'strokeText'].forEach(function (k) { var f = c[k]; c[k] = function (t) { arguments[0] = nl(t); return f.apply(c, arguments); }; });
-    var mt = c.measureText; c.measureText = function (t) { return mt.call(c, nl(t)); };
+    var ls = 'letterSpacing' in c, f1 = c.fillText, f2 = c.strokeText, mt = c.measureText;
+    function wrap(f) { return function (t) { if (ls) c.letterSpacing = '0.01px'; else arguments[0] = nl(t); return f.apply(c, arguments); }; }
+    c.fillText = wrap(f1); c.strokeText = wrap(f2);
+    c.measureText = function (t) { if (ls) c.letterSpacing = '0.01px'; else t = nl(t); return mt.call(c, t); };
   }
 
   /* ---------- highlighter (same rules and classes as the ladder code panel) ---------- */
