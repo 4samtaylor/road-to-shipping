@@ -439,7 +439,7 @@
    "walk": [
     [
      1,
-     "This writes one pattern per line into a file called <b>.gitignore</b> in the repo root. <code>&gt;</code> creates the file, <code>&gt;&gt;</code> adds to it. In VS Code you can just create the file instead. Run this in the Developer Command Prompt, not PowerShell: PowerShell’s echo writes a file format Git can’t read."
+     "This writes one pattern per line into a file called <b>.gitignore</b> in the repo root. <code>&gt;</code> creates the file, <code>&gt;&gt;</code> adds to it. In VS Code you can just create the file instead. Run this in the Developer Command Prompt, not Windows PowerShell 5.1: its echo writes UTF-16, which Git can’t read as patterns. (PowerShell 7 writes UTF-8 and is fine.)"
     ],
     [
      4,

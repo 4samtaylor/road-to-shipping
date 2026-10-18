@@ -22,7 +22,7 @@
    ],
    "builds": "Phase 5: the message loop and drawing a frame. Phase 3.5: structs and pointers.",
    "why": "Every frame your game does two different jobs: decide what happened, then draw it. Keep them in separate functions and you can pause, slow down or debug one without touching the other. Mix them and every change breaks something.",
-   "code": "#include <stdio.h>\n\ntypedef struct { int x; int paused; } Game;\n\nvoid update(Game *g) {\n    g->x += 10;\n}\n\nvoid render(const Game *g) {\n    printf(\"x = %d\\n\", g->x);\n}\n\nint main() {\n    Game g = {0, 0};\n    for (int frame = 1; frame <= 5; frame++) {\n        g.paused = (frame == 3 || frame == 4);\n        if (!g.paused) update(&g);\n        render(&g);\n    }\n    return 0;\n}",
+   "code": "#include <stdio.h>\n\ntypedef struct { int x; int paused; } Game;\n\nvoid update(Game *g) {\n    g->x += 10;\n}\n\nvoid render(const Game *g) {\n    printf(\"x = %d\\n\", g->x);\n}\n\nint main(void) {\n    Game g = {0, 0};\n    for (int frame = 1; frame <= 5; frame++) {\n        g.paused = (frame == 3 || frame == 4);\n        if (!g.paused) update(&g);\n        render(&g);\n    }\n    return 0;\n}",
    "walk": [
     [
      3,
@@ -103,7 +103,7 @@
    ],
    "builds": "Phase 5: frame time (how long the last frame took). Phase 2: float.",
    "why": "If you write <code>x += 5;</code>, a PC running 144 frames a second moves the player more than twice as far as one running 60. Multiply by the frame time instead and the speed is the same on every machine.",
-   "code": "#include <stdio.h>\n\nfloat run(int fps, float speed) {\n    float x = 0.0f;\n    float dt = 1.0f / fps;\n    for (int frame = 0; frame < fps; frame++) {\n        x += speed * dt;\n    }\n    return x;\n}\n\nint main() {\n    printf(\"30 fps: %.1f\\n\", run(30, 120.0f));\n    printf(\"60 fps: %.1f\\n\", run(60, 120.0f));\n    return 0;\n}",
+   "code": "#include <stdio.h>\n\nfloat run(int fps, float speed) {\n    float x = 0.0f;\n    float dt = 1.0f / fps;\n    for (int frame = 0; frame < fps; frame++) {\n        x += speed * dt;\n    }\n    return x;\n}\n\nint main(void) {\n    printf(\"30 fps: %.1f\\n\", run(30, 120.0f));\n    printf(\"60 fps: %.1f\\n\", run(60, 120.0f));\n    return 0;\n}",
    "walk": [
     [
      3,
@@ -180,7 +180,7 @@
    ],
    "builds": "Phase 3.5: enum. Phase 2: switch. Phase 4.5: your first state-machine menu.",
    "why": "Menu, playing and game over each behave differently, and you switch between them all the time. If you change state in the middle of a frame, later code in the same frame runs under the new state and things happen twice. Write the change into <code>next_state</code> and apply it at the very end.",
-   "code": "#include <stdio.h>\n\ntypedef enum { MENU, PLAYING, GAME_OVER } State;\nconst char *names[] = { \"MENU\", \"PLAYING\", \"GAME_OVER\" };\n\nint main() {\n    State state = MENU;\n    for (int frame = 1; frame <= 5; frame++) {\n        State next_state = state;\n        switch (state) {\n        case MENU:\n            if (frame == 2) next_state = PLAYING;\n            break;\n        case PLAYING:\n            if (frame == 4) next_state = GAME_OVER;\n            break;\n        case GAME_OVER:\n            break;\n        }\n        printf(\"frame %d: %s\\n\", frame, names[state]);\n        state = next_state;\n    }\n    return 0;\n}",
+   "code": "#include <stdio.h>\n\ntypedef enum { MENU, PLAYING, GAME_OVER } State;\nconst char *names[] = { \"MENU\", \"PLAYING\", \"GAME_OVER\" };\n\nint main(void) {\n    State state = MENU;\n    for (int frame = 1; frame <= 5; frame++) {\n        State next_state = state;\n        switch (state) {\n        case MENU:\n            if (frame == 2) next_state = PLAYING;\n            break;\n        case PLAYING:\n            if (frame == 4) next_state = GAME_OVER;\n            break;\n        case GAME_OVER:\n            break;\n        }\n        printf(\"frame %d: %s\\n\", frame, names[state]);\n        state = next_state;\n    }\n    return 0;\n}",
    "walk": [
     [
      3,
@@ -261,7 +261,7 @@
    ],
    "builds": "Phase 3.5: structs. Phase 2: if, &&, comparisons.",
    "why": "“Did the bullet hit the enemy?” is really “do these two rectangles overlap?”. Four comparisons answer it. It’s the collision test behind pickups, enemies and platforms in your runner.",
-   "code": "#include <stdio.h>\n\ntypedef struct { int x, y, w, h; } Box;\n\nint overlap(Box a, Box b) {\n    return a.x < b.x + b.w && a.x + a.w > b.x &&\n           a.y < b.y + b.h && a.y + a.h > b.y;\n}\n\nint main() {\n    Box player = {10, 10, 20, 20};\n    Box corner = {25, 25, 20, 20};\n    Box touching = {30, 10, 20, 20};\n    Box far_away = {50, 50, 10, 10};\n    Box inside = {15, 15, 5, 5};\n    printf(\"%d\\n\", overlap(player, corner));\n    printf(\"%d\\n\", overlap(player, touching));\n    printf(\"%d\\n\", overlap(player, far_away));\n    printf(\"%d\\n\", overlap(player, inside));\n    return 0;\n}",
+   "code": "#include <stdio.h>\n\ntypedef struct { int x, y, w, h; } Box;\n\nint overlap(Box a, Box b) {\n    return a.x < b.x + b.w && a.x + a.w > b.x &&\n           a.y < b.y + b.h && a.y + a.h > b.y;\n}\n\nint main(void) {\n    Box player = {10, 10, 20, 20};\n    Box corner = {25, 25, 20, 20};\n    Box touching = {30, 10, 20, 20};\n    Box far_away = {50, 50, 10, 10};\n    Box inside = {15, 15, 5, 5};\n    printf(\"%d\\n\", overlap(player, corner));\n    printf(\"%d\\n\", overlap(player, touching));\n    printf(\"%d\\n\", overlap(player, far_away));\n    printf(\"%d\\n\", overlap(player, inside));\n    return 0;\n}",
    "walk": [
     [
      3,
