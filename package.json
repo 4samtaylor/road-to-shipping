@@ -1,0 +1,19 @@
+{
+  "name": "road-to-shipping",
+  "private": true,
+  "version": "13.0.0",
+  "description": "C game-dev roadmap — web app and Android/iOS app from one codebase",
+  "scripts": {
+    "build": "node scripts/build-www.mjs",
+    "android": "npm run build && npx cap sync android && npx cap open android",
+    "sync": "npm run build && npx cap sync"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/core": "^8.5.2"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.5.2"
+  }
+}

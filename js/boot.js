@@ -52,7 +52,9 @@
       if (loading) loading.innerHTML = msg; else main.insertAdjacentHTML('afterbegin', '<div class="content-loading">' + msg + '</div>');
     });
 
-  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  // Inside the Android/iOS app the files already live on the device, so no offline cache.
+  var nativeApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+  if (!nativeApp && 'serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
     navigator.serviceWorker.register('sw.js').catch(function () {});
   }
 })();
