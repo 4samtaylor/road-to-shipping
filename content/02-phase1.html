@@ -54,7 +54,7 @@
                 <div class="task-cb">✓</div>
                 <div class="task-content">
                   <div class="task-text">Commit your Hello World to GitHub <span class="task-tag t-git">Git</span></div>
-                  <div class="task-note">git add . → git commit -m "feat: hello world compiles and runs" → git push <span class="task-time">~10 min</span></div>
+                  <div class="task-note">git add hello_world.c build.bat → git commit -m "feat: hello world compiles and runs" → git push (name the files so the .exe and .obj stay out; Phase 4 adds a .gitignore) <span class="task-time">~10 min</span></div>
                 </div>
               </div>
             </div>
@@ -75,7 +75,7 @@
               </div>
 <pre><span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
 
-<span class="c-type">int</span> <span class="c-fn">main</span>() {
+<span class="c-type">int</span> <span class="c-fn">main</span>(<span class="c-type">void</span>) {
     <span class="c-fn">printf</span>(<span class="c-str">"Hello, World!\n"</span>);
 
     <span class="c-cm">// TODO 1: Change the string above and recompile. See it change.</span>

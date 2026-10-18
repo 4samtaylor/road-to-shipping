@@ -255,7 +255,7 @@
 
   /* ================= p1-compiler ================= */
   (function () {
-    var SRC = ['#include <stdio.h>', '', 'int main() {', '    printf("Hello\\n");', '    printf("World\\n")', '    return 0;', '}'];
+    var SRC = ['#include <stdio.h>', '', 'int main(void) {', '    printf("Hello\\n");', '    printf("World\\n")', '    return 0;', '}'];
     var Y0 = 32, LH = 21, CW = 7.3, TX = 46;
     function rowY(r) { return Y0 + (r - 1) * LH; }
     reg('p1-compiler', {

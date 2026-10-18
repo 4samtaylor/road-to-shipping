@@ -147,6 +147,8 @@
     <span class="c-fn">ShowWindow</span>(<span class="c-var">g_hwnd</span>, <span class="c-var">nShow</span>);
 
     <span class="c-cm">// The message loop — this IS the game loop at the OS level</span>
+    <span class="c-cm">// GetMessage waits for input. The message-loop concept swaps it for</span>
+    <span class="c-cm">// PeekMessage before you add the 60 fps frame timer.</span>
     <span class="c-type">MSG</span> <span class="c-var">msg</span>;
     <span class="c-kw">while</span> (<span class="c-fn">GetMessage</span>(&amp;<span class="c-var">msg</span>, <span class="c-kw">NULL</span>, <span class="c-num">0</span>, <span class="c-num">0</span>)) {
         <span class="c-fn">TranslateMessage</span>(&amp;<span class="c-var">msg</span>);
@@ -252,7 +254,7 @@
               </div>
               <div class="prompt-item">
                 <div class="prompt-label">Connect your Player struct to the window</div>
-                <div class="prompt-text">I have a Player struct in C (float x, float y, int health, bool alive) and a Win32 window that draws a green rectangle at g_x, g_y. I want to replace the global g_x/g_y with a Player instance and call player_move() on key input. Tell me exactly what to change: don't rewrite the whole file, just the 3-4 spots that need updating.</div>
+                <div class="prompt-text">I have a Player struct in C (float x, float y, int health, bool alive) and a Win32 window that draws a green rectangle at g_rect_x, g_rect_y. I want to replace the globals g_rect_x/g_rect_y with a Player instance and call player_move() on key input. Tell me exactly what to change: don't rewrite the whole file, just the 3-4 spots that need updating.</div>
               </div>
             </div>
 

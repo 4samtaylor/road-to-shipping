@@ -384,7 +384,7 @@
    "qa": [
     [
      "Why is there flicker?",
-     "FillRect clears the real window, then the rectangle is drawn on top, and the user can catch the in-between. Rung 7 (double buffering) fixes it."
+     "FillRect clears the real window, then the rectangle is drawn on top, and the user can catch the in-between. The Double buffering concept, at the end of this phase, fixes it."
     ],
     [
      "What does the TRUE do in InvalidateRect?",

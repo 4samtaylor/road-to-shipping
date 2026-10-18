@@ -31,7 +31,7 @@
    ],
    "builds": "Phase 1: <code>int</code> and <code>%d</code>. Session 1: <code>var(1.8f)</code> printed 1.",
    "why": "Your game has to remember things: a score, how fast the player moves, which key was pressed, whether they’re still alive. In C you say what kind of thing each variable holds before you use it, and it only accepts that kind.",
-   "code": "#include <stdio.h>\n#include <stdbool.h>\n\nint main() {\n    int score = 0;\n    float speed = 2.5f;\n    char key = 'q';\n    bool alive = true;\n\n    score = score + 10;\n    int lives = 2.9f;\n    printf(\"%d %d\\n\", score, lives);\n    return 0;\n}",
+   "code": "#include <stdio.h>\n#include <stdbool.h>\n\nint main(void) {\n    int score = 0;\n    float speed = 2.5f;\n    char key = 'q';\n    bool alive = true;\n\n    score = score + 10;\n    int lives = 2.9f;\n    printf(\"%d %d\\n\", score, lives);\n    return 0;\n}",
    "walk": [
     [
      2,
@@ -66,7 +66,7 @@
      "Two <code>%d</code> slots, filled left to right by score and lives."
     ]
    ],
-   "model": "<b>Mental model:</b> each variable is a box with a shape cut in the lid. A float squeezed through an int-shaped lid loses whatever doesn’t fit, and C doesn’t round. It chops.",
+   "model": "<b>Mental model:</b> each variable is a box with a shape cut in the lid. C will push a value through the wrong lid without stopping you: a float squeezed into an int-shaped box loses whatever doesn’t fit, and C doesn’t round. It chops.",
    "check": {
     "q": "What does this program print?",
     "opts": [
@@ -85,7 +85,7 @@
     }
    },
    "tryit": {
-    "task": "Pick the type for each variable. Write it in VS Code and build with /W4: zero warnings means you chose well.",
+    "task": "Pick the type for each variable. Then print all four in one program (<code>%f %c %d %d</code>) and check each value comes out the way you put it in.",
     "code": "____ jump_height = 1.5f;\n____ lane = 'A';\n____ coins = 0;\n____ paused = false;",
     "answer": "float, char, int, bool"
    },
@@ -124,7 +124,7 @@
    ],
    "builds": "Rung 1: the four types. Phase 1: <code>%d</code> and <code>%%</code>.",
    "why": "You can already print an int with %d. Every type gets its own slot in printf. Use the wrong slot and printf prints nonsense without stopping, so matching them is on you.",
-   "code": "#include <stdio.h>\n\nint main() {\n    int score = 120;\n    float speed = 2.5f;\n    char key = 'q';\n\n    printf(\"Score: %d\\n\", score);\n    printf(\"Speed: %f\\n\", speed);\n    printf(\"Speed: %.1f\\n\", speed);\n    printf(\"Key: %c\\n\", key);\n    printf(\"Key as a number: %d\\n\", key);\n    return 0;\n}",
+   "code": "#include <stdio.h>\n\nint main(void) {\n    int score = 120;\n    float speed = 2.5f;\n    char key = 'q';\n\n    printf(\"Score: %d\\n\", score);\n    printf(\"Speed: %f\\n\", speed);\n    printf(\"Speed: %.1f\\n\", speed);\n    printf(\"Key: %c\\n\", key);\n    printf(\"Key as a number: %d\\n\", key);\n    return 0;\n}",
    "walk": [
     [
      8,
@@ -194,7 +194,7 @@
    ],
    "builds": "Rung 2: format slots. scanf uses the same slots, in the other direction.",
    "why": "printf talks to the player. scanf listens. It waits for them to type something and press Enter, then puts what they typed into one of your variables. It’s how the guessing game reads a guess.",
-   "code": "#define _CRT_SECURE_NO_WARNINGS\n#include <stdio.h>\n\nint main() {\n    int guess;\n    char again;\n\n    printf(\"Guess a number: \");\n    scanf(\"%d\", &guess);\n    printf(\"You guessed %d\\n\", guess);\n\n    printf(\"Play again? (y/n) \");\n    scanf(\" %c\", &again);\n    return 0;\n}",
+   "code": "#define _CRT_SECURE_NO_WARNINGS\n#include <stdio.h>\n\nint main(void) {\n    int guess;\n    char again;\n\n    printf(\"Guess a number: \");\n    scanf(\"%d\", &guess);\n    printf(\"You guessed %d\\n\", guess);\n\n    printf(\"Play again? (y/n) \");\n    scanf(\" %c\", &again);\n    return 0;\n}",
    "walk": [
     [
      1,
@@ -251,7 +251,7 @@
    "qa": [
     [
      "What happens if I forget the &?",
-     "It compiles, maybe with a warning, then usually crashes when you type a number: scanf writes to a random place in memory. One of the most common C bugs, so break it on purpose once."
+     "With your build.bat it won’t compile: MSVC warns that %d needs an address (C4477) and /WX stops the build. Without /WX it compiles, then usually crashes when you type a number, because scanf writes to a random place in memory. One of the most common C bugs, so break it on purpose once."
     ],
     [
      "What if they type letters instead of a number?",
@@ -276,7 +276,7 @@
    ],
    "builds": "Rung 3: you have the player’s guess in a variable. Now compare it.",
    "why": "Games are mostly decisions. Did they guess right? Are they out of lives? An if runs its block only when its condition is true. else catches everything else.",
-   "code": "#define _CRT_SECURE_NO_WARNINGS\n#include <stdio.h>\n\nint main() {\n    int secret = 42;\n    int guess;\n    printf(\"Guess: \");\n    scanf(\"%d\", &guess);\n\n    if (guess == secret) {\n        printf(\"Got it!\\n\");\n    } else if (guess < secret) {\n        printf(\"Higher\\n\");\n    } else {\n        printf(\"Lower\\n\");\n    }\n    return 0;\n}",
+   "code": "#define _CRT_SECURE_NO_WARNINGS\n#include <stdio.h>\n\nint main(void) {\n    int secret = 42;\n    int guess;\n    printf(\"Guess: \");\n    scanf(\"%d\", &guess);\n\n    if (guess == secret) {\n        printf(\"Got it!\\n\");\n    } else if (guess < secret) {\n        printf(\"Higher\\n\");\n    } else {\n        printf(\"Lower\\n\");\n    }\n    return 0;\n}",
    "walk": [
     [
      10,
@@ -354,7 +354,7 @@
    ],
    "builds": "Rung 4: conditions. A loop is an if that keeps coming back.",
    "why": "The guessing game has to keep asking until the player gets it. Writing scanf ten times won’t do. A loop runs the same block again and again while a condition stays true.",
-   "code": "#include <stdio.h>\n\nint main() {\n    int lives = 3;\n    while (lives > 0) {\n        printf(\"Lives: %d\\n\", lives);\n        lives = lives - 1;\n    }\n    printf(\"Game over\\n\");\n\n    for (int i = 1; i <= 3; i++) {\n        printf(\"Wave %d\\n\", i);\n    }\n    return 0;\n}",
+   "code": "#include <stdio.h>\n\nint main(void) {\n    int lives = 3;\n    while (lives > 0) {\n        printf(\"Lives: %d\\n\", lives);\n        lives = lives - 1;\n    }\n    printf(\"Game over\\n\");\n\n    for (int i = 1; i <= 3; i++) {\n        printf(\"Wave %d\\n\", i);\n    }\n    return 0;\n}",
    "walk": [
     [
      5,
@@ -439,7 +439,7 @@
    ],
    "builds": "Rung 4: else if chains. switch does the same job when you’re matching one value against fixed options.",
    "why": "A menu with four options is four else ifs in a row. switch reads one value and jumps straight to the matching case. It’s also how the runner will react to different keys.",
-   "code": "#define _CRT_SECURE_NO_WARNINGS\n#include <stdio.h>\n\nint main() {\n    int choice;\n    printf(\"1 Play  2 Scores  3 Quit: \");\n    scanf(\"%d\", &choice);\n\n    switch (choice) {\n        case 1:\n            printf(\"Starting...\\n\");\n            break;\n        case 2:\n            printf(\"High scores\\n\");\n            break;\n        case 3:\n            printf(\"Bye\\n\");\n            break;\n        default:\n            printf(\"Not an option\\n\");\n    }\n    return 0;\n}",
+   "code": "#define _CRT_SECURE_NO_WARNINGS\n#include <stdio.h>\n\nint main(void) {\n    int choice;\n    printf(\"1 Play  2 Scores  3 Quit: \");\n    scanf(\"%d\", &choice);\n\n    switch (choice) {\n        case 1:\n            printf(\"Starting...\\n\");\n            break;\n        case 2:\n            printf(\"High scores\\n\");\n            break;\n        case 3:\n            printf(\"Bye\\n\");\n            break;\n        default:\n            printf(\"Not an option\\n\");\n    }\n    return 0;\n}",
    "walk": [
     [
      9,
@@ -510,7 +510,7 @@
    ],
    "builds": "Rung 1: the float-to-int chop. The same chop hides inside division.",
    "why": "Timers, averages and percentages all divide. C divides two ints as ints and throws the remainder away, with no warning. Knowing when that happens saves hours of “why is this 0?”.",
-   "code": "#include <stdio.h>\n\nint main() {\n    int a = 7, b = 2;\n    printf(\"%d\\n\", a / b);\n    printf(\"%d\\n\", a % b);\n    printf(\"%f\\n\", a / 2.0f);\n    printf(\"%f\\n\", (float)a / b);\n    printf(\"%f\\n\", (float)(a / b));\n    printf(\"%zu\\n\", sizeof(int));\n    return 0;\n}",
+   "code": "#include <stdio.h>\n\nint main(void) {\n    int a = 7, b = 2;\n    printf(\"%d\\n\", a / b);\n    printf(\"%d\\n\", a % b);\n    printf(\"%f\\n\", a / 2.0f);\n    printf(\"%f\\n\", (float)a / b);\n    printf(\"%f\\n\", (float)(a / b));\n    printf(\"%zu\\n\", sizeof(int));\n    return 0;\n}",
    "walk": [
     [
      4,
@@ -599,7 +599,7 @@
    ],
    "builds": "Rung 7: % and casts, both used here.",
    "why": "A guessing game where the secret is always 42 isn’t a game. rand() gives a number that looks random. srand() changes where the sequence starts, so it’s different every run.",
-   "code": "#include <stdio.h>\n#include <stdlib.h>\n#include <time.h>\n\nint main() {\n    srand((unsigned)time(NULL));\n    int secret = rand() % 100 + 1;\n    int roll = rand() % 6 + 1;\n    printf(\"Secret: %d  Dice: %d\\n\", secret, roll);\n    return 0;\n}",
+   "code": "#include <stdio.h>\n#include <stdlib.h>\n#include <time.h>\n\nint main(void) {\n    srand((unsigned)time(NULL));\n    int secret = rand() % 100 + 1;\n    int roll = rand() % 6 + 1;\n    printf(\"Secret: %d  Dice: %d\\n\", secret, roll);\n    return 0;\n}",
    "walk": [
     [
      2,
