@@ -128,7 +128,7 @@
       for (var i = 0; i < 20; i++) txt(c, '.', 38.5 + i * 17, 54, { size: 14, col: C.muted });
       txt(c, 'A', 38.5 + 2 * 17, 49, { size: 15, w: 800, col: C.accent });
       if (ox > 38) txt(c, '#', ox + 8.5, 49, { size: 15, w: 800, col: C.orange });
-      if (V.quit || V.quitK > 0) { var qk = V.quitK == null ? 1 : V.quitK; badge(c, C, 300, 36, 128, 18, 'break: leave the loop', C.orange, qk); }
+      if (V.quit || V.quitK > 0) { var qk = V.quitK == null ? 1 : V.quitK; badge(c, C, 322, 27, 128, 16, 'break: leave the loop', C.orange, qk); }
       /* letterbox */
       var sx = KB.slot[0], sy = KB.slot[1];
       rrect(c, 24, 98, 120, 46, 4); c.fillStyle = rgba(C.accent, .08); c.fill(); c.lineWidth = 1.5; c.strokeStyle = rgba(C.accent, .6); c.stroke();

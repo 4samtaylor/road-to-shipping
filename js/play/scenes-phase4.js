@@ -79,7 +79,7 @@
     for (i = 0; i < NP; i++) { var ww = Math.max(0, vis[i]); Y.push(y); var h = tot > 0 ? avail * ww / tot : 0; Hh.push(h); if (ww > .02) y += h + gap; }
     return { y: Y, h: Hh };
   }
-  function laneY(y, h, lane) { var base = y + h * .45, gap = clamp(h * .26, 18, 34); return lane ? base + gap : base; }
+  function laneY(y, h, lane) { var base = y + h * .48, gap = clamp(h * .26, 18, 34); return lane ? base + gap : base; }
   var popv = function (V, k) { var v = V.pop && V.pop[k]; return v == null ? 1 : v; };
 
   /* ---------- chips ---------- */
@@ -352,7 +352,7 @@
     Object.keys(groups).forEach(function (hid) {
       var cm = byId[hid], list = groups[hid].slice().sort(function (a, b) { return (a.r ? 1 : 0) - (b.r ? 1 : 0); });
       var fs = 8, ws = list.map(function (b) { return b.n.length * fs * .6 + 9; }), total = ws.reduce(function (a, b) { return a + b + 3; }, -3);
-      var cx = X(cm.col), cy = laneY(y, h, cm.lane), x = clamp(cx - total / 2, 12, W - 12 - total), fy = cy + (cm.lane ? 16 : -16);
+      var cx = X(cm.col), cy = laneY(y, h, cm.lane), x = clamp(cx - total / 2, 12, W - 12 - total), fy = cy + (cm.lane ? 14 : -14);
       var lcol = laneCol(cm.lane, C);
       list.forEach(function (b, i) {
         var w = ws[i], pp = popv(V, 'f' + p + b.n), dr = V.drop && V.drop.p === p && V.drop.n === b.n ? V.drop.t : 0;
@@ -361,7 +361,7 @@
         var s = EZ.back(pp) * (1 - dr), fx = x + w / 2;
         if (s > .02) {
           c.save(); c.translate(fx, fy); c.scale(s, s); c.globalAlpha *= 1 - dr;
-          rr(c, -w / 2, -6, w, 12, 4);
+          rr(c, -w / 2, -5.5, w, 11, 4);
           if (b.r) { c.setLineDash([2, 2]); c.strokeStyle = C.muted2; c.lineWidth = 1; c.stroke(); c.setLineDash([]); txt(c, b.n, 0, .5, { size: fs, w: 600, col: C.muted2 }); }
           else {
             c.fillStyle = hot > 0 ? rgba(lcol, .15 + .85 * hot) : rgba(lcol, .12); c.fill(); c.strokeStyle = lcol; c.lineWidth = 1; c.stroke();

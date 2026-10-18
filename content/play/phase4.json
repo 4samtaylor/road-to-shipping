@@ -1531,7 +1531,7 @@
     "line": 14,
     "ms": 2400,
     "note": "Push shares the merged result. GitHub gets your commit and the merge, and everyone is back in step.",
-    "out": "> git push\nTo https://github.com/4samtaylor/game-dev-exercises.git\n   cb284f6..7d41e0a  main -> main\n",
+    "out": "> git push\nTo https://github.com/4samtaylor/game-dev-exercises\n   cb284f6..7d41e0a  main -> main\n",
     "outAt": 0.6,
     "do": [
      {

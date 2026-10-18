@@ -2749,3 +2749,14 @@ body.editing .pg[hidden] { display: block; margin-top: 26px; }
   .pg-top .stage-nav::-webkit-scrollbar { display: none; }
   .pg-top .stage-nav button, .pg-top .stage-nav a { flex: none; font-size: 11px; padding: 6px 10px; min-height: 32px; margin-left: 0; white-space: nowrap; }
 }
+
+/* v22: part 2 is one view, switched between the step-through and the player */
+.lad-ph2 { justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px 12px; }
+.lad-ph2 > span:first-child { display: flex; align-items: baseline; gap: 10px; }
+.lad-seg { display: inline-flex; border: 1px solid var(--border2); border-radius: 3px; overflow: hidden; letter-spacing: 0; text-transform: none; }
+.lad-seg button { font-family: var(--font-mono); font-size: 12px; padding: 6px 12px; min-height: 32px; cursor: pointer; background: none; border: 0; border-left: 1px solid var(--border); color: var(--muted2); }
+.lad-seg button:first-child { border-left: 0; }
+.lad-seg button:hover { color: var(--text); }
+.lad-seg button.on { background: var(--accent-dim); color: var(--accent); }
+.lad-play-host .rtsp-hd { display: none; }
+@media (max-width: 600px) { .lad-seg button { min-height: 36px; padding: 6px 10px; } }

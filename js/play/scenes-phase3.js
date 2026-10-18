@@ -117,7 +117,7 @@
         bg(c, C, W, H);
         V.rooms.forEach(function (R, i) {
           if (!R.vis) return;
-          var k = R.k == null ? 1 : R.k, lit = V.lit === i, al = (R.fade == null ? 1 : R.fade) * (V.lit >= 0 && !lit ? 0.6 : 1);
+          var k = R.k == null ? 1 : R.k, lit = V.lit === i, al = (R.fade == null ? 1 : R.fade) * (V.lit >= 0 && !lit ? 0.75 : 1);
           var cx = RX[i] + RW / 2, cy = RY + RH / 2, mach = R.kind === 'machine';
           c.save(); c.globalAlpha = Math.max(0, al); c.translate(cx, cy); c.scale(Math.max(k, 0), Math.max(k, 0)); c.translate(-cx, -cy);
           rrect(c, RX[i], RY, RW, RH, 8); c.fillStyle = C.surface2; c.fill(); c.lineWidth = lit ? 2.5 : 1.5; c.strokeStyle = lit ? C.accent : C.border2; c.stroke();
@@ -195,7 +195,7 @@
           var y = entY(i) + 12, r = V.entR ? V.entR[i] : 1, shown = V.ent[i];
           c.save(); c.setLineDash([2, 3]); c.strokeStyle = C.border2; c.beginPath(); c.moveTo(20, y + 8); c.lineTo(176, y + 8); c.stroke(); c.restore();
           if (shown) { var str = s.slice(0, Math.ceil(s.length * clamp(r))); txt(c, str, 20, y, { size: 8.5, w: 600, col: C.text, align: 'left' });
-            if (V.match[i]) { var k = V.matchK ? V.matchK[i] : 1; c.save(); c.translate(0, 0); tick(c, 172, y + 20, Math.max(k, 0) * 0.9, C.accent); c.restore(); } }
+            if (V.match[i]) { var k = V.matchK ? V.matchK[i] : 1; c.save(); c.translate(0, 0); tick(c, 170, y, Math.max(k, 0) * 0.9, C.accent); c.restore(); } }
         });
         /* main */
         rrect(c, 214, 26, 176, 100, 6); c.fillStyle = C.surface2; c.fill(); c.strokeStyle = C.accent; c.lineWidth = 1.5; c.stroke();
@@ -219,7 +219,7 @@
         });
         /* compiler peeks at contents */
         if (V.look) { var L = V.look, p = L.lp, y2 = entY(L.i) + 12;
-          c.save(); c.globalAlpha = Math.sin(Math.PI * p); arrow(c, 214, 74, 190 + 4, y2, C.yellow, true);
+          c.save(); c.globalAlpha = clamp(Math.sin(Math.PI * p) * 2.2); arrow(c, 214, 74, 190 + 4, y2, C.yellow, true);
           txt(c, 'known!', 200, y2 - 11 + (L.i ? 6 : 0), { size: 8, w: 700, col: C.yellow }); c.restore(); }
         if (V.fl) paper(c, C, V.fl.x, V.fl.y, 44, 22, String(V.fl.t), { col: V.fl.ret ? C.orange : C.purple, al: V.fl.al, size: 11 });
         capDraw(c, C, V.cap, V.capA);

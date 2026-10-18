@@ -203,7 +203,7 @@
   var slotX = function (k) { return SLOT0 - SLOTD * k; };
   var rowY = function (i) { return 41 + i * 15; };
   var rectX = function (v) { return WX + 12 + (v - 100) * 3; };
-  RTSPlay.scene('p5-desk', {
+  var deskDef = {
     W: W, H: H,
     init: function () { return { win: 'on', title: 'My First Window', gx: null, px: null, tg: null, rows: [], hl: null, q: [], hand: null, loop: 'GetMessage', stat: '', fr: null, wet: false, hdc: false, brush: false, banner: null, bk: 'ok' }; },
     apply: function (S, a) {
@@ -217,6 +217,7 @@
         case 'give': S.hand = null; S.hl = a.row; break;
         case 'send': S.hl = a.row; break;
         case 'hl': S.hl = a.row || null; break;
+        case 'bin': S.hand = null; break;
         case 'loop': S.loop = a.name; S.stat = a.t || ''; break;
         case 'stat': S.stat = a.t || ''; break;
         case 'fr': S.fr = a.n; break;
@@ -261,6 +262,7 @@
           if (lp >= 1) V.fly = null;
           break; }
         case 'hl': if (lp > 0) V.hl = a.row || null; break;
+        case 'bin': if (V.hand) { if (lp >= 1) V.hand = null; else V.hand = Object.assign({}, V.hand, { al: 1 - lp, y: V.hand.y - 10 * lp, sc: 1 - .3 * lp }); } break;
         case 'loop': V.loopPop = Math.sin(Math.PI * lp); if (lp >= .4) { V.loop = a.name; V.stat = a.t || ''; } break;
         case 'stat': V.statPop = Math.sin(Math.PI * lp); if (lp >= .4) V.stat = a.t || ''; break;
         case 'fr': V.frPop = Math.sin(Math.PI * lp); if (lp >= .4) V.fr = a.n; break;
@@ -350,8 +352,16 @@
       /* banner */
       if (V.banner) { var col = V.bk === 'warn' ? C.orange : C.accent; txt(c, V.banner, 200, 236, { size: 9, w: 700, col: col, al: V.banA != null ? V.banA : 1 }); }
     }
-  });
+  };
   function a_to(V, s) { return s; }
+  function deskVariant(name, over) {
+    var d = Object.assign({}, deskDef);
+    d.init = function () { var s = deskDef.init(); Object.keys(over).forEach(function (k) { s[k] = JSON.parse(JSON.stringify(over[k])); }); return s; };
+    RTSPlay.scene(name, d);
+  }
+  deskVariant('p5-desk-wndproc', { win: 'off', rows: [] });
+  deskVariant('p5-desk-loop', { rows: ['WM_DESTROY: PostQuitMessage', 'default: DefWindowProc'], loop: 'PeekMessage', stat: '' });
+  deskVariant('p5-desk-paint', { rows: ['case WM_KEYDOWN', 'case WM_PAINT', 'case WM_DESTROY', 'default'] });
 
   /* =====================================================================
      p5-libs   menu (windows.h) -> kitchens (user32 / gdi32); the linker is the waiter
@@ -597,9 +607,7 @@
       var cx = PL.x + 2, cy = PL.y + 16, cw = PL.w - 4, ch = PL.h - 18;
       c.save(); c.beginPath(); c.rect(cx, cy, cw, ch); c.clip();
       var wv = V.wInk, bl = V.blit;
-      if (bl > 0 && bl < 1 && V.blitV !== wv) { /* old picture fading as the new one arrives */ }
       sq(c, C, PL, wv, 1);
-      if (bl > 0 && bl < 1) { c.fillStyle = rgba(C.bg, 1); }
       if (bl > .45 && bl < 1) { c.fillStyle = rgba(C.accent, .28 * Math.sin(Math.PI * seg(bl, .45, 1))); c.fillRect(cx, cy, cw, ch); }
       c.restore();
       if (V.hdc) { var ha = V.hdcA != null ? V.hdcA : 1; chip(c, C, PL.x + 4, PL.y + PL.h + 6, 74, 15, 'hdc = window', C.blue, ha); }
@@ -640,7 +648,7 @@
       if (card === 'bmp') { var bk = V.bmpP != null && V.bmpP < 1 ? V.bmpP : 1; chip(c, C, PR.x + 84, PR.y + PR.h + 6, 80, 15, 'bmp = pixels', C.accent, bk); }
       if (V.sel) { var sa = V.selP != null ? V.selP : 1; c.save(); c.globalAlpha *= sa;
         c.strokeStyle = C.accent; c.lineWidth = 1.6; c.beginPath(); c.moveTo(PR.x + 78, PR.y + PR.h + 13.5); c.lineTo(PR.x + 84, PR.y + PR.h + 13.5); c.stroke();
-        chip(c, C, PR.x + 84, PR.y + PR.h + 26, 80, 15, 'old = spare', C.muted2, 1); txt(c, 'bmp is now inside back', PR.x + 4, PR.y + PR.h + 41 + 0, { size: 0, col: C.muted }); c.restore(); }
+        chip(c, C, PR.x + 84, PR.y + PR.h + 26, 80, 15, 'old = spare', C.muted2, 1); c.restore(); }
       if (V.brush) { var ba = V.brushA != null ? V.brushA : 1; c.save(); c.globalAlpha *= ba; chip(c, C, PR.x + 4, PR.y + PR.h + 26, 50, 15, 'brush', C.accent, 1); c.fillStyle = C.accent; c.fillRect(PR.x + 7, PR.y + PR.h + 30, 5, 6); c.restore(); }
       /* BitBlt arrow + copy */
       var bp = V.blit;

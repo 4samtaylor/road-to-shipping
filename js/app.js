@@ -1223,6 +1223,7 @@ function showPage(pid, key, o) {
     p.el.hidden = p !== pg;
   });
   s.want = undefined;
+  if (pg.rung === undefined || ladState(pid).cur !== pg.rung) ladUI(pid).watch = null;   // the player closes when the concept or page changes
   if (!state._pages || typeof state._pages !== 'object') state._pages = {};
   state._pages[pid] = pg.key;
   if (pg.rung !== undefined) ladState(pid).cur = pg.rung;
@@ -2605,14 +2606,16 @@ function renderLadder(pid) {
 
   if (!hideWalk) {
     var at = step > 0 ? r.walk[Math.min(step, r.walk.length) - 1] : null;
-    h += '<section class="lad-part"><div class="lad-ph"><b>2</b>See it, one line at a time</div>' + ladCode(r.code, at ? at[0] : 0) +
+    var watch = canPlay && ui.watch === r.id;   // one view: either the step-through or the player, never both
+    h += '<section class="lad-part"><div class="lad-ph lad-ph2"><span><b>2</b>See it, one line at a time</span>' +
+      (canPlay ? '<span class="lad-seg" role="group" aria-label="How to see it"><button data-lad-mode="step" aria-pressed="' + !watch + '"' + (watch ? '' : ' class="on"') + '>Step through</button>' +
+        '<button data-lad-mode="watch" aria-pressed="' + watch + '"' + (watch ? ' class="on"' : '') + '>▶ Watch it run</button></span>' : '') + '</div>' +
+      (watch ? '<div class="lad-play-host"></div>' : ladCode(r.code, at ? at[0] : 0) +
       '<div class="lad-walk"><div class="lad-note">' + (at ? '<small>Line ' + at[0] + ' · stop ' + Math.min(step, r.walk.length) + ' of ' + r.walk.length + '</small>' + at[1]
         : '<small>' + r.walk.length + ' stops</small>Read the whole program once. Then step through the lines that matter.') + '</div>' +
       '<div class="lad-ctl"><button class="lad-btn" data-lad-walk="-1"' + (step === 0 ? ' disabled' : '') + '>Back</button>' +
       (step < r.walk.length ? '<button class="lad-btn go" data-lad-walk="1">' + (step === 0 ? 'Start' : 'Next line') + '</button>' : '<button class="lad-btn" data-lad-walk="restart">From the top</button>') +
-      '</div></div>' +
-      (canPlay ? '<div class="lad-play"><button class="lad-btn lad-playbtn" data-lad-play>' + (keep ? 'Hide' : '▶ See it run') + '</button></div><div class="lad-play-host"></div>' : '') +
-      (walkDone ? '<p class="lad-model">' + r.model + '</p>' : '') + '</section>';
+      '</div></div>' + (walkDone ? '<p class="lad-model">' + r.model + '</p>' : '')) + '</section>';
   }
 
   if (!showCheck) {
@@ -2651,13 +2654,16 @@ function renderLadder(pid) {
     var nh = $('.lad-play-host', m);
     if (nh) nh.parentNode.replaceChild(keep, nh);
     else if (window.RTSPlay) RTSPlay.close(keep);   // the walkthrough part is gone, so the player goes too
+  } else if (canPlay && ui.watch === r.id) {
+    var wh = $('.lad-play-host', m);
+    if (wh && window.RTSPlay) RTSPlay.open(wh, pid, r.id);
   }
   renderOverview(pid);   // done ticks, pills and Start / Continue follow the ladder state
   renderStrip(s);
 }
 document.addEventListener('click', function (e) {
   if (document.body.classList.contains('editing')) return;
-  var el = e.target.closest('[data-lad-go], [data-lad-walk], [data-lad-quiz], [data-lad-opt], [data-lad-hint], [data-lad-reveal], [data-lad-showwalk], [data-lad-play]');
+  var el = e.target.closest('[data-lad-go], [data-lad-walk], [data-lad-quiz], [data-lad-opt], [data-lad-hint], [data-lad-reveal], [data-lad-showwalk], [data-lad-mode]');
   if (!el) return;
   var ph = el.closest('.phase'), pid = ph && ph.dataset.ladder && ph.id, d = pid && LADDERS[pid];
   if (!d) return;
@@ -2679,11 +2685,10 @@ document.addEventListener('click', function (e) {
     if (ck) scrollToEl(ck, TOPBAR + 90);
     return;
   }
-  if (el.hasAttribute('data-lad-play')) {
-    var host = $('.lad-play-host', el.closest('.lad-part'));
-    if (!host || !window.RTSPlay) return;
-    if (host.firstChild) { RTSPlay.close(host); el.textContent = '▶ See it run'; }
-    else { RTSPlay.open(host, pid, r.id); if (host.firstChild) el.textContent = 'Hide'; }
+  if (el.hasAttribute('data-lad-mode')) {
+    if (el.dataset.ladMode === 'watch') ui.watch = r.id;
+    else { ui.watch = null; closePlay(el.closest('.lad-part')); }   // back to the walkthrough where you left it
+    renderLadder(pid);
     return;
   }
   if (el.hasAttribute('data-lad-opt')) {

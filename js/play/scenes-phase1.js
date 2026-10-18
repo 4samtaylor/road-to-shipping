@@ -219,7 +219,7 @@
           }
           case 'tab': { var to = (Math.floor(S.cur.c / 8) + 1) * 8, e = EZ.io(lp); V.cx = lerp(S.cur.c, to, e); V.cy = V.cur.r; V.cur.c = to; V.tabK = lp; break; }
           case 'nl': { var e2 = EZ.io(lp); V.cx = lerp(S.cur.c, 0, e2); V.cy = lerp(S.cur.r, S.cur.r + 1, e2); V.cur.r = S.cur.r + 1; V.cur.c = 0; break; }
-          case 'cr': { var e3 = EZ.io(lp); V.cx = lerp(S.cur.c, 0, e3); V.cy = V.cur.r; V.cur.c = 0; V.crK = lp; break; }
+          case 'cr': { var e3 = EZ.io(lp); V.crFrom = S.cur.c; V.cx = lerp(S.cur.c, 0, e3); V.cy = V.cur.r; V.cur.c = 0; V.crK = lp; break; }
         }
       },
       prep: function (V, S) { V.ghost = null; V.cx = null; V.cy = null; V.keyK = null; V.tabK = null; V.crK = null; },

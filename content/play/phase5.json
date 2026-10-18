@@ -1,0 +1,1646 @@
+{
+ "winmain-hwnd": {
+  "scene": "p5-window",
+  "steps": [
+   {
+    "line": 3,
+    "ms": 1300,
+    "note": "g_hwnd starts as NULL: there is no window yet, so the ticket slot is empty. This program runs until you close it, so we film the set-up and one turn of the loop.",
+    "do": [
+     {
+      "a": "tkt0"
+     }
+    ]
+   },
+   {
+    "line": 9,
+    "ms": 1200,
+    "note": "Windows starts the program at WinMain and hands it two things: hInst (this program) and nShow (how the window should first appear).",
+    "do": [
+     {
+      "a": "chips"
+     }
+    ]
+   },
+   {
+    "line": 10,
+    "ms": 800,
+    "note": "hPrev and lpCmd go unused, so the (void) casts tell the compiler that is on purpose.",
+    "do": []
+   },
+   {
+    "line": 11,
+    "ms": 1000,
+    "note": "A blank WNDCLASS form: the {0} sets every field to zero.",
+    "do": [
+     {
+      "a": "form"
+     }
+    ]
+   },
+   {
+    "line": 12,
+    "ms": 1000,
+    "note": "The key field: the address of WindowProc. Windows rings this function whenever something happens to the window.",
+    "do": [
+     {
+      "a": "fill",
+      "i": 0
+     }
+    ]
+   },
+   {
+    "line": 13,
+    "ms": 900,
+    "note": "hInstance says which program owns this kind of window.",
+    "do": [
+     {
+      "a": "fill",
+      "i": 1
+     }
+    ]
+   },
+   {
+    "line": 14,
+    "ms": 900,
+    "note": "The form gets a name: GameWindow.",
+    "do": [
+     {
+      "a": "fill",
+      "i": 2
+     }
+    ]
+   },
+   {
+    "line": 15,
+    "ms": 1500,
+    "note": "RegisterClass hands the form to Windows, who files it under the name GameWindow.",
+    "do": [
+     {
+      "a": "register"
+     }
+    ]
+   },
+   {
+    "line": 17,
+    "ms": 1200,
+    "note": "CreateWindowEx orders a window of kind GameWindow, titled My First Window. It exists now, but nobody can see it yet.",
+    "do": [
+     {
+      "a": "win",
+      "s": "hid"
+     }
+    ]
+   },
+   {
+    "line": 18,
+    "ms": 1200,
+    "note": "WS_OVERLAPPEDWINDOW gives it a title bar, border and buttons. CW_USEDEFAULT means Windows picks where it goes.",
+    "do": [
+     {
+      "a": "style"
+     }
+    ]
+   },
+   {
+    "line": 19,
+    "ms": 1700,
+    "note": "The size is 800 by 600. The call returns a claim ticket, the HWND, and it is stored in g_hwnd.",
+    "do": [
+     {
+      "a": "size",
+      "len": 0.4
+     },
+     {
+      "a": "hwnd",
+      "v": "0x000A04C2",
+      "at": 0.4
+     }
+    ]
+   },
+   {
+    "line": 20,
+    "ms": 1200,
+    "note": "ShowWindow makes the window visible, the way nShow asked.",
+    "do": [
+     {
+      "a": "win",
+      "s": "on"
+     }
+    ]
+   },
+   {
+    "line": 22,
+    "ms": 800,
+    "note": "msg is an empty box that will hold each message Windows sends.",
+    "do": []
+   },
+   {
+    "line": 23,
+    "ms": 1300,
+    "note": "GetMessage waits for something to happen. The first thing is a paint request, so a WM_PAINT message arrives.",
+    "do": [
+     {
+      "a": "loop",
+      "t": "GetMessage got|WM_PAINT",
+      "e": "WM_PAINT"
+     }
+    ]
+   },
+   {
+    "line": 25,
+    "ms": 1100,
+    "note": "DispatchMessage hands the message to the window's WindowProc.",
+    "do": [
+     {
+      "a": "loop",
+      "t": "DispatchMessage|rings WindowProc",
+      "e": "WM_PAINT"
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 1300,
+    "note": "WindowProc has no opinions yet, so it passes everything to DefWindowProc, Windows' own standard handling. The window paints itself.",
+    "do": [
+     {
+      "a": "loop",
+      "t": "DispatchMessage|rings WindowProc",
+      "e": "WM_PAINT",
+      "def": true
+     },
+     {
+      "a": "flash"
+     }
+    ]
+   },
+   {
+    "line": 23,
+    "ms": 1300,
+    "note": "Back to waiting. Only a quit message ends this loop and this version never gets one, so the program keeps running until you close it. We stop the film here.",
+    "do": [
+     {
+      "a": "loop",
+      "t": "GetMessage|waits again...",
+      "e": null
+     }
+    ]
+   }
+  ]
+ },
+ "wndproc": {
+  "scene": "p5-desk-wndproc",
+  "steps": [
+   {
+    "line": 22,
+    "ms": 1400,
+    "note": "The set-up from rung 1 hands Windows the address of WindowProc: this is the window's receptionist, with a row for each case. Later we pretend the user presses Esc.",
+    "do": [
+     {
+      "a": "rows",
+      "list": [
+       "case WM_KEYDOWN",
+       "case WM_DESTROY",
+       "default"
+      ]
+     }
+    ]
+   },
+   {
+    "line": 27,
+    "ms": 1000,
+    "note": "CreateWindowEx builds the window. It is not visible yet.",
+    "do": [
+     {
+      "a": "win",
+      "s": "hid"
+     }
+    ]
+   },
+   {
+    "line": 30,
+    "ms": 1500,
+    "note": "ShowWindow shows it, and Windows drops a WM_PAINT envelope on the message queue: please paint yourself.",
+    "do": [
+     {
+      "a": "win",
+      "s": "on",
+      "len": 0.5
+     },
+     {
+      "a": "post",
+      "m": "WM_PAINT",
+      "at": 0.45,
+      "len": 0.55
+     }
+    ]
+   },
+   {
+    "line": 33,
+    "ms": 1000,
+    "note": "GetMessage picks the front envelope off the queue.",
+    "do": [
+     {
+      "a": "take"
+     },
+     {
+      "a": "loop",
+      "name": "GetMessage",
+      "t": "got WM_PAINT"
+     }
+    ]
+   },
+   {
+    "line": 35,
+    "ms": 1100,
+    "note": "DispatchMessage carries the envelope to WindowProc. This is the moment Windows calls your function.",
+    "do": [
+     {
+      "a": "give",
+      "row": "default"
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 900,
+    "note": "The switch looks at the message number. WM_PAINT is not one of our cases.",
+    "do": []
+   },
+   {
+    "line": 14,
+    "ms": 1000,
+    "note": "So it lands in default and goes to DefWindowProc, which paints the plain window.",
+    "do": [
+     {
+      "a": "flash"
+     }
+    ]
+   },
+   {
+    "line": 33,
+    "ms": 1900,
+    "note": "GetMessage waits. Then the user presses Esc: a WM_KEYDOWN envelope arrives, with wp saying which key.",
+    "do": [
+     {
+      "a": "hl",
+      "row": null
+     },
+     {
+      "a": "loop",
+      "name": "GetMessage",
+      "t": "waiting...",
+      "at": 0
+     },
+     {
+      "a": "post",
+      "m": "WM_KEYDOWN",
+      "sub": "wp: ESC",
+      "key": "Esc",
+      "at": 0.1,
+      "len": 0.4
+     },
+     {
+      "a": "take",
+      "at": 0.55,
+      "len": 0.45
+     },
+     {
+      "a": "stat",
+      "t": "got WM_KEYDOWN",
+      "at": 0.55,
+      "len": 0.3
+     }
+    ]
+   },
+   {
+    "line": 35,
+    "ms": 1100,
+    "note": "DispatchMessage carries it to WindowProc again.",
+    "do": [
+     {
+      "a": "give",
+      "row": "case WM_KEYDOWN"
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 900,
+    "note": "This time the switch jumps to case WM_KEYDOWN.",
+    "do": []
+   },
+   {
+    "line": 8,
+    "ms": 1700,
+    "note": "wp is the Esc key, so DestroyWindow takes the window apart. Windows immediately sends WM_DESTROY straight back into WindowProc.",
+    "do": [
+     {
+      "a": "win",
+      "s": "gone",
+      "len": 0.4
+     },
+     {
+      "a": "send",
+      "m": "WM_DESTROY",
+      "row": "case WM_DESTROY",
+      "at": 0.35,
+      "len": 0.65
+     }
+    ]
+   },
+   {
+    "line": 10,
+    "ms": 1000,
+    "note": "WindowProc is running again, and now the switch lands on case WM_DESTROY.",
+    "do": []
+   },
+   {
+    "line": 11,
+    "ms": 1200,
+    "note": "PostQuitMessage drops a WM_QUIT envelope on the queue. That is how the loop will learn it is time to stop.",
+    "do": [
+     {
+      "a": "post",
+      "m": "WM_QUIT"
+     }
+    ]
+   },
+   {
+    "line": 16,
+    "ms": 900,
+    "note": "return 0 tells Windows the message was handled.",
+    "do": [
+     {
+      "a": "hl",
+      "row": null
+     }
+    ]
+   },
+   {
+    "line": 33,
+    "ms": 1400,
+    "note": "GetMessage picks up WM_QUIT and returns 0 instead of a message. The while loop ends.",
+    "do": [
+     {
+      "a": "take"
+     },
+     {
+      "a": "loop",
+      "name": "GetMessage",
+      "t": "WM_QUIT:|returns 0"
+     },
+     {
+      "a": "banner",
+      "t": "GetMessage returned 0: the loop stops",
+      "k": "warn",
+      "at": 0.5,
+      "len": 0.5
+     }
+    ]
+   },
+   {
+    "line": 37,
+    "ms": 1300,
+    "note": "After the loop, msg.wParam holds the 0 we gave PostQuitMessage. It becomes the program's exit code.",
+    "do": [
+     {
+      "a": "banner",
+      "t": "exit code 0: the program ends"
+     }
+    ]
+   }
+  ]
+ },
+ "message-loop": {
+  "scene": "p5-desk-loop",
+  "steps": [
+   {
+    "line": 26,
+    "ms": 1300,
+    "note": "msg is an empty box for incoming messages. A real game loop runs forever, so we film two frames and then pretend the user closes the window.",
+    "do": [
+     {
+      "a": "stat",
+      "t": "msg = empty"
+     }
+    ]
+   },
+   {
+    "line": 27,
+    "ms": 800,
+    "note": "running is 1: the loop may go on.",
+    "do": [
+     {
+      "a": "stat",
+      "t": "running = 1"
+     }
+    ]
+   },
+   {
+    "line": 28,
+    "ms": 800,
+    "note": "The frame counter starts at 0.",
+    "do": [
+     {
+      "a": "fr",
+      "n": 0
+     }
+    ]
+   },
+   {
+    "line": 30,
+    "ms": 900,
+    "note": "A new frame begins. running is 1, so we go in.",
+    "do": [
+     {
+      "a": "stat",
+      "t": "running = 1|new frame"
+     }
+    ]
+   },
+   {
+    "line": 31,
+    "ms": 1300,
+    "note": "PeekMessage glances at the queue. It is empty, so PeekMessage returns 0 at once. No waiting, so the game can carry on.",
+    "do": [
+     {
+      "a": "loop",
+      "name": "PeekMessage",
+      "t": "queue empty|returns 0 now"
+     },
+     {
+      "a": "banner",
+      "t": "PeekMessage never waits",
+      "k": "ok"
+     }
+    ]
+   },
+   {
+    "line": 36,
+    "ms": 900,
+    "note": "The frame itself: frame goes up by 1.",
+    "do": [
+     {
+      "a": "fr",
+      "n": 1
+     }
+    ]
+   },
+   {
+    "line": 37,
+    "ms": 900,
+    "note": "wsprintf writes the text Frame 1 into the title array.",
+    "do": [
+     {
+      "a": "stat",
+      "t": "title =|\"Frame 1\""
+     }
+    ]
+   },
+   {
+    "line": 38,
+    "ms": 1000,
+    "note": "SetWindowText puts that text in the title bar. You can see the loop running.",
+    "do": [
+     {
+      "a": "title",
+      "t": "Frame 1"
+     }
+    ]
+   },
+   {
+    "line": 39,
+    "ms": 1300,
+    "note": "Sleep(16) rests for about 16 ms so the loop does not hog the CPU.",
+    "do": [
+     {
+      "a": "sleep"
+     },
+     {
+      "a": "stat",
+      "t": "sleeping..."
+     }
+    ]
+   },
+   {
+    "line": 31,
+    "ms": 1900,
+    "note": "Next frame. While we slept, the user tapped a key, so an envelope is waiting. PeekMessage takes it and returns nonzero.",
+    "do": [
+     {
+      "a": "banner",
+      "t": ""
+     },
+     {
+      "a": "post",
+      "m": "WM_KEYDOWN",
+      "key": "a key",
+      "at": 0,
+      "len": 0.4
+     },
+     {
+      "a": "take",
+      "at": 0.5,
+      "len": 0.5
+     },
+     {
+      "a": "loop",
+      "name": "PeekMessage",
+      "t": "found one|returns nonzero",
+      "at": 0.5,
+      "len": 0.4
+     }
+    ]
+   },
+   {
+    "line": 32,
+    "ms": 1000,
+    "note": "Is it WM_QUIT? No, it is WM_KEYDOWN, so running stays 1.",
+    "do": [
+     {
+      "a": "stat",
+      "t": "not WM_QUIT|running = 1"
+     }
+    ]
+   },
+   {
+    "line": 34,
+    "ms": 1100,
+    "note": "DispatchMessage hands the envelope to WindowProc, which passes it to DefWindowProc.",
+    "do": [
+     {
+      "a": "give",
+      "row": "default: DefWindowProc"
+     }
+    ]
+   },
+   {
+    "line": 31,
+    "ms": 1000,
+    "note": "Ask again: the queue is empty now, so PeekMessage returns 0 and the inner loop ends.",
+    "do": [
+     {
+      "a": "hl",
+      "row": null
+     },
+     {
+      "a": "loop",
+      "name": "PeekMessage",
+      "t": "queue empty|returns 0 now"
+     }
+    ]
+   },
+   {
+    "line": 36,
+    "ms": 800,
+    "note": "Frame 2.",
+    "do": [
+     {
+      "a": "fr",
+      "n": 2
+     }
+    ]
+   },
+   {
+    "line": 38,
+    "ms": 900,
+    "note": "The title bar shows Frame 2.",
+    "do": [
+     {
+      "a": "title",
+      "t": "Frame 2"
+     }
+    ]
+   },
+   {
+    "line": 39,
+    "ms": 1100,
+    "note": "Sleep(16) again.",
+    "do": [
+     {
+      "a": "sleep"
+     },
+     {
+      "a": "stat",
+      "t": "sleeping..."
+     }
+    ]
+   },
+   {
+    "line": 31,
+    "ms": 2000,
+    "note": "Now the user closes the window. Closing ran WM_DESTROY in WindowProc, which called PostQuitMessage, so a WM_QUIT envelope is in the queue. PeekMessage finds it.",
+    "do": [
+     {
+      "a": "post",
+      "m": "WM_QUIT",
+      "at": 0,
+      "len": 0.4
+     },
+     {
+      "a": "take",
+      "at": 0.5,
+      "len": 0.5
+     },
+     {
+      "a": "loop",
+      "name": "PeekMessage",
+      "t": "found one|returns nonzero",
+      "at": 0.5,
+      "len": 0.4
+     }
+    ]
+   },
+   {
+    "line": 32,
+    "ms": 1300,
+    "note": "It is WM_QUIT, so running becomes 0. Unlike GetMessage, PeekMessage does not stop for you; you check for quit yourself.",
+    "do": [
+     {
+      "a": "stat",
+      "t": "WM_QUIT!|running = 0"
+     }
+    ]
+   },
+   {
+    "line": 34,
+    "ms": 1000,
+    "note": "The rest of this pass still runs. WM_QUIT belongs to no window, so Windows quietly drops it.",
+    "do": [
+     {
+      "a": "bin"
+     }
+    ]
+   },
+   {
+    "line": 31,
+    "ms": 900,
+    "note": "Queue empty again.",
+    "do": [
+     {
+      "a": "loop",
+      "name": "PeekMessage",
+      "t": "queue empty|returns 0 now"
+     }
+    ]
+   },
+   {
+    "line": 36,
+    "ms": 900,
+    "note": "One last frame: frame goes to 3.",
+    "do": [
+     {
+      "a": "fr",
+      "n": 3
+     }
+    ]
+   },
+   {
+    "line": 30,
+    "ms": 1300,
+    "note": "Back at the top, running is 0, so the loop ends.",
+    "do": [
+     {
+      "a": "stat",
+      "t": "running = 0|loop over"
+     },
+     {
+      "a": "banner",
+      "t": "running is 0: the game loop stops",
+      "k": "warn"
+     }
+    ]
+   },
+   {
+    "line": 41,
+    "ms": 1200,
+    "note": "Return msg.wParam, the 0 from PostQuitMessage. The program exits.",
+    "do": [
+     {
+      "a": "banner",
+      "t": "exit code 0: the program ends"
+     }
+    ]
+   }
+  ]
+ },
+ "gdi-invalidate": {
+  "scene": "p5-desk-paint",
+  "steps": [
+   {
+    "line": 3,
+    "ms": 1300,
+    "note": "g_rect_x is just a number: where the square should be. This program runs until closed, so we film the first paint and one arrow-key press.",
+    "do": [
+     {
+      "a": "x",
+      "to": 100
+     }
+    ]
+   },
+   {
+    "line": 48,
+    "ms": 1500,
+    "note": "A new window needs a first picture, so Windows queues a WM_PAINT. GetMessage picks it up.",
+    "do": [
+     {
+      "a": "post",
+      "m": "WM_PAINT",
+      "at": 0,
+      "len": 0.4
+     },
+     {
+      "a": "take",
+      "at": 0.5,
+      "len": 0.5
+     }
+    ]
+   },
+   {
+    "line": 50,
+    "ms": 1000,
+    "note": "DispatchMessage carries it to WindowProc.",
+    "do": [
+     {
+      "a": "give",
+      "row": "case WM_PAINT"
+     }
+    ]
+   },
+   {
+    "line": 14,
+    "ms": 800,
+    "note": "case WM_PAINT: the one place we draw.",
+    "do": []
+   },
+   {
+    "line": 16,
+    "ms": 1000,
+    "note": "BeginPaint says \"I am starting to draw\" and gives us hdc, the surface to draw on.",
+    "do": [
+     {
+      "a": "hdc",
+      "on": true
+     }
+    ]
+   },
+   {
+    "line": 17,
+    "ms": 1100,
+    "note": "FillRect with the window colour wipes the old picture clean first. Without this, old squares would smear.",
+    "do": [
+     {
+      "a": "erase"
+     }
+    ]
+   },
+   {
+    "line": 19,
+    "ms": 1000,
+    "note": "SetRect works out where the square goes: 50 by 50 at g_rect_x.",
+    "do": [
+     {
+      "a": "target",
+      "v": 100
+     }
+    ]
+   },
+   {
+    "line": 20,
+    "ms": 900,
+    "note": "CreateSolidBrush makes a green brush.",
+    "do": [
+     {
+      "a": "brush",
+      "on": true
+     }
+    ]
+   },
+   {
+    "line": 21,
+    "ms": 1200,
+    "note": "FillRect with the brush paints the square at 100.",
+    "do": [
+     {
+      "a": "ink",
+      "v": 100
+     },
+     {
+      "a": "target",
+      "v": null,
+      "at": 0.8,
+      "len": 0.2
+     }
+    ]
+   },
+   {
+    "line": 22,
+    "ms": 800,
+    "note": "We made the brush, so we delete it.",
+    "do": [
+     {
+      "a": "brush",
+      "on": false
+     }
+    ]
+   },
+   {
+    "line": 23,
+    "ms": 900,
+    "note": "EndPaint finishes. The window now shows the square at 100.",
+    "do": [
+     {
+      "a": "hdc",
+      "on": false
+     }
+    ]
+   },
+   {
+    "line": 48,
+    "ms": 1800,
+    "note": "Time passes. The user presses the Right arrow, and a WM_KEYDOWN envelope arrives.",
+    "do": [
+     {
+      "a": "hl",
+      "row": null
+     },
+     {
+      "a": "post",
+      "m": "WM_KEYDOWN",
+      "sub": "wp: RIGHT",
+      "key": "Right",
+      "at": 0,
+      "len": 0.4
+     },
+     {
+      "a": "take",
+      "at": 0.5,
+      "len": 0.5
+     }
+    ]
+   },
+   {
+    "line": 50,
+    "ms": 1000,
+    "note": "DispatchMessage carries it to WindowProc.",
+    "do": [
+     {
+      "a": "give",
+      "row": "case WM_KEYDOWN"
+     }
+    ]
+   },
+   {
+    "line": 9,
+    "ms": 800,
+    "note": "case WM_KEYDOWN: an arrow key was pressed.",
+    "do": []
+   },
+   {
+    "line": 10,
+    "ms": 800,
+    "note": "Is wp the Left arrow? No, so nothing happens here.",
+    "do": []
+   },
+   {
+    "line": 11,
+    "ms": 1500,
+    "note": "It is Right, so g_rect_x goes up by 5. The variable changed, but the window still shows the square at 100. The picture is out of date.",
+    "do": [
+     {
+      "a": "x",
+      "to": 105
+     }
+    ]
+   },
+   {
+    "line": 12,
+    "ms": 1500,
+    "note": "InvalidateRect hangs the wet paint sign: this picture needs redoing. Windows will send a WM_PAINT.",
+    "do": [
+     {
+      "a": "wet",
+      "on": true
+     },
+     {
+      "a": "post",
+      "m": "WM_PAINT",
+      "at": 0.4,
+      "len": 0.6
+     }
+    ]
+   },
+   {
+    "line": 48,
+    "ms": 1000,
+    "note": "The next GetMessage picks up that WM_PAINT.",
+    "do": [
+     {
+      "a": "hl",
+      "row": null
+     },
+     {
+      "a": "take"
+     }
+    ]
+   },
+   {
+    "line": 50,
+    "ms": 900,
+    "note": "Dispatched to WindowProc.",
+    "do": [
+     {
+      "a": "give",
+      "row": "case WM_PAINT"
+     }
+    ]
+   },
+   {
+    "line": 16,
+    "ms": 1000,
+    "note": "BeginPaint starts drawing and clears the wet paint sign.",
+    "do": [
+     {
+      "a": "hdc",
+      "on": true
+     },
+     {
+      "a": "wet",
+      "on": false
+     }
+    ]
+   },
+   {
+    "line": 17,
+    "ms": 1000,
+    "note": "Wipe the old picture.",
+    "do": [
+     {
+      "a": "erase"
+     }
+    ]
+   },
+   {
+    "line": 21,
+    "ms": 1200,
+    "note": "Paint the square at the new g_rect_x: 105. The painting matches the variable again.",
+    "do": [
+     {
+      "a": "ink",
+      "v": 105
+     }
+    ]
+   },
+   {
+    "line": 23,
+    "ms": 1300,
+    "note": "EndPaint. Variables are the truth; the window is a painting of them, redone when we ask.",
+    "do": [
+     {
+      "a": "hdc",
+      "on": false
+     }
+    ]
+   }
+  ]
+ },
+ "link-libs": {
+  "scene": "p5-libs",
+  "steps": [
+   {
+    "line": 1,
+    "ms": 1500,
+    "note": "REM starts a comment, so this line does nothing. The picture: windows.h is a menu of every Windows function, and the .lib files are the kitchens that actually cook them.",
+    "do": []
+   },
+   {
+    "line": 2,
+    "ms": 1300,
+    "note": "First the compiler runs. The header (the menu) lists every function you call, so this step passes.",
+    "do": [
+     {
+      "a": "badge",
+      "w": "compile",
+      "v": "ok",
+      "t": "OK"
+     }
+    ]
+   },
+   {
+    "line": 2,
+    "ms": 2300,
+    "note": "Then the linker, our waiter, walks every dish to a kitchen. user32.lib and gdi32.lib are both on the command line, so every dish has a kitchen.",
+    "do": [
+     {
+      "a": "link"
+     },
+     {
+      "a": "badge",
+      "w": "link",
+      "v": "ok",
+      "t": "OK",
+      "at": 0.75,
+      "len": 0.25
+     }
+    ]
+   },
+   {
+    "line": 4,
+    "ms": 1500,
+    "note": "Now imagine gdi32.lib is left off. The compile step still passes, because the menu lists the functions. The trouble comes at link time.",
+    "do": [
+     {
+      "a": "reset"
+     },
+     {
+      "a": "kitchens",
+      "u": true,
+      "g": false
+     },
+     {
+      "a": "badge",
+      "w": "compile",
+      "v": "ok",
+      "t": "OK",
+      "at": 0.5,
+      "len": 0.5
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 1900,
+    "note": "Unresolved external symbol: the linker was asked to call a function and cannot find its code anywhere.",
+    "do": [
+     {
+      "a": "link"
+     },
+     {
+      "a": "badge",
+      "w": "link",
+      "v": "fail",
+      "t": "LNK2019",
+      "at": 0.75,
+      "len": 0.25
+     }
+    ],
+    "out": "win32_window.obj : error LNK2019: unresolved external symbol\n",
+    "outAt": 0.7
+   },
+   {
+    "line": 6,
+    "ms": 1700,
+    "note": "The name looks odd, but strip the __imp__ in front and the @4 behind and you can read it: CreateSolidBrush. That is a gdi32 dish.",
+    "do": [
+     {
+      "a": "decode",
+      "on": true
+     }
+    ],
+    "out": "      __imp__CreateSolidBrush@4 referenced in function _WindowProc@16\n",
+    "outAt": 0.4
+   },
+   {
+    "line": 7,
+    "ms": 1200,
+    "note": "The summary line counts how many symbols were missing.",
+    "do": [
+     {
+      "a": "decode",
+      "on": false
+     },
+     {
+      "a": "badge",
+      "w": "link",
+      "v": "fail",
+      "t": "2 missing"
+     }
+    ],
+    "out": "win32_window.exe : fatal error LNK1120: 2 unresolved externals\n",
+    "outAt": 0.4
+   },
+   {
+    "line": 8,
+    "ms": 1700,
+    "note": "Two dishes had no kitchen: CreateSolidBrush and DeleteObject. The count is how many gdi32 functions your file calls. Add gdi32.lib and both are fixed.",
+    "do": [
+     {
+      "a": "ring",
+      "ds": [
+       3,
+       4
+      ]
+     }
+    ]
+   },
+   {
+    "line": 10,
+    "ms": 1400,
+    "note": "Now the other way round: leave user32.lib off instead.",
+    "do": [
+     {
+      "a": "reset"
+     },
+     {
+      "a": "kitchens",
+      "u": false,
+      "g": true
+     },
+     {
+      "a": "badge",
+      "w": "compile",
+      "v": "ok",
+      "t": "OK",
+      "at": 0.5,
+      "len": 0.5
+     }
+    ]
+   },
+   {
+    "line": 11,
+    "ms": 2000,
+    "note": "The same kind of error, but now the missing name is a user32 function. The A on the end of CreateWindowExA just means the plain-text version.",
+    "do": [
+     {
+      "a": "link"
+     },
+     {
+      "a": "badge",
+      "w": "link",
+      "v": "fail",
+      "t": "LNK2019",
+      "at": 0.75,
+      "len": 0.25
+     }
+    ],
+    "out": "  unresolved external symbol __imp__CreateWindowExA@48\n",
+    "outAt": 0.7
+   }
+  ]
+ },
+ "frame-time": {
+  "scene": "p5-clock",
+  "steps": [
+   {
+    "line": 17,
+    "ms": 1700,
+    "note": "A window program has no console, so printf would print nowhere. AllocConsole opens one. This loop runs forever, so we film three frames. The ms numbers are samples from one run; yours will differ a little.",
+    "do": [
+     {
+      "a": "ban",
+      "t": "a console window opens"
+     }
+    ]
+   },
+   {
+    "line": 18,
+    "ms": 1100,
+    "note": "freopen points printf at that console.",
+    "do": [
+     {
+      "a": "ban",
+      "t": "printf now writes to the console"
+     }
+    ]
+   },
+   {
+    "line": 30,
+    "ms": 1100,
+    "note": "Three variables for the stopwatch: freq, last and now. They are empty for now.",
+    "do": [
+     {
+      "a": "ban",
+      "t": ""
+     },
+     {
+      "a": "decl"
+     }
+    ]
+   },
+   {
+    "line": 31,
+    "ms": 1200,
+    "note": "freq is how many ticks the counter makes each second. On this sample PC: 10 million. It never changes.",
+    "do": [
+     {
+      "a": "reg",
+      "name": "freq",
+      "val": "10,000,000"
+     }
+    ]
+   },
+   {
+    "line": 32,
+    "ms": 1300,
+    "note": "The first reading: the stopwatch starts here. The number alone means nothing; only differences between two readings do.",
+    "do": [
+     {
+      "a": "reg",
+      "name": "last",
+      "val": "52,408,331"
+     }
+    ]
+   },
+   {
+    "line": 42,
+    "ms": 1500,
+    "note": "Frame 1: Sleep(16) is our old guess. The yellow dot is real time passing.",
+    "do": [
+     {
+      "a": "sleep",
+      "ms": 16.8213
+     }
+    ]
+   },
+   {
+    "line": 43,
+    "ms": 1100,
+    "note": "A second reading of the counter, taken right after the sleep.",
+    "do": [
+     {
+      "a": "reg",
+      "name": "now",
+      "val": "52,576,544"
+     }
+    ]
+   },
+   {
+    "line": 44,
+    "ms": 1500,
+    "note": "now minus last is 168,213 ticks. Times 1000, divided by ticks per second, makes milliseconds: 16.8.",
+    "do": [
+     {
+      "a": "calc",
+      "ms": "16.8"
+     }
+    ]
+   },
+   {
+    "line": 45,
+    "ms": 1100,
+    "note": "last = now. The end of this frame is the start of the next one.",
+    "do": [
+     {
+      "a": "copy"
+     }
+    ]
+   },
+   {
+    "line": 46,
+    "ms": 1000,
+    "note": "printf writes the measured frame time.",
+    "do": [
+     {
+      "a": "lap",
+      "ms": "16.8"
+     }
+    ],
+    "out": "Frame: 16.8 ms\n",
+    "outAt": 0.4
+   },
+   {
+    "line": 42,
+    "ms": 1300,
+    "note": "Frame 2: sleep again.",
+    "do": [
+     {
+      "a": "sleep",
+      "ms": 16.2477
+     }
+    ]
+   },
+   {
+    "line": 43,
+    "ms": 900,
+    "note": "Read the counter.",
+    "do": [
+     {
+      "a": "reg",
+      "name": "now",
+      "val": "52,739,021"
+     }
+    ]
+   },
+   {
+    "line": 44,
+    "ms": 1200,
+    "note": "162,477 ticks make 16.2 ms. A little quicker this time.",
+    "do": [
+     {
+      "a": "calc",
+      "ms": "16.2"
+     }
+    ]
+   },
+   {
+    "line": 45,
+    "ms": 900,
+    "note": "last = now again.",
+    "do": [
+     {
+      "a": "copy"
+     }
+    ]
+   },
+   {
+    "line": 46,
+    "ms": 1000,
+    "note": "Print the second frame time.",
+    "do": [
+     {
+      "a": "lap",
+      "ms": "16.2"
+     }
+    ],
+    "out": "Frame: 16.2 ms\n",
+    "outAt": 0.4
+   },
+   {
+    "line": 42,
+    "ms": 1300,
+    "note": "Frame 3: sleep.",
+    "do": [
+     {
+      "a": "sleep",
+      "ms": 17.1038
+     }
+    ]
+   },
+   {
+    "line": 43,
+    "ms": 900,
+    "note": "Read the counter.",
+    "do": [
+     {
+      "a": "reg",
+      "name": "now",
+      "val": "52,910,059"
+     }
+    ]
+   },
+   {
+    "line": 44,
+    "ms": 1300,
+    "note": "171,038 ticks make 17.1 ms. Sleep(16) was only a guess, and the stopwatch shows the real length.",
+    "do": [
+     {
+      "a": "calc",
+      "ms": "17.1"
+     }
+    ]
+   },
+   {
+    "line": 45,
+    "ms": 900,
+    "note": "last = now.",
+    "do": [
+     {
+      "a": "copy"
+     }
+    ]
+   },
+   {
+    "line": 46,
+    "ms": 1100,
+    "note": "Print it. The loop would keep going until you close the window; we stop the film here.",
+    "do": [
+     {
+      "a": "lap",
+      "ms": "17.1"
+     }
+    ],
+    "out": "Frame: 17.1 ms\n",
+    "outAt": 0.4
+   }
+  ]
+ },
+ "double-buffer": {
+  "scene": "p5-curtain",
+  "steps": [
+   {
+    "line": 3,
+    "ms": 1400,
+    "note": "g_rect_x is 100 and the window shows its square there. This program runs until closed, so we film one arrow-key press and the repaint it causes.",
+    "do": [
+     {
+      "a": "x",
+      "to": 100
+     }
+    ]
+   },
+   {
+    "line": 9,
+    "ms": 1000,
+    "note": "The user presses the Right arrow: a WM_KEYDOWN message reaches WindowProc.",
+    "do": [
+     {
+      "a": "msg",
+      "m": "WM_KEYDOWN"
+     }
+    ]
+   },
+   {
+    "line": 11,
+    "ms": 1100,
+    "note": "g_rect_x becomes 105. The window still shows the old picture.",
+    "do": [
+     {
+      "a": "x",
+      "to": 105
+     }
+    ]
+   },
+   {
+    "line": 12,
+    "ms": 1100,
+    "note": "InvalidateRect asks for a repaint, so a WM_PAINT message follows.",
+    "do": [
+     {
+      "a": "msg",
+      "m": "WM_PAINT"
+     }
+    ]
+   },
+   {
+    "line": 14,
+    "ms": 800,
+    "note": "case WM_PAINT: now we draw. This time, not straight onto the screen.",
+    "do": []
+   },
+   {
+    "line": 16,
+    "ms": 1000,
+    "note": "BeginPaint gives us hdc, the connection to the real window.",
+    "do": [
+     {
+      "a": "hdc",
+      "on": true
+     }
+    ]
+   },
+   {
+    "line": 18,
+    "ms": 1200,
+    "note": "GetClientRect measures the drawable area: width and height. The numbers are used a few lines later.",
+    "do": [
+     {
+      "a": "dims",
+      "on": true
+     }
+    ]
+   },
+   {
+    "line": 20,
+    "ms": 1300,
+    "note": "CreateCompatibleDC makes a second drawing surface, back, that is not attached to the screen. It is backstage, behind the curtain.",
+    "do": [
+     {
+      "a": "dc"
+     }
+    ]
+   },
+   {
+    "line": 21,
+    "ms": 1300,
+    "note": "CreateCompatibleBitmap makes the actual pixels for that backstage card: the same size as the window.",
+    "do": [
+     {
+      "a": "bmp"
+     },
+     {
+      "a": "dims",
+      "on": false,
+      "at": 0.5,
+      "len": 0.5
+     }
+    ]
+   },
+   {
+    "line": 22,
+    "ms": 1400,
+    "note": "SelectObject puts the bitmap into back, so drawing on back goes onto the card. The old object it replaced is kept in old so we can undo this later.",
+    "do": [
+     {
+      "a": "sel",
+      "on": true
+     }
+    ]
+   },
+   {
+    "line": 24,
+    "ms": 1200,
+    "note": "Clear the card to the window colour. Only the hidden card changes; the audience still sees the old frame.",
+    "do": [
+     {
+      "a": "cfill"
+     }
+    ]
+   },
+   {
+    "line": 26,
+    "ms": 1000,
+    "note": "SetRect works out where the square goes on the card: x = 105.",
+    "do": [
+     {
+      "a": "ctarget",
+      "v": 105
+     }
+    ]
+   },
+   {
+    "line": 27,
+    "ms": 800,
+    "note": "A green brush.",
+    "do": [
+     {
+      "a": "cbrush",
+      "on": true
+     }
+    ]
+   },
+   {
+    "line": 28,
+    "ms": 1400,
+    "note": "Paint the square on the card at 105. The window on the left still shows 100: nobody has seen this half-finished work.",
+    "do": [
+     {
+      "a": "cink",
+      "v": 105
+     }
+    ]
+   },
+   {
+    "line": 29,
+    "ms": 800,
+    "note": "Done with the brush, so delete it.",
+    "do": [
+     {
+      "a": "cbrush",
+      "on": false
+     }
+    ]
+   },
+   {
+    "line": 31,
+    "ms": 1900,
+    "note": "BitBlt copies the finished card onto the window in one go. The curtain opens on a complete frame, never a half-drawn one.",
+    "do": [
+     {
+      "a": "blit",
+      "v": 105
+     }
+    ]
+   },
+   {
+    "line": 32,
+    "ms": 1000,
+    "note": "Put the old object back into back, so the bitmap is no longer selected.",
+    "do": [
+     {
+      "a": "sel",
+      "on": false
+     }
+    ]
+   },
+   {
+    "line": 33,
+    "ms": 1100,
+    "note": "Delete the bitmap, because we made it. Skipping this leaks a bitmap every frame.",
+    "do": [
+     {
+      "a": "drop",
+      "what": "bmp"
+     }
+    ]
+   },
+   {
+    "line": 34,
+    "ms": 1100,
+    "note": "Delete the backstage drawing surface too.",
+    "do": [
+     {
+      "a": "drop",
+      "what": "dc"
+     }
+    ]
+   },
+   {
+    "line": 35,
+    "ms": 1100,
+    "note": "EndPaint. The new frame is on screen, and the card is gone until the next paint.",
+    "do": [
+     {
+      "a": "hdc",
+      "on": false
+     },
+     {
+      "a": "msg",
+      "m": null
+     }
+    ]
+   }
+  ]
+ }
+}
