@@ -3,23 +3,23 @@
  "phase": "phase3",
  "goals": {
   "cp-p3-fn": [
-   1,
-   2
+   "functions",
+   "prototypes"
   ],
   "cp-p3b-1": [
-   5
+   "arrays"
   ],
   "cp-p3b-2": [
-   6
+   "strings"
   ],
   "cp-p3b-3": [
-   7,
-   8
+   "fgets",
+   "strcmp"
   ],
   "cp-p3b-4": [
-   1,
-   4,
-   5
+   "functions",
+   "define",
+   "arrays"
   ]
  },
  "rungs": [

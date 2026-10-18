@@ -173,7 +173,9 @@
               <div class="eyebrow eyebrow--tight eyebrow--xl bb t-accent" style="background:var(--surface2);padding:10px 16px">Exercise 2: A struct you designed (Phase 3.5 knowledge)</div>
               <div class="p-16">
                 <div class="prose t-muted2 mb-12">Target output: an Enemy struct. The AI should produce exactly these fields, no extras:</div>
-<pre class="code-panel"><span class="c-cm">// KEYWORD: "enum for enemy type, melee or ranged" → the EnemyType enum</span>
+<pre class="code-panel"><span class="c-pp">#include</span> <span class="c-str">&lt;stdbool.h&gt;</span>  <span class="c-cm">// bool needs this in C17 (built in from C23)</span>
+
+<span class="c-cm">// KEYWORD: "enum for enemy type, melee or ranged" → the EnemyType enum</span>
 <span class="c-kw">typedef enum</span> { ENEMY_MELEE, ENEMY_RANGED } <span class="c-type">EnemyType</span>;
 
 <span class="c-cm">// KEYWORD: "struct named Enemy"          → names the struct</span>

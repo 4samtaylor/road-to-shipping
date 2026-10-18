@@ -3,25 +3,25 @@
  "phase": "phase1",
  "goals": {
   "cp-p1-1": [
-   1,
-   2
+   "program",
+   "compile"
   ],
   "cp-p1-2": [
-   1,
-   3
+   "program",
+   "escapes"
   ],
   "cp-p1-3": [
-   3
+   "escapes"
   ],
   "cp-p1-4": [
-   4
+   "errors"
   ],
   "cp-p1-5": [
-   5,
-   6
+   "buildbat",
+   "git"
   ],
   "cp-p1-6": [
-   6
+   "git"
   ]
  },
  "rungs": [
@@ -112,7 +112,36 @@
      "The computer only understands machine code, and the compiler has to translate with no guessing. It stops rather than produce something wrong, which catches mistakes before they become bugs in a running game."
     ]
    ],
-   "bridge": "You can write a program. Next: <b>turning it into something Windows can run</b>, with cl."
+   "bridge": "You can write a program. Next: <b>turning it into something Windows can run</b>, with cl.",
+   "learn": {
+    "parts": [
+     [
+      "Three kinds of line",
+      "<p>Every line in this program is one of three things, and knowing which is half of reading C.</p><ul><li><b>A directive</b> starts with <code>#</code>. It isn't really C: it's a note to a tool that runs before the compiler. <code>#include &lt;stdio.h&gt;</code> means “paste in the description of the input/output tools here”. A directive takes up one line and never ends with <code>;</code>.</li><li><b>A function</b> is a named block of code. <code>main</code> is the one every program must have, because Windows starts your program by running it.</li><li><b>A statement</b> is one instruction inside a function, like <code>printf(...);</code> or <code>return 0;</code>. Statements run top to bottom and each one ends with <code>;</code>.</li></ul>"
+     ],
+     [
+      "Why the semicolon?",
+      "<p>C doesn't care about line breaks, so you could spread one statement over three lines or put two on one line. The <code>;</code> is how the compiler knows where each instruction stops. Directives don't need one because a directive always ends at the end of its line.</p><p class=\"warn\">Put a <code>;</code> after <code>#include &lt;stdio.h&gt;</code> and MSVC warns about unexpected tokens (C4067). With the warnings-as-errors flag you add in Concept 5, that stops the build.</p>"
+     ],
+     [
+      "Calling a function",
+      "<p><code>printf(\"Hello\\n\");</code> <b>calls</b> printf: it asks a function someone else wrote to do its job. The brackets hold what you hand over, here a piece of text. Text in double quotes is called a <b>string literal</b>. The quotes mark where it starts and ends; they aren't printed.</p><p>printf prints exactly what you give it and nothing more. It never moves to a new line by itself, so <code>printf(\"Game \"); printf(\"over\\n\");</code> prints one line: <code>Game over</code>.</p>"
+     ],
+     [
+      "Spelling matters",
+      "<p>C is case-sensitive. <code>main</code>, <code>Main</code> and <code>MAIN</code> are three different names, and only the first one starts your program. <code>Printf</code> is not <code>printf</code> either.</p>"
+     ],
+     [
+      "What return 0 does",
+      "<p><code>return 0;</code> does two jobs at once: it ends main, which ends the program, and it hands Windows the number 0, meaning “finished fine”. Since C99 a program that reaches the closing <code>}</code> of main returns 0 anyway, but writing it says what you mean. You'll see that number again in Concept 5, where build.bat checks it.</p>"
+     ],
+     [
+      "Why int main(void)?",
+      "<p><code>int</code> is the kind of value main hands back (a whole number). <code>(void)</code> says it takes nothing in. Older code writes <code>int main()</code>, which works too; from C23 the two mean the same thing.</p>"
+     ]
+    ],
+    "king": "§2.1–2.2, plus §2.7 for case-sensitivity"
+   }
   },
   {
    "id": "compile",

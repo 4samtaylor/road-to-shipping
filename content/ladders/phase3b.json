@@ -3,17 +3,17 @@
   "phase": "phase3b",
   "goals": {
     "cp-p3-1": [
-      2,
-      3,
-      4
+      "struct-copy",
+      "pointers",
+      "by-pointer"
     ],
     "cp-p3-2": [
-      7,
-      8
+      "headers",
+      "linker"
     ],
     "cp-p3-3": [
-      4,
-      7
+      "by-pointer",
+      "headers"
     ]
   },
   "rungs": [
@@ -262,7 +262,7 @@
         ],
         [
           "What does a pointer actually print as?",
-          "A big number like 0x00affc10, the address. You’ll see one in the debugger’s Watch window in the last concept."
+          "A long hex number like 000000A1B2EFF7A4 (16 digits, because a 64-bit address is 8 bytes). Use <code>%p</code> to print one. You’ll see one in the debugger’s Watch window in the last concept."
         ],
         [
           "GDScript has no pointers. Why does C make me deal with them?",

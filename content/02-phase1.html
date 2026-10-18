@@ -88,7 +88,7 @@
             <div class="code-island" style="border-top:1px solid var(--border);padding:14px 16px">
               <div class="eyebrow eyebrow--md t-muted2 mb-10">// Compile &amp; run</div>
               <div class="code-inset fs-11 lh-18 t-accent">
-                cd C:\Users\4samt\Documents\Dev\game-dev-exercises<br>
+                cd C:\Users\4samt\Documents\Dev\game-dev-exercises\p01<br>
                 cl hello_world.c<br>
                 hello_world.exe
               </div>
@@ -107,7 +107,7 @@
 
             <div class="eyebrow eyebrow--tight eyebrow--lg t-muted2 mb-10">// Step 1, Create the file</div>
             <div class="prose t-text mb-12">
-              In VS Code, in your <strong class="t-accent">game-dev-exercises</strong> folder, create a new file called <span class="cmd">build.bat</span>. Make sure it's in the same folder as your .c files, not inside a subfolder.
+              In VS Code, in your <strong class="t-accent">p01</strong> folder (inside game-dev-exercises), create a new file called <span class="cmd">build.bat</span>. Make sure it's in the same folder as hello_world.c, not one level up.
             </div>
 
             <div class="eyebrow eyebrow--tight eyebrow--lg t-muted2 mb-10">// Step 2, Start simple: Hello World build</div>
@@ -336,11 +336,13 @@ DE</pre>
           </div>
           <div class="acc-body section-block-body">
             <dl class="king">
-              <dt>Concept 1, your first program</dt><dd>Ch 1 <em>Introducing C</em> (skim, it is history) and the start of Ch 2 <em>C Fundamentals</em>: the shape of a program, directives, functions, statements, comments.</dd>
-              <dt>Concept 2, compiling</dt><dd>Ch 2, compiling and linking.</dd>
-              <dt>Concept 3, escape sequences and printf</dt><dd>Ch 2 for the basics, Ch 3 for printf and escape sequences.</dd>
-              <dt>Concepts 4 to 6</dt><dd>Not in King.</dd>
-              <dt>Try</dt><dd>Two or three short end-of-chapter exercises. Type them in, compile with <span class="cmd">cl</span>, read any errors out loud.</dd>
+              <dt>Your first C program</dt><dd>§2.1–2.2 for the shape of a program: directives, functions and statements, and what “calling” means. §2.7 adds identifiers and case-sensitivity. §1.2 (strengths and weaknesses of C) is worth reading; §1.1 is history.</dd>
+              <dt>Compiling and running with cl</dt><dd>§2.1, “Compiling and Linking”. King uses a Unix compiler: on Windows the command is <span class="cmd">cl</span>, the .exe is named after your file, and <span class="cmd">/Fe:</span> renames it.</dd>
+              <dt>Escape sequences and %d</dt><dd>§2.2 for printing strings, then §3.1 for conversion specifications and escape sequences. The ch 3 Q&amp;A answers <span class="cmd">%%</span> and tab width. §2.4 (variables) is where <span class="cmd">%d</span> really comes from: read it ahead.</dd>
+              <dt>Reading compiler errors</dt><dd>§1.2 “Weaknesses” and “Effective Use of C”, plus the ch 1 Q&amp;A on errors vs warnings. §2.3 and §2.8 show the mistakes that cause them: unclosed comments, strings split across lines.</dd>
+              <dt>build.bat and compiler flags</dt><dd>The ch 1 and ch 2 Q&amp;A sections on warning levels and compiler options. King shows GCC options; our equivalents are <span class="cmd">/W4</span> and <span class="cmd">/WX</span>.</dd>
+              <dt>Git</dt><dd>Not in King.</dd>
+              <dt>Try</dt><dd>Ch 2 exercises 2, 5, 7 and 8: they check directives vs statements, identifiers and tokens. Type them in, compile with <span class="cmd">cl</span>, read any errors out loud.</dd>
             </dl>
             <div class="fs-11 t-muted mt-12">Chapter numbers are from the 2nd edition. If your copy is different, match by chapter title.</div>
           </div>
