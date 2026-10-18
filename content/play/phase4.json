@@ -273,7 +273,8 @@
      }
     ]
    }
-  ]
+  ],
+  "prompt": ""
  },
  "commit-messages": {
   "scene": "git-graph",
@@ -498,7 +499,8 @@
      }
     ]
    }
-  ]
+  ],
+  "prompt": ""
  },
  "branches": {
   "scene": "git-graph",
@@ -819,7 +821,8 @@
      }
     ]
    }
-  ]
+  ],
+  "prompt": ""
  },
  "pull-requests": {
   "scene": "git-graph",
@@ -1141,7 +1144,8 @@
      }
     ]
    }
-  ]
+  ],
+  "prompt": ""
  },
  "merge-conflicts": {
   "scene": "git-graph",
@@ -1559,7 +1563,8 @@
      }
     ]
    }
-  ]
+  ],
+  "prompt": ""
  },
  "gitignore": {
   "scene": "git-graph",
@@ -1980,6 +1985,7 @@
      }
     ]
    }
-  ]
+  ],
+  "prompt": ""
  }
 }

@@ -1178,7 +1178,8 @@
     "out": "  unresolved external symbol __imp__CreateWindowExA@48\n",
     "outAt": 0.7
    }
-  ]
+  ],
+  "prompt": ""
  },
  "frame-time": {
   "scene": "p5-clock",

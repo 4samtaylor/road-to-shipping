@@ -208,7 +208,8 @@
     "note": "If you edit the .c file, nothing changes here until you run cl again to cook a new .exe.",
     "do": []
    }
-  ]
+  ],
+  "prompt": ""
  },
  "escapes": {
   "scene": "p1-cursor",
@@ -683,7 +684,8 @@
     "out": "BUILD OK\n",
     "outAt": 0.4
    }
-  ]
+  ],
+  "prompt": ""
  },
  "git": {
   "scene": "git-graph",
@@ -972,6 +974,7 @@
      }
     ]
    }
-  ]
+  ],
+  "prompt": ""
  }
 }

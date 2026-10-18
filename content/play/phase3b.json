@@ -1561,7 +1561,8 @@
      }
     ]
    }
-  ]
+  ],
+  "prompt": ""
  },
  "linker": {
   "scene": "p3b-link",
@@ -1668,7 +1669,8 @@
      }
     ]
    }
-  ]
+  ],
+  "prompt": ""
  },
  "debugger": {
   "scene": "p3b-debug",
