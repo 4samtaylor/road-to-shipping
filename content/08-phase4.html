@@ -7,7 +7,7 @@
         <div class="phase-title">Git &amp; Working With Your Partner</div>
       </div>
       <div class="phase-right">
-        <div class="phase-week">Week 4 — Ongoing</div>
+        <div class="phase-week">Week 4, Ongoing</div>
         <div class="phase-chevron">▼</div>
       </div>
     </div>
@@ -21,7 +21,7 @@
               <div class="task" data-id="p4-shared-repo">
                 <div class="task-cb">✓</div>
                 <div class="task-content">
-                  <div class="task-text">Set up a shared repo with your partner — invite them as a collaborator on GitHub</div>
+                  <div class="task-text">Set up a shared repo with your partner, invite them as a collaborator on GitHub</div>
                   <div class="task-note"><span class="task-time">~15 min</span></div>
                 </div>
               </div>
@@ -29,7 +29,7 @@
           </div>
         </div>
 
-        <div class="section-block" data-page="concept:branches">
+        <div class="section-block" data-page="concept:pull-requests">
           <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
           <div class="section-block-body">
             <div class="tasks">
@@ -51,7 +51,7 @@
               <div class="task" data-id="p4-merge-conflict">
                 <div class="task-cb">✓</div>
                 <div class="task-content">
-                  <div class="task-text">Deliberately create and resolve a merge conflict — do this before it happens in real work</div>
+                  <div class="task-text">Deliberately create and resolve a merge conflict, do this before it happens in real work</div>
                   <div class="task-note"><span class="task-time">~20 min</span></div>
                 </div>
               </div>
@@ -66,7 +66,7 @@
               <div class="task" data-id="p4-gitignore">
                 <div class="task-cb">✓</div>
                 <div class="task-content">
-                  <div class="task-text">Add a .gitignore for C/C++ — don't commit .exe, .obj, or .pdb files</div>
+                  <div class="task-text">Add a .gitignore for C/C++, don't commit .exe, .obj, or .pdb files</div>
                   <div class="task-note"><span class="task-time">~10 min</span></div>
                 </div>
               </div>
@@ -75,14 +75,14 @@
         </div>
 
         <div class="section-block" data-page="practice">
-          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-header"><span class="badge badge-green">Tasks</span></div>
           <div class="section-block-body">
             <div class="tasks">
               <div class="task" data-id="p4-git-core-ops">
                 <div class="task-cb">✓</div>
                 <div class="task-content">
                   <div class="task-text">Learn the 5 core Git operations: commit, push, pull, branch, merge <span class="task-tag t-git">Git</span></div>
-                  <div class="task-note">Use learngitbranching.js.org — it's interactive and free <span class="task-time">~30 min</span></div>
+                  <div class="task-note">Use learngitbranching.js.org, it's interactive and free <span class="task-time">~30 min</span></div>
                 </div>
               </div>
             </div>
@@ -97,7 +97,7 @@
           <div class="acc-body">
             <div class="code-wrap">
               <div class="code-label">
-                <span>.gitignore — paste this in your repo root</span>
+                <span>.gitignore, paste this in your repo root</span>
                 <button class="copy-btn">Copy</button>
               </div>
 <pre><span class="c-cm"># Compiled output</span>
@@ -117,8 +117,9 @@ x86/
 Debug/
 Release/
 
-<span class="c-cm"># VS Code settings (optional — remove if you want to share settings)</span>
-.vscode/
+<span class="c-cm"># VS Code settings (keep launch.json so your partner can debug too)</span>
+.vscode/*
+!.vscode/launch.json
 
 <span class="c-cm"># Visual Studio files</span>
 *.suo
@@ -137,7 +138,7 @@ Release/
             <div class="stuck-items">
               <div class="stuck-item">
                 <div class="stuck-q">I committed something I shouldn't have</div>
-                <div class="stuck-a">If you haven't pushed yet: <span class="cmd">git reset --soft HEAD~1</span> undoes the last commit but keeps your changes. If you have pushed: don't panic. Ask Claude Code to walk you through a revert — the exact command depends on the situation.</div>
+                <div class="stuck-a">If you haven't pushed yet: <span class="cmd">git reset --soft HEAD~1</span> undoes the last commit but keeps your changes. If you have pushed: don't panic. Ask Claude Code to walk you through a revert, the exact command depends on the situation.</div>
               </div>
             </div>
           </div>
@@ -152,7 +153,7 @@ Release/
           <div class="checkpoint-items">
             <div class="cp-item" data-id="cp-p4-1"><span class="cp-cb">✓</span><span class="cp-text">You and your partner both have the repo cloned locally and can push/pull</span></div>
             <div class="cp-item" data-id="cp-p4-2"><span class="cp-cb">✓</span><span class="cp-text">You've resolved at least one merge conflict successfully</span></div>
-            <div class="cp-item" data-id="cp-p4-3"><span class="cp-cb">✓</span><span class="cp-text">Your .gitignore is in place — no build artifacts in the repo</span></div>
+            <div class="cp-item" data-id="cp-p4-3"><span class="cp-cb">✓</span><span class="cp-text">Your .gitignore is in place, no build artifacts in the repo</span></div>
           </div>
         </div>
 
