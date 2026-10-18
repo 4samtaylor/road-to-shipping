@@ -1,0 +1,467 @@
+{
+ "_about": "Concept ladder for the Learn stage. One concept per rung. Rung ids are progress keys: never rename. skills are glossary.json ids that move to Practiced when the check is passed. goals maps checkpoint data-ids to the rungs (1-based) that teach them. lang: c programs are compiled and run to verify each check.",
+ "phase": "phase1",
+ "goals": {
+  "cp-p1-1": [
+   1,
+   2
+  ],
+  "cp-p1-2": [
+   1,
+   3
+  ],
+  "cp-p1-3": [
+   3
+  ],
+  "cp-p1-4": [
+   4
+  ],
+  "cp-p1-5": [
+   5,
+   6
+  ],
+  "cp-p1-6": [
+   6
+  ]
+ },
+ "rungs": [
+  {
+   "id": "program",
+   "title": "Your first C program",
+   "kick": "#include · main() · printf · ; · return 0",
+   "mins": 10,
+   "lang": "c",
+   "skills": [
+    "include",
+    "main",
+    "printf",
+    "semicolon",
+    "return0"
+   ],
+   "builds": "Environment Setup: VS Code open on your exercises folder, and <code>cl</code> working.",
+   "why": "Every C program you’ll write, the game included, has the same skeleton: pull in the tools you need, start at main, do the work, report that it finished. Learn the skeleton once and every file after this looks familiar.",
+   "code": "#include <stdio.h>\n\nint main() {\n    printf(\"Hello, World!\\n\");\n    printf(\"Ready to ship.\\n\");\n    return 0;\n}",
+   "walk": [
+    [
+     1,
+     "<b>#include &lt;stdio.h&gt;</b> pulls in the standard input/output toolbox. printf lives there. Without this line, C doesn’t know what printf is."
+    ],
+    [
+     3,
+     "<b>main</b> is where every C program starts. <code>int</code> means it hands back a whole number when it finishes. The { opens its body."
+    ],
+    [
+     4,
+     "<b>printf</b> prints the text between the quotes. The \\n moves to a new line. The <b>;</b> ends the statement, like a full stop."
+    ],
+    [
+     5,
+     "Statements run top to bottom, one after another."
+    ],
+    [
+     6,
+     "<b>return 0</b> tells Windows “finished, no problems”. Any other number means something went wrong."
+    ],
+    [
+     7,
+     "The } closes main. Every { needs a matching }."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a recipe card. #include lists the tools, main is “start here”, each line inside is one step, and return 0 is “done”.",
+   "check": {
+    "q": "What does this program print?",
+    "opts": [
+     "Hello, World!\nReady to ship.",
+     "Hello, World! Ready to ship.",
+     "Hello, World!\\nReady to ship.",
+     "Nothing until you add a third printf"
+    ],
+    "a": 0,
+    "hint": "Each \\n is a press of Enter. How many lines does that make?",
+    "why": "Two lines. Each \\n ends a line, so “Ready to ship.” starts on the next one. The backslash and n are never printed themselves.",
+    "miss": {
+     "1": "That would need the \\n removed from the first printf.",
+     "2": "\\n is an instruction to start a new line, not text to print.",
+     "3": "Two printf calls are enough. Each one runs and prints."
+    }
+   },
+   "tryit": {
+    "task": "Add a third line that prints your name. Build it with cl and run it.",
+    "code": "#include <stdio.h>\n\nint main() {\n    printf(\"Hello, World!\\n\");\n    printf(\"____\\n\");\n    return 0;\n}",
+    "answer": "printf(\"Sam\\n\");   any text inside the quotes, ending with \\n"
+   },
+   "qa": [
+    [
+     "Why int main() and not just main()?",
+     "main hands a number back to Windows when it ends: 0 for success. <code>int</code> says what kind of thing it returns. Phase 3 covers return values properly."
+    ],
+    [
+     "What happens if I forget the ;?",
+     "The compiler stops with an error, usually C2143, pointing at the line after the one missing it. Concept 4 is all about reading those."
+    ],
+    [
+     "Does the spacing matter?",
+     "Not to the compiler. Indenting the lines inside { } is for you: it shows what belongs to main at a glance."
+    ]
+   ],
+   "bridge": "You can write a program. Next: <b>turning it into something Windows can run</b>, with cl."
+  },
+  {
+   "id": "compile",
+   "title": "Compiling and running with cl",
+   "kick": "cd · dir · cl · .exe",
+   "mins": 10,
+   "lang": "shell",
+   "skills": [
+    "cl",
+    "cd-dir"
+   ],
+   "builds": "Concept 1: hello_world.c, saved in your p01 folder.",
+   "why": "Windows can’t run hello_world.c. It’s text for humans. The compiler, cl, translates it into hello_world.exe, which Windows can run. Every change needs a fresh compile before you see it.",
+   "code": "cd C:\\Users\\4samt\\Documents\\Dev\\game-dev-exercises\\p01\ndir\ncl hello_world.c\nhello_world.exe",
+   "walk": [
+    [
+     1,
+     "<b>cd</b> moves the terminal into your project folder. cl looks for files in the folder you’re in."
+    ],
+    [
+     2,
+     "<b>dir</b> lists the files here. Check hello_world.c is in the list before compiling."
+    ],
+    [
+     3,
+     "<b>cl</b> reads hello_world.c and, if there are no errors, writes hello_world.obj and hello_world.exe next to it."
+    ],
+    [
+     4,
+     "Typing the .exe name runs it. Its printf output appears right here in the terminal."
+    ]
+   ],
+   "model": "<b>Mental model:</b> the .c file is a recipe, cl is the cook, the .exe is the meal. Change the recipe and nothing happens until the cook makes it again.",
+   "check": {
+    "q": "You change “Hello” to “Hi” in hello_world.c, save, and run hello_world.exe again without running cl. What prints?",
+    "opts": [
+     "Hi, World!",
+     "Hello, World!",
+     "An error: the .exe is out of date",
+     "Nothing"
+    ],
+    "a": 1,
+    "hint": "Which file did you change, and which file did you run?",
+    "why": "The .exe is still the old build. It only changes when cl rebuilds it, so you see Hello, World! until you compile again. Forgetting to rebuild is the classic “my change didn’t work” moment.",
+    "miss": {
+     "0": "The .c file says Hi, but the .exe was built before the change.",
+     "2": "Windows doesn’t know or care that the .c changed. It just runs the old .exe.",
+     "3": "The old .exe still works. It just has the old text."
+    }
+   },
+   "tryit": {
+    "task": "Fill in the commands: go to your p01 folder, compile greet.c, run it.",
+    "code": "____ C:\\Users\\4samt\\Documents\\Dev\\game-dev-exercises\\p01\n____ greet.c\n____",
+    "answer": "cd …   then   cl greet.c   then   greet.exe"
+   },
+   "qa": [
+    [
+     "'cl' is not recognized",
+     "You’re in a terminal that hasn’t loaded Visual Studio’s tools. Use the Developer Command Prompt, or set up the VS Code terminal profile from Environment Setup step 8."
+    ],
+    [
+     "What is the .obj file?",
+     "A halfway step: your code compiled but not yet linked into a program. Phase 3.5 explains linking. You can ignore it, and a .gitignore keeps it out of Git."
+    ],
+    [
+     "Can I name the .exe something else?",
+     "Yes: <code>cl hello_world.c /Fe:game.exe</code>. Concept 5 puts that in build.bat."
+    ]
+   ],
+   "bridge": "You can build and run. Next: <b>controlling exactly what printf shows</b>: new lines, special characters and numbers."
+  },
+  {
+   "id": "escapes",
+   "title": "Escape sequences and %d",
+   "kick": "\\n · \\t · \\\\ · %% · %d",
+   "mins": 12,
+   "lang": "c",
+   "skills": [
+    "escapes",
+    "fmt-d"
+   ],
+   "builds": "Concept 1: printf and \\n. Session 1: the disappearing “Lets”.",
+   "why": "Some characters can’t be typed straight into a string: a new line, a tab, a quote. C uses a backslash to say “the next character is special”. And %d drops a number into your text, which is how the game will show a score.",
+   "code": "#include <stdio.h>\n\nint main() {\n    printf(\"Score:\\t%d\\n\", 120);\n    printf(\"Path: C:\\\\Games\\\\runner\\n\");\n    printf(\"Progress: 50%%\\n\");\n    printf(\"Lets\\r party\\n\");\n    return 0;\n}",
+   "walk": [
+    [
+     4,
+     "<b>\\t</b> is a tab: a jump to the next column. <b>%d</b> is a slot that gets filled with 120."
+    ],
+    [
+     5,
+     "<b>\\\\</b> prints one backslash. You need two, because a single \\ starts an escape."
+    ],
+    [
+     6,
+     "<b>%%</b> prints one percent sign. A single % would start a slot like %d."
+    ],
+    [
+     7,
+     "<b>\\r</b> jumps back to the start of the line without moving down, so “ party” writes over “Lets”. You saw this in Session 1."
+    ]
+   ],
+   "model": "<b>Mental model:</b> inside the quotes, \\ and % are control keys. \\ controls the cursor, % opens a slot. To print either one as plain text, press it twice.",
+   "check": {
+    "q": "What does line 7 show on screen?",
+    "opts": [
+     " party",
+     "Lets party",
+     "Lets\\r party",
+     "Lets\n party"
+    ],
+    "a": 0,
+    "hint": "\\r moves the cursor back to the start of the same line. What happens to “Lets”?",
+    "why": "“Lets” prints, \\r sends the cursor back to the start of the line, and “ party” is written over it. It’s six characters long, so it covers all four letters of Lets.",
+    "miss": {
+     "1": "\\r doesn’t print anything. It moves the cursor back, and the next text overwrites.",
+     "2": "\\r is an escape, so it’s never shown as text.",
+     "3": "\\r goes back to the start of the same line. \\n is the one that moves down."
+    }
+   },
+   "tryit": {
+    "task": "Make this print exactly: Lives: 3 (100%)",
+    "code": "printf(\"Lives: ____ (100____)\\n\", 3);",
+    "answer": "%d and %%   →   printf(\"Lives: %d (100%%)\\n\", 3);"
+   },
+   "qa": [
+    [
+     "How do I print a double quote?",
+     "Escape it: \\\" inside the string. <code>printf(\"She said \\\"hi\\\"\\n\");</code>"
+    ],
+    [
+     "What other escapes are there?",
+     "\\t (tab), \\\\ (backslash), \\\" (quote), \\' (single quote) and \\0, the end of a string, which Phase 3 explains. \\n and \\t are the ones you’ll use most."
+    ],
+    [
+     "Can %d show a decimal number?",
+     "No. %d is for whole numbers only. Phase 2 adds %f for decimals."
+    ]
+   ],
+   "bridge": "You can print anything you want. Next: <b>what to do when the compiler says no</b>."
+  },
+  {
+   "id": "errors",
+   "title": "Reading compiler errors",
+   "kick": "file(line): error C2143 · warnings",
+   "mins": 12,
+   "lang": "c",
+   "skills": [
+    "compile-error"
+   ],
+   "builds": "Concepts 1 and 2: every statement ends with ;, and cl reports problems when you compile.",
+   "why": "You will see compiler errors every day, for as long as you write code. They look scary but follow one pattern: file, line, code, message. Reading them calmly is a skill, and it’s the fastest way to fix your own code.",
+   "code": "#include <stdio.h>\n\nint main() {\n    printf(\"Hello\\n\");\n    printf(\"World\\n\")\n    return 0;\n}",
+   "walk": [
+    [
+     4,
+     "This line is fine: it ends with ;."
+    ],
+    [
+     5,
+     "The ; is missing at the end of this line. The compiler doesn’t complain yet."
+    ],
+    [
+     6,
+     "It complains here, on reaching <code>return</code> without having seen a ;. cl prints <code>hello.c(6): error C2143: syntax error: missing ';' before 'return'</code>. That’s file, line, error code, message."
+    ]
+   ],
+   "model": "<b>Mental model:</b> the compiler reads like you do, top to bottom. It reports a problem at the first place it can’t make sense of things, which is often one line after the actual mistake.",
+   "check": {
+    "q": "The error says line 6. Where do you fix it?",
+    "opts": [
+     "Line 6: add a ; after return 0",
+     "Line 5: add a ; at the end",
+     "Line 4: the first printf is wrong",
+     "Rename the file"
+    ],
+    "a": 1,
+    "hint": "The message says “missing ; before return”. Which line ends just before return?",
+    "why": "The mistake is on line 5, the line before the one reported. The compiler only noticed when it reached return on line 6. When an error points at a line that looks fine, check the line above it.",
+    "miss": {
+     "0": "return 0; already has its ;. The message says the ; is missing before return.",
+     "2": "Line 4 is fine. It has its ;.",
+     "3": "The file name has nothing to do with it."
+    }
+   },
+   "tryit": {
+    "task": "This has two mistakes. Build it, read the first error, fix it, build again, then fix the next.",
+    "code": "#include <stdio.h>\n\nint main() {\n    printf(\"Score: %d\\n\", 10)\n    printf(\"Lives: 3\\n);\n    return 0;\n}",
+    "answer": "Line 4 is missing the ; at the end. Line 5 is missing the closing \" before the ). Fix the first error first: one mistake can cause several messages."
+   },
+   "qa": [
+    [
+     "Error or warning: what’s the difference?",
+     "An error (C2xxx) means no .exe is made. A warning (C4xxx) still makes one, but something looks wrong. With /WX in Concept 5, warnings stop the build too."
+    ],
+    [
+     "Why do I get ten errors for one mistake?",
+     "After the first problem the compiler gets confused about what follows. Fix the first error, rebuild, and many of the others disappear."
+    ],
+    [
+     "How do I look up an error code?",
+     "Search “MSVC C2143”. Microsoft’s page for each code explains it with examples."
+    ]
+   ],
+   "bridge": "You can read the compiler’s complaints. Next: <b>build.bat</b>, one word that compiles with the right warnings switched on."
+  },
+  {
+   "id": "buildbat",
+   "title": "build.bat and compiler flags",
+   "kick": "build.bat · /W4 /WX · %ERRORLEVEL%",
+   "mins": 15,
+   "lang": "bat",
+   "skills": [
+    "build-bat",
+    "msvc-flags",
+    "errorlevel"
+   ],
+   "builds": "Concept 2: the cl command. Concept 4: errors and warnings.",
+   "why": "Typing cl with the right flags every time gets old, and it’s easy to forget the flags that catch bugs. build.bat is a file of commands you run with one word: <code>build</code>. Every project from here on has one.",
+   "code": "@echo off\nset FLAGS=/W4 /WX /Zi /Od\ncl %FLAGS% hello_world.c /Fe:hello_world.exe\nif %ERRORLEVEL% neq 0 (\n    echo BUILD FAILED\n    exit /b 1\n)\necho BUILD OK",
+   "walk": [
+    [
+     1,
+     "<b>@echo off</b> stops Windows printing each command before running it, so you only see the results."
+    ],
+    [
+     2,
+     "<b>set FLAGS=</b> saves the compiler flags in one place. /W4 turns on most warnings, /WX makes any warning stop the build, /Zi and /Od set it up for the debugger."
+    ],
+    [
+     3,
+     "<b>%FLAGS%</b> is swapped for the flags. <b>/Fe:</b> names the .exe."
+    ],
+    [
+     4,
+     "<b>%ERRORLEVEL%</b> holds the result of the last command: 0 means cl succeeded, anything else means it failed. neq means “not equal”."
+    ],
+    [
+     5,
+     "Runs only if the build failed."
+    ],
+    [
+     6,
+     "<b>exit /b 1</b> stops the script and reports failure."
+    ],
+    [
+     8,
+     "Only reached when cl succeeded."
+    ]
+   ],
+   "model": "<b>Mental model:</b> build.bat is a recipe card for the cook. You write the steps once, flags included, and every build follows them exactly.",
+   "check": {
+    "q": "hello_world.c has one warning (C4244) and nothing else wrong. What does build print at the end?",
+    "opts": [
+     "BUILD OK",
+     "BUILD FAILED",
+     "BUILD OK, then the warning",
+     "Nothing"
+    ],
+    "a": 1,
+    "hint": "What does /WX do to warnings?",
+    "why": "/WX turns every warning into an error, so cl fails, %ERRORLEVEL% isn’t 0, and you get BUILD FAILED. That’s the point: warnings are bugs you haven’t met yet, and /WX won’t let you ignore them.",
+    "miss": {
+     "0": "Without /WX it would. With /WX, any warning fails the build.",
+     "2": "With /WX the warning becomes an error, so there’s no BUILD OK.",
+     "3": "The script always ends with BUILD OK or BUILD FAILED."
+    }
+   },
+   "tryit": {
+    "task": "Change build.bat so it builds runner.c into runner.exe.",
+    "code": "cl %FLAGS% ____ /Fe:____",
+    "answer": "cl %FLAGS% runner.c /Fe:runner.exe"
+   },
+   "qa": [
+    [
+     "Why does typing build work without .bat?",
+     "When you type a name, Windows tries .bat, .cmd and .exe automatically, as long as the file is in the current folder."
+    ],
+    [
+     "What is rem?",
+     "A comment line in a .bat file, like // in C. The longer build.bat in the full notes uses rem to explain every flag."
+    ],
+    [
+     "When do I add more .c files?",
+     "From Phase 3.5. You’ll list them in a SOURCES variable and pass them all to cl."
+    ]
+   ],
+   "bridge": "You can build with one word. Last: <b>saving your work to GitHub</b>, so it’s backed up and Person A can see it."
+  },
+  {
+   "id": "git",
+   "title": "Saving your work with Git",
+   "kick": "git status · add · commit · push",
+   "mins": 10,
+   "lang": "shell",
+   "skills": [
+    "git-basics"
+   ],
+   "builds": "Environment Setup: Git installed and your game-dev-exercises repo cloned.",
+   "why": "Right now your code lives on one hard drive. Git takes snapshots of it, and GitHub keeps a copy online that Person A can read. Small snapshots, often, mean you can always get back to a version that worked.",
+   "code": "git status\ngit add hello_world.c build.bat\ngit commit -m \"Add hello world and build.bat\"\ngit push",
+   "walk": [
+    [
+     1,
+     "<b>git status</b> shows what changed since your last snapshot. Run it before and after everything."
+    ],
+    [
+     2,
+     "<b>git add</b> picks the files for the next snapshot. Nothing is saved yet."
+    ],
+    [
+     3,
+     "<b>git commit</b> takes the snapshot, with a message saying what changed. It’s saved on your machine only."
+    ],
+    [
+     4,
+     "<b>git push</b> sends your snapshots to GitHub. Now they’re backed up and visible to Person A."
+    ]
+   ],
+   "model": "<b>Mental model:</b> add puts photos in an envelope, commit seals it with a label, push posts it. Nothing leaves your computer until the push.",
+   "check": {
+    "q": "You run git add and git commit, then your laptop dies. Is your work on GitHub?",
+    "opts": [
+     "Yes, commit saves to GitHub",
+     "No, it was never pushed",
+     "Only the files you added",
+     "Only the commit message"
+    ],
+    "a": 1,
+    "hint": "Which of the three commands actually talks to GitHub?",
+    "why": "commit saves the snapshot on your machine. Only push sends it to GitHub. Commit, then push, every session.",
+    "miss": {
+     "0": "commit is local. It’s push that uploads.",
+     "2": "add only picks files for a snapshot. Nothing goes online until push.",
+     "3": "Nothing goes to GitHub until push, message included."
+    }
+   },
+   "tryit": {
+    "task": "Fill in the end-of-session ritual for a new file, guess.c.",
+    "code": "git ____ guess.c\ngit ____ -m \"Add guessing game\"\ngit ____",
+    "answer": "add, commit, push"
+   },
+   "qa": [
+    [
+     "What makes a good commit message?",
+     "Say what changed, as if finishing “This commit will…”: “Add build.bat”, “Fix warning C4244 in var()”. Phase 4 goes deeper."
+    ],
+    [
+     "git push asks me to sign in",
+     "The first push from a new computer opens a GitHub sign-in in your browser. After that it remembers you."
+    ],
+    [
+     "Should I commit the .exe?",
+     "No. It’s rebuilt from your code any time. Phase 4 adds a .gitignore so Git skips .exe and .obj files automatically."
+    ]
+   ],
+   "bridge": "That’s every concept in Phase 1. Next: <b>Trace</b>, predicting what small programs print, then the Phase 1 tasks."
+  }
+ ]
+}

@@ -1,0 +1,778 @@
+{
+ "_about": "Concept ladder for the Learn stage. One concept per rung. Rung ids are progress keys: never rename. skills are glossary.json ids that move to Practiced when the check is passed. goals maps checkpoint data-ids to the rungs (1-based) that teach them. lang: c programs are compiled and run to verify each check.",
+ "phase": "phase3",
+ "goals": {
+  "cp-p3-fn": [
+   1,
+   2
+  ],
+  "cp-p3b-1": [
+   5
+  ],
+  "cp-p3b-2": [
+   6
+  ],
+  "cp-p3b-3": [
+   7,
+   8
+  ],
+  "cp-p3b-4": [
+   1,
+   4,
+   5
+  ]
+ },
+ "rungs": [
+  {
+   "id": "functions",
+   "title": "Functions: parameters and return values",
+   "kick": "return type · parameters · calling",
+   "mins": 15,
+   "lang": "c",
+   "skills": [
+    "function"
+   ],
+   "builds": "Phase 2: variables, if and loops. Everything so far has lived inside main.",
+   "why": "Your guessing game is one long main. As programs grow that becomes impossible to read. A function packs one job into a named block you can call whenever you need it: inputs go in, one result comes out.",
+   "code": "#include <stdio.h>\n\nint add_score(int score, int points) {\n    int total = score + points;\n    return total;\n}\n\nint main() {\n    int score = 0;\n    score = add_score(score, 10);\n    score = add_score(score, 5);\n    printf(\"Score: %d\\n\", score);\n    return 0;\n}",
+   "walk": [
+    [
+     3,
+     "The first line names the function. <code>int</code> at the front is what it hands back. Inside the brackets are its inputs, called <b>parameters</b>, each with a type."
+    ],
+    [
+     4,
+     "Inside, score and points are ordinary variables holding whatever was passed in."
+    ],
+    [
+     5,
+     "<b>return</b> hands the result back to whoever called the function, and ends it."
+    ],
+    [
+     10,
+     "Calling it: add_score(score, 10) runs the function with score = 0 and points = 10. The result, 10, goes back into score."
+    ],
+    [
+     11,
+     "Called again with the new score: 10 + 5."
+    ],
+    [
+     12,
+     "Prints 15."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a vending machine. You put inputs in the slot, it does its job where you can’t see, and one thing drops out. main doesn’t need to know how, only what to put in and what comes out.",
+   "check": {
+    "q": "What would print if line 11 were add_score(score, 5); with no score = in front?",
+    "opts": [
+     "Score: 15",
+     "Score: 10",
+     "Score: 5",
+     "Score: 0"
+    ],
+    "a": 1,
+    "hint": "The function returns a value. If nobody catches it, where does it go?",
+    "why": "The function still returns 15, but nothing stores it, so score stays 10. A return value you don’t assign is thrown away.",
+    "miss": {
+     "0": "The function can’t change score by itself. Only the score = on the left does that.",
+     "2": "5 is the points, not the total.",
+     "3": "Line 10 still set score to 10."
+    }
+   },
+   "tryit": {
+    "task": "Write a function that returns the bigger of two ints.",
+    "code": "____ max_of(int a, int b) {\n    if (a > b) {\n        ____ a;\n    }\n    return b;\n}",
+    "answer": "int, then return"
+   },
+   "qa": [
+    [
+     "Can a function return two things?",
+     "Not directly. One value comes back. Phase 3.5 shows how pointers and structs get around that."
+    ],
+    [
+     "Do parameter names have to match the caller’s variables?",
+     "No. add_score(lives, 1) works fine. The value is copied into the parameter, whatever it’s called."
+    ],
+    [
+     "How long should a function be?",
+     "Short enough to describe in one sentence. If you need “and” to describe it, it’s probably two functions."
+    ]
+   ],
+   "bridge": "You can write a function. Next: <b>void and prototypes</b>: functions that return nothing, and telling the compiler a function exists before you use it."
+  },
+  {
+   "id": "prototypes",
+   "title": "void and function prototypes",
+   "kick": "void · prototype · declare before use",
+   "mins": 12,
+   "lang": "c",
+   "skills": [
+    "void",
+    "prototype"
+   ],
+   "builds": "Concept 1: functions with parameters and return values.",
+   "why": "Some functions just do a job, like printing a menu, and have nothing to hand back: that’s <code>void</code>. And C reads top to bottom, so if main calls a function written below it, the compiler needs a one-line heads-up first: the prototype.",
+   "code": "#include <stdio.h>\n\nvoid print_menu(void);\nint square(int n);\n\nint main() {\n    print_menu();\n    printf(\"%d\\n\", square(4));\n    return 0;\n}\n\nvoid print_menu(void) {\n    printf(\"1 Play  2 Quit\\n\");\n}\n\nint square(int n) {\n    return n * n;\n}",
+   "walk": [
+    [
+     3,
+     "A <b>prototype</b>: the function’s first line with a ; instead of a body. It tells the compiler “print_menu exists, takes nothing, returns nothing”."
+    ],
+    [
+     4,
+     "Another prototype. Now main can call square even though its body is further down."
+    ],
+    [
+     7,
+     "Calling a void function: no value comes back, so there’s nothing to store."
+    ],
+    [
+     8,
+     "square(4) runs and hands back 16, which printf prints."
+    ],
+    [
+     12,
+     "The real function, with its body. <b>void</b> at the front: returns nothing. <b>(void)</b> in the brackets: takes nothing."
+    ],
+    [
+     16,
+     "Matches its prototype exactly: same name, same types."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a prototype is a contents-page entry. The compiler reads the contents first, so when main mentions a function on page 3, it already knows that chapter exists.",
+   "check": {
+    "q": "You delete line 4 (the square prototype) and run build.bat (/W4 /WX). What happens?",
+    "opts": [
+     "It builds and prints 16",
+     "The build fails: square is used at line 8 before the compiler has seen it",
+     "An error at line 16",
+     "It prints 0"
+    ],
+    "a": 1,
+    "hint": "When the compiler reaches line 8, has it seen square yet?",
+    "why": "At line 8 the compiler hasn’t met square, so MSVC warns C4013 (“square undefined; assuming extern returning int”). /WX turns that into a failed build. Prototypes at the top prevent it.",
+    "miss": {
+     "0": "Without /WX it might build, with warning C4013. With your flags it fails.",
+     "2": "Line 16 is fine by itself. The problem is using square before the compiler knows about it.",
+     "3": "With /WX it never gets as far as running."
+    }
+   },
+   "tryit": {
+    "task": "Add the missing prototype so main can call heal(), which is written below it.",
+    "code": "#include <stdio.h>\n\n____\n\nint main() {\n    int hp = heal(50, 20);\n    printf(\"%d\\n\", hp);\n    return 0;\n}\n\nint heal(int hp, int amount) {\n    return hp + amount;\n}",
+    "answer": "int heal(int hp, int amount);"
+   },
+   "qa": [
+    [
+     "Why not just put every function above main?",
+     "You can, and for small files it’s fine. Prototypes matter once functions call each other, and they’re exactly what goes in a .h file in Phase 3.5."
+    ],
+    [
+     "What does (void) in the brackets mean?",
+     "“Takes no inputs.” In C, empty brackets () mean “not specified”, so (void) is the precise way to say none."
+    ],
+    [
+     "Can a void function use return?",
+     "Yes, a bare <code>return;</code> to leave early. It just can’t return a value."
+    ]
+   ],
+   "bridge": "Your functions can live anywhere in the file. Next: <b>scope</b>: which variables a function can see."
+  },
+  {
+   "id": "scope",
+   "title": "Scope: where a variable lives",
+   "kick": "local variables · { } blocks · copies",
+   "mins": 10,
+   "lang": "c",
+   "skills": [
+    "scope"
+   ],
+   "builds": "Concepts 1 and 2: calling functions and passing values in.",
+   "why": "A variable made inside a function only exists inside that function, from its line to the closing }. That’s why two functions can each have a variable called total without clashing, and why a function can’t reach into main’s variables.",
+   "code": "#include <stdio.h>\n\nvoid reset(int score) {\n    score = 0;\n    printf(\"Inside reset: %d\\n\", score);\n}\n\nint main() {\n    int score = 99;\n    reset(score);\n    printf(\"Back in main: %d\\n\", score);\n    return 0;\n}",
+   "walk": [
+    [
+     3,
+     "reset gets its own variable called score: a copy of whatever main passes in."
+    ],
+    [
+     4,
+     "This changes reset’s copy only."
+    ],
+    [
+     9,
+     "main’s score. A different variable that happens to share the name."
+    ],
+    [
+     10,
+     "Passes the value 99 in. reset receives a copy."
+    ],
+    [
+     11,
+     "main’s score was never touched."
+    ]
+   ],
+   "model": "<b>Mental model:</b> each function is its own room. Passing a value in hands over a photocopy. Whatever the function scribbles on its copy, the original in main stays the same.",
+   "check": {
+    "q": "What is the second line of output?",
+    "opts": [
+     "Back in main: 0",
+     "Back in main: 99",
+     "Back in main: a garbage number",
+     "A compile error: score is defined twice"
+    ],
+    "a": 1,
+    "hint": "Did reset get main’s variable, or a copy of its value?",
+    "why": "reset changed its own copy to 0. main’s score is a separate variable and stays 99. To change a caller’s variable you need a return value or, in Phase 3.5, a pointer.",
+    "miss": {
+     "0": "reset only had a copy. main’s score never changed.",
+     "2": "main’s score was set to 99 and nothing touched it.",
+     "3": "Each function has its own score. Same name, different rooms, no clash."
+    }
+   },
+   "tryit": {
+    "task": "Make reset actually work by returning the new value.",
+    "code": "____ reset(void) {\n    return 0;\n}\n\n// in main:\nscore = ____;",
+    "answer": "int reset(void)   and   score = reset();"
+   },
+   "qa": [
+    [
+     "What about variables inside an if or a loop?",
+     "Same rule, smaller room. A variable made inside the { } of an if or for disappears at its }. In <code>for (int i = 0; …)</code>, i only exists inside that loop."
+    ],
+    [
+     "What are global variables?",
+     "Variables made outside every function, visible everywhere. Easy now, painful later: any function can change them. This roadmap avoids them until there’s a real reason."
+    ],
+    [
+     "Why is this a good thing?",
+     "You can read one function without worrying that some other function is secretly changing its variables."
+    ]
+   ],
+   "bridge": "You know where variables live. Next: <b>#define</b>, giving fixed numbers a name."
+  },
+  {
+   "id": "define",
+   "title": "Named constants with #define",
+   "kick": "#define · no magic numbers",
+   "mins": 8,
+   "lang": "c",
+   "skills": [
+    "define"
+   ],
+   "builds": "Phase 2: for loops. Concept 3: values with clear meaning.",
+   "why": "A 5 in the middle of your code could mean five scores, five lives or five pixels. #define gives a fixed number a name, so the code says what it means, and you change it in one place.",
+   "code": "#include <stdio.h>\n\n#define MAX_SCORES 5\n#define START_LIVES 3\n\nint main() {\n    int lives = START_LIVES;\n    for (int i = 0; i < MAX_SCORES; i++) {\n        printf(\"Slot %d\\n\", i);\n    }\n    printf(\"Lives: %d\\n\", lives);\n    return 0;\n}",
+   "walk": [
+    [
+     3,
+     "<b>#define MAX_SCORES 5</b>: before compiling, every MAX_SCORES in the file is swapped for 5. No = and no ;."
+    ],
+    [
+     4,
+     "Names go in capitals by convention, so you can tell a constant from a variable at a glance."
+    ],
+    [
+     7,
+     "Reads as “start with the starting lives”, not “start with 3”."
+    ],
+    [
+     8,
+     "The loop runs MAX_SCORES times. Change line 3 to 10 and every use updates."
+    ]
+   ],
+   "model": "<b>Mental model:</b> find-and-replace that runs before the compiler. The compiler never sees MAX_SCORES, only the 5 it was swapped for.",
+   "check": {
+    "q": "How many “Slot” lines print, and what is the last one?",
+    "opts": [
+     "5 lines, last is Slot 4",
+     "5 lines, last is Slot 5",
+     "4 lines, last is Slot 4",
+     "6 lines, last is Slot 5"
+    ],
+    "a": 0,
+    "hint": "i starts at 0 and the loop runs while i < 5.",
+    "why": "i goes 0, 1, 2, 3, 4: five lines, and the last is Slot 4. When i reaches 5, i < 5 fails. Counting from 0 is how arrays work too, which is next.",
+    "miss": {
+     "1": "i stops before reaching 5, because the loop needs i < 5.",
+     "2": "Counting 0 to 4 is five numbers.",
+     "3": "The loop stops when i reaches 5, so 5 never prints."
+    }
+   },
+   "tryit": {
+    "task": "Replace the magic number with a named constant.",
+    "code": "____ ENEMY_SPEED 2\n\nint x = 0;\nx = x + ____;",
+    "answer": "#define   and   ENEMY_SPEED"
+   },
+   "qa": [
+    [
+     "Why does #define have no = or ;?",
+     "It isn’t C code. It’s an instruction to the preprocessor, which runs before the compiler. A ; would get pasted in everywhere the name is used and cause odd errors."
+    ],
+    [
+     "#define or const int?",
+     "<code>const int MAX = 5;</code> also works and has a type. #define is what this roadmap and most C game code use for array sizes. Both beat a bare 5."
+    ],
+    [
+     "What else does the preprocessor do?",
+     "#include is one too: it pastes a whole file in. Phase 3.5 adds #pragma once."
+    ]
+   ],
+   "bridge": "Your numbers have names. Next: <b>arrays</b>, many values under one name."
+  },
+  {
+   "id": "arrays",
+   "title": "Arrays: many values, one name",
+   "kick": "int a[5] · a[0] · loop to count - 1",
+   "mins": 15,
+   "lang": "c",
+   "skills": [
+    "array",
+    "array-loop",
+    "array-count"
+   ],
+   "builds": "Concept 4: #define for sizes. Phase 2: for loops and casts.",
+   "why": "Five high scores in five variables is clumsy, and fifty is impossible. An array is a row of boxes under one name, numbered from 0. Pair it with a for loop and the same few lines handle any number of values.",
+   "code": "#include <stdio.h>\n\n#define MAX_SCORES 5\n\nint main() {\n    int scores[MAX_SCORES] = {90, 75, 60, 40, 10};\n    int count = (int)(sizeof(scores) / sizeof(scores[0]));\n\n    printf(\"Top score: %d\\n\", scores[0]);\n    scores[4] = 25;\n\n    for (int i = 0; i < count; i++) {\n        printf(\"%d: %d\\n\", i + 1, scores[i]);\n    }\n    return 0;\n}",
+   "walk": [
+    [
+     6,
+     "<b>int scores[5]</b> makes five int boxes in a row. The braces fill them in order."
+    ],
+    [
+     7,
+     "sizeof(scores) is the whole array in bytes (20). sizeof(scores[0]) is one element (4). 20 / 4 = 5. The (int) cast from Phase 2 keeps /W4 quiet."
+    ],
+    [
+     9,
+     "The first box is <b>[0]</b>, not [1]."
+    ],
+    [
+     10,
+     "The last box is <b>[4]</b>: count - 1. It changes from 10 to 25 here."
+    ],
+    [
+     12,
+     "The standard array loop: start at 0, stop before count."
+    ],
+    [
+     13,
+     "scores[i] is whichever box i points at this time round."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a row of lockers numbered from 0. scores[2] means locker 2, which is the third one. Five lockers are numbered 0 to 4. There is no locker 5.",
+   "check": {
+    "q": "What is the last line printed?",
+    "opts": [
+     "5: 25",
+     "5: 10",
+     "4: 25",
+     "5: 40"
+    ],
+    "a": 0,
+    "hint": "Line 10 changed one box before the loop runs. Which one, and what does the loop print for it?",
+    "why": "The loop prints i + 1 as the position, so the last line is position 5, which is scores[4]. Line 10 changed it from 10 to 25 before the loop ran.",
+    "miss": {
+     "1": "scores[4] was changed to 25 on line 10, before the loop.",
+     "2": "The loop prints i + 1, so the last position is 5.",
+     "3": "40 is scores[3]. The last element is scores[4]."
+    }
+   },
+   "tryit": {
+    "task": "Finish the loop that finds the highest score.",
+    "code": "int best = scores[0];\nfor (int i = 1; i < count; i++) {\n    if (scores[i] ____ best) {\n        best = ____;\n    }\n}",
+    "answer": ">   and   scores[i]"
+   },
+   "qa": [
+    [
+     "What happens if I use scores[5]?",
+     "C doesn’t check. It reads or writes whatever memory sits after the array: garbage at best, a crash or a corrupted variable at worst, and no error message. Keep loops at i &lt; count."
+    ],
+    [
+     "Why start counting at 0?",
+     "The number is how far a box is from the start. The first box is 0 steps along. It feels odd for a week, then it’s natural."
+    ],
+    [
+     "Can the size be a variable?",
+     "Use a #define or a fixed number for array sizes in this roadmap. Some compilers allow variable sizes, but MSVC doesn’t."
+    ]
+   ],
+   "bridge": "You can store a row of numbers. Next: <b>strings</b>, which are arrays of characters with one twist."
+  },
+  {
+   "id": "strings",
+   "title": "Strings and the '\\0' at the end",
+   "kick": "char name[8] · '\\0' · strlen · %s",
+   "mins": 15,
+   "lang": "c",
+   "skills": [
+    "string",
+    "nul",
+    "strlen"
+   ],
+   "builds": "Concept 5: arrays. Phase 2: char and %zu.",
+   "why": "C has no string type. A string is a char array, and C marks where the text ends with a hidden character, '\\0'. Every string function relies on finding it. Knowing it’s there explains most string bugs before they happen.",
+   "code": "#include <stdio.h>\n#include <string.h>\n\nint main() {\n    char name[8] = \"Sam\";\n    printf(\"Name: %s\\n\", name);\n    printf(\"Length: %zu\\n\", strlen(name));\n    printf(\"Array size: %zu\\n\", sizeof(name));\n    name[1] = 'u';\n    printf(\"Now: %s\\n\", name);\n    return 0;\n}",
+   "walk": [
+    [
+     2,
+     "<b>string.h</b> has the string tools: strlen, strcmp and more."
+    ],
+    [
+     5,
+     "Eight char boxes. \"Sam\" fills the first three, and C puts '\\0' in box 3 to mark the end. The rest are zero too."
+    ],
+    [
+     6,
+     "<b>%s</b> prints characters until it reaches the '\\0'."
+    ],
+    [
+     7,
+     "<b>strlen</b> counts characters up to the '\\0', not counting it: 3."
+    ],
+    [
+     8,
+     "sizeof is the whole array: 8 boxes, however much text is in it."
+    ],
+    [
+     9,
+     "A string is an array, so you can change one character. Box 1 becomes u."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a row of boxes with a stop sign after the last letter. Everything that reads a string walks along until it hits the stop sign. Lose the sign and it keeps walking into memory that isn’t yours.",
+   "check": {
+    "q": "What does the last printf show?",
+    "opts": [
+     "Now: Sum",
+     "Now: Suam",
+     "Now: uam",
+     "Now: Sam"
+    ],
+    "a": 0,
+    "hint": "Which box is name[1]? Arrays count from 0.",
+    "why": "name[0] is S, name[1] is a, name[2] is m. Line 9 replaces the a with u, giving Sum.",
+    "miss": {
+     "1": "Assigning replaces a box. It doesn’t insert one.",
+     "2": "name[1] is the second box, not the first.",
+     "3": "Line 9 changed one character before the last printf."
+    }
+   },
+   "tryit": {
+    "task": "How many letters can char name[32] hold? Fill in, then check by printing strlen of a long name.",
+    "code": "// char name[32] holds at most ____ letters, because ____",
+    "answer": "31, because one box is needed for the '\\0' at the end."
+   },
+   "qa": [
+    [
+     "Why can’t I write name = \"Alex\"; later?",
+     "Arrays can’t be assigned with = after they’re made. Use <code>strcpy(name, \"Alex\")</code>, or fill it from the keyboard with fgets, next."
+    ],
+    [
+     "What’s the difference between 'a' and \"a\"?",
+     "'a' is one char. \"a\" is a string: two boxes, 'a' and '\\0'."
+    ],
+    [
+     "What if a string has no '\\0'?",
+     "%s and strlen keep reading past the end until they happen to find a zero byte. You get garbage or a crash. The weekly “string with no end” exercise shows it."
+    ]
+   ],
+   "bridge": "You know what a string really is. Next: <b>reading a whole line of text</b> from the player with fgets."
+  },
+  {
+   "id": "fgets",
+   "title": "Reading a line of text with fgets",
+   "kick": "fgets · stdin · strip the newline",
+   "mins": 12,
+   "lang": "c",
+   "skills": [
+    "fgets"
+   ],
+   "builds": "Concept 6: strings and '\\0'. Phase 2: scanf.",
+   "why": "scanf(\"%s\") stops at the first space and doesn’t know how big your array is, so a long name overflows it. fgets reads a whole line and never writes more than the size you give it. It’s the safe way to read a name.",
+   "code": "#include <stdio.h>\n#include <string.h>\n\nint main() {\n    char name[32];\n    printf(\"Your name: \");\n    fgets(name, sizeof(name), stdin);\n    printf(\"[%s]\\n\", name);\n    name[strcspn(name, \"\\n\")] = '\\0';\n    printf(\"[%s]\\n\", name);\n    return 0;\n}",
+   "walk": [
+    [
+     5,
+     "Room for 31 letters plus the '\\0'."
+    ],
+    [
+     7,
+     "<b>fgets(where, how much, from where)</b>: read a line into name, never more than sizeof(name) characters, from <b>stdin</b>, the keyboard."
+    ],
+    [
+     8,
+     "The brackets show exactly what’s in name. fgets keeps the Enter, so the ] lands on the next line."
+    ],
+    [
+     9,
+     "<b>strcspn</b> finds the position of the first \\n. Putting '\\0' there ends the string before it. Every fgets gets this line straight after."
+    ],
+    [
+     10,
+     "Now the brackets close right after the name."
+    ]
+   ],
+   "model": "<b>Mental model:</b> fgets is a scoop with a size limit. It scoops the whole line, Enter included, and never overflows the cup. The strcspn line wipes the Enter off the bottom.",
+   "check": {
+    "q": "The player types Sam and presses Enter. What does line 8 print?",
+    "opts": [
+     "[Sam]",
+     "[Sam\n]",
+     "[Sam ]",
+     "[]"
+    ],
+    "a": 1,
+    "hint": "fgets keeps everything typed, including the Enter key.",
+    "why": "fgets stores S, a, m and the \\n from Enter, so the ] prints on the next line. Line 9 removes that \\n, which is why line 10 prints [Sam].",
+    "miss": {
+     "0": "That’s line 10, after the newline is stripped.",
+     "2": "Enter is stored as \\n, a new line, not a space.",
+     "3": "fgets did read the name. It’s in there, plus the Enter."
+    }
+   },
+   "tryit": {
+    "task": "Read a player tag of up to 15 letters safely and strip the newline.",
+    "code": "char tag[____];\nfgets(tag, ____, stdin);\ntag[strcspn(tag, \"\\n\")] = ____;",
+    "answer": "16,   sizeof(tag),   '\\0'"
+   },
+   "qa": [
+    [
+     "Why not scanf(\"%s\", name)?",
+     "It stops at the first space, so “Sam Taylor” becomes “Sam”, and it has no idea how big name is. Type 50 letters into 32 boxes and it writes past the end. MSVC flags it with C4996 for that reason."
+    ],
+    [
+     "What if they type more than 31 letters?",
+     "fgets stops at 31 and leaves the rest waiting in the input. Your array is safe. The leftovers get read by the next input call."
+    ],
+    [
+     "Mixing scanf(\"%d\") and fgets?",
+     "scanf leaves the Enter behind, and the next fgets reads it as an empty line. Read numbers with fgets too, or clear the leftover line first. The Stuck section covers it."
+    ]
+   ],
+   "bridge": "You can read a name safely. Next: <b>comparing strings</b>, because == doesn’t do what you’d expect."
+  },
+  {
+   "id": "strcmp",
+   "title": "Comparing strings with strcmp",
+   "kick": "strcmp · 0 means equal",
+   "mins": 10,
+   "lang": "c",
+   "skills": [
+    "strcmp"
+   ],
+   "builds": "Concepts 6 and 7: strings, and reading them with fgets.",
+   "why": "You’ll want to check if the player typed “quit”, or if a name is already on the high-score table. == on two strings compares where they live in memory, not their letters. strcmp compares the letters.",
+   "code": "#include <stdio.h>\n#include <string.h>\n\nint main() {\n    char cmd[16] = \"quit\";\n\n    if (strcmp(cmd, \"quit\") == 0) {\n        printf(\"Bye\\n\");\n    }\n    printf(\"%d\\n\", strcmp(\"apple\", \"banana\") < 0);\n    printf(\"%d\\n\", strcmp(\"Sam\", \"sam\") == 0);\n    return 0;\n}",
+   "walk": [
+    [
+     7,
+     "<b>strcmp</b> returns 0 when the two strings match exactly. So “equal” is <code>== 0</code>, which reads backwards at first."
+    ],
+    [
+     10,
+     "It returns a negative number when the first string sorts earlier. apple is before banana, so this is true: 1."
+    ],
+    [
+     11,
+     "Capitals are different characters. Sam and sam don’t match: 0."
+    ]
+   ],
+   "model": "<b>Mental model:</b> strcmp answers “how do these two words sort?”, not “are they the same?”. Negative: the first comes first. Zero: same. Positive: the first comes later. Same is just the zero case.",
+   "check": {
+    "q": "What does if (strcmp(cmd, \"quit\")) { … } do when cmd is \"quit\"?",
+    "opts": [
+     "Runs the block",
+     "Skips the block",
+     "A compile error",
+     "Runs it twice"
+    ],
+    "a": 1,
+    "hint": "What number does strcmp return for a match, and how does if treat that number?",
+    "why": "A match returns 0, and if treats 0 as false, so the block is skipped. It runs for every string except \"quit\". Always write == 0 for “equal”.",
+    "miss": {
+     "0": "strcmp gives 0 for a match, and if (0) is false.",
+     "2": "It compiles. It’s a logic bug, not a syntax error.",
+     "3": "An if runs its block at most once."
+    }
+   },
+   "tryit": {
+    "task": "Print “Welcome back” only when the name is Sam.",
+    "code": "if (strcmp(name, \"Sam\") ____) {\n    printf(\"Welcome back\\n\");\n}",
+    "answer": "== 0"
+   },
+   "qa": [
+    [
+     "Why doesn’t == work on strings?",
+     "<code>name == \"Sam\"</code> compares two memory addresses, which are never the same. It compiles and quietly gives false. Phase 3.5 explains addresses."
+    ],
+    [
+     "How do I ignore capitals?",
+     "MSVC has <code>_stricmp(a, b)</code>, which works like strcmp but ignores case. It’s Windows-only."
+    ],
+    [
+     "Does strcmp care about the \\n from fgets?",
+     "Yes. \"Sam\\n\" isn’t \"Sam\". That’s why you strip the newline straight after fgets."
+    ]
+   ],
+   "bridge": "You can work with text. Next: <b>2D arrays</b>, grids of values like a game map."
+  },
+  {
+   "id": "grid",
+   "title": "2D arrays: grids",
+   "kick": "map[3][5] · row, column · nested loops",
+   "mins": 12,
+   "lang": "c",
+   "skills": [
+    "array-2d"
+   ],
+   "builds": "Concept 5: arrays. Phase 2: loops inside loops.",
+   "why": "A level map, a tile grid or a board is rows and columns. A 2D array is an array of rows. Two loops, one inside the other, visit every cell.",
+   "code": "#include <stdio.h>\n\n#define ROWS 3\n#define COLS 5\n\nint main() {\n    char map[ROWS][COLS] = {\n        {'#', '#', '#', '#', '#'},\n        {'#', '.', 'P', '.', '#'},\n        {'#', '#', '#', '#', '#'}\n    };\n    map[1][3] = 'E';\n\n    for (int r = 0; r < ROWS; r++) {\n        for (int c = 0; c < COLS; c++) {\n            printf(\"%c\", map[r][c]);\n        }\n        printf(\"\\n\");\n    }\n    return 0;\n}",
+   "walk": [
+    [
+     7,
+     "<b>map[3][5]</b>: 3 rows of 5 chars. The first number is the row."
+    ],
+    [
+     9,
+     "Row 1 is the middle row. P sits at column 2."
+    ],
+    [
+     12,
+     "<b>map[1][3]</b>: row 1, column 3. The dot to the right of P becomes E."
+    ],
+    [
+     14,
+     "The outer loop picks a row."
+    ],
+    [
+     15,
+     "The inner loop walks across that row’s columns."
+    ],
+    [
+     18,
+     "After each row, a new line."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a spreadsheet. map[row][column], always row first. The outer loop moves down, the inner loop moves across.",
+   "check": {
+    "q": "What is the middle line of output?",
+    "opts": [
+     "#.PE#",
+     "#EP.#",
+     "#.P.#",
+     "#.EP#"
+    ],
+    "a": 0,
+    "hint": "map[1][3] is row 1, column 3. Count columns from 0 along the middle row.",
+    "why": "The middle row is # . P . # at columns 0 to 4. Column 3 is the second dot, so it becomes E: #.PE#.",
+    "miss": {
+     "1": "Column 3 is to the right of P, not the left.",
+     "2": "Line 12 changed one cell before printing.",
+     "3": "P is at column 2 and stays there. Column 3 is the one that changes."
+    }
+   },
+   "tryit": {
+    "task": "Put a coin (c) in the top-left corner inside the walls.",
+    "code": "map[____][____] = 'c';",
+    "answer": "1 and 1   (row 1, column 1)"
+   },
+   "qa": [
+    [
+     "Why row first?",
+     "It’s how C lays out the memory: all of row 0, then all of row 1. Looping rows on the outside walks memory in order."
+    ],
+    [
+     "Can I pass a 2D array to a function?",
+     "Yes, but the function has to know the column count: <code>void draw(char map[][COLS])</code>. The runner in Phase 4.5 uses a single row instead, which is simpler."
+    ],
+    [
+     "How is this different from an array of strings?",
+     "Very close. <code>char names[5][32]</code> is five strings of up to 31 letters. Each row is one string."
+    ]
+   ],
+   "bridge": "You can model a grid. Last: <b>saving to a file</b>, so a best score survives closing the game."
+  },
+  {
+   "id": "files",
+   "title": "Saving and loading with files",
+   "kick": "fopen · fprintf · fscanf · fclose",
+   "mins": 15,
+   "lang": "c",
+   "skills": [
+    "fopen"
+   ],
+   "builds": "Phase 2: printf and scanf. The file versions work the same way.",
+   "why": "When your program ends, every variable is gone. Writing to a file keeps a value between runs, like a best score. The stretch goal uses exactly this.",
+   "code": "#define _CRT_SECURE_NO_WARNINGS\n#include <stdio.h>\n\nint main() {\n    FILE *f = fopen(\"best.txt\", \"w\");\n    if (f == NULL) {\n        printf(\"Could not save\\n\");\n        return 1;\n    }\n    fprintf(f, \"%d\\n\", 120);\n    fclose(f);\n\n    int best = 0;\n    f = fopen(\"best.txt\", \"r\");\n    if (f != NULL) {\n        fscanf(f, \"%d\", &best);\n        fclose(f);\n    }\n    printf(\"Best: %d\\n\", best);\n    return 0;\n}",
+   "walk": [
+    [
+     1,
+     "MSVC calls fopen and fscanf unsafe (C4996). This line turns that off, and must come first."
+    ],
+    [
+     5,
+     "<b>fopen</b> opens best.txt for writing (\"w\"), creating it if needed. <code>FILE *f</code> is a handle to the open file. The * is a pointer, explained in Phase 3.5. For now, read it as “the file I opened”."
+    ],
+    [
+     6,
+     "fopen gives back <b>NULL</b> when it fails, for example in a folder you can’t write to. Always check."
+    ],
+    [
+     10,
+     "<b>fprintf</b> works like printf, but writes into the file instead of the screen."
+    ],
+    [
+     11,
+     "<b>fclose</b> finishes writing and lets go of the file."
+    ],
+    [
+     14,
+     "\"r\" opens it for reading. If the file doesn’t exist, f is NULL and best stays 0."
+    ],
+    [
+     16,
+     "<b>fscanf</b> works like scanf, but reads from the file."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a notebook in a drawer. fopen takes it out (\"w\" starts a fresh page, \"r\" just reads), fprintf and fscanf write and read, fclose puts it back. Forget fclose and the last lines may never reach the page.",
+   "check": {
+    "q": "You delete best.txt and change line 5 to open with \"r\" instead of \"w\". What happens on the next run?",
+    "opts": [
+     "It creates best.txt and saves 120",
+     "It prints Could not save and stops",
+     "It prints Best: 120",
+     "It crashes"
+    ],
+    "a": 1,
+    "hint": "\"r\" only opens a file that already exists. What does fopen give back when it can’t?",
+    "why": "\"r\" won’t create a file. fopen returns NULL, the check on line 6 catches it, prints Could not save and returns 1. That check is what stops a crash.",
+    "miss": {
+     "0": "Only \"w\" (or \"a\") creates a file.",
+     "2": "The save never happens, because the first fopen failed.",
+     "3": "The NULL check prevents it. Without the check, fprintf on NULL would crash."
+    }
+   },
+   "tryit": {
+    "task": "Add to the file instead of replacing it, so every score is kept.",
+    "code": "FILE *f = fopen(\"scores.txt\", \"____\");",
+    "answer": "\"a\" (append). \"w\" wipes the file each time it opens."
+   },
+   "qa": [
+    [
+     "Where does best.txt end up?",
+     "In the folder the terminal is in when you run the .exe, usually your project folder."
+    ],
+    [
+     "What does \"w\" do to an existing file?",
+     "Empties it straight away, before you write anything. Use \"a\" to add to the end."
+    ],
+    [
+     "Why return 1?",
+     "A non-zero return from main tells Windows the program failed: the same idea as %ERRORLEVEL% in build.bat."
+    ]
+   ],
+   "bridge": "That’s every concept in Phase 3. Next: <b>Trace</b>, predicting what whole programs do, then the high-score table build."
+  }
+ ]
+}

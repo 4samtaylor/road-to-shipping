@@ -2112,11 +2112,13 @@ function renderLadder(pid) {
   var doneN = rungs.filter(function (x) { return l.done[x.id]; }).length;
 
   var h = '<div class="lad-live"><div class="lad-top"><span class="lad-count">' + doneN + ' of ' + rungs.length + ' concepts</span>' +
-    '<span class="lad-bar"><i style="width:' + Math.round(doneN / rungs.length * 100) + '%"></i></span></div><nav class="lad-rungs" aria-label="Concepts in order">' +
+    '<span class="lad-bar"><i style="width:' + Math.round(doneN / rungs.length * 100) + '%"></i></span></div><ol class="lad-toc" aria-label="Concepts in this phase">' +
     rungs.map(function (x, k) {
       var cls = (k === i ? ' cur' : '') + (l.done[x.id] ? ' done' : '');
-      return '<button class="lad-chip' + cls + '" data-lad-go="' + k + '"' + (k === i ? ' aria-current="step"' : '') + ' title="' + esc(x.kick) + '"><b>' + (l.done[x.id] ? '✓' : k + 1) + '</b><span>' + esc(x.title) + '</span></button>';
-    }).join('') + '</nav>';
+      return '<li><button class="lad-row' + cls + '" data-lad-go="' + k + '"' + (k === i ? ' aria-current="step"' : '') + '>' +
+        '<span class="lad-n">' + (l.done[x.id] ? '✓' : k + 1) + '</span><span class="lad-t">' + esc(x.title) + '<small>' + esc(x.kick) + '</small></span>' +
+        '<span class="lad-m">' + (k === i ? 'Open' : '~' + x.mins + 'm') + '</span></button></li>';
+    }).join('') + '</ol>';
 
   var step = ui.step[r.id] || 0, walkDone = step >= r.walk.length, ans = ui.ans[r.id], done = !!l.done[r.id];
   var tries = (ans && ans.tries) || [], right = tries.indexOf(r.check.a) >= 0;
@@ -2166,7 +2168,7 @@ function renderLadder(pid) {
         r.qa.map(function (q) { return '<details class="lad-qa"><summary>' + esc(q[0]) + '</summary><div>' + q[1] + '</div></details>'; }).join('') + '</div></section>';
       h += '<div class="lad-bridge"><p>' + r.bridge + '</p>' + (i < rungs.length - 1
         ? '<button class="lad-btn go" data-lad-go="' + (i + 1) + '">Concept ' + (i + 2) + ' ›</button>'
-        : '<button class="lad-btn go" data-stage="' + pid + '-trace">Go to Trace ›</button>') + '</div>';
+        : ladNextStage(pid)) + '</div>';
     }
   }
   m.innerHTML = h + '</article></div>';
@@ -2182,6 +2184,11 @@ function renderLadder(pid) {
       return '<button class="lad-pill' + (l.done[x.id] ? ' done' : '') + '" data-lad-go="' + (n - 1) + '" title="' + esc(x.title) + '">' + n + '</button>';
     }).join('') + '</span>');
   });
+}
+function ladNextStage(pid) {
+  // after the last concept, point at the first stage that exists after Learn
+  var st = [['trace', 'Trace'], ['practice', 'Practice'], ['build', 'Build'], ['review', 'Review']].filter(function (x) { return document.getElementById(pid + '-' + x[0]); })[0];
+  return st ? '<button class="lad-btn go" data-stage="' + pid + '-' + st[0] + '">Go to ' + st[1] + ' ›</button>' : '';
 }
 function ladScrollTop(pid) {
   var m = document.querySelector('[data-ladder-mount="' + pid + '"] .lad-rung');

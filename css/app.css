@@ -2619,3 +2619,20 @@ pre, code, kbd, .cmd, .code-panel, .code-inset, .fw-code, .tp-ex, .keycap, .cs-t
   .lad-why { font-size: 15px; }
   .lad-btn, .lad-quiz { font-size: 13px; padding: 9px 14px; }
 }
+
+/* ─── v20: concept table of contents (replaces the chip slider) ─── */
+.lad-toc { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr)); gap: 4px 10px;
+  border: 1px solid var(--border); background: var(--surface); padding: 8px; }
+.lad-row { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 10px; align-items: center; width: 100%; text-align: left; cursor: pointer;
+  padding: 7px 8px; background: none; border: 1px solid transparent; color: var(--muted2); font-family: var(--font-mono); }
+.lad-row:hover { background: var(--surface2); color: var(--text); }
+.lad-n { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border2);
+  font-family: var(--font-display); font-weight: 800; font-size: 12px; color: var(--muted); }
+.lad-t { min-width: 0; font-size: 13px; line-height: 1.35; }
+.lad-t small { display: block; font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lad-m { font-size: 11px; color: var(--muted); white-space: nowrap; }
+.lad-row.cur { background: var(--accent-wash); border-color: var(--accent-line); color: var(--text); }
+.lad-row.cur .lad-n { border-color: var(--accent); color: var(--accent); }
+.lad-row.cur .lad-m { color: var(--accent); }
+.lad-row.done .lad-n { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.lad-row.done .lad-t { color: var(--muted2); }
