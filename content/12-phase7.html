@@ -14,17 +14,10 @@
     <div class="phase-body">
       <div class="phase-inner">
 
-        <div class="section-block">
-          <div class="section-block-header"><span class="badge badge-green">Rules</span></div>
+        <div class="section-block" data-page="concept:prompt-signature">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
           <div class="section-block-body">
-            <div class="tasks" id="tasks-7">
-              <div class="task" data-id="p7-read-every-line">
-                <div class="task-cb">✓</div>
-                <div class="task-content">
-                  <div class="task-text">Never accept generated code without reading every line first <span class="task-tag t-crucial">Crucial</span></div>
-                  <div class="task-note">AI code can be plausible and wrong simultaneously. Your name is on the commit. <span class="task-time">~10 min</span></div>
-                </div>
-              </div>
+            <div class="tasks">
               <div class="task" data-id="p7-name-function-signature">
                 <div class="task-cb">✓</div>
                 <div class="task-content">
@@ -32,6 +25,49 @@
                   <div class="task-note">Bad: "make the player move" — Good: "write move(Player* p, float dx, float dy) that updates x and y with bounds checking against a 800x600 window" <span class="task-time">~15 min</span></div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+        <div class="section-block" data-page="concept:prompt-signature">
+          <div class="section-block-header"><span class="badge badge-blue">Prompt Template</span>&nbsp;&nbsp;Copy and adapt</div>
+          <div class="section-block-body">
+            <div class="prompt-items">
+              <div class="prompt-item">
+                <div class="prompt-label">The "implement this specific thing" prompt</div>
+                <div class="prompt-text">I'm building a game in C. I need you to implement [function name] with this signature: [signature]. It should: [bullet list of exact behaviors]. Follow the patterns already in my code. Don't add any dependencies I haven't mentioned. Don't write any other functions — just this one.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="section-block" data-page="concept:read-every-line">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
+              <div class="task" data-id="p7-read-every-line">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Never accept generated code without reading every line first <span class="task-tag t-crucial">Crucial</span></div>
+                  <div class="task-note">AI code can be plausible and wrong simultaneously. Your name is on the commit. <span class="task-time">~10 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="section-block" data-page="concept:read-every-line">
+          <div class="section-block-header"><span class="badge badge-blue">Prompt Template</span>&nbsp;&nbsp;Copy and adapt</div>
+          <div class="section-block-body">
+            <div class="prompt-items">
+              <div class="prompt-item">
+                <div class="prompt-label">The "I'm stuck on a bug" prompt</div>
+                <div class="prompt-text">I have a bug in my C code. Here's what I expect to happen: [describe]. Here's what actually happens: [describe]. Here's the relevant code: [paste]. Walk me through how to debug this — don't just give me the fix, help me find it myself so I learn.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="section-block" data-page="concept:ask-explain">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
               <div class="task" data-id="p7-ask-explain">
                 <div class="task-cb">✓</div>
                 <div class="task-content">
@@ -39,6 +75,24 @@
                   <div class="task-note"><span class="task-time">~10 min</span></div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+        <div class="section-block" data-page="concept:ask-explain">
+          <div class="section-block-header"><span class="badge badge-blue">Prompt Template</span>&nbsp;&nbsp;Copy and adapt</div>
+          <div class="section-block-body">
+            <div class="prompt-items">
+              <div class="prompt-item">
+                <div class="prompt-label">The "explain before I use it" prompt</div>
+                <div class="prompt-text">Before I use this code, explain to me: (1) what each function does in plain English, (2) what could go wrong if inputs are invalid, (3) anything I should change for my specific use case: [paste code]</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="section-block" data-page="concept:push-back">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
               <div class="task" data-id="p7-push-back-simplify">
                 <div class="task-cb">✓</div>
                 <div class="task-content">
@@ -46,6 +100,13 @@
                   <div class="task-note"><span class="task-time">~10 min</span></div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+        <div class="section-block" data-page="concept:own-architecture">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
               <div class="task" data-id="p7-architecture-decisions">
                 <div class="task-cb">✓</div>
                 <div class="task-content">
@@ -56,26 +117,10 @@
             </div>
           </div>
         </div>
-
-        <div class="section-block acc-section open">
-          <div class="section-block-header">
-            <span class="badge badge-blue">Prompt Templates</span>&nbsp;&nbsp;Copy and adapt these
-            <span class="acc-toggle-icon">▼</span>
-          </div>
-          <div class="acc-body section-block-body">
+        <div class="section-block" data-page="concept:own-architecture">
+          <div class="section-block-header"><span class="badge badge-blue">Prompt Template</span>&nbsp;&nbsp;Copy and adapt</div>
+          <div class="section-block-body">
             <div class="prompt-items">
-              <div class="prompt-item">
-                <div class="prompt-label">The "implement this specific thing" prompt</div>
-                <div class="prompt-text">I'm building a game in C. I need you to implement [function name] with this signature: [signature]. It should: [bullet list of exact behaviors]. Follow the patterns already in my code. Don't add any dependencies I haven't mentioned. Don't write any other functions — just this one.</div>
-              </div>
-              <div class="prompt-item">
-                <div class="prompt-label">The "explain before I use it" prompt</div>
-                <div class="prompt-text">Before I use this code, explain to me: (1) what each function does in plain English, (2) what could go wrong if inputs are invalid, (3) anything I should change for my specific use case: [paste code]</div>
-              </div>
-              <div class="prompt-item">
-                <div class="prompt-label">The "I'm stuck on a bug" prompt</div>
-                <div class="prompt-text">I have a bug in my C code. Here's what I expect to happen: [describe]. Here's what actually happens: [describe]. Here's the relevant code: [paste]. Walk me through how to debug this — don't just give me the fix, help me find it myself so I learn.</div>
-              </div>
               <div class="prompt-item">
                 <div class="prompt-label">The "is my approach right?" prompt</div>
                 <div class="prompt-text">I'm about to implement [feature] in my C game. My plan is: [describe your approach]. Before I write the code — is this a sound approach? Are there obvious problems I haven't considered? Don't write the code yet, just critique the plan.</div>
@@ -83,20 +128,17 @@
             </div>
           </div>
         </div>
-
         <!-- PROMPT REPRODUCTION EXERCISES -->
-        <div class="section-block acc-section open">
+        <div class="section-block acc-section open" data-page="practice">
           <div class="section-block-header">
-            <span class="badge badge-purple">Exercises</span>&nbsp;&nbsp;Prompt-to-Code — can you write the prompt that produces this?
+            <span class="badge badge-purple">Exercises</span>&nbsp;&nbsp;Prompt-to-Code: can you write the prompt that produces this?
             <span class="acc-toggle-icon">▼</span>
           </div>
           <div class="acc-body section-block-body">
 
             <div class="callout callout--purple callout--bar mb-18">
-              <div class="eyebrow eyebrow--lg t-purple mb-8">// How these work</div>
               <div class="prose prose--loose t-text">
-                Each exercise shows a target piece of game code. <strong class="t-accent">Your job: write the prompt that would make Claude Code produce it</strong> — without looking at the reference prompt first. The comments in the code map each line back to the keyword your prompt needs to contain. If your prompt is missing a keyword, the AI has to guess — and guessing is where wrong code comes from.<br><br>
-                This is the real skill: not memorizing C, but knowing exactly what to specify so the AI builds <em>your</em> system, not its own invention. Write your prompt, then expand the reference to check what you missed.
+                Each exercise shows target code. <strong class="t-accent">Write the prompt that would make Claude Code produce it</strong>, before you open the reference prompt. The comments mark the keywords your prompt needs. Anything you leave out, Claude has to guess. If you can reproduce the target exactly, you know the system well enough to verify what the AI hands back.
               </div>
             </div>
 
@@ -208,15 +250,6 @@
                     <div class="prose prose--sm t-muted2 mt-10">This is the Phase 6 lesson in one prompt: you paste the context (struct, enum, existing functions) <em>first</em>, then ask for the implementation. Without that context block the AI invents its own struct, its own move function, its own state names — and nothing connects to what you and your partner already built.</div>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            <!-- THE ANTI-PATTERN -->
-            <div class="callout callout--orange callout--bar" style="padding:16px 18px">
-              <div class="eyebrow eyebrow--lg t-orange mb-10">// The anti-pattern these exercises train you to avoid</div>
-              <div class="prose prose--loose t-text">
-                Every one of these exercises is really teaching the same thing: <strong class="t-orange">the gap between what you specify and what you leave unspecified is where wrong code is born.</strong> The AI fills every gap with a guess. A guess that compiles and runs looks correct — until it silently doesn't match your architecture, your types, or your partner's code.<br><br>
-                If you can write a prompt that reproduces the target exactly, you understand the system well enough to verify anything the AI hands back. That is the actual goal of this whole roadmap: <strong class="t-accent">not to write every line yourself, but to know enough to direct and verify.</strong>
               </div>
             </div>
 

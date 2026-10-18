@@ -14,77 +14,9 @@
     <div class="phase-body">
       <div class="phase-inner">
 
-        <!-- PLAIN ENGLISH -->
-        <div class="section-block acc-section open">
-          <div class="section-block-header">
-            <span class="badge badge-purple">Explain Like I'm New</span>&nbsp;&nbsp;Why you're building a game with no graphics
-            <span class="acc-toggle-icon">▼</span>
-          </div>
-          <div class="acc-body section-block-body">
-            <div class="stack gap-14">
 
-              <div class="callout callout--purple callout--bar">
-                <div class="eyebrow eyebrow--lg t-purple mb-8">// Two hard things, one at a time</div>
-                <div class="prose prose--loose t-text">
-                  Phase 5 was going to teach you two unrelated hard things in the same weekend: how a window works, and how a game is structured. When something breaks — and it will — you'd have no way to tell which of the two you got wrong.<br><br>
-                  So you build the game structure here, in the terminal, where you can already see everything and every tool you have still works. <strong class="t-accent">By the time you open Phase 5, the only new thing in it is the window.</strong> Same loop, same states, same collision idea, drawn somewhere else.
-                </div>
-                <div class="prose t-muted2 mt-12">
-                  What you finish this phase with is a genuine game: it runs on its own, it reacts to keys while it's running, obstacles come at you, you dodge, you score, you die, you restart. It looks like 1978. It is structurally identical to what you'll ship.
-                </div>
-              </div>
-
-              <div class="callout callout--blue callout--bar">
-                <div class="eyebrow eyebrow--lg t-blue mb-8">// The missing rung — input that doesn't stop the world</div>
-                <div class="prose prose--loose t-text">
-                  Everything you've written so far calls <span class="cmd">scanf</span> and then stands completely still until you press Enter. A game can't do that. The obstacles have to keep moving whether or not you're touching the keyboard.
-                </div>
-<pre class="code-panel mt-12"><span class="c-cm">BLOCKING (everything so far)     NON-BLOCKING (a game)</span>
-<span class="c-cm">----------------------------     ---------------------</span>
-scanf(" %c", &amp;input);            if (_kbhit()) key = _getch();
-   ^ the program stops dead          ^ "is a key waiting?" — answers
-     until Enter is pressed            instantly either way, then the
-                                       loop carries on regardless</pre>
-                <div class="prose stack gap-8 mt-12 t-muted2">
-                  <div><span class="cmd">_kbhit()</span> from <span class="cmd">&lt;conio.h&gt;</span> asks one question — is there a keystroke sitting in the buffer? — and returns immediately, non-zero for yes. It never waits.</div>
-                  <div><span class="cmd">_getch()</span> takes that keystroke. No Enter needed, and it doesn't echo the character to the screen, which matters when you're drawing the screen yourself.</div>
-                  <div class="t-text">This is the rung that was missing between <span class="cmd">scanf</span> and Win32's message queue. <strong class="t-accent">Phase 5's <span class="cmd upright">PeekMessage</span> is the same idea</strong> — "anything for me? no? fine, carry on" — just with a window attached.</div>
-                </div>
-              </div>
-
-              <div class="callout callout--yellow">
-                <div class="eyebrow eyebrow--lg t-yellow mb-8">// Your session 1 bug is this phase's rendering engine</div>
-                <div class="prose prose--loose t-text">
-                  In session 1 you wrote <span class="cmd">printf("Lets\r party up!\n")</span> and watched the word "Lets" vanish. That looked like a mistake. It is the technique this whole phase is built on.
-                </div>
-<pre class="code-panel mt-12"><span class="c-fn">printf</span>(<span class="c-str">"\r%s  score %d"</span>, <span class="c-var">lane</span>, <span class="c-var">score</span>);
-
-frame 1:  A....#.......#....  score 12
-                     <span class="c-cm">↑ \r sends the cursor back here, column 0,</span>
-                     <span class="c-cm">  without moving down. No newline, ever.</span>
-frame 2:  A...#.......#.....  score 13   <span class="c-cm">← drawn straight over the top</span></pre>
-                <div class="prose stack gap-8 mt-12 t-muted2">
-                  <div>One line of output, repainted thirty times a second. No scrolling, no flicker, and the terminal never even knows it's being used as a screen.</div>
-                  <div>The obvious alternative, <span class="cmd">system("cls")</span>, clears the whole console and redraws from nothing — you get a visible flash on every frame, and it launches a separate process each time, which is astonishingly slow. <strong class="t-accent">Use <span class="cmd upright">\r</span>.</strong> You found it first anyway.</div>
-                  <div class="t-text">Build the entire line in a <span class="cmd">char</span> array first, then print it in one go. That's a frame buffer — the same thing Phase 5 does with pixels, at a smaller scale.</div>
-                </div>
-              </div>
-
-              <div class="callout callout--accent">
-                <div class="eyebrow eyebrow--lg t-accent mb-8">// Sleep() — why a game has to slow itself down</div>
-                <div class="prose prose--loose t-text">
-                  Left alone, your loop runs millions of times a second. The obstacles would cross the screen before you saw them and your CPU fan would come on. <span class="cmd">Sleep(33)</span> from <span class="cmd">&lt;windows.h&gt;</span> hands the processor back to Windows for about 33 milliseconds, which gives you roughly 30 frames a second.<br><br>
-                  <strong class="t-accent">"About" is doing real work in that sentence.</strong> Sleep guarantees a minimum, not an exact figure — Windows wakes threads on a scheduler tick that's around 15.6 ms by default, so <span class="cmd">Sleep(1)</span> is not one millisecond. It's fine for this phase and it's not good enough for a real game, which is exactly why Phase 5 asks you to measure elapsed time instead of assuming it.
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-
-        <!-- TASKS -->
-        <div class="section-block">
-          <div class="section-block-header"><span class="badge badge-green">Tasks</span></div>
+        <div class="section-block" data-page="concept:kbhit-getch">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
           <div class="section-block-body">
             <div class="tasks" id="tasks-4b">
               <div class="task" data-id="p4b-realtime-loop">
@@ -94,6 +26,14 @@ frame 2:  A...#.......#.....  score 13   <span class="c-cm">← drawn straight o
                   <div class="task-note">Prove it first: print a counter that keeps climbing while you do nothing. No scanf anywhere in this file. <span class="task-time">~1 hr</span></div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block" data-page="concept:frame-buffer">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
               <div class="task" data-id="p4b-render-lane">
                 <div class="task-cb">✓</div>
                 <div class="task-content">
@@ -101,6 +41,14 @@ frame 2:  A...#.......#.....  score 13   <span class="c-cm">← drawn straight o
                   <div class="task-note">Build the whole line before printing any of it. That's a frame buffer, and it's why there's no flicker. <span class="task-time">~1 hr</span></div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block" data-page="concept:sentinel">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
               <div class="task" data-id="p4b-obstacles-collide">
                 <div class="task-cb">✓</div>
                 <div class="task-content">
@@ -108,6 +56,14 @@ frame 2:  A...#.......#.....  score 13   <span class="c-cm">← drawn straight o
                   <div class="task-note">Phase 3's array walk, moving. The hit test is one comparison — that's collision detection with the geometry taken out. <span class="task-time">~1.5 hrs</span></div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block" data-page="concept:state-machine">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
               <div class="task" data-id="p4b-state-restart">
                 <div class="task-cb">✓</div>
                 <div class="task-content">
@@ -115,6 +71,14 @@ frame 2:  A...#.......#.....  score 13   <span class="c-cm">← drawn straight o
                   <div class="task-note">Write the reset once as a function and call it from both the start and the restart. Phase 6 uses this exact shape. <span class="task-time">~1 hr</span></div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block" data-page="concept:lnk2005">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
               <div class="task" data-id="p4b-multifile">
                 <div class="task-cb">✓</div>
                 <div class="task-content">
@@ -122,19 +86,23 @@ frame 2:  A...#.......#.....  score 13   <span class="c-cm">← drawn straight o
                   <div class="task-note">Same game, three files. Do it now, on code you understand, before Phase 6 makes it five. <span class="task-time">~1.5 hrs</span></div>
                 </div>
               </div>
-              <div class="task" data-id="p4b-commit-github">
-                <div class="task-cb">✓</div>
-                <div class="task-content">
-                  <div class="task-text">Commit the runner and show it to your partner <span class="task-tag t-git">Git</span></div>
-                  <div class="task-note">git add . → git commit -m "feat: ASCII runner with state machine and dodging" → git push. This is the first thing you've built that's actually playable — get eyes on it. <span class="task-time">~15 min</span></div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
 
+        <div class="section-block" data-page="overview">
+          <div class="section-block-header"><span class="badge badge-purple">Pair with King</span>&nbsp;&nbsp;C Programming: A Modern Approach, 2nd edition</div>
+          <div class="section-block-body">
+            <dl class="king">
+              <dt>Concepts 1 to 8</dt><dd>No King chapter. <span class="cmd">conio.h</span> and <span class="cmd">Sleep</span> are Windows extras, so the concept pages are your reading.</dd>
+              <dt>Concept 9, Multiple files</dt><dd>Ch 14 <em>The Preprocessor</em> (<span class="cmd">#define</span>, <span class="cmd">#include</span>) and Ch 15 <em>Writing Large Programs</em> (header files, dividing a program into files). That is exactly the runner split.</dd>
+              <dt>Note</dt><dd>King guards headers with <span class="cmd">#ifndef</span> / <span class="cmd">#define</span> / <span class="cmd">#endif</span>. <span class="cmd">#pragma once</span> does the same in one line. Know both when you see them. Skip parameterised macros and the makefile section; build.bat is your makefile.</dd>
+            </dl>
+          </div>
+        </div>
+
         <!-- STARTER CODE -->
-        <div class="section-block acc-section open">
+        <div class="section-block acc-section open" data-page="build">
           <div class="section-block-header">
             <span class="badge badge-blue">Starter Code</span>&nbsp;&nbsp;ascii_runner.c — the skeleton, six TODOs
             <span class="acc-toggle-icon">▼</span>
@@ -253,152 +221,14 @@ frame 2:  A...#.......#.....  score 13   <span class="c-cm">← drawn straight o
             <div class="code-island" style="border-top:1px solid var(--border);padding:14px 16px">
               <div class="eyebrow eyebrow--md t-muted2 mb-10">// It compiles clean and runs before you write a single TODO</div>
               <div class="prose t-text">
-                That's deliberate. Build it, run it, and you'll see an empty track with a stationary <span class="cmd">A</span> and a score of 0, repainting quietly forever until you press Q. <strong class="t-accent">The engine works. The game isn't written yet.</strong> Do the TODOs in order, rebuilding after each one — every single one of them produces something visible on screen, which is the fastest feedback loop you've had so far.<br><br>
-                If <span class="cmd">windows.h</span> itself trips <span class="cmd">/WX</span> on your SDK version, add <span class="cmd">/external:anglebrackets /external:W0</span> to the <span class="cmd">cl</span> line in build.bat. That tells MSVC to stop applying your warning level to headers you didn't write, which is the right fix rather than turning <span class="cmd">/WX</span> off.
+                That's deliberate. Build it, run it, and you'll see an empty track with a stationary <span class="cmd">A</span> and a score of 0, repainting quietly forever until you press Q. <strong class="t-accent">The engine works. The game isn't written yet.</strong> Do the TODOs in order, rebuilding after each one — every single one of them produces something visible on screen, which is the fastest feedback loop you've had so far.
               </div>
             </div>
-          </div>
-        </div>
-
-        <!-- STUCK -->
-        <div class="section-block acc-section">
-          <div class="section-block-header">
-            <span class="badge badge-orange">Stuck &amp; Curious</span>&nbsp;&nbsp;Real-time terminal problems
-            <span class="acc-toggle-icon">▼</span>
-          </div>
-          <div class="acc-body section-block-body">
-            <div class="stuck-items">
-              <div class="stuck-item">
-                <div class="stuck-q">The track flickers, or every frame prints on a new line and the screen scrolls</div>
-                <div class="stuck-a">You have a <span class="cmd">\n</span> somewhere in the frame. One newline anywhere in the render step and the cursor moves down permanently — <span class="cmd">\r</span> can only get you back to the start of the <em>current</em> line. There must be exactly one printf in the render step, it must start with <span class="cmd">\r</span>, and it must not contain <span class="cmd">\n</span> at all. If instead you're getting a visible flash on every frame, you're using <span class="cmd">system("cls")</span> — delete it. It clears the whole console and spawns a process to do it.</div>
-              </div>
-              <div class="stuck-item">
-                <div class="stuck-q">Nothing appears at all until I quit, then everything shows up at once</div>
-                <div class="stuck-a">Output buffering. On Mac, Linux, or when output goes to a file, <span class="cmd">stdout</span> can hold characters until it sees a <span class="cmd">\n</span> or the buffer fills, and your render line deliberately has no newline in it. The Windows console usually shows it straight away, but don't rely on that. <span class="cmd">fflush(stdout)</span> immediately after the printf forces it out. It's already in the skeleton; if you rewrote the render step, you probably dropped it.</div>
-              </div>
-              <div class="stuck-item">
-                <div class="stuck-q">Input feels laggy — I press duck and it happens a moment later, or several times</div>
-                <div class="stuck-a">Two separate causes. First, your reaction window is one frame long, so at <span class="cmd">Sleep(33)</span> a key can wait up to 33 ms before the loop even looks. Lower <span class="cmd">FRAME_MS</span> to 16 and it halves. Second, holding a key down makes Windows repeat it, which stuffs dozens of characters into the buffer — if you only call <span class="cmd">_getch()</span> once per frame you're working through a backlog that gets further behind every frame. That's what the <span class="cmd">while (_kbhit())</span> loop is for: drain the buffer completely each frame and keep only the last key.</div>
-              </div>
-              <div class="stuck-item">
-                <div class="stuck-q">After splitting into files: LNK2005 "already defined in main.obj"</div>
-                <div class="stuck-a">Something with a body ended up in runner.h — a function body, or a variable like <span class="cmd">int score = 0;</span>. Both .c files include the header, so both get a copy, and the linker finds two things with one name. Headers hold <em>declarations</em> only: prototypes, <span class="cmd">#define</span>s, the enum, the struct type. Bodies and variables live in exactly one .c file.</div>
-              </div>
-              <div class="stuck-item">
-                <div class="stuck-q">Sleep(16) doesn't give me 60 fps, and Sleep(1) doesn't give me 1000</div>
-                <div class="stuck-a">It never will. <span class="cmd">Sleep</span> promises "at least this long," and Windows only wakes sleeping threads on a scheduler tick — around 15.6 ms by default. So <span class="cmd">Sleep(1)</span> typically costs you 1 to 15 ms, and <span class="cmd">Sleep(16)</span> often lands nearer 31. It's fine for an ASCII game and completely inadequate for a real one. <strong class="t-text">The real fix is not to trust the sleep:</strong> measure how long the frame actually took and feed that elapsed time into your movement. That's Phase 5's frame timer task, and in Godot it arrives for free as the <span class="cmd">delta</span> parameter.</div>
-              </div>
-            </div>
-            <div class="eyebrow eyebrow--md t-blue curious-lbl">// Curious — the "why" questions</div>
-            <div class="stuck-items">
-              <div class="stuck-item">
-                <div class="stuck-q">Why do <span class="cmd">_kbhit</span> and <span class="cmd">_getch</span> start with an underscore?</div>
-                <div class="stuck-a">They aren't standard C. <span class="cmd">&lt;conio.h&gt;</span> is a Microsoft extension, and the underscore is how Microsoft marks names that aren't part of the C standard. This file won't compile on a Mac or Linux. That's fine here — and it's one of the reasons SDL2 and Godot exist: they hide the different keyboard APIs of every platform behind one.</div>
-              </div>
-              <div class="stuck-item">
-                <div class="stuck-q">Why doesn't the key I press show up on screen?</div>
-                <div class="stuck-a"><span class="cmd">_getch</span> deliberately doesn't <em>echo</em> — print the character back — the way typing normally does. If it did, every D you pressed would land in the middle of your track and wreck the frame. <span class="cmd">_getche</span> is the echoing version, and you'll never want it in a game.</div>
-              </div>
-              <div class="stuck-item">
-                <div class="stuck-q">Wouldn't it be simpler to read input on a separate thread?</div>
-                <div class="stuck-a">It sounds simpler and isn't. Two threads touching the same variables need locks, and getting those wrong produces bugs that only happen one run in a hundred. Games almost always do what you're doing: check the input once at the top of every frame. Godot works the same way — input is gathered, then your <span class="cmd">_process</span> runs.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- CLAUDE PROMPTS -->
-        <div class="section-block acc-section">
-          <div class="section-block-header">
-            <span class="badge badge-blue">Claude Code Prompts</span>&nbsp;&nbsp;Phase 4.5
-            <span class="acc-toggle-icon">▼</span>
-          </div>
-          <div class="acc-body section-block-body">
-
-            <div class="prompt-items">
-              <div class="prompt-item">
-                <div class="prompt-label">Concept only — no code, before you write TODO 3 and 4</div>
-                <div class="prompt-text">Don't write any code. I'm building a console game in C with an array int obs[8] where each element is a column position and -1 means the slot is empty. In plain English, explain the pattern of using a sentinel value like -1 to mean "unused slot" — why games do this instead of allocating and freeing, and what I have to be careful about when I search for a free slot. Two short paragraphs.</div>
-              </div>
-              <div class="prompt-item">
-                <div class="prompt-label">Review what you built — behaviour, not style</div>
-                <div class="prompt-text">Review this C console game I wrote. I'm a beginner compiling with MSVC cl /W4 /WX. Check three things only: (1) can any obstacle index go outside the lane array bounds, (2) is there any path where the state machine gets stuck in a state it can't leave, (3) does the render step build the whole line before printing. Don't rewrite it and don't restructure it. Point at problems and tell me which line: [paste code]</div>
-              </div>
-            </div>
-
-            <div class="callout callout--accent mt-16">
-              <div class="eyebrow eyebrow--md t-accent mb-8">// The rule for this phase</div>
-              <div class="prose t-text">
-                Write all six TODOs yourself. They are short, and the whole point of this phase is that the game structure lives in your head rather than in a file you can't debug. Ask AI for the sentinel-slot concept before you start, and for a review after it works — nothing in between.<br><br>
-                Then play it. If it isn't a bit fun for thirty seconds, say so out loud and work out why. <strong class="t-accent">That instinct is the one this project depends on most</strong>, and this is the first time you get to use it on something you built.
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- QUIZ -->
-        <div class="section-block acc-section">
-          <div class="section-block-header">
-            <span class="badge badge-purple">Quiz Yourself</span>&nbsp;&nbsp;4 questions — answer out loud before revealing
-            <span class="acc-toggle-icon">▼</span>
-          </div>
-          <div class="acc-body section-block-body">
-            <div class="quiz-items">
-
-              <div class="quiz-item">
-                <div class="quiz-q">1. Why can't a game use <span class="cmd">scanf</span>, and what replaces it here?</div>
-                <details>
-                  <summary>Reveal answer</summary>
-                  <div class="quiz-a"><span class="cmd">scanf</span> blocks — the entire program stops until Enter is pressed, so nothing moves while you're deciding. A game's loop has to keep running whether or not there's input. <span class="cmd">_kbhit()</span> replaces it by asking "is a key waiting?" and answering instantly either way; <span class="cmd">_getch()</span> then collects the key without waiting for Enter and without echoing it. Phase 5's <span class="cmd">PeekMessage</span> is the same trade, with a window attached.</div>
-                </details>
-              </div>
-
-              <div class="quiz-item">
-                <div class="quiz-q">2. Why is the input step a <span class="cmd">while (_kbhit())</span> loop rather than a single <span class="cmd">if</span>?</div>
-                <details>
-                  <summary>Reveal answer</summary>
-                  <div class="quiz-a">Because keystrokes queue up. Hold a key and Windows generates repeats far faster than 30 frames a second, so an <span class="cmd">if</span> takes one character per frame and falls further and further behind — you'd still be replaying inputs from five seconds ago. The <span class="cmd">while</span> drains the buffer completely each frame and keeps the most recent key, so the game always reacts to what you're pressing now.</div>
-                </details>
-              </div>
-
-              <div class="quiz-item">
-                <div class="quiz-q">3. Why build the whole track into a <span class="cmd">char</span> array before printing anything?</div>
-                <details>
-                  <summary>Reveal answer</summary>
-                  <div class="quiz-a">One printf per frame instead of fifty. Printing character by character is slow and you'd watch the line assemble itself, which is exactly what flicker is. Building it in memory first and pushing it out in a single call means the frame appears all at once. That's a frame buffer — the same principle as the back buffer you'll use in Phase 5, and the same reason it exists there.</div>
-                </details>
-              </div>
-
-              <div class="quiz-item">
-                <div class="quiz-q">4. <span class="cmd">Sleep(16)</span> — do you actually get a 16 ms frame?</div>
-                <details>
-                  <summary>Reveal answer</summary>
-                  <div class="quiz-a">No. Sleep guarantees <em>at least</em> the time you ask for, never exactly it. Windows wakes sleeping threads on a scheduler tick that defaults to about 15.6 ms, so 16 often becomes 31, and <span class="cmd">Sleep(1)</span> is nothing like a millisecond. It's acceptable here because nothing depends on precision. The real answer is to stop assuming and start measuring elapsed time per frame, then scale movement by it — Phase 5's frame timer, and the <span class="cmd">delta</span> that Godot hands you automatically in <span class="cmd">_process</span>.</div>
-                </details>
-              </div>
-
-            </div>
-          </div>
-        </div>
-
-        <!-- CHECKPOINT -->
-        <div class="checkpoint">
-          <div class="checkpoint-header">
-            <span class="badge badge-green">Checkpoint</span>
-            <span class="checkpoint-title">Ready to move on when:</span>
-            <span class="cp-counter">0/4</span>
-          </div>
-          <div class="checkpoint-items">
-            <div class="cp-item" data-id="cp-p4b-1"><span class="cp-cb">✓</span><span class="cp-text">Your loop runs on its own and reacts to keys without ever waiting for Enter</span></div>
-            <div class="cp-item" data-id="cp-p4b-2"><span class="cp-cb">✓</span><span class="cp-text">The track repaints in place with \r — one line, no flicker, no system("cls")</span></div>
-            <div class="cp-item" data-id="cp-p4b-3"><span class="cp-cb">✓</span><span class="cp-text">Obstacles scroll toward you, dodging scores a point, and a hit ends the run</span></div>
-            <div class="cp-item" data-id="cp-p4b-4"><span class="cp-cb">✓</span><span class="cp-text">MENU → PLAYING → GAME_OVER → restart all work, and it's committed to GitHub</span></div>
           </div>
         </div>
 
         <!-- MULTI-FILE SPLIT -->
-        <div class="section-block acc-section open">
+        <div class="section-block acc-section open" data-page="build">
           <div class="section-block-header">
             <span class="badge badge-blue">Starter Code</span>&nbsp;&nbsp;Split it — runner.h, runner.c, main.c
             <span class="acc-toggle-icon">▼</span>
@@ -407,7 +237,7 @@ frame 2:  A...#.......#.....  score 13   <span class="c-cm">← drawn straight o
             <div class="code-island" style="border-top:1px solid var(--border);padding:14px 16px">
               <div class="eyebrow eyebrow--md t-muted2 mb-10">// Why now</div>
               <div class="prose t-text">
-                Your Phase 6 game will be five files or more, and you'll be learning a window at the same time. Splitting is much easier on a program you already understand completely. The game state moves into a <span class="cmd">Runner</span> struct, the switch and the render step become functions that take a <span class="cmd">Runner*</span>, and <span class="cmd">main</span> shrinks to the four-step loop. <strong class="t-accent">Same game, same output — only the shape changes.</strong>
+                The game state moves into a <span class="cmd">Runner</span> struct, the switch and render step become functions that take a <span class="cmd">Runner*</span>, and <span class="cmd">main</span> shrinks to the four-step loop. <strong class="t-accent">Same game, only the shape changes.</strong>
               </div>
             </div>
             <div class="code-wrap">
@@ -488,44 +318,29 @@ frame 2:  A...#.......#.....  score 13   <span class="c-cm">← drawn straight o
             <div class="code-island" style="border-top:1px solid var(--border);padding:14px 16px">
               <div class="eyebrow eyebrow--md t-muted2 mb-10">// runner.c is yours to write</div>
               <div class="prose t-text">
-                Start it with <span class="cmd">#include "runner.h"</span>, <span class="cmd">&lt;stdio.h&gt;</span> and <span class="cmd">&lt;string.h&gt;</span>, then move code in from ascii_runner.c: the reset into <span class="cmd">runner_reset</span>, the switch into <span class="cmd">runner_update</span>, the render step into <span class="cmd">runner_render</span> (the <span class="cmd">lane</span> buffer becomes a local variable in there). Every <span class="cmd">score</span> becomes <span class="cmd">r-&gt;score</span>. Build after each function you move, not at the end.<br><br>
-                <span class="cmd">const Runner* r</span> in <span class="cmd">runner_render</span> is a promise: "I'll read through this pointer, never write". If you accidentally change <span class="cmd">r-&gt;score</span> while drawing, the compiler stops you.
+                Start it with <span class="cmd">#include "runner.h"</span>, <span class="cmd">&lt;stdio.h&gt;</span> and <span class="cmd">&lt;string.h&gt;</span>, then move code in from ascii_runner.c: the reset into <span class="cmd">runner_reset</span>, the switch into <span class="cmd">runner_update</span>, the render step into <span class="cmd">runner_render</span> (the <span class="cmd">lane</span> buffer becomes a local variable in there). Every <span class="cmd">score</span> becomes <span class="cmd">r-&gt;score</span>. Build after each function you move, not at the end.
               </div>
             </div>
           </div>
         </div>
 
-        <!-- BUILD SPEC -->
-        <div class="section-block acc-section open" data-order="-1">
-          <div class="section-block-header">
-            <span class="badge badge-blue">Build Spec</span>&nbsp;&nbsp;Write the requirements before you build
-            <span class="acc-toggle-icon">▼</span>
-          </div>
-          <div class="acc-body section-block-body">
-            <div class="prose prose--sm t-muted2 mb-14">Three requirements per build, written <strong class="t-text">before</strong> you open the editor. Each line is something you can test: run the program and answer yes or no. This is the <span class="cmd">It should:</span> list from the Phase 07 "implement this" prompt — writing it for yourself now is practice for writing it for Claude later. Tick the build when all three pass.</div>
-            <div class="spec">
-              <div class="spec-item">
-                <h4><span>ascii_runner.c</span> — it should:</h4>
-                <ul>
-                  <li>keep running and repainting at about 30 frames a second whether or not a key is pressed</li>
-                  <li>score a point for every obstacle that passes, and end the run when one reaches the player while not ducking</li>
-                  <li>go MENU → PLAYING → GAME_OVER, and restart with R without relaunching</li>
-                </ul>
-              </div>
-              <div class="spec-item">
-                <h4><span>the three-file split</span> — it should:</h4>
-                <ul>
-                  <li>build from <span class="cmd">main.c</span> and <span class="cmd">runner.c</span> with a single <span class="cmd">build</span>, zero warnings</li>
-                  <li>keep <span class="cmd">main</span> down to the loop: input, <span class="cmd">runner_update</span>, <span class="cmd">runner_render</span>, <span class="cmd">Sleep</span></li>
-                  <li>play exactly the same as the single-file version</li>
-                </ul>
+        <div class="section-block" data-page="build">
+          <div class="section-block-header"><span class="badge badge-green">Ship it</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
+              <div class="task" data-id="p4b-commit-github">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Commit the runner and show it to your partner <span class="task-tag t-git">Git</span></div>
+                  <div class="task-note">git add . → git commit -m "feat: ASCII runner with state machine and dodging" → git push. This is the first thing you've built that's actually playable — get eyes on it. <span class="task-time">~15 min</span></div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         <!-- STRETCH -->
-        <div class="section-block acc-section">
+        <div class="section-block acc-section" data-page="build">
           <div class="section-block-header">
             <span class="badge badge-blue">Stretch Goal</span>&nbsp;&nbsp;ASCII Runner v2 — faster, a second obstacle, a best score
             <span class="acc-toggle-icon">▼</span>
@@ -562,8 +377,82 @@ frame 2:  A...#.......#.....  score 13   <span class="c-cm">← drawn straight o
           </div>
         </div>
 
+        <!-- BUILD SPEC -->
+        <div class="section-block acc-section open" data-page="practice" data-order="-1">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Build Spec</span>&nbsp;&nbsp;Write the requirements before you build
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="prose prose--sm t-muted2 mb-14">Three requirements per build, written <strong class="t-text">before</strong> you open the editor. Each line is something you can test: run the program and answer yes or no. This is the <span class="cmd">It should:</span> list from the Phase 07 "implement this" prompt — writing it for yourself now is practice for writing it for Claude later. Tick the build when all three pass.</div>
+            <div class="spec">
+              <div class="spec-item">
+                <h4><span>ascii_runner.c</span> — it should:</h4>
+                <ul>
+                  <li>keep running and repainting at about 30 frames a second whether or not a key is pressed</li>
+                  <li>score a point for every obstacle that passes, and end the run when one reaches the player while not ducking</li>
+                  <li>go MENU → PLAYING → GAME_OVER, and restart with R without relaunching</li>
+                </ul>
+              </div>
+              <div class="spec-item">
+                <h4><span>the three-file split</span> — it should:</h4>
+                <ul>
+                  <li>build from <span class="cmd">main.c</span> and <span class="cmd">runner.c</span> with a single <span class="cmd">build</span>, zero warnings</li>
+                  <li>keep <span class="cmd">main</span> down to the loop: input, <span class="cmd">runner_update</span>, <span class="cmd">runner_render</span>, <span class="cmd">Sleep</span></li>
+                  <li>play exactly the same as the single-file version</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block acc-section" data-page="help">
+          <div class="section-block-header">
+            <span class="badge badge-orange">Stuck &amp; Curious</span>&nbsp;&nbsp;Real-time terminal problems
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="stuck-items">
+              <div class="stuck-item">
+                <div class="stuck-q">Input feels laggy — I press duck and it happens a moment later, or several times</div>
+                <div class="stuck-a">Two separate causes. First, your reaction window is one frame long, so at <span class="cmd">Sleep(33)</span> a key can wait up to 33 ms before the loop even looks. Lower <span class="cmd">FRAME_MS</span> to 16 and it halves. Second, holding a key down makes Windows repeat it, which stuffs dozens of characters into the buffer — if you only call <span class="cmd">_getch()</span> once per frame you're working through a backlog that gets further behind every frame. That's what the <span class="cmd">while (_kbhit())</span> loop is for: drain the buffer completely each frame and keep only the last key.</div>
+              </div>
+            </div>
+            <div class="prose prose--sm t-muted2 mt-12">Flicker, new lines, nothing showing until you quit, Sleep timing and LNK2005 are answered in the concept pages' Q&amp;A.</div>
+          </div>
+        </div>
+
+        <!-- CLAUDE PROMPTS -->
+        <div class="section-block acc-section" data-page="help">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Claude Code Prompts</span>&nbsp;&nbsp;Phase 4.5
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+
+            <div class="prompt-items">
+              <div class="prompt-item">
+                <div class="prompt-label">Concept only — no code, before you write TODO 3 and 4</div>
+                <div class="prompt-text">Don't write any code. I'm building a console game in C with an array int obs[8] where each element is a column position and -1 means the slot is empty. In plain English, explain the pattern of using a sentinel value like -1 to mean "unused slot" — why games do this instead of allocating and freeing, and what I have to be careful about when I search for a free slot. Two short paragraphs.</div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Review what you built — behaviour, not style</div>
+                <div class="prompt-text">Review this C console game I wrote. I'm a beginner compiling with MSVC cl /W4 /WX. Check three things only: (1) can any obstacle index go outside the lane array bounds, (2) is there any path where the state machine gets stuck in a state it can't leave, (3) does the render step build the whole line before printing. Don't rewrite it and don't restructure it. Point at problems and tell me which line: [paste code]</div>
+              </div>
+            </div>
+
+            <div class="callout callout--accent mt-16">
+              <div class="eyebrow eyebrow--md t-accent mb-8">// The rule for this phase</div>
+              <div class="prose t-text">
+                Write all six TODOs yourself. Ask AI for the sentinel-slot concept before you start and for a review after it works, nothing in between. Then play it for thirty seconds. If it isn't a bit fun, work out why.
+              </div>
+            </div>
+
+          </div>
+        </div>
+
         <!-- MIXED REVIEW -->
-        <div class="section-block acc-section">
+        <div class="section-block acc-section" data-page="review">
           <div class="section-block-header">
             <span class="badge badge-purple">Mixed Review</span>&nbsp;&nbsp;one from Phase 03, one from Phase 3.5
             <span class="acc-toggle-icon">▼</span>
@@ -589,20 +478,18 @@ frame 2:  A...#.......#.....  score 13   <span class="c-cm">← drawn straight o
           </div>
         </div>
 
-        <!-- PAIR WITH KING -->
-        <div class="section-block acc-section" data-order="9">
-          <div class="section-block-header">
-            <span class="badge badge-purple">Pair with King</span>&nbsp;&nbsp;C Programming: A Modern Approach — chapters 14–15
-            <span class="acc-toggle-icon">▼</span>
+        <!-- CHECKPOINT -->
+        <div class="checkpoint" data-page="review">
+          <div class="checkpoint-header">
+            <span class="badge badge-green">Checkpoint</span>
+            <span class="checkpoint-title">Ready to move on when:</span>
+            <span class="cp-counter">0/4</span>
           </div>
-          <div class="acc-body section-block-body">
-            <dl class="king">
-              <dt>Read</dt><dd>Ch 14 <em>The Preprocessor</em> · Ch 15 <em>Writing Large Programs</em>.</dd>
-              <dt>Focus on</dt><dd><span class="cmd">#define</span> and <span class="cmd">#include</span>, and what conditional compilation is for (ch 14). Source files, header files, sharing macros, types and prototypes between files, and how to divide a program into files (ch 15) — that's exactly the runner split.</dd>
-              <dt>Note</dt><dd>King protects headers with <span class="cmd">#ifndef</span> / <span class="cmd">#define</span> / <span class="cmd">#endif</span> guards. <span class="cmd">#pragma once</span> does the same job in one line and every compiler you'll use supports it. Know both when you see them.</dd>
-              <dt>Skip</dt><dd>Macros with parameters beyond the basics, and the makefile section — build.bat is your makefile.</dd>
-            </dl>
-            <div class="fs-11 t-muted mt-12">Chapter numbers are from the 2nd edition.</div>
+          <div class="checkpoint-items">
+            <div class="cp-item" data-id="cp-p4b-1"><span class="cp-cb">✓</span><span class="cp-text">Your loop runs on its own and reacts to keys without ever waiting for Enter</span></div>
+            <div class="cp-item" data-id="cp-p4b-2"><span class="cp-cb">✓</span><span class="cp-text">The track repaints in place with \r — one line, no flicker, no system("cls")</span></div>
+            <div class="cp-item" data-id="cp-p4b-3"><span class="cp-cb">✓</span><span class="cp-text">Obstacles scroll toward you, dodging scores a point, and a hit ends the run</span></div>
+            <div class="cp-item" data-id="cp-p4b-4"><span class="cp-cb">✓</span><span class="cp-text">MENU → PLAYING → GAME_OVER → restart all work, and it's committed to GitHub</span></div>
           </div>
         </div>
 
