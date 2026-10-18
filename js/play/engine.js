@@ -317,7 +317,9 @@
       if (idx >= 0) { var st = spec.steps[idx]; if (st.out && (reduced.matches || p >= (st.outAt == null ? .5 : st.outAt))) s += st.out; }
       return s;
     }
+    var endFired = false;   // 'rtsplay:ended' bubbles from the host the first time the last step completes
     function ui() {
+      if (!endFired && finished()) { endFired = true; try { host.dispatchEvent(new CustomEvent('rtsplay:ended', { bubbles: true })); } catch (e) {} }
       btn('play').innerHTML = playing ? '&#10074;&#10074; Pause' : (finished() ? '&#9654; Replay' : '&#9654; Play');
       btn('step').disabled = idx >= n - 1 && p >= 1; btn('reset').disabled = idx < 0;
       btn('speed').textContent = (speed === 1 ? '1×' : '0.5×') + ' speed';

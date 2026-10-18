@@ -2619,7 +2619,7 @@ function renderLadder(pid) {
   }
 
   if (!showCheck) {
-    h += '<section class="lad-part lad-wait"><div class="lad-ph"><b>3</b>Check, try, curious</div><p>These open when you finish the walkthrough, or straight away with <b>I know this: quiz me</b>.</p></section>';
+    h += '<section class="lad-part lad-wait"><div class="lad-ph"><b>3</b>Check, try, curious</div><p>These open when you finish the walkthrough' + (canPlay ? ' or watch it run to the end' : '') + ', or straight away with <b>I know this: quiz me</b>.</p></section>';
   } else {
     var c = r.check;
     h += '<section class="lad-part" data-lad-check><div class="lad-ph"><b>3</b>Check: predict it</div><div class="lad-q">' + esc(c.q) + '</div><div class="lad-opts">' +
@@ -2661,6 +2661,15 @@ function renderLadder(pid) {
   renderOverview(pid);   // done ticks, pills and Start / Continue follow the ladder state
   renderStrip(s);
 }
+// watching See It Run to the end counts as finishing the walkthrough, so the check opens
+document.addEventListener('rtsplay:ended', function (e) {
+  var ph = e.target.closest && e.target.closest('.phase'), pid = ph && ph.dataset.ladder, d = pid && LADDERS[pid];
+  if (!d) return;
+  var r = d.rungs[Math.max(0, Math.min(d.rungs.length - 1, +ladState(pid).cur || 0))], ui = ladUI(pid);
+  if ((ui.step[r.id] || 0) >= r.walk.length) return;
+  ui.step[r.id] = r.walk.length;
+  renderLadder(pid);
+});
 document.addEventListener('click', function (e) {
   if (document.body.classList.contains('editing')) return;
   var el = e.target.closest('[data-lad-go], [data-lad-walk], [data-lad-quiz], [data-lad-opt], [data-lad-hint], [data-lad-reveal], [data-lad-showwalk], [data-lad-mode]');
