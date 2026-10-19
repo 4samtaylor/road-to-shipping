@@ -24,22 +24,52 @@
    "title": "WinMain and the window handle (HWND)",
    "kick": "WinMain · WNDCLASS · CreateWindowEx · HWND",
    "mins": 14,
-   "lang": "c-win",
    "skills": [
     "winmain",
-    "hwnd"
+    "hwnd",
+    "handle",
+    "typedef-win32"
    ],
-   "builds": "Phase 1: <code>main</code> is where a program starts. Phase 3.5: a pointer is a value that stands for something else.",
+   "builds": "main from Your first C program (Phase 1), Structs and the dot operator and Pointers: &amp; and * (Phase 3.5), Function pointers (Phase 3.75) and Preprocessor switches (Phase 4.5).",
    "why": "A console program just runs. A window has to be created, and Windows hands you back a handle for it: the HWND. Every later call (show it, draw on it, close it) needs that ticket. This is the boilerplate you fill in once per game.",
+   "learn": {
+    "parts": [
+     [
+      "A window is something you ask for",
+      "<p>A console program owns its text and just prints. A window belongs to Windows. You fill in a form describing a <i>kind</i> of window (a WNDCLASS), register it, ask CreateWindowEx for one window of that kind, and Windows hands back an <b>HWND</b>, the handle you quote in every later call. Then a loop keeps the program alive. That's the whole file; the rest is detail.</p>"
+     ],
+     [
+      "The type names are typedefs",
+      "<p>Win32 renamed ordinary C types with typedef, just as you named your structs in Structs and the dot operator. <code>UINT</code> is <code>unsigned int</code>. <code>DWORD</code> is a 32-bit <code>unsigned long</code>. <code>LPSTR</code> is <code>char *</code>. <code>BOOL</code> is a plain <code>int</code>, not C's bool. <code>WPARAM</code>, <code>LPARAM</code> and <code>LRESULT</code> are integers as wide as a pointer, so 8 bytes on x64. Hover over any of them in VS Code to see what it really is.</p><p>The prefixes on names tell you the type: <b>h</b> is a handle (hInst, hwnd), <b>lp</b> is a pointer (the \"long\" is left over from 16-bit Windows), <b>lpsz</b> is a pointer to a string ending in '\\0', <b>lpfn</b> is a pointer to a function. The w and l in wp and lp once meant \"word\" and \"long\"; today both are pointer-sized.</p>"
+     ],
+     [
+      "A handle is a pointer you can't see through",
+      "<p>windows.h declares HWND as a pointer to a little struct that has nothing useful in it. The real window data lives inside Windows, where you can't reach it. So you can store an HWND, compare it with NULL and pass it back, but never look inside. That's on purpose: Windows can change its insides without breaking your program. HWND, HBRUSH and HDC are different pointer types, so passing a brush where a window belongs makes MSVC warn, and /WX stops the build.</p>"
+     ],
+     [
+      "CALLBACK and the bare function name",
+      "<p><code>CALLBACK</code> and <code>WINAPI</code> are #define macros for a calling convention, the rule for how arguments get passed. On x64 there's only one convention and the compiler ignores them, but keep them: 32-bit builds need them. <code>wc.lpfnWndProc = WindowProc;</code> has no brackets, so it stores the function's address, exactly as in Function pointers. The field's type, <code>WNDPROC</code>, is a typedef for that function shape.</p>"
+     ],
+     [
+      "CreateWindowEx is two functions",
+      "<p>There's no function called CreateWindowEx. Windows has CreateWindowExA, which takes char strings, and CreateWindowExW, which takes wide strings. windows.h uses <code>#ifdef UNICODE</code> to point the plain name at one of them: Preprocessor switches again. build.bat doesn't define UNICODE, so you get the A versions and \"GameWindow\" works. RegisterClass, DefWindowProc and MessageBox work the same way. Visual Studio projects define UNICODE, which is why copied code often writes <code>L\"GameWindow\"</code>.</p>"
+     ],
+     [
+      "Mistakes and MSVC notes",
+      "<ul><li>A global or static starts at zero, so g_hwnd would be NULL even without <code>= NULL</code> (Static locals and globals). A local doesn't: without <code>= {0}</code>, wc is full of garbage and RegisterClass can fail.</li><li>The class name in RegisterClass and CreateWindowEx must match exactly, or CreateWindowEx returns NULL.</li><li>Both calls report failure through their return value. Check it while you're learning.</li></ul><p class=\"warn\">An unused parameter is a warning at /W4, so /WX stops the build. The <code>(void)hPrev;</code> line \"uses\" it. build.bat's /external:W0 keeps windows.h's own warnings quiet.</p>"
+     ]
+    ],
+    "king": "§7.5, §19.3, §20.3, §14.3–14.4"
+   },
    "code": "#include <windows.h>\n\nstatic HWND g_hwnd = NULL;\n\nLRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {\n    return DefWindowProc(hwnd, msg, wp, lp);\n}\n\nint WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmd, int nShow) {\n    (void)hPrev; (void)lpCmd;\n    WNDCLASS wc = {0};\n    wc.lpfnWndProc   = WindowProc;\n    wc.hInstance     = hInst;\n    wc.lpszClassName = \"GameWindow\";\n    RegisterClass(&wc);\n\n    g_hwnd = CreateWindowEx(0, \"GameWindow\", \"My First Window\",\n                   WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,\n                   800, 600, NULL, NULL, hInst, NULL);\n    ShowWindow(g_hwnd, nShow);\n\n    MSG msg;\n    while (GetMessage(&msg, NULL, 0, 0)) {\n        TranslateMessage(&msg);\n        DispatchMessage(&msg);\n    }\n    return 0;\n}",
    "walk": [
     [
      3,
-     "<b>HWND</b> is a “handle to a window”: a pointer-sized number Windows gives you. You never look inside it, you just hand it back in later calls. NULL means “no window yet”. <code>static</code> keeps this variable private to this file."
+     "<b>HWND</b> is a “handle to a window”: a pointer to a struct you can’t see inside. You never look in it; you just hand it back in later calls. NULL means “no window yet”. A static global starts at zero anyway; the <code>= NULL</code> just says so."
     ],
     [
      5,
-     "Windows will call this function for every event on the window. For now it passes everything to Windows’ default handling. Rung 2 fills it in."
+     "Windows will call this function for every event on the window. For now it passes everything to Windows’ default handling. The window procedure fills it in."
     ],
     [
      9,
@@ -47,19 +77,19 @@
     ],
     [
      10,
-     "The other two parameters are unused. Under <code>/W4 /WX</code> an unused parameter is a warning (C4100) turned into an error, so “use” them with a <code>(void)</code> cast."
+     "The other two parameters are unused. Under <code>/W4 /WX</code> an unused parameter is a warning turned into an error, so “use” them with a <code>(void)</code> cast."
     ],
     [
      11,
-     "A form describing a <i>kind</i> of window. <code>= {0}</code> zeroes every field (Phase 3.5 structs) so you only fill in the ones you care about."
+     "A form describing a <i>kind</i> of window. It’s a local, so without <code>= {0}</code> every field would be garbage. This zeroes them all, so you only fill in the ones you care about."
     ],
     [
      12,
-     "The important field: the address of your callback. Windows rings this number whenever something happens."
+     "The important field: the address of your callback. No brackets after WindowProc, so this is its address, as in Function pointers. Windows rings this number whenever something happens."
     ],
     [
      15,
-     "Hands the form to Windows under the name “GameWindow”. (No <code>UNICODE</code> defined, so these calls use plain char strings.)"
+     "Hands the form to Windows under the name “GameWindow”. No <code>UNICODE</code> is defined, so RegisterClass means RegisterClassA, the plain char version."
     ],
     [
      17,
@@ -75,7 +105,7 @@
     ],
     [
      23,
-     "The message loop keeps the program alive: GetMessage waits for the next message, then TranslateMessage and DispatchMessage pass it on to WindowProc. It gets its own rung (3). Without it, WinMain would end and the window would vanish at once."
+     "The message loop keeps the program alive: GetMessage waits for the next message, then TranslateMessage and DispatchMessage pass it on to WindowProc. It gets its own concept, The message loop and PeekMessage. Without it, WinMain would end and the window would vanish at once."
     ]
    ],
    "model": "<b>Mental model:</b> registering a class is filling in a form for a type of window. CreateWindowEx is ordering one from that form, and the HWND is the claim ticket. Every later call says “about window number…” using that ticket.",
@@ -104,7 +134,7 @@
    "qa": [
     [
      "Why doesn’t clicking X end the program?",
-     "X destroys the window, but nothing tells the message loop to stop, so the process keeps running with no window. Rung 2 fixes this with WM_DESTROY."
+     "X destroys the window, but nothing tells the message loop to stop, so the process keeps running with no window. The window procedure fixes this with WM_DESTROY."
     ],
     [
      "Why WinMain and not main?",
@@ -112,26 +142,271 @@
     ],
     [
      "What are CW_USEDEFAULT and WS_OVERLAPPEDWINDOW?",
-     "Named numbers. The first means “let Windows pick the position”. The second means a normal window with a title bar, border and the minimise/maximise/close buttons."
+     "Named numbers. The first means “let Windows pick the position”. The second is several style flags joined into one number; Combining flags with | and &amp; shows how."
     ],
     [
      "I don’t know half these type names (LRESULT, WPARAM, HINSTANCE). Is that okay?",
-     "Yes. They are renamed ordinary types: HWND is a pointer-like handle, WPARAM is a number. Win32 dates from 1993 and named everything twice. Understanding about a fifth of this file on the first read is normal. Spend your attention on the <code>switch</code> in WndProc and the loop in WinMain."
+     "Yes. They are typedefs for ordinary types: HINSTANCE and HWND are handles, WPARAM is a pointer-sized number. Win32 dates from the early 1990s and named everything twice. Understanding about a fifth of this file on the first read is normal."
+    ],
+    [
+     "Can I print an HWND?",
+     "Yes, with <code>%p</code>, like any pointer: 16 hex digits on x64. The number means nothing to you, though. It only matters to Windows."
     ]
    ],
-   "bridge": "You can create and show a window. Next: <b>the window procedure</b>, the function Windows calls with every event."
+   "bridge": "You can create and show a window. Next: <b>Linking libraries</b>, the two words this program needs on the build line before it will link at all.",
+   "lang": "c-win"
+  },
+  {
+   "id": "link-libs",
+   "title": "Linking libraries (user32.lib, gdi32.lib)",
+   "kick": "import library · user32.lib · gdi32.lib · LNK2019",
+   "mins": 9,
+   "skills": [
+    "link-libs"
+   ],
+   "builds": "Linker errors (LNK2019) from Phase 3.75, and the build.bat FLAGS and SOURCES lines. The window from WinMain and the window handle is the program you’re linking.",
+   "why": "<code>windows.h</code> only <i>declares</i> CreateWindowEx and FillRect, like a menu. The real code lives in Windows’ own libraries. If you don’t tell the linker which ones, the window you just wrote dies with LNK2019 even though every line compiled.",
+   "learn": {
+    "parts": [
+     [
+      "Declared isn't defined",
+      "<p>windows.h only declares CreateWindowExA: its name and shape. The code is inside Windows, in DLLs such as user32.dll and gdi32.dll. To call it, the linker needs an <b>import library</b> like user32.lib: a small file that lists what the DLL contains, so the linker can write “fetch this from user32.dll at start-up” into your .exe. The .lib is used when you build, the DLL when you run. King tells the same story with the maths library, which some systems make you ask for by name.</p>"
+     ],
+     [
+      "Which library?",
+      "<p>Look the function up on Microsoft Learn. The Requirements table at the bottom of its page names the header, the library and the DLL: CreateSolidBrush says Gdi32.lib. Windows, messages and input are user32.lib; brushes and bitmaps are gdi32.lib. The window from WinMain and the window handle only needs user32.lib, but put both on build.bat's cl line now, before you start drawing.</p>"
+     ],
+     [
+      "Reading the error",
+      "<p>The compile step passes, because the header declared everything. The link step fails with LNK2019, and the name it quotes is <code>__imp_CreateSolidBrush</code>: <code>__imp_</code> means “the slot imported from a DLL”. Strip it and look the rest up. Older posts show names like <code>_WindowProc@16</code>; that's 32-bit decoration, and x64 has none.</p>"
+     ],
+     [
+      "MSVC notes",
+      "<p class=\"warn\">MSVC can also take the library from the source file: <code>#pragma comment(lib, \"gdi32.lib\")</code>. Misspell <code>comment</code> and MSVC warns C4068 (unknown pragma), because compilers skip pragmas they don't know. /WX makes that error C2220. Misspell the library name instead and the linker stops because it can't open the file. This course keeps libraries on the build line, where you can see them all.</p>"
+     ]
+    ],
+    "king": "§15.4"
+   },
+   "code": "REM build.bat: add the Windows libraries to the cl line (REM starts a comment)\ncl %FLAGS% %SOURCES% user32.lib gdi32.lib /Fe:game.exe\n\nREM Once you draw, leaving gdi32.lib off compiles, then fails to link:\nREM   win32_window.obj : error LNK2019: unresolved external symbol\nREM       __imp_CreateSolidBrush referenced in function WindowProc\nREM   game.exe : fatal error LNK1120: 2 unresolved externals\nREM (the count is how many gdi32 functions your file calls)\nREM\nREM Leave user32.lib off and the same error names a user32 function:\nREM   unresolved external symbol __imp_CreateWindowExA",
+   "walk": [
+    [
+     2,
+     "build.bat’s cl line, with two library names added. <b>user32.lib</b> covers windows, messages and input (CreateWindowEx, GetMessage, FillRect). <b>gdi32.lib</b> covers drawing objects (CreateSolidBrush, DeleteObject, BitBlt). Your first window only needs user32, but list both now."
+    ],
+    [
+     4,
+     "Missing library: the <i>compile</i> step passes, because the header declared the function. The <i>link</i> step fails. You’ll see this one once Drawing with GDI makes a brush."
+    ],
+    [
+     5,
+     "“Unresolved external symbol”: the linker was told to call a function and can’t find its code. Linker errors (LNK2019) showed the same error for your own files."
+    ],
+    [
+     6,
+     "Strip the <code>__imp_</code> (“imported from a DLL”) and you can read it: CreateSolidBrush. It’s a GDI function, so the fix is gdi32.lib. On x64 there’s no leading underscore and no <code>@4</code> on the end; those only appear in 32-bit builds."
+    ],
+    [
+     7,
+     "The summary line: it counts how many symbols were missing. Fix the first one and the rest usually go too."
+    ]
+   ],
+   "model": "<b>Mental model:</b> windows.h is the menu, the .lib files are the kitchens. The menu lists CreateWindowEx, but the linker needs to know which kitchen (user32 or gdi32) actually cooks it.",
+   "check": {
+    "q": "Your build fails with: unresolved external symbol __imp_CreateSolidBrush referenced in function WindowProc. What is the fix?",
+    "opts": [
+     "Add an include for wingdi.h at the top of the file",
+     "Add user32.lib to the cl line in build.bat",
+     "Add gdi32.lib to the cl line in build.bat",
+     "Rename CreateSolidBrush, because it is misspelled"
+    ],
+    "a": 2,
+    "hint": "Which step reports missing code: the compiler or the linker? Then ask which library holds drawing objects like brushes.",
+    "why": "A linker error with the function’s name means the code was declared but not found. CreateSolidBrush is a GDI (drawing) function, so it lives in gdi32.lib. windows.h already pulls in the GDI header, which is why it compiled.",
+    "miss": {
+     "0": "The header is already included through windows.h. A missing declaration would be a compile error, not LNK2019.",
+     "1": "user32.lib holds window and input functions. Brushes are GDI, so they live in gdi32.lib.",
+     "3": "A misspelled name would be caught by the compiler. LNK2019 means the name was fine but the code wasn’t linked."
+    }
+   },
+   "tryit": {
+    "task": "Write build.bat’s cl line for the window, with both libraries.",
+    "code": "set SOURCES=win32_window.c\ncl %FLAGS% %SOURCES% ____ ____ /Fe:game.exe",
+    "answer": "user32.lib gdi32.lib"
+   },
+   "qa": [
+    [
+     "Is there a way to put this in the source file instead?",
+     "Yes: <code>#pragma comment(lib, \"user32.lib\")</code> in MSVC. It’s handy for small tests. This course keeps the libraries on the build line so build.bat shows everything the program needs."
+    ],
+    [
+     "Why did gcc/MinGW use -luser32 instead?",
+     "Different compiler, same idea: <code>-luser32 -lgdi32</code> tell its linker which libraries to use. You only need the cl form."
+    ],
+    [
+     "Older answers online show _WindowProc@16 and __imp__CreateSolidBrush@4. Why don’t I see those?",
+     "That’s 32-bit Windows, where the compiler decorates names with an underscore and the number of argument bytes. Your build is x64, which has one calling convention and no decoration, so you see <code>WindowProc</code> and <code>__imp_CreateSolidBrush</code>."
+    ],
+    [
+     "Does the .lib end up inside my .exe?",
+     "Only a small table from it. The real code stays in user32.dll and gdi32.dll, which every copy of Windows already has, so your .exe stays small."
+    ]
+   ],
+   "bridge": "You can build the window. Next: <b>Combining flags with | and &amp;</b>, the C behind WS_OVERLAPPEDWINDOW and RGB.",
+   "lang": "bat"
+  },
+  {
+   "id": "bit-flags",
+   "title": "Combining flags with | and &",
+   "kick": "1u << n · |= · &= ~ · (flags & X) != 0",
+   "mins": 15,
+   "skills": [
+    "bit-flags"
+   ],
+   "builds": "Named constants with #define (Phase 3), Comparisons, &amp;&amp;, || and ! (Phase 2.5), and How big a number can be (Phase 2).",
+   "why": "Windows packs a dozen yes-or-no options into one number: the window’s border, title bar and buttons are all bits in WS_OVERLAPPEDWINDOW. Your game can do the same with a player’s status: alive, shielded, poisoned, all in one <code>unsigned int</code>. Reading Win32 code means reading <code>|</code> and <code>&amp;</code>.",
+   "learn": {
+    "parts": [
+     [
+      "One number, many switches",
+      "<p>An <code>unsigned int</code> is 32 bits, and each bit can be a yes or no. Give each bit a name and one variable holds 32 separate switches: alive, jumping, shielded, poisoned. That's a set of <b>bit flags</b>. Windows uses them everywhere, so you need to read them before the next concepts.</p>"
+     ],
+     [
+      "Making the flags with <<",
+      "<p><code>1u &lt;&lt; n</code> shifts a 1 left by n places, giving a number with only bit n on: 1, 2, 4, 8, 16. Each flag is a different power of two, so no two share a bit. You'll also see them written in hex: 0x1, 0x2, 0x4, 0x8. C17 has no binary literals; C23 adds <code>0b1000</code>, so you may meet it in newer code. <code>&gt;&gt;</code> shifts the other way. Use unsigned: shifting a 1 into the top bit of a signed int is undefined behaviour.</p>"
+     ],
+     [
+      "Set, clear, toggle, test",
+      "<pre>flags |= FLAG_SHIELD;                // set: turn that bit on\nflags &amp;= ~FLAG_SHIELD;               // clear: turn it off\nflags ^= FLAG_JUMPING;               // toggle: flip it\nif ((flags &amp; FLAG_POISONED) != 0)    // test: is it on?</pre><p><code>|</code> gives a 1 wherever <i>either</i> side has one. <code>&amp;</code> gives a 1 only where <i>both</i> do, so it works like a stencil: <code>flags &amp; FLAG_POISONED</code> keeps that one bit and zeroes the rest. <code>~</code> flips every bit, so <code>~FLAG_SHIELD</code> is a mask with every bit on except the shield. AND with it and only the shield goes.</p>"
+     ],
+     [
+      "The two traps",
+      "<p><b>Precedence.</b> <code>flags &amp; FLAG_POISONED != 0</code> looks right but reads as <code>flags &amp; (FLAG_POISONED != 0)</code>, because != binds tighter than &amp;. That's <code>flags &amp; 1</code>, which tests the alive bit instead. Always bracket the &amp;, or drop the != 0 and write <code>if (flags &amp; FLAG_POISONED)</code>.</p><p><b>&amp; is not &amp;&amp;.</b> The logical operators from Comparisons, &amp;&amp;, || and ! only ever give 0 or 1. <code>FLAG_ALIVE || FLAG_SHIELD</code> is 1, not 5, and <code>flags &amp;&amp; FLAG_SHIELD</code> is true whenever any flag at all is set. Both compile without a word.</p>"
+     ],
+     [
+      "Where Win32 uses this",
+      "<p><code>WS_OVERLAPPEDWINDOW</code> is six window styles joined with |: WS_OVERLAPPED, WS_CAPTION, WS_SYSMENU, WS_THICKFRAME, WS_MINIMIZEBOX and WS_MAXIMIZEBOX. Want a window the player can't resize? Take two out: <code>WS_OVERLAPPEDWINDOW &amp; ~(WS_THICKFRAME | WS_MAXIMIZEBOX)</code>.</p><p>Join flags with |, never +. A bit that's already on stays on with |, but + carries it into the next bit. <code>WS_OVERLAPPEDWINDOW + WS_CAPTION</code> adds the caption bits twice and switches on styles you never asked for. The colour macro RGB, coming in Drawing with GDI, packs three bytes into one number with the same shifts and |.</p>"
+     ]
+    ],
+    "king": "§20.1"
+   },
+   "code": "#include <stdio.h>\n\n#define FLAG_ALIVE    (1u << 0)\n#define FLAG_JUMPING  (1u << 1)\n#define FLAG_SHIELD   (1u << 2)\n#define FLAG_POISONED (1u << 3)\n\nint main(void) {\n    unsigned int flags = FLAG_ALIVE | FLAG_SHIELD;\n    printf(\"start: %u\\n\", flags);\n    flags |= FLAG_POISONED;     // a dart hits\n    flags &= ~FLAG_SHIELD;      // and the shield breaks\n    printf(\"after hit: %u\\n\", flags);\n\n    if ((flags & FLAG_POISONED) != 0) {\n        printf(\"poisoned\\n\");\n    }\n    if (flags & FLAG_SHIELD) {\n        printf(\"shielded\\n\");\n    }\n    return 0;\n}",
+   "walk": [
+    [
+     3,
+     "Each flag is 1 shifted left: <code>1u &lt;&lt; 0</code> is 1. The <code>u</code> makes it unsigned. The brackets matter: a macro pastes text, and without them an expression around it could split the shift apart."
+    ],
+    [
+     6,
+     "<code>1u &lt;&lt; 3</code> is 8, binary 1000. The four flags are 1, 2, 4 and 8, so each one owns a different bit."
+    ],
+    [
+     9,
+     "<b>|</b> joins flags: 1 | 4 is 5, binary 0101. Alive and shielded are on; jumping and poisoned are off."
+    ],
+    [
+     11,
+     "<code>|=</code> sets a bit: 5 | 8 is 13. The bits already on stay on."
+    ],
+    [
+     12,
+     "<code>~</code> flips every bit, so <code>~FLAG_SHIELD</code> has every bit on except bit 2. <code>&amp;=</code> with it clears just the shield: 13 becomes 9."
+    ],
+    [
+     13,
+     "Prints <code>after hit: 9</code>: alive (1) plus poisoned (8)."
+    ],
+    [
+     15,
+     "The test. <code>flags &amp; FLAG_POISONED</code> is 9 &amp; 8, which is 8, not 0, so it’s true. The extra brackets are needed: without them, <code>!=</code> would run first."
+    ],
+    [
+     18,
+     "The short form: any nonzero result counts as true. 9 &amp; 4 is 0, so <code>shielded</code> doesn’t print."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a row of light switches on one panel. <code>|</code> flips chosen switches on, <code>&amp; ~</code> flips chosen switches off, and <code>&amp;</code> on its own is a stencil that hides every switch except the one you want to look at.",
+   "check": {
+    "q": "What does this program print?",
+    "opts": [
+     "start: 5, after hit: 9, then poisoned",
+     "start: 5, after hit: 13, then poisoned and shielded",
+     "start: 5, after hit: 9, then poisoned and shielded",
+     "start: 1, after hit: 9, then poisoned"
+    ],
+    "a": 0,
+    "hint": "Write the four flags as 1, 2, 4 and 8. Which are on after each line?",
+    "why": "1 | 4 is 5. Setting poisoned makes 13, and clearing the shield takes 4 away, leaving 9. Then 9 & 8 is 8, which is true, and 9 & 4 is 0, which is false, so only poisoned prints.",
+    "miss": {
+     "1": "&= ~FLAG_SHIELD clears bit 2: ~ makes a mask with every bit except the shield, and & keeps only those. 13 becomes 9.",
+     "2": "The values are right, but 9 & 4 is 0, and 0 is false, so shielded doesn’t print.",
+     "3": "That would be ||, which only gives 0 or 1. A single | combines bits: 1 | 4 is 5."
+    }
+   },
+   "tryit": {
+    "task": "The player jumps: turn the jumping bit on, then print whether they are jumping.",
+    "code": "flags ____ FLAG_JUMPING;\nif ((flags ____ FLAG_JUMPING) != 0) {\n    printf(\"jumping\\n\");\n}",
+    "answer": "|= then &"
+   },
+   "qa": [
+    [
+     "Why unsigned?",
+     "Shifting a 1 into the top bit of a signed int is undefined behaviour, and ~ on a signed value gives a negative number. Unsigned bits are just bits. Print them with <code>%u</code>, or <code>%x</code> to see them in hex."
+    ],
+    [
+     "How many flags fit?",
+     "32 in an <code>unsigned int</code> on MSVC, which is 4 bytes. For more, use <code>unsigned long long</code> and <code>1ull &lt;&lt; n</code>, which gives 64."
+    ],
+    [
+     "Why not just four int variables?",
+     "You can, and for four flags it’s fine. Flags win when there are many: you pass one value to a function, save one number to a file, and test several at once with one &amp;. Windows takes dozens of options this way in a single DWORD."
+    ],
+    [
+     "What does ^ do?",
+     "Exclusive or: a 1 where the two sides differ. <code>flags ^= FLAG_JUMPING</code> flips that bit, on to off or off to on."
+    ],
+    [
+     "How do I test two flags at once?",
+     "<code>(flags &amp; (FLAG_ALIVE | FLAG_SHIELD)) != 0</code> means “either one is on”. <code>(flags &amp; mask) == mask</code> means “both are on”."
+    ]
+   ],
+   "bridge": "You can pack and unpack flags. Next: <b>The window procedure</b>, where Windows hands you messages with values packed the same way.",
+   "lang": "c"
   },
   {
    "id": "wndproc",
    "title": "The window procedure (WndProc) and messages",
    "kick": "WindowProc · switch (msg) · WM_KEYDOWN · WM_DESTROY",
    "mins": 14,
-   "lang": "c-win",
    "skills": [
     "wndproc"
    ],
-   "builds": "Rung 1 (the callback address you handed Windows) and Phase 2.5 (<code>switch</code>).",
+   "builds": "WinMain and the window handle (the callback address you handed Windows), Function pointers (Phase 3.75), switch statements (Phase 2.5) and Combining flags with | and &amp;.",
    "why": "Everything that happens to your window arrives here as a numbered message: a key, a click, a repaint request, the close button. Your whole game’s reaction to the outside world is a <code>switch</code> inside this one function.",
+   "learn": {
+    "parts": [
+     [
+      "Windows calls you",
+      "<p>The window procedure is a <b>callback</b>: a function you write but never call yourself. You gave Windows its address in WinMain and the window handle, and Windows calls it whenever something happens to the window. It's the same deal as qsort's compare function from Function pointers: you supply the function, someone else decides when it runs. Most calls arrive through DispatchMessage in your loop. A few come straight from Windows during another call. CreateWindowEx sends messages before it even returns, so inside WindowProc use the <code>hwnd</code> parameter, never g_hwnd.</p>"
+     ],
+     [
+      "Messages are numbers",
+      "<p>Every WM_ name is a #define: <code>WM_KEYDOWN</code> is 0x0100, <code>WM_PAINT</code> is 0x000F, <code>WM_DESTROY</code> is 0x0002. The preprocessor swaps the names out before the compiler runs, so in The debugger's Locals panel msg shows a bare 256, not WM_KEYDOWN. It's the enum lesson from the other side. Hover over a WM_ name in VS Code to see its number when you need to match one up.</p>"
+     ],
+     [
+      "wp and lp carry the details",
+      "<p>What wp and lp mean depends on the message. For WM_KEYDOWN, wp is the virtual-key code: VK_LEFT, VK_ESCAPE, or the capital letter itself for letter keys, so <code>wp == 'W'</code> works. For mouse messages, lp holds two numbers packed into one: x in the low 16 bits, y in the next 16. You unpack them with a mask and a shift, as in Combining flags with | and &amp;:</p><pre>int x = (int)(lp &amp; 0xFFFF);\nint y = (int)((lp &gt;&gt; 16) &amp; 0xFFFF);</pre><p>That breaks for negative positions, which happen with two monitors or when you drag outside the window: -5 comes out as 65531. windowsx.h has <code>GET_X_LPARAM(lp)</code> and <code>GET_Y_LPARAM(lp)</code>, which read those 16 bits as a signed short. Use them for mouse positions.</p>"
+     ],
+     [
+      "Mistakes to watch for",
+      "<ul><li>No <code>default:</code> that calls DefWindowProc. Then nothing handles moving, resizing or the X button, and the window seems frozen.</li><li>A missing <code>break</code> falls through into the next case, just as in switch statements.</li><li>Forgetting PostQuitMessage in WM_DESTROY. The window goes and the program keeps running.</li></ul>"
+     ],
+     [
+      "MSVC notes",
+      "<p class=\"warn\">The function's shape has to match WNDPROC exactly: LRESULT, CALLBACK, then HWND, UINT, WPARAM, LPARAM. Get one wrong and MSVC warns on the <code>wc.lpfnWndProc = WindowProc;</code> line, and /WX stops the build. Fix the function, don't cast the warning away: a cast hides a mismatch that crashes later.</p>"
+     ]
+    ],
+    "king": "§17.7, §5.3"
+   },
    "code": "#include <windows.h>\n\nstatic HWND g_hwnd = NULL;\n\nLRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {\n    switch (msg) {\n        case WM_KEYDOWN:\n            if (wp == VK_ESCAPE) DestroyWindow(hwnd);\n            break;\n        case WM_DESTROY:\n            PostQuitMessage(0);\n            break;\n        default:\n            return DefWindowProc(hwnd, msg, wp, lp);\n    }\n    return 0;\n}\n\nint WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmd, int nShow) {\n    (void)hPrev; (void)lpCmd;\n    WNDCLASS wc = {0};\n    wc.lpfnWndProc   = WindowProc;\n    wc.hInstance     = hInst;\n    wc.lpszClassName = \"GameWindow\";\n    RegisterClass(&wc);\n\n    g_hwnd = CreateWindowEx(0, \"GameWindow\", \"My First Window\",\n                   WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,\n                   800, 600, NULL, NULL, hInst, NULL);\n    ShowWindow(g_hwnd, nShow);\n\n    MSG msg;\n    while (GetMessage(&msg, NULL, 0, 0)) {\n        TranslateMessage(&msg);\n        DispatchMessage(&msg);\n    }\n    return (int)msg.wParam;\n}",
    "walk": [
     [
@@ -140,7 +415,7 @@
     ],
     [
      6,
-     "A plain Phase 2.5 <code>switch</code>, choosing by message number. WM_ names are just constants for those numbers."
+     "A plain <code>switch</code> from Phase 2.5, choosing by message number. The WM_ names are #defines for those numbers, so the debugger shows the number."
     ],
     [
      7,
@@ -152,7 +427,7 @@
     ],
     [
      11,
-     "On WM_DESTROY the window is going away. <b>PostQuitMessage</b> drops a WM_QUIT message in the queue so the loop in WinMain can stop (rung 3)."
+     "On WM_DESTROY the window is going away. <b>PostQuitMessage</b> drops a WM_QUIT message in the queue so the loop in WinMain can stop. The message loop and PeekMessage looks at that next."
     ],
     [
      14,
@@ -193,7 +468,7 @@
    "qa": [
     [
      "What are wp and lp?",
-     "Extra details whose meaning depends on the message. For WM_KEYDOWN, wp is the key. For a mouse click, lp holds the position. WPARAM and LPARAM are just integer types."
+     "Extra details whose meaning depends on the message. For WM_KEYDOWN, wp is the key. For a mouse click, lp holds the position, packed as two 16-bit halves. WPARAM and LPARAM are pointer-sized integer types."
     ],
     [
      "Why return DefWindowProc in the default case?",
@@ -206,27 +481,52 @@
     [
      "Why does Windows call me, instead of me calling it?",
      "A console program calls <code>scanf</code> and waits, so you are in charge. A window is one of many on the desktop, and Windows owns the mouse, keyboard and screen. It decides when you need a redraw or a key arrived. You hand it your WndProc once, like a phone number, and it rings whenever something happens."
+    ],
+    [
+     "Why not LOWORD and HIWORD for the mouse?",
+     "They read the halves as unsigned, so a position left of or above the window turns into a huge number. GET_X_LPARAM and GET_Y_LPARAM from windowsx.h keep the sign."
     ]
    ],
-   "bridge": "You can react to messages. Next: <b>the message loop and PeekMessage</b>, how messages get to WndProc, and how a game keeps running between them."
+   "bridge": "You can react to messages. Next: <b>the message loop and PeekMessage</b>, how messages get to WndProc, and how a game keeps running between them.",
+   "lang": "c-win"
   },
   {
    "id": "message-loop",
    "title": "The message loop and PeekMessage",
    "kick": "GetMessage · PeekMessage · PM_REMOVE · WM_QUIT",
    "mins": 15,
-   "lang": "c-win",
    "skills": [
     "message-loop",
     "peekmessage"
    ],
-   "builds": "Phase 4.5: the game loop with <code>_kbhit</code> and <code>Sleep</code>. This is the same loop one level down.",
+   "builds": "The window procedure, The game loop: input, update, render, wait (Phase 4.5) and Copying and joining strings (Phase 3), for snprintf.",
    "why": "The loop is how your program collects its messages and hands them to WndProc. A normal app uses GetMessage and waits. A game can’t wait, because enemies must move even when nobody presses a key, so it uses PeekMessage and runs a frame whether or not a message arrived.",
-   "code": "#include <windows.h>\n\nstatic HWND g_hwnd = NULL;\n\nLRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {\n    if (msg == WM_DESTROY) {\n        PostQuitMessage(0);\n        return 0;\n    }\n    return DefWindowProc(hwnd, msg, wp, lp);\n}\n\nint WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmd, int nShow) {\n    (void)hPrev; (void)lpCmd;\n    WNDCLASS wc = {0};\n    wc.lpfnWndProc   = WindowProc;\n    wc.hInstance     = hInst;\n    wc.lpszClassName = \"GameWindow\";\n    RegisterClass(&wc);\n\n    g_hwnd = CreateWindowEx(0, \"GameWindow\", \"My First Window\",\n                   WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,\n                   800, 600, NULL, NULL, hInst, NULL);\n    ShowWindow(g_hwnd, nShow);\n\n    MSG msg = {0};\n    int running = 1;\n    int frame = 0;\n    char title[32];\n    while (running) {\n        while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {\n            if (msg.message == WM_QUIT) running = 0;\n            TranslateMessage(&msg);\n            DispatchMessage(&msg);\n        }\n        frame++;\n        wsprintf(title, \"Frame %d\", frame);\n        SetWindowText(g_hwnd, title);\n        Sleep(16);\n    }\n    return (int)msg.wParam;\n}",
+   "learn": {
+    "parts": [
+     [
+      "Peek, don't wait",
+      "<p>GetMessage waits until a message arrives, which is right for a text editor and wrong for a game. PeekMessage returns at once. Each frame, an inner <code>while</code> keeps calling it with PM_REMOVE until the queue is empty, handing each message to WindowProc. Then you run one frame. PeekMessage doesn't return 0 for WM_QUIT the way GetMessage does, so check <code>msg.message == WM_QUIT</code> yourself.</p>"
+     ],
+     [
+      "Text with snprintf",
+      "<p>The title text comes from <code>snprintf</code>, from Copying and joining strings: <code>snprintf(title, sizeof title, \"Frame %d\", frame);</code>. It works like printf but writes into the array, never past <code>sizeof title</code>, and always ends with '\\0'. Old Win32 samples use <code>wsprintf</code>, which has no size limit at all. Swap it for snprintf when you copy one, and include stdio.h.</p>"
+     ],
+     [
+      "The catch: dragging the window",
+      "<p>Hold the title bar to drag the window, or grab an edge to resize it, and the frame counter stops. DefWindowProc runs a loop of its own inside that DispatchMessage call until you let go of the mouse, so your loop is stuck in one call. The menu bar does the same. It's normal; a game just pauses. There are fixes, but you don't need them yet.</p>"
+     ],
+     [
+      "MSVC notes",
+      "<p class=\"warn\">snprintf builds clean under /W4 /WX; your test build confirmed it. sprintf and wsprintf don't check the size, and MSVC flags sprintf with C4996, as it did strcpy.</p>"
+     ]
+    ],
+    "king": "§22.8"
+   },
+   "code": "#include <windows.h>\n#include <stdio.h>\nstatic HWND g_hwnd = NULL;\n\nLRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {\n    if (msg == WM_DESTROY) {\n        PostQuitMessage(0);\n        return 0;\n    }\n    return DefWindowProc(hwnd, msg, wp, lp);\n}\n\nint WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmd, int nShow) {\n    (void)hPrev; (void)lpCmd;\n    WNDCLASS wc = {0};\n    wc.lpfnWndProc   = WindowProc;\n    wc.hInstance     = hInst;\n    wc.lpszClassName = \"GameWindow\";\n    RegisterClass(&wc);\n\n    g_hwnd = CreateWindowEx(0, \"GameWindow\", \"My First Window\",\n                   WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,\n                   800, 600, NULL, NULL, hInst, NULL);\n    ShowWindow(g_hwnd, nShow);\n\n    MSG msg = {0};\n    int running = 1;\n    int frame = 0;\n    char title[32];\n    while (running) {\n        while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {\n            if (msg.message == WM_QUIT) running = 0;\n            TranslateMessage(&msg);\n            DispatchMessage(&msg);\n        }\n        frame++;\n        snprintf(title, sizeof title, \"Frame %d\", frame);\n        SetWindowText(g_hwnd, title);\n        Sleep(16);\n    }\n    return (int)msg.wParam;\n}",
    "walk": [
     [
      26,
-     "A <code>MSG</code> struct (Phase 3.5) that each retrieved message is copied into. Zeroed so it’s safe to read at the end."
+     "A <code>MSG</code> struct (Phase 3.5) that each message is copied into. Zeroed so it’s safe to read at the end."
     ],
     [
      30,
@@ -250,7 +550,7 @@
     ],
     [
      37,
-     "Works like printf, but writes the text (“Frame 1”, “Frame 2”…) into the <code>title</code> array instead of the screen."
+     "<b>snprintf</b>, from Copying and joining strings: like printf, but writes “Frame 1”, “Frame 2”… into <code>title</code>, never more than <code>sizeof title</code> bytes. That’s why stdio.h is on line 2."
     ],
     [
      38,
@@ -258,12 +558,12 @@
     ],
     [
      39,
-     "Without this the loop would spin as fast as it can and use a whole CPU core. Rung 6 replaces this guess with real timing."
+     "Without this the loop would spin as fast as it can and use a whole CPU core. Frame time replaces this guess with real timing."
     ]
    ],
    "model": "<b>Mental model:</b> GetMessage is standing at the post office until a letter arrives. PeekMessage is glancing in the mailbox on your way past: letter or no letter, you carry on with your day. A game needs the glance.",
    "check": {
-    "q": "You delete the line <code>if (msg.message == WM_QUIT) running = 0;</code> and run the program. You click the X. What happens?",
+    "q": "You delete the line if (msg.message == WM_QUIT) running = 0; and run the program. You click the X. What happens?",
     "opts": [
      "The window closes and the program exits as normal, as it did before",
      "The program crashes because WM_QUIT is never handled anywhere",
@@ -300,21 +600,54 @@
     [
      "How does this compare to my Phase 2.5 and 4.5 loops?",
      "It is the same shape. <code>GetMessage</code> is waiting like <code>scanf</code>, <code>PeekMessage</code> is checking without waiting like <code>_kbhit</code>, and WndProc is the “react to it” step. The job is still read input, update, draw."
+    ],
+    [
+     "Why snprintf and not wsprintf?",
+     "wsprintf is an old Windows function with no size limit, so a long string runs straight past the end of the array. snprintf is standard C, takes the size, and you already know it."
     ]
    ],
-   "bridge": "You can explain how messages flow. Next: <b>drawing with GDI and InvalidateRect</b>, putting a coloured rectangle on screen."
+   "bridge": "You can explain how messages flow. Next: <b>drawing with GDI and InvalidateRect</b>, putting a coloured rectangle on screen.",
+   "lang": "c-win"
   },
   {
    "id": "gdi-invalidate",
    "title": "Drawing with GDI and InvalidateRect",
    "kick": "WM_PAINT · BeginPaint · FillRect · InvalidateRect",
    "mins": 15,
-   "lang": "c-win",
    "skills": [
     "invalidate"
    ],
-   "builds": "Rung 2 (messages in WindowProc) and Phase 2 (updating variables, then showing them).",
-   "why": "In a window you don’t print. You draw when Windows asks you to, inside WM_PAINT. To move something you change your variables, then tell Windows “this is out of date, ask me to redraw”. That’s InvalidateRect. This rung gets you the coloured rectangle and the arrow keys.",
+   "builds": "The window procedure, The message loop and PeekMessage, and Combining flags with | and &amp; (RGB packs bytes the same way).",
+   "why": "In a window you don’t print. You draw when Windows asks you to, inside WM_PAINT. To move something you change your variables, then tell Windows “this is out of date, ask me to redraw”. That’s InvalidateRect. This concept gets you the coloured rectangle and the arrow keys.",
+   "learn": {
+    "parts": [
+     [
+      "Draw when asked",
+      "<p>You only draw inside WM_PAINT, between BeginPaint and EndPaint. To move something, change your variables and call InvalidateRect, which marks the window out of date. Windows sends WM_PAINT once the queue has nothing more urgent, and several InvalidateRect calls in a row become one repaint.</p>"
+     ],
+     [
+      "y grows downward",
+      "<p>(0, 0) is the top-left corner of the client area, the part inside the border. x grows to the right and y grows <i>down</i>, so the up arrow subtracts from y. A RECT holds left, top, right and bottom, and FillRect stops just short of right and bottom: a RECT from 100 to 150 is 50 pixels wide.</p>"
+     ],
+     [
+      "RGB packs three bytes",
+      "<p><code>RGB</code> is a macro with parameters, like the #defines from Named constants with #define but taking arguments. Simplified, <code>RGB(r, g, b)</code> becomes <code>r | (g &lt;&lt; 8) | (b &lt;&lt; 16)</code>: three bytes in one number, built the way Combining flags with | and &amp; built flags. Red sits in the lowest byte, so <code>RGB(0, 200, 100)</code> is 0x0064C800, and the hex reads blue, green, red. A web colour #FF8800 is <code>RGB(0xFF, 0x88, 0x00)</code>, not 0xFF8800. Each argument is cut to one byte, so <code>RGB(300, 0, 0)</code> quietly gives 44.</p>"
+     ],
+     [
+      "A number dressed as a brush",
+      "<p>FillRect wants an HBRUSH. <code>(HBRUSH)(COLOR_WINDOW + 1)</code> casts a small number to a handle type. FillRect is written to spot small values and treat them as “this system colour”. The +1 is there because COLOR_SCROLLBAR is 0, and 0 would look like NULL. It's a trick that only works for these functions. Don't DeleteObject it: you never created it. A brush from CreateSolidBrush is yours, so delete it when you're done.</p>"
+     ],
+     [
+      "Braces after case WM_PAINT:",
+      "<p>In C17 a case label must be followed by a statement, and a declaration like <code>PAINTSTRUCT ps;</code> isn't one. The braces make a block, which is a statement. They also keep ps and hdc inside this case, so no other case can use them by mistake. C23 relaxes the rule, so you may see code without the braces.</p>"
+     ],
+     [
+      "Mistakes to watch for",
+      "<ul><li>Drawing in WM_KEYDOWN. The next repaint wipes it.</li><li>Skipping BeginPaint in WM_PAINT. BeginPaint is what marks the window as painted; without it Windows sends WM_PAINT again and again. Every BeginPaint also needs its EndPaint, which hands the drawing surface back.</li><li>Forgetting DeleteObject. Each process gets about 10,000 GDI objects; leak one per frame and drawing stops working within minutes.</li></ul>"
+     ]
+    ],
+    "king": "§14.3"
+   },
    "code": "#include <windows.h>\n\nstatic int g_rect_x = 100;\nstatic int g_rect_y = 100;\nstatic HWND g_hwnd = NULL;\n\nLRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {\n    switch (msg) {\n        case WM_KEYDOWN:\n            if (wp == VK_LEFT)  g_rect_x -= 5;\n            if (wp == VK_RIGHT) g_rect_x += 5;\n            InvalidateRect(hwnd, NULL, TRUE);\n            break;\n        case WM_PAINT: {\n            PAINTSTRUCT ps;\n            HDC hdc = BeginPaint(hwnd, &ps);\n            FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));\n            RECT r;\n            SetRect(&r, g_rect_x, g_rect_y, g_rect_x + 50, g_rect_y + 50);\n            HBRUSH brush = CreateSolidBrush(RGB(0, 200, 100));\n            FillRect(hdc, &r, brush);\n            DeleteObject(brush);\n            EndPaint(hwnd, &ps);\n        } break;\n        case WM_DESTROY:\n            PostQuitMessage(0);\n            break;\n        default:\n            return DefWindowProc(hwnd, msg, wp, lp);\n    }\n    return 0;\n}\n\nint WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmd, int nShow) {\n    (void)hPrev; (void)lpCmd;\n    WNDCLASS wc = {0};\n    wc.lpfnWndProc   = WindowProc;\n    wc.hInstance     = hInst;\n    wc.lpszClassName = \"GameWindow\";\n    RegisterClass(&wc);\n\n    g_hwnd = CreateWindowEx(0, \"GameWindow\", \"My First Window\",\n                   WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,\n                   800, 600, NULL, NULL, hInst, NULL);\n    ShowWindow(g_hwnd, nShow);\n\n    MSG msg;\n    while (GetMessage(&msg, NULL, 0, 0)) {\n        TranslateMessage(&msg);\n        DispatchMessage(&msg);\n    }\n    return (int)msg.wParam;\n}",
    "walk": [
     [
@@ -323,7 +656,7 @@
     ],
     [
      9,
-     "Arrow keys arrive here. Change the position only, no drawing yet. (Up and down are your tryit.)"
+     "Arrow keys arrive here. Change the position only, no drawing yet. Up and down are your tryit; remember y grows downward."
     ],
     [
      12,
@@ -351,7 +684,7 @@
     ],
     [
      20,
-     "A brush is a colour you paint with, here RGB(0, 200, 100), green. It lives in gdi32 (rung 5)."
+     "A brush is a colour you paint with. <code>RGB(0, 200, 100)</code> packs red, green and blue into one number: green. CreateSolidBrush lives in gdi32.lib (Linking libraries)."
     ],
     [
      22,
@@ -384,7 +717,7 @@
    "qa": [
     [
      "Why is there flicker?",
-     "FillRect clears the real window, then the rectangle is drawn on top, and the user can catch the in-between. The Double buffering concept, at the end of this phase, fixes it."
+     "FillRect clears the real window, then the rectangle is drawn on top, and the user can catch the in-between. Double buffering, at the end of this phase, fixes it."
     ],
     [
      "What does the TRUE do in InvalidateRect?",
@@ -393,99 +726,60 @@
     [
      "Why not draw straight in WM_KEYDOWN?",
      "Windows can ask for a repaint at any time (another window moved away). If drawing only happens on key presses, those repaints show garbage. One place, WM_PAINT, always draws from the variables."
+    ],
+    [
+     "Why is RGB backwards in hex?",
+     "Windows puts red in the lowest byte. Hex is written with the highest byte first, so you read blue, green, red. Always build colours with RGB() and the order looks after itself."
     ]
    ],
-   "bridge": "You can draw and move a rectangle. Next: <b>linking libraries</b>, why the build line needs user32.lib and gdi32.lib."
-  },
-  {
-   "id": "link-libs",
-   "title": "Linking libraries (user32.lib, gdi32.lib)",
-   "kick": "cl · user32.lib · gdi32.lib · LNK2019",
-   "mins": 9,
-   "lang": "bat",
-   "skills": [
-    "link-libs"
-   ],
-   "builds": "Phase 3.75: the compiler turns files into <code>.obj</code>, the <b>linker</b> joins them and finds each function’s real code.",
-   "why": "<code>windows.h</code> only <i>declares</i> CreateWindowEx and FillRect, like a menu. The real code lives in Windows’ own libraries. If you don’t tell the linker which ones, your build dies with LNK2019 even though every line compiled.",
-   "code": "REM build.bat: the Win32 build line (REM starts a comment line in a .bat file)\ncl /W4 /WX /Zi /Od win32_window.c user32.lib gdi32.lib\n\nREM If gdi32.lib is left off, it compiles, then fails to link:\nREM   win32_window.obj : error LNK2019: unresolved external symbol\nREM       __imp__CreateSolidBrush@4 referenced in function _WindowProc@16\nREM   win32_window.exe : fatal error LNK1120: 2 unresolved externals\nREM (the count is how many gdi32 functions your file calls)\nREM\nREM If user32.lib is left off, the same error names a user32 function:\nREM   unresolved external symbol __imp__CreateWindowExA@48",
-   "walk": [
-    [
-     2,
-     "Your usual flags, plus two library names at the end. <b>user32.lib</b> covers windows, messages and input (CreateWindowEx, GetMessage, FillRect). <b>gdi32.lib</b> covers drawing objects (CreateSolidBrush, DeleteObject, BitBlt)."
-    ],
-    [
-     4,
-     "Missing library: the <i>compile</i> step passes, because the header declared the function. The <i>link</i> step fails."
-    ],
-    [
-     5,
-     "“Unresolved external symbol”: the linker was told to call a function and can’t find its code. Phase 3.75 showed the same family of error for your own files."
-    ],
-    [
-     6,
-     "The name in the error is the function with decoration. Strip the <code>__imp__</code> and the <code>@4</code> and you can read it: CreateSolidBrush. It’s a GDI function, so the fix is gdi32.lib."
-    ],
-    [
-     7,
-     "The summary line: it counts how many symbols were missing. Fix the first one and the rest usually go too."
-    ]
-   ],
-   "model": "<b>Mental model:</b> windows.h is the menu, the .lib files are the kitchens. The menu lists CreateWindowEx, but the linker needs to know which kitchen (user32 or gdi32) actually cooks it.",
-   "check": {
-    "q": "Your build fails with: <code>unresolved external symbol __imp__CreateSolidBrush@4</code>. What is the fix?",
-    "opts": [
-     "Add <code>#include &lt;wingdi.h&gt;</code> at the top of the file",
-     "Add user32.lib to the cl line after the file name",
-     "Add gdi32.lib to the cl line after the file name",
-     "Rename CreateSolidBrush, because it is misspelled"
-    ],
-    "a": 2,
-    "hint": "Which step reports missing code: the compiler or the linker? Then ask which library holds drawing objects like brushes.",
-    "why": "A linker error with the function’s name means the code was declared but not found. CreateSolidBrush is a GDI (drawing) function, so it lives in gdi32.lib. windows.h already pulls in the GDI header, which is why it compiled.",
-    "miss": {
-     "0": "The header is already included through windows.h. A missing declaration would be a compile error, not LNK2019.",
-     "1": "user32.lib holds window and input functions. Brushes are GDI, so they live in gdi32.lib.",
-     "3": "A misspelled name would be caught by the compiler. LNK2019 means the name was fine but the code wasn’t linked."
-    }
-   },
-   "tryit": {
-    "task": "Write the full build line for win32_window.c with your usual flags and both libraries.",
-    "code": "cl /W4 /WX /Zi /Od ____ ____ ____",
-    "answer": "win32_window.c user32.lib gdi32.lib"
-   },
-   "qa": [
-    [
-     "Is there a way to put this in the source file instead?",
-     "Yes: <code>#pragma comment(lib, \"user32.lib\")</code> in MSVC. This roadmap keeps the libraries on the build line so build.bat shows everything the program needs."
-    ],
-    [
-     "Why did gcc/MinGW use -luser32 instead?",
-     "Different compiler, same idea: <code>-luser32 -lgdi32</code> tell its linker which libraries to use. You only need the cl form."
-    ],
-    [
-     "What are the @4 and @16 on the names?",
-     "On 32-bit Windows, the number is how many bytes of arguments the function takes. It’s decoration the compiler adds to __stdcall function names. You can ignore it when reading an error."
-    ]
-   ],
-   "bridge": "You can fix the link errors. Next: <b>frame time</b>, measuring how long each frame really takes."
+   "bridge": "You can draw and move a rectangle. Next: <b>Frame time</b>, measuring how long each frame really takes.",
+   "lang": "c-win"
   },
   {
    "id": "frame-time",
    "title": "Frame time (QueryPerformanceCounter)",
    "kick": "QueryPerformanceCounter · frequency · dt · Sleep",
    "mins": 14,
-   "lang": "c-win",
    "skills": [
-    "frame-time"
+    "frame-time",
+    "union"
    ],
-   "builds": "Phase 4.5: <code>Sleep</code> in the game loop. Phase 2: <code>double</code> and casts.",
+   "builds": "Frame timing with Sleep (Phase 4.5), Division, remainder and casts (Phase 2), and The message loop and PeekMessage.",
    "why": "Sleep(16) asks for a wait of about 16 ms, but the real wait varies and the frame’s own work adds more. To move things at the same speed on every PC, and to know how fast your loop really runs, you measure each frame with a high-resolution timer.",
+   "learn": {
+    "parts": [
+     [
+      "A stopwatch that counts ticks",
+      "<p>QueryPerformanceCounter reads a counter that ticks millions of times a second. QueryPerformanceFrequency tells you how many ticks make a second: 10,000,000 on most Windows 10 and 11 PCs, but always ask. A single reading means nothing. Two readings, subtracted and divided by the frequency, give the seconds between them.</p>"
+     ],
+     [
+      "LARGE_INTEGER is a union",
+      "<p>Both functions fill in a LARGE_INTEGER. It's a <b>union</b>: like a struct, except every member shares the same bytes. Simplified from winnt.h:</p><pre>typedef union {\n    struct { DWORD LowPart; LONG HighPart; } u;\n    LONGLONG QuadPart;\n} LARGE_INTEGER;</pre><p>That's two views of one 8-byte value: the whole 64-bit number, or its two 32-bit halves. The halves are from before compilers had 64-bit integers. x64 is little-endian, storing the lowest byte first, so LowPart is the bottom 32 bits of QuadPart. You use QuadPart.</p>"
+     ],
+     [
+      "Reading the other member",
+      "<p>King warns that after writing one member, reading a different member gives you a meaningless value. That was the C89 view. Since the corrections to C99, the standard says you get the same bytes read as the other type, which is exactly how Windows uses LARGE_INTEGER. MSVC has always worked that way.</p>"
+     ],
+     [
+      "Subtract first, then convert",
+      "<p><code>now.QuadPart - last.QuadPart</code> is exact integer maths, and the answer is small. Cast that to double, multiply by 1000 and divide by the frequency. Don't convert each reading first: a float holds about 7 digits and a counter reading has 13 or more, so the difference comes out as junk. And cast before you divide, or Division, remainder and casts happens again and you only get whole milliseconds.</p>"
+     ],
+     [
+      "Sleep and 60 fps",
+      "<p>Sleep wakes on Windows' timer tick, about 15.6 ms by default, so Sleep(16) often lasts 31 ms. <code>timeBeginPeriod(1)</code> (timeapi.h, linked with winmm.lib) asks for 1 ms ticks; call <code>timeEndPeriod(1)</code> before you exit. Since Windows 10 version 2004 that setting only affects your own program. Before, any program could change it for everyone, so a game seemed smooth only while a browser was open. To hold 60 fps, measure the frame, then sleep for what's left of 16.67 ms. If the frame ran long, skip the Sleep: a negative wait turned into a DWORD is huge, as Frame timing with Sleep showed.</p>"
+     ],
+     [
+      "MSVC notes",
+      "<p class=\"warn\">freopen gets MSVC's C4996 \"unsafe\" warning, like scanf did, so line 1 defines _CRT_SECURE_NO_WARNINGS before any include. If build.bat also passes /D_CRT_SECURE_NO_WARNINGS, delete the line, or you get C4005 for defining it twice.</p>"
+     ]
+    ],
+    "king": "§16.4, §20.3, §7.2"
+   },
    "code": "#define _CRT_SECURE_NO_WARNINGS\n#include <windows.h>\n#include <stdio.h>\n\nstatic HWND g_hwnd = NULL;\n\nLRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {\n    if (msg == WM_DESTROY) {\n        PostQuitMessage(0);\n        return 0;\n    }\n    return DefWindowProc(hwnd, msg, wp, lp);\n}\n\nint WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmd, int nShow) {\n    (void)hPrev; (void)lpCmd;\n    AllocConsole();\n    freopen(\"CONOUT$\", \"w\", stdout);\n    WNDCLASS wc = {0};\n    wc.lpfnWndProc   = WindowProc;\n    wc.hInstance     = hInst;\n    wc.lpszClassName = \"GameWindow\";\n    RegisterClass(&wc);\n\n    g_hwnd = CreateWindowEx(0, \"GameWindow\", \"My First Window\",\n                   WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,\n                   800, 600, NULL, NULL, hInst, NULL);\n    ShowWindow(g_hwnd, nShow);\n\n    LARGE_INTEGER freq, last, now;\n    QueryPerformanceFrequency(&freq);\n    QueryPerformanceCounter(&last);\n\n    MSG msg = {0};\n    int running = 1;\n    while (running) {\n        while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {\n            if (msg.message == WM_QUIT) running = 0;\n            TranslateMessage(&msg);\n            DispatchMessage(&msg);\n        }\n        Sleep(16);\n        QueryPerformanceCounter(&now);\n        double ms = (double)(now.QuadPart - last.QuadPart) * 1000.0 / (double)freq.QuadPart;\n        last = now;\n        printf(\"Frame: %.1f ms\\n\", ms);\n    }\n    return (int)msg.wParam;\n}",
    "walk": [
     [
      1,
-     "MSVC calls <code>freopen</code> unsafe (warning C4996, which /WX turns into an error). This line, placed first, turns that off."
+     "MSVC calls <code>freopen</code> unsafe (warning C4996, which /WX turns into an error). This line, placed before the includes, turns that off."
     ],
     [
      17,
@@ -493,7 +787,7 @@
     ],
     [
      30,
-     "The counter is a 64-bit number, stored in the <code>.QuadPart</code> field of a LARGE_INTEGER. <code>freq</code> is how many ticks it makes per second (it depends on the PC), <code>last</code> and <code>now</code> are readings."
+     "A LARGE_INTEGER is a union: one 8-byte value you can read whole (<code>.QuadPart</code>) or as two halves. <code>freq</code> is ticks per second (it depends on the PC); <code>last</code> and <code>now</code> are readings."
     ],
     [
      31,
@@ -509,7 +803,7 @@
     ],
     [
      44,
-     "Ticks elapsed, times 1000 for milliseconds, divided by ticks per second. Cast to <code>double</code> first so the maths isn’t whole-number division."
+     "Subtract the two readings as integers first, then convert the small difference to <code>double</code>, times 1000 for milliseconds, divided by ticks per second. Casting first means the division isn’t whole-number division."
     ],
     [
      45,
@@ -546,26 +840,51 @@
     ],
     [
      "How do I hold 60 fps properly?",
-     "Compare the frame time to a target of about 16.67 ms and only Sleep for what’s left, instead of a fixed Sleep(16). That’s the task in the Phase 5 build spec."
+     "Compare the frame time to a target of about 16.67 ms and only Sleep for what’s left, instead of a fixed Sleep(16). Skip the Sleep if nothing is left. That’s the task in the Phase 5 build spec."
     ],
     [
      "What is dt?",
      "Delta time: how long the last frame took, in seconds. Move by <code>speed * dt</code> and the game runs the same on a slow and a fast PC."
+    ],
+    [
+     "Does timeBeginPeriod drain the battery?",
+     "A little, because the PC wakes more often. That’s why you call timeEndPeriod when the game closes. Since Windows 11, Windows may also ignore the request while your window is minimised or hidden."
     ]
    ],
-   "bridge": "You can measure your loop. Next: <b>double buffering</b>, ending the flicker."
+   "bridge": "You can measure your loop. Next: <b>double buffering</b>, ending the flicker.",
+   "lang": "c-win"
   },
   {
    "id": "double-buffer",
    "title": "Double buffering",
    "kick": "CreateCompatibleDC · off-screen bitmap · BitBlt",
    "mins": 14,
-   "lang": "c-win",
    "skills": [
     "double-buffer"
    ],
-   "builds": "Phase 4.5: the runner built each frame in a <code>char</code> array and printed it in one go. Rung 4: the WM_PAINT drawing.",
+   "builds": "The frame buffer (Phase 4.5), Drawing with GDI and InvalidateRect, and Static locals and globals (Phase 3).",
    "why": "Drawing straight to the window means the user can catch the half-drawn frame: cleared, but the rectangle not yet there. That’s flicker. Draw the whole frame somewhere hidden, then copy it to the window in one step. It’s your Phase 4.5 frame buffer, made of pixels.",
+   "learn": {
+    "parts": [
+     [
+      "Draw behind the curtain",
+      "<p>Make a hidden drawing surface the size of the window, draw the whole frame on it, then copy it to the window with one BitBlt. The user only ever sees finished frames. It's the frame buffer from Phase 4.5, made of pixels.</p>"
+     ],
+     [
+      "HGDIOBJ is void *",
+      "<p>SelectObject puts a bitmap, brush or pen into a DC and hands back whatever was there before. One function serves every kind, so it takes and returns <code>HGDIOBJ</code>, which is a typedef for <code>void *</code>: a pointer to anything. In C an HBITMAP converts to and from it without a cast. Keep the old object and select it back before you delete yours. Windows won't delete a bitmap that's still selected.</p>"
+     ],
+     [
+      "Create the back buffer once",
+      "<p>The program here builds a new bitmap on every paint, to stay short. Real code keeps it in static locals, which keep their value between calls and start at zero (Static locals and globals):</p><pre>static HDC back = NULL;\nstatic HBITMAP bmp = NULL;\nstatic HGDIOBJ old = NULL;\nstatic int bw = 0, bh = 0;\nif (back == NULL || w != bw || h != bh) {\n    if (back != NULL) { SelectObject(back, old); DeleteObject(bmp); DeleteDC(back); }\n    back = CreateCompatibleDC(hdc);\n    bmp = CreateCompatibleBitmap(hdc, w, h);\n    old = SelectObject(back, bmp);\n    bw = w; bh = h;\n}</pre><p>Now it's only rebuilt when the window changes size.</p>"
+     ],
+     [
+      "Mistakes to watch for",
+      "<ul><li>Forgetting the deletes. A leak on every paint uses up the 10,000-object limit fast.</li><li>Setting hbrBackground: Windows erases the window before WM_PAINT and the flicker comes back.</li></ul>"
+     ]
+    ],
+    "king": "§18.2"
+   },
    "code": "#include <windows.h>\n\nstatic int g_rect_x = 100;\nstatic int g_rect_y = 100;\nstatic HWND g_hwnd = NULL;\n\nLRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {\n    switch (msg) {\n        case WM_KEYDOWN:\n            if (wp == VK_LEFT)  g_rect_x -= 5;\n            if (wp == VK_RIGHT) g_rect_x += 5;\n            InvalidateRect(hwnd, NULL, TRUE);\n            break;\n        case WM_PAINT: {\n            PAINTSTRUCT ps;\n            HDC hdc = BeginPaint(hwnd, &ps);\n            RECT rc;\n            GetClientRect(hwnd, &rc);\n            int w = rc.right, h = rc.bottom;\n            HDC back = CreateCompatibleDC(hdc);\n            HBITMAP bmp = CreateCompatibleBitmap(hdc, w, h);\n            HGDIOBJ old = SelectObject(back, bmp);\n\n            FillRect(back, &rc, (HBRUSH)(COLOR_WINDOW + 1));\n            RECT r;\n            SetRect(&r, g_rect_x, g_rect_y, g_rect_x + 50, g_rect_y + 50);\n            HBRUSH brush = CreateSolidBrush(RGB(0, 200, 100));\n            FillRect(back, &r, brush);\n            DeleteObject(brush);\n\n            BitBlt(hdc, 0, 0, w, h, back, 0, 0, SRCCOPY);\n            SelectObject(back, old);\n            DeleteObject(bmp);\n            DeleteDC(back);\n            EndPaint(hwnd, &ps);\n        } break;\n        case WM_DESTROY:\n            PostQuitMessage(0);\n            break;\n        default:\n            return DefWindowProc(hwnd, msg, wp, lp);\n    }\n    return 0;\n}\n\nint WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmd, int nShow) {\n    (void)hPrev; (void)lpCmd;\n    WNDCLASS wc = {0};\n    wc.lpfnWndProc   = WindowProc;\n    wc.hInstance     = hInst;\n    wc.lpszClassName = \"GameWindow\";\n    RegisterClass(&wc);\n\n    g_hwnd = CreateWindowEx(0, \"GameWindow\", \"My First Window\",\n                   WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,\n                   800, 600, NULL, NULL, hInst, NULL);\n    ShowWindow(g_hwnd, nShow);\n\n    MSG msg;\n    while (GetMessage(&msg, NULL, 0, 0)) {\n        TranslateMessage(&msg);\n        DispatchMessage(&msg);\n    }\n    return (int)msg.wParam;\n}",
    "walk": [
     [
@@ -582,7 +901,7 @@
     ],
     [
      22,
-     "Puts the bitmap into the off-screen DC so drawing on <code>back</code> goes into it. It hands back the previous object (<code>HGDIOBJ</code> is just a generic handle for any GDI object: bitmap, brush, pen) so you can restore it later."
+     "Puts the bitmap into the off-screen DC so drawing on <code>back</code> goes into it. It hands back the previous object as an <code>HGDIOBJ</code>, a typedef for <code>void *</code> that can hold any GDI handle, so you can put it back later."
     ],
     [
      24,
@@ -601,13 +920,13 @@
      "Puts the original object back into the DC. A bitmap that is still selected can’t be deleted."
     ],
     [
-     34,
-     "Delete the bitmap and the DC, because you made them. Skipping this leaks GDI objects every frame."
+     33,
+     "Delete the bitmap (line 33) and the DC (line 34), because you made them. Skipping this leaks GDI objects every frame."
     ]
    ],
    "model": "<b>Mental model:</b> a painter who sets up the whole scene behind a curtain, then pulls the curtain back. The audience never sees half-finished work (the curtain is the off-screen bitmap).",
    "check": {
-    "q": "In this program, you delete the <code>BitBlt</code> line and leave everything else. What do you see?",
+    "q": "In this program, you delete the BitBlt line and leave everything else. What do you see?",
     "opts": [
      "The same green rectangle as before, but now with no flicker at all",
      "The rectangle drawn directly on the window, flickering as before",
@@ -635,14 +954,15 @@
     ],
     [
      "Isn’t creating a bitmap every frame wasteful?",
-     "Yes. Real code creates the back buffer once and reuses it, recreating it only on resize. Here it’s inside WM_PAINT to keep the rung short."
+     "Yes. The Learn it part shows the real way: keep the DC and bitmap in static locals and rebuild them only when the window size changes."
     ],
     [
      "Is this the same as the runner’s char array?",
      "Same idea, different material. Build the whole frame in a buffer in memory, then put it on screen in one operation."
     ]
    ],
-   "bridge": "That’s every concept in Phase 5. Next: <b>the prototype build</b>, putting all of this into your own game."
+   "bridge": "That’s every concept in Phase 5. Next: <b>the prototype build</b>, putting all of this into your own game.",
+   "lang": "c-win"
   }
  ]
 }

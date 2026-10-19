@@ -49,5 +49,12 @@
  "p3_c4996_sscanf": "C4996",
  "p3_c4996_strncpy": "C4996",
  "p3_c4996_strncat": "C4996",
- "p3_c4244_float_arg": "C4244"
+ "p3_c4244_float_arg": "C4244",
+ "p45_c4245_sleep_negative": "C4245",
+ "p45_sleep_neg_var_expect_none": "none",
+ "p5_c4100_unused_param": "C4100",
+ "p5_case_decl_error": "C2143",
+ "p6_c4267_strlen_int": "C4267",
+ "p6_c4505_unused_static": "C4505",
+ "p6_c4244_double_expr_float": "C4244"
 }

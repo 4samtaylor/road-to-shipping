@@ -18,6 +18,7 @@
   "cp-p4b-4": [
    "state-machine",
    "const-ptr",
+   "ifdef",
    "lnk2005"
   ]
  },
@@ -27,12 +28,36 @@
    "title": "Input without waiting: _kbhit and _getch",
    "kick": "_kbhit · _getch · conio.h · for (;;)",
    "mins": 12,
-   "lang": "c-win",
    "skills": [
     "kbhit"
    ],
-   "builds": "Phase 2.5: while loops and if. Every program so far used scanf, which stops and waits for Enter.",
+   "builds": "Loops: while and for, and do, break, continue and the endless loop (Phase 2.5). Every program so far used scanf, which waits for Enter.",
    "why": "A game can’t freeze while you decide what to press. The obstacles have to keep moving either way. <code>_kbhit</code> asks “is a key waiting?” and answers straight away, yes or no. Only then do you take the key with <code>_getch</code>.",
+   "learn": {
+    "parts": [
+     [
+      "Why scanf can't run a game",
+      "<p>scanf, getchar and fgets all stop and wait. On top of that, the console keeps what you type to itself until you press Enter, and only then hands the whole line over. So even getchar sees nothing while you're still typing. A game can't stand still for that. Standard C has no way to ask \"has a key been pressed?\", because keyboards work differently on every system. You need a library from the operating system.</p>"
+     ],
+     [
+      "conio.h: the Windows answer",
+      "<p><code>&lt;conio.h&gt;</code> is that library on Windows. <code>_kbhit()</code> looks at the keyboard and answers at once: non-zero if a key is waiting, 0 if not. <code>_getch()</code> hands you one key straight away, no Enter, no echo. Only call <code>_getch</code> after <code>_kbhit</code> says yes, and it never has to wait.</p>"
+     ],
+     [
+      "Why the key is an int",
+      "<p>Same reason getchar gives back an int: there are values a char can't hold. Arrow keys and other special keys arrive as two values, 0 or 224 first, then a code. 224 is too big for a signed char, so keep keys in an int and compare them with <code>==</code>.</p>"
+     ],
+     [
+      "Mistakes to watch for",
+      "<ul><li><b>A break in the wrong loop.</b> Put <code>if (key == 'q') break;</code> inside <code>while (_kbhit())</code> and it only leaves the drain loop. The game keeps running. Test the key after the drain, as the code does.</li><li><b>One <code>if (_kbhit())</code> per frame.</b> A held key repeats faster than your frames, so a backlog builds up.</li><li><b>No pause.</b> This loop spins as fast as the CPU allows. Sleep fixes that next.</li></ul>"
+     ],
+     [
+      "MSVC notes",
+      "<p class=\"warn\">Old tutorials write <code>kbhit</code> and <code>getch</code> without the underscore. MSVC treats those as deprecated old names and warns (C4996), and /WX stops the build. Use the underscore versions.</p>"
+     ]
+    ],
+    "king": "ch 22 Q&A"
+   },
    "code": "#include <conio.h>\n#include <stdio.h>\n\nint main(void) {\n    int key;\n    int count = 0;\n\n    for (;;) {\n        key = 0;\n        while (_kbhit()) {\n            key = _getch();\n        }\n        if (key == 'q') {\n            break;\n        }\n        count++;\n        if (key != 0) {\n            printf(\"key %c at loop %d\\n\", key, count);\n        }\n    }\n    return 0;\n}",
    "walk": [
     [
@@ -101,7 +126,7 @@
      "<code>_getch</code> deliberately doesn’t echo. If it did, every letter you pressed would land in the middle of your game screen. <code>_getche</code> is the echoing version, and a game never wants it."
     ],
     [
-     "Why <code>while (_kbhit())</code> and not a single <code>if</code>?",
+     "Why while (_kbhit()) and not a single if?",
      "Keys queue up. Hold one and Windows repeats it far faster than 30 times a second. A single <code>if</code> takes one key per frame and falls behind; <code>while (_kbhit())</code> drains the queue and keeps the latest key."
     ],
     [
@@ -117,24 +142,54 @@
      "So Phase 5 has only one new thing: the window. Its <code>PeekMessage</code> is this same “anything for me? no? carry on” idea, with a window attached."
     ]
    ],
-   "bridge": "You can read keys without stopping the program. Next: <b>Sleep</b>, so the loop runs at a speed a person can follow."
+   "bridge": "You can read keys without stopping the program. Next: <b>Sleep</b>, so the loop runs at a speed a person can follow.",
+   "lang": "c-win"
   },
   {
    "id": "sleep",
    "title": "Frame timing with Sleep",
    "kick": "Sleep(ms) · FRAME_MS · windows.h",
    "mins": 10,
-   "lang": "c-win",
    "skills": [
-    "sleep"
+    "sleep",
+    "dword"
    ],
-   "builds": "Concept 1: a loop that never stops. Phase 3: #define constants.",
+   "builds": "Input without waiting: _kbhit and _getch (a loop that never stops) and Named constants with #define (Phase 3).",
    "why": "Left alone, your loop would run very many times a second. The obstacles would cross the screen before you could see them. <code>Sleep(33)</code> hands the processor back to Windows for a moment, which gives roughly 30 frames a second.",
+   "learn": {
+    "parts": [
+     [
+      "Giving the CPU back",
+      "<p><code>Sleep(ms)</code> from windows.h pauses your program for about that many milliseconds. While it sleeps, Windows gives the processor to other programs. One frame of work plus <code>Sleep(33)</code> gives roughly 30 frames a second, slow enough to watch and fast enough to feel smooth.</p>"
+     ],
+     [
+      "WIN32_LEAN_AND_MEAN, a name with no value",
+      "<p><code>#define WIN32_LEAN_AND_MEAN</code> doesn't replace anything. It just makes the name exist. windows.h is full of tests that ask \"is this name defined?\", and when this one is, it skips the parts few programs use, such as networking and the shell. The header builds faster and pulls in fewer names that could clash with yours.</p><p>That's why the line goes <i>before</i> the include. The preprocessor reads from the top down. By the time it reaches a #define placed after <code>#include &lt;windows.h&gt;</code>, the header has already been pasted in and has already made its choices. Preprocessor switches, later in this phase, shows how those tests are written.</p>"
+     ],
+     [
+      "/D does the same from build.bat",
+      "<p>cl can define the name for you: <code>/DWIN32_LEAN_AND_MEAN</code> in FLAGS acts as if the line sat at the top of every file. Pick one place, not both. /D gives the name the value 1, while your line gives it no value at all, so the two count as different definitions.</p>"
+     ],
+     [
+      "Sleep takes a DWORD",
+      "<p>The parameter is a <code>DWORD</code>: Windows' name for a 32-bit unsigned whole number, made with a typedef. Unsigned means it has no negatives. Pass a negative int and it wraps round to a huge value, the way How big a number can be showed. -1 becomes 4,294,967,295, which is the exact value Windows calls <code>INFINITE</code>. <code>Sleep(-1)</code> never comes back. -2 waits about 49 days.</p><p>This matters in Phase 5. There you'll sleep for \"frame length minus the time this frame already took\", and a slow frame makes that negative. Check it first: <code>if (wait &gt; 0) Sleep((DWORD)wait);</code></p>"
+     ],
+     [
+      "It's approximate",
+      "<p>Windows only checks its timers on a tick, about every 15.6 ms. So <code>Sleep(33)</code> usually lasts somewhere from about 31 to 47 ms, and <code>Sleep(1)</code> can cost a whole tick. Fine for an ASCII game. Phase 5 measures the real time instead of trusting Sleep.</p>"
+     ],
+     [
+      "MSVC notes",
+      "<p class=\"warn\">With both a #define and a /D for the same name, MSVC warns C4005 (macro redefinition) and /WX turns it into C2220, so nothing builds. windows.h with WIN32_LEAN_AND_MEAN compiles clean under build.bat's /std:c17 /W4 /WX; your test build checked that. Don't count on a warning when a negative int variable reaches Sleep. Check the value yourself.</p>"
+     ]
+    ],
+    "king": "§14.3–14.4, §20.3"
+   },
    "code": "#define WIN32_LEAN_AND_MEAN\n#include <windows.h>\n#include <stdio.h>\n\n#define FRAME_MS 33\n\nint main(void) {\n    int frame;\n\n    for (frame = 1; frame <= 30; frame++) {\n        printf(\"frame %d\\n\", frame);\n        Sleep(FRAME_MS);\n    }\n    printf(\"Done.\\n\");\n    return 0;\n}",
    "walk": [
     [
      1,
-     "<b>WIN32_LEAN_AND_MEAN</b> tells windows.h to skip the rarely used parts. It builds faster and avoids some clashes. Put it before the include."
+     "<b>WIN32_LEAN_AND_MEAN</b> has no value: it only has to exist. windows.h checks for the name and skips its rarely used parts, so it must come <i>before</i> the include."
     ],
     [
      2,
@@ -182,8 +237,12 @@
      "Rarely. It usually costs 1 to 15 ms, depending on where the timer tick falls. Sleep(16) often lands nearer 31."
     ],
     [
-     "What if windows.h makes /WX fail?",
-     "Add <code>/external:anglebrackets /external:W0</code> to the cl line in build.bat. That stops MSVC applying your warning level to headers you didn’t write."
+     "Will windows.h break /WX?",
+     "Not with WIN32_LEAN_AND_MEAN in front of it: your test build showed it compiles clean under /std:c17 /W4 /WX. build.bat’s <code>/external:anglebrackets /external:W0</code> also stop MSVC applying your warning level to system headers."
+    ],
+    [
+     "What does Sleep(-1) do?",
+     "Waits forever. Sleep takes an unsigned DWORD, so -1 wraps round to 0xFFFFFFFF, which Windows reads as INFINITE. Any negative wait becomes enormous, so check <code>wait &gt; 0</code> before you call it."
     ],
     [
      "Why not just count to a big number to waste time?",
@@ -191,23 +250,48 @@
     ],
     [
      "Is Sleep good enough for a real game?",
-     "No. It promises “at least this long”, so it’s fine here but not for precision. The fix is to measure the time each frame actually took and scale movement by it: Phase 5’s frame timer, or Godot’s <code>delta</code>."
+     "No. It’s only approximate, a tick early or late, so it’s fine here but not for precision. The fix is to measure the time each frame actually took and scale movement by it: Phase 5’s frame timer, or Godot’s <code>delta</code>."
     ]
    ],
-   "bridge": "You can pace a loop. Next: <b>redrawing in place</b>, using \\r so each frame paints over the last."
+   "bridge": "You can pace a loop. Next: <b>redrawing in place</b>, using \\r so each frame paints over the last.",
+   "lang": "c-win"
   },
   {
    "id": "redraw-r",
    "title": "Redrawing in place: \\r and fflush",
    "kick": "\\r · no \\n · fflush(stdout) · %-3d",
    "mins": 12,
-   "lang": "c",
    "skills": [
     "redraw-r",
     "fflush"
    ],
    "builds": "Phase 1: escape sequences. You met \\r in Session 1 when “Lets” vanished. That was this technique.",
    "why": "A terminal game has no screen to clear and redraw. Instead it prints one line starting with <code>\\r</code> and no newline, so each frame lands on top of the last. The cursor goes back to the start of the line and the new text overwrites the old.",
+   "learn": {
+    "parts": [
+     [
+      "printf writes to a buffer",
+      "<p>printf doesn't put text on the screen directly. It drops it into stdout's buffer, and the buffer is sent on later. When depends on the stream's mode:</p><ul><li><b>Full buffering:</b> sent when the buffer fills. Normal for files, including output you redirect with <code>&gt;</code>.</li><li><b>Line buffering:</b> sent at every <code>\\n</code>. Normal for a terminal on Mac and Linux.</li><li><b>No buffering:</b> sent straight away. MSVC's console behaves much like this.</li></ul>"
+     ],
+     [
+      "Why \\r needs fflush",
+      "<p>A redraw frame never ends in <code>\\n</code>, that's the whole trick. So under line or full buffering it just sits there. <code>fflush(stdout)</code> sends whatever is waiting, right now. It costs almost nothing and makes the redraw work on every system, not just yours.</p>"
+     ],
+     [
+      "\\r is the only portable trick",
+      "<p>Standard C knows nothing about cursors, colours or clearing the screen. It does define <code>\\r</code>: go back to the start of this line. Anything more, like jumping up a line or printing in red, needs terminal escape codes or Windows console functions, and those differ between systems. One line, repainted with \\r, works everywhere.</p>"
+     ],
+     [
+      "Never fflush(stdin)",
+      "<p>fflush is for output streams. On an input stream like stdin, the C standard says the result is undefined. Some old Microsoft libraries used it to throw away keys you'd typed, so you'll find it in old tutorials. Don't copy it. To skip the rest of a typed line, read characters with getchar until you reach <code>'\\n'</code>.</p>"
+     ],
+     [
+      "Mistakes to watch for",
+      "<ul><li>A shorter frame leaves old characters behind, as the check shows. Pad to a fixed width with <code>%-3d</code>.</li><li>One stray <code>\\n</code> in the frame and every frame lands on a new line.</li></ul>"
+     ]
+    ],
+    "king": "§22.2"
+   },
    "code": "#include <stdio.h>\n\nint main(void) {\n    int score;\n\n    for (score = 11; score >= 9; score--) {\n        printf(\"\\rscore %d\", score);\n        fflush(stdout);\n    }\n    printf(\"\\n\");\n    return 0;\n}",
    "walk": [
     [
@@ -238,7 +322,7 @@
     ],
     "a": 0,
     "hint": "After the last print, which characters from the earlier line are still on the screen?",
-    "why": "“score 9” covers the first seven characters of “score 10”, but the final 0 is still there. The terminal shows <b>score 90</b>. Fix it by padding every frame to the same width, like <code>%-3d</code> (left-aligned, at least 3 wide), which is what the starter does with <code>%-4d</code>.",
+    "why": "“score 9” covers the first seven characters of “score 10”, but the final 0 is still there. The terminal shows score 90. Fix it by padding every frame to the same width, like %-3d (left-aligned, at least 3 wide), which is what the starter does with %-4d.",
     "miss": {
      "1": "That would be true if the lines were cleared first. \\r only moves the cursor. It doesn’t erase anything.",
      "2": "Each print overwrites the last, so the first one doesn’t survive.",
@@ -262,21 +346,51 @@
     [
      "Nothing shows until I quit. Why?",
      "On Mac/Linux, or when output goes to a file, text without a newline can sit in a buffer. <code>fflush(stdout)</code> forces it out."
+    ],
+    [
+     "Can fflush(stdin) clear keys I typed earlier?",
+     "Not reliably. Standard C only defines fflush for output, so on stdin it’s undefined. Read and throw away characters with getchar until <code>'\\n'</code> instead."
     ]
    ],
-   "bridge": "You can repaint one line in place. Next: <b>the frame buffer</b>, building the whole line in memory first."
+   "bridge": "You can repaint one line in place. Next: <b>the frame buffer</b>, building the whole line in memory first.",
+   "lang": "c"
   },
   {
    "id": "frame-buffer",
    "title": "The frame buffer",
    "kick": "char array · memset · draw order · print once",
    "mins": 12,
-   "lang": "c",
    "skills": [
-    "frame-buffer"
+    "frame-buffer",
+    "memset"
    ],
-   "builds": "Phase 3: arrays and strings, including the ’\\0’ at the end. Concept 3: one printf per frame.",
+   "builds": "Arrays: many values, one name and Strings and the '\\0' at the end (Phase 3). Redrawing in place: one printf per frame.",
    "why": "The runner’s track is a row of characters. To draw it you start with a row of dots, stamp the obstacles on top, stamp the player on top of that, and only then print. Doing it in memory first means the frame appears all at once, with no flicker.",
+   "learn": {
+    "parts": [
+     [
+      "Fill, stamp, print",
+      "<p>A frame buffer is the frame built in memory before anyone sees it. For the runner it's a char array: fill it with road, stamp obstacles on top, stamp the player last, print once. Later writes cover earlier ones, so the order of the stamps decides what's visible.</p>"
+     ],
+     [
+      "memset fills bytes",
+      "<p><code>memset(p, value, n)</code> from string.h sets <code>n</code> bytes, starting at <code>p</code>, to <code>value</code>. In a char array one byte is one slot, so <code>memset(lane, '.', LANE_LEN)</code> lays down LANE_LEN dots.</p>"
+     ],
+     [
+      "It counts bytes, not elements",
+      "<p>For other types the count goes wrong. <code>int hp[8];</code> is 32 bytes, so <code>memset(hp, 0, 8)</code> clears only the first two ints. Pass <code>sizeof hp</code> instead. Inside a function that received the array as a parameter, sizeof gives the pointer's size (Passing arrays to functions), so use <code>count * sizeof hp[0]</code>.</p>"
+     ],
+     [
+      "memset(ints, 1, ...) doesn't give 1s",
+      "<p>Every <i>byte</i> becomes 1, so each 4-byte int becomes 0x01010101, which is 16843009. memset only works for ints with 0, where every byte is zero, and -1, where every byte is 0xFF. For any other value, write a for loop, as the runner does to set its obstacle slots.</p>"
+     ],
+     [
+      "It never adds the '\\0'",
+      "<p>memset writes exactly <code>n</code> bytes and stops. It lives in string.h, but it isn't a string function and knows nothing about the end marker. That's why the next line sets <code>lane[LANE_LEN] = '\\0'</code>. Leave it out and printf keeps reading past the end of the lane.</p>"
+     ]
+    ],
+    "king": "§23.6"
+   },
    "code": "#include <stdio.h>\n#include <string.h>\n\n#define LANE_LEN   12\n#define PLAYER_COL 2\n\nint main(void) {\n    char lane[LANE_LEN + 1];\n    int obs_col = 8;\n\n    memset(lane, '.', LANE_LEN);\n    lane[LANE_LEN] = '\\0';\n    lane[obs_col] = '#';\n    lane[PLAYER_COL] = 'A';\n    printf(\"%s\\n\", lane);\n    return 0;\n}",
    "walk": [
     [
@@ -315,7 +429,7 @@
     ],
     "a": 3,
     "hint": "One slot holds one character. Which line writes to it last?",
-    "why": "Column 2 gets a # on line 13, then an A on line 14. The A overwrites it, because one slot holds one character, and the last write wins. The result is <b>..A.........</b>. This draw order is how the runner decides what you see.",
+    "why": "Column 2 gets a # on line 13, then an A on line 14. The A overwrites it, because one slot holds one character, and the last write wins. The result is ..A......... (two dots, the A, then nine dots), and this draw order is how the runner decides what you see.",
     "miss": {
      "0": "The # is written first, then overwritten by the A.",
      "1": "A slot can’t hold two characters, and nothing gets inserted. Each write replaces what was there.",
@@ -345,19 +459,44 @@
      "Printing piece by piece is slow and you’d watch the line assemble, which is flicker. Build it in memory, print once, and the frame appears all at once."
     ]
    ],
-   "bridge": "You can draw a frame in memory. Next: <b>the game loop</b>, which strings input, update, render and wait together."
+   "bridge": "You can draw a frame in memory. Next: <b>the game loop</b>, which strings input, update, render and wait together.",
+   "lang": "c"
   },
   {
    "id": "game-loop",
    "title": "The game loop: input, update, render, wait",
    "kick": "four steps · every frame · pretend keyboard",
    "mins": 12,
-   "lang": "c",
    "skills": [
     "game-loop-4"
    ],
-   "builds": "Concepts 1 to 4: keys, Sleep, \\r and the frame buffer, now in one place.",
+   "builds": "Input without waiting, Frame timing with Sleep, Redrawing in place and The frame buffer, now in one place.",
    "why": "Every game ever made repeats the same four steps: look at input, update the world, draw it, wait a moment. Once you can see those four steps in code, Phase 5’s window and Phase 6’s game are just the same loop with different guts.",
+   "learn": {
+    "parts": [
+     [
+      "Four steps, every frame",
+      "<p>Input, update, render, wait. Read what the player pressed, change the world, draw the world, pause. Then do it again. Keep the four apart: render only reads, update is the only place that changes things, and the wait comes last so every frame gets the same pause.</p>"
+     ],
+     [
+      "A comparison is a number",
+      "<p><code>ducking = (key == 'd');</code> stores the answer to a question. In C, <code>==</code> gives an int: 1 if true, 0 if false, as Comparisons, &amp;&amp;, || and ! showed. So ducking is an ordinary int you can print, test or add up. The brackets aren't required, because == is worked out before =, but they make the line easier to read.</p>"
+     ],
+     [
+      "Worked out, not remembered",
+      "<p>That line runs every frame, so ducking only stays 1 while this frame's key is d. Nothing carries over unless you store it. A jump that lasts six frames needs a counter that update counts down.</p>"
+     ],
+     [
+      "#if 0 switches a step off",
+      "<p>While you test update, you might want render out of the way. Put <code>#if 0</code> on the line above the render code and <code>#endif</code> below it. The preprocessor drops everything in between before the compiler starts, so it's like deleting the lines without losing them. Unlike <code>/* */</code>, it doesn't break when the code inside already has a comment. Preprocessor switches covers it properly.</p>"
+     ],
+     [
+      "Mistakes to watch for",
+      "<ul><li>Rendering before updating, so the screen is always a frame behind.</li><li>Reading the keyboard in two places. Read it once, at the top.</li><li>Sleeping between update and render instead of at the end.</li></ul>"
+     ]
+    ],
+    "king": "§5.1"
+   },
    "code": "#include <stdio.h>\n\nint main(void) {\n    char keys[] = \"..d..\";   /* a pretend keyboard: one key per frame */\n    int frame;\n    int key;\n    int ducking;\n    int pos = 0;\n\n    for (frame = 0; frame < 5; frame++) {\n        key = keys[frame];                 /* 1. input  */\n        ducking = (key == 'd');            /* 2. update */\n        pos++;\n        printf(\"frame %d: pos %d ducking %d\\n\", frame, pos, ducking);  /* 3. render */\n        /* 4. wait: the real game calls Sleep(FRAME_MS) here */\n    }\n    return 0;\n}",
    "walk": [
     [
@@ -366,7 +505,7 @@
     ],
     [
      11,
-     "<b>1. Input.</b> Read this frame’s key. In the real game this is the while (_kbhit()) loop from Concept 1."
+     "<b>1. Input.</b> Read this frame’s key. In the real game this is the while (_kbhit()) loop from Input without waiting."
     ],
     [
      12,
@@ -396,7 +535,7 @@
     ],
     "a": 1,
     "hint": "Line 12 runs fresh each frame. What is key on frame 3?",
-    "why": "The d is in slot 2 only. On frame 3, key is ‘.’ again, so <code>key == ‘d’</code> is false and ducking goes back to 0. Only frame 2 shows <b>ducking 1</b>. In the runner you set <code>ducking = 0</code> at the top of PLAYING for the same reason.",
+    "why": "The d is in slot 2 only. On frame 3, key is ‘.’ again, so key == ‘d’ is false and ducking goes back to 0. Only frame 2 shows ducking 1. In the runner you set ducking = 0 at the top of PLAYING for the same reason.",
     "miss": {
      "0": "ducking is recomputed each frame from that frame’s key. Nothing remembers it.",
      "2": "Those frames read ’.’, not ’d’.",
@@ -411,7 +550,7 @@
    "qa": [
     [
      "Why is update before render?",
-     "So you draw the world as it is <i>now</i>. Render only looks at the state and never changes it, which a later rung formalises with const."
+     "So you draw the world as it is <i>now</i>. Render only looks at the state and never changes it, which const pointers makes the compiler enforce."
     ],
     [
      "What if render takes longer than the wait?",
@@ -422,19 +561,40 @@
      "In main.c after the split: about four lines inside <code>while (running)</code> or <code>for (;;)</code>, calling runner_update and runner_render."
     ]
    ],
-   "bridge": "You can run the whole four-step frame. Next: <b>sentinel values</b>, how the runner keeps track of obstacles that come and go."
+   "bridge": "You can run the whole four-step frame. Next: <b>sentinel values</b>, how the runner keeps track of obstacles that come and go.",
+   "lang": "c"
   },
   {
    "id": "sentinel",
    "title": "Sentinel values: -1 for an empty slot",
    "kick": "-1 = free · find a free slot · break",
    "mins": 14,
-   "lang": "c",
    "skills": [
     "sentinel"
    ],
-   "builds": "Phase 3: arrays, loops over arrays, break.",
+   "builds": "Arrays: many values, one name (Phase 3), break from do, break, continue and the endless loop (Phase 2.5), and % from Division, remainder and casts (Phase 2).",
    "why": "The runner can have up to 8 obstacles at once, but most frames have fewer. Rather than growing and shrinking the array, you keep a fixed one and mark unused slots with -1. Spawning means finding a -1 and filling it. Dodging means setting a slot back to -1.",
+   "learn": {
+    "parts": [
+     [
+      "A value that means \"nothing here\"",
+      "<p>A sentinel is a value that can never be real data, so you can use it as a marker. Obstacle columns run from 0 upwards, so -1 can mean \"this slot is empty\". The array stays the same size; what changes is which slots hold real columns.</p>"
+     ],
+     [
+      "Finding a free slot",
+      "<p>Walk the array, stop at the first -1, fill it, and <code>break</code>. That break ends the search loop and nothing else. break leaves the innermost loop or switch it's in, so the frame loop around it keeps going. If you ever need to leave two loops at once, set a flag the outer loop checks, or return from the function.</p>"
+     ],
+     [
+      "Every N frames with %",
+      "<p><code>frame % 2 == 0</code> is true on frames 0, 2, 4 and so on, because the remainder repeats. <code>frame % 20 == 0</code> fires once every 20 frames. Frame 0 counts, so the first spawn happens straight away. Want it later? <code>frame % 20 == 10</code> fires on frames 10, 30, 50.</p>"
+     ],
+     [
+      "Mistakes to watch for",
+      "<ul><li><code>obs[i] = -1</code> where you meant <code>==</code> empties the slot instead of testing it.</li><li>Forgetting that every slot might be full. The search must end at MAX_OBS and spawn nothing.</li><li>Picking a sentinel that can be real, like 0 for a column.</li></ul>"
+     ]
+    ],
+    "king": "§8.1, §6.4"
+   },
    "code": "#include <stdio.h>\n\n#define MAX_OBS 4\n\nint main(void) {\n    int obs[MAX_OBS];\n    int frame, i;\n    int score = 0;\n\n    for (i = 0; i < MAX_OBS; i++) {\n        obs[i] = -1;\n    }\n\n    for (frame = 0; frame < 5; frame++) {\n        for (i = 0; i < MAX_OBS; i++) {\n            if (obs[i] != -1) {\n                obs[i]--;\n                if (obs[i] < 0) {\n                    obs[i] = -1;\n                    score++;\n                }\n            }\n        }\n        if (frame % 2 == 0) {\n            for (i = 0; i < MAX_OBS; i++) {\n                if (obs[i] == -1) {\n                    obs[i] = 2;\n                    break;\n                }\n            }\n        }\n    }\n    printf(\"%d %d %d %d  score %d\\n\", obs[0], obs[1], obs[2], obs[3], score);\n    return 0;\n}",
    "walk": [
     [
@@ -481,10 +641,10 @@
     ],
     "a": 2,
     "hint": "Slot 0 is freed on frame 3. On frame 4 the spawn looks for the first free slot, starting from slot 0.",
-    "why": "Frame 0 fills slot 0. Frame 2 fills slot 1. On frame 3 slot 0 drops below 0, is freed and scores 1. On frame 4 the spawn finds slot 0 free again and reuses it, so slot 0 is 2 and slot 1 has moved to 0. Result: <b>2 0 -1 -1  score 1</b>.",
+    "why": "Frame 0 fills slot 0. Frame 2 fills slot 1. On frame 3 slot 0 drops below 0, is freed and scores 1. On frame 4 the spawn finds slot 0 free again and reuses it, so slot 0 is 2 and slot 1 has moved to 0. Result: 2 0 -1 -1  score 1.",
     "miss": {
      "0": "The frame 4 spawn does happen, and it reuses the freed slot 0, so slot 0 isn’t -1.",
-     "1": "The spawn takes the <i>first</i> free slot and then breaks. It would land in slot 0, not slot 2.",
+     "1": "The spawn takes the first free slot and then breaks. It would land in slot 0, not slot 2.",
      "3": "The obstacle in slot 0 did pass the player on frame 3, so the score is 1."
     }
    },
@@ -500,26 +660,51 @@
     ],
     [
      "Why -1 and not 0?",
-     "0 is a real column, the one next to the player. A sentinel must be a value that can never be real data."
+     "0 is a real column, the player’s end of the road. A sentinel must be a value that can never be real data."
     ],
     [
      "Why not allocate memory for each obstacle as it appears?",
      "Not needed (that’s what malloc and free do, covered much later). A small fixed array is simpler, can’t leak, and is how most games handle bullets and enemies. King ch 17 covers malloc when you want the bigger version."
     ]
    ],
-   "bridge": "You can track a changing set of things in a fixed array. Next: <b>state machines</b>: MENU, PLAYING and GAME_OVER in one switch."
+   "bridge": "You can track a changing set of things in a fixed array. Next: <b>state machines</b>: MENU, PLAYING and GAME_OVER in one switch.",
+   "lang": "c"
   },
   {
    "id": "state-machine",
    "title": "State machines: enum and switch",
    "kick": "enum · switch · case · break · transitions",
    "mins": 14,
-   "lang": "c",
    "skills": [
     "state-machine"
    ],
-   "builds": "Phase 3.75: enum. Phase 2.5: switch and if. Concept 5: the loop calls the same code every frame, so something has to remember where the game is up to.",
+   "builds": "enum (Phase 3.75), switch statements (Phase 2.5), and The game loop: the loop runs the same code every frame, so something has to remember where the game is up to.",
    "why": "The runner behaves three different ways: waiting on the menu, running, or dead. Rather than a pile of flags, you keep one variable holding the current state and one switch that does that state’s work. Phase 6 uses exactly this shape.",
+   "learn": {
+    "parts": [
+     [
+      "One variable, one switch",
+      "<p>A state machine is a variable that says where the game is up to, plus code that behaves differently for each value. The runner has three states. Each frame the switch runs only the current state's case, and that case decides whether to move to another state.</p>"
+     ],
+     [
+      "Transitions",
+      "<p>Moving between states is just an assignment: <code>state = STATE_GAME_OVER;</code>. Each case lists the only ways out of that state. If a state has no way out, the game gets stuck there, so check every case has one.</p>"
+     ],
+     [
+      "default: for the impossible",
+      "<p>As enum showed, a GameState can still end up holding 7. Give the switch a last case that catches it:</p><pre>default:\n    printf(\"bad state %d\\n\", state);\n    state = STATE_MENU;\n    break;</pre><p>MSVC won't tell you when a switch on an enum misses a case, so this is your safety net.</p>"
+     ],
+     [
+      "Enum values print as numbers",
+      "<p><code>printf(\"%d\", state)</code> shows 2, not STATE_GAME_OVER. The names are gone once the program is compiled. To print a name, use a table indexed by the state, like the <code>state_names</code> array from enum.</p>"
+     ],
+     [
+      "Mistakes to watch for",
+      "<p>A missing <code>break</code> falls into the next case, so one frame can run two states. Resetting the board in two places drifts apart; write <code>runner_reset</code> once and call it from both.</p>"
+     ]
+    ],
+    "king": "§5.3, §16.5"
+   },
    "code": "#include <stdio.h>\n\ntypedef enum { STATE_MENU, STATE_PLAYING, STATE_GAME_OVER } GameState;\n\nint main(void) {\n    char keys[] = \".x.hxr\";   /* '.' means no key */\n    GameState state = STATE_MENU;\n    int frame;\n\n    for (frame = 0; frame < 6; frame++) {\n        int key = keys[frame];\n        switch (state) {\n        case STATE_MENU:\n            if (key != '.') state = STATE_PLAYING;\n            break;\n        case STATE_PLAYING:\n            if (key == 'h') state = STATE_GAME_OVER;\n            break;\n        case STATE_GAME_OVER:\n            if (key == 'r') state = STATE_PLAYING;\n            break;\n        }\n        printf(\"frame %d: state %d\\n\", frame, state);\n    }\n    return 0;\n}",
    "walk": [
     [
@@ -562,7 +747,7 @@
     ],
     "a": 0,
     "hint": "Which case runs on frame 4, and which key does it react to?",
-    "why": "State is STATE_GAME_OVER (2), so only the third case runs. It reacts to r, not x, so state doesn’t change: <b>frame 4: state 2</b>. Frame 5’s r then restarts the game to state 1.",
+    "why": "State is STATE_GAME_OVER (2), so only the third case runs. It reacts to r, not x, so state doesn’t change: frame 4: state 2. Frame 5’s r then restarts the game to state 1.",
     "miss": {
      "1": "That would need an r. x only starts a game from the menu, and we are not in the menu.",
      "2": "Nothing sends the game back to the menu. Only the three transitions in the code exist.",
@@ -577,7 +762,7 @@
    "qa": [
     [
      "What does state 2 mean when I print it?",
-     "The enum value, which is just a number. Printing the name takes a lookup; for now the number is enough."
+     "The enum value, which is just a number. To print the name, look it up in a table indexed by the state, like the <code>state_names</code> array from enum."
     ],
     [
      "Why not just use if statements?",
@@ -588,19 +773,44 @@
      "When the state moves into PLAYING, you reset the board. Write it once as <code>runner_reset</code> and call it from both the start and the restart, as the TODOs say."
     ]
    ],
-   "bridge": "You can drive a program with a state variable. Next: <b>const pointers</b>, promising a function it only gets to look."
+   "bridge": "You can drive a program with a state variable. Next: <b>const pointers</b>, promising a function it only gets to look.",
+   "lang": "c"
   },
   {
    "id": "const-ptr",
    "title": "const pointers: const Runner* r",
    "kick": "const Runner* · read-only · r->field",
    "mins": 10,
-   "lang": "c",
    "skills": [
     "const-ptr"
    ],
-   "builds": "Phase 3.5: structs, pointers and r->field. Concept 5: render only draws, update changes things.",
+   "builds": "Pointers: & and * and Passing by pointer and -> (Phase 3.5). The game loop: render only draws, update changes things.",
    "why": "When the runner’s state moves into a struct, each function takes a pointer to it. Update needs to change the score. Render should never touch it. Marking render’s pointer <code>const</code> makes the compiler enforce that, so a stray change fails to build instead of silently breaking the game.",
+   "learn": {
+    "parts": [
+     [
+      "Read from the name outward",
+      "<p>Pointer declarations make sense if you start at the name and read outward, right to left. <code>const Runner* r</code>: r is a pointer to a Runner that's const, so you can't change the Runner through r. <code>Runner* const r</code>: r is a const pointer, so it can't be pointed somewhere else, but the Runner can change. <code>const Runner* const r</code>: neither. The first one is the one you'll write.</p>"
+     ],
+     [
+      "One access path, not the object",
+      "<p>const on a pointer limits what you can do <i>through that pointer</i>. The Runner in main isn't const at all. runner_update changes it through its own plain pointer, in the same frame. So const is a promise a function makes about its own behaviour, checked by the compiler.</p>"
+     ],
+     [
+      "const isn't \"constant\"",
+      "<p>In C, a const variable is read-only, not a compile-time constant. <code>const int MAX_OBS = 8;</code> followed by <code>int obs[MAX_OBS];</code> stops the build with C2057, as enum showed. It can't be a case label either. Array sizes and case labels need #define or an enum.</p>"
+     ],
+     [
+      "Where you've seen it",
+      "<p>strlen and strcmp take <code>const char*</code> for the same reason: they only read your string. Passing a plain <code>char*</code> or <code>Runner*</code> to a const parameter is always fine. Going the other way, from const to plain, is what the compiler objects to.</p>"
+     ],
+     [
+      "MSVC notes",
+      "<p class=\"warn\">Writing through a pointer to const is an error, not a warning, so it fails even without /WX. Casting the const away to get round it compiles, but if the object really was declared const, writing to it is undefined behaviour.</p>"
+     ]
+    ],
+    "king": "§11.4, §18.3–18.4"
+   },
    "code": "#include <stdio.h>\n\ntypedef struct {\n    int score;\n    int frame;\n} Runner;\n\nvoid runner_update(Runner* r) {\n    r->score++;\n    r->frame++;\n}\n\nvoid runner_render(const Runner* r) {\n    printf(\"score %d, frame %d\\n\", r->score, r->frame);\n}\n\nint main(void) {\n    Runner r;\n    r.score = 0;\n    r.frame = 0;\n    runner_update(&r);\n    runner_update(&r);\n    runner_render(&r);\n    return 0;\n}",
    "walk": [
     [
@@ -658,27 +868,171 @@
     ],
     [
      "Is const Runner* the same as Runner* const?",
-     "No. const before the * means the thing pointed at is read-only (what we want). const after the * would mean the pointer itself can’t be moved. It’s rare; ignore it for now."
+     "No. Read from the name outward: <code>const Runner* r</code> points at a Runner you can’t change through r. <code>Runner* const r</code> is a pointer that can’t be moved, though the Runner can change. You’ll mostly write the first."
     ]
    ],
-   "bridge": "You can protect data with const. Next: <b>multiple files and LNK2005</b>, splitting the runner into runner.h, runner.c and main.c."
+   "bridge": "You can protect data with const. Next: <b>Preprocessor switches</b>, turning lines on and off before the compiler sees them.",
+   "lang": "c"
+  },
+  {
+   "id": "ifdef",
+   "title": "Preprocessor switches: #ifdef, #if 0 and /D",
+   "kick": "#ifdef · #ifndef · #else · #endif · #if 0 · /D",
+   "mins": 12,
+   "skills": [
+    "ifdef",
+    "cl-d"
+   ],
+   "builds": "Named constants with #define (Phase 3), Header files and #pragma once (Phase 3.75) for the #ifndef guard, and WIN32_LEAN_AND_MEAN from Frame timing with Sleep.",
+   "why": "Some code should only exist sometimes: a debug overlay while you test, a hard mode, lines that only make sense on Windows. <code>#ifdef</code> lets one source file build more than one way. The preprocessor removes the switched-off lines before the compiler starts, so they cost nothing in the game and can’t break the build.",
+   "learn": {
+    "parts": [
+     [
+      "Switches the compiler never sees",
+      "<p>The preprocessor runs before the compiler, and it can keep or drop lines depending on whether a name has been defined. Dropped lines are gone. They aren't compiled, they make no code, and errors in them don't count. One source file can build a debug version, a hard mode or a Windows-only version, just by flipping names on or off.</p>"
+     ],
+     [
+      "The family",
+      "<ul><li><code>#ifdef NAME</code>: keep the lines that follow if NAME is defined.</li><li><code>#ifndef NAME</code>: keep them if it isn't.</li><li><code>#else</code>: the other half. Exactly one half survives.</li><li><code>#endif</code>: the end. Every #if, #ifdef and #ifndef needs one.</li><li><code>#if 0</code>: 0 means false, so the block is always dropped.</li></ul>"
+     ],
+     [
+      "A #define with no value",
+      "<p><code>#define SHOW_HITBOXES</code> makes the name exist and gives it nothing to replace. That's enough for #ifdef, which only asks whether a name is there. WIN32_LEAN_AND_MEAN in Frame timing with Sleep is exactly this kind of switch. Comment the line out and the switch is off. <code>#undef SHOW_HITBOXES</code> switches it off from that point down.</p>"
+     ],
+     [
+      "/D: flip it from build.bat",
+      "<p><code>/DHARD_MODE</code> on the cl line defines HARD_MODE for every file in the build, with the value 1, and you don't touch the source. While testing you might use <code>set FLAGS=/std:c17 /W4 /WX /Zi /Od /DSHOW_HITBOXES</code>. Define a name in the file or with /D, never both: the two definitions differ, MSVC warns C4005 (macro redefinition), and /WX stops the build with C2220.</p>"
+     ],
+     [
+      "Include guards in full",
+      "<p>Header files and #pragma once showed the guard. Now you can read every line of it:</p><pre>#ifndef RUNNER_H\n#define RUNNER_H\ntypedef struct { int score; } Runner;\nvoid runner_reset(Runner* r);\n#endif</pre><p>The first paste into a .c file finds RUNNER_H undefined, keeps the text and defines RUNNER_H. A second paste into the same file finds it defined and skips to #endif. Each header needs its own guard name. Copy a header, forget to rename the guard, and the second one silently disappears.</p>"
+     ],
+     [
+      "Coming in Phase 5",
+      "<p>windows.h uses <code>#ifdef UNICODE</code> to decide what a name like MessageBox means: MessageBoxW, the wide-character version, when UNICODE is defined, or MessageBoxA, the plain-char version, when it isn't. Visual Studio projects define UNICODE; a plain cl line doesn't. <code>_CRT_SECURE_NO_WARNINGS</code> is another switch: the CRT headers test it as they're pasted in, so it must come before the first #include, just like WIN32_LEAN_AND_MEAN.</p>"
+     ],
+     [
+      "MSVC notes",
+      "<p class=\"warn\">A misspelt switch is not an error. <code>#ifdef SHOW_HITBOXSE</code> is simply false, and the code inside quietly vanishes. If a switch seems to do nothing, check the spelling on both lines.</p>"
+     ]
+    ],
+    "king": "§14.4, §15.2, §15.4"
+   },
+   "code": "#include <stdio.h>\n\n#define SHOW_HITBOXES   /* a switch: no value needed */\n\nint main(void) {\n    int lives = 3;\n\n#ifdef SHOW_HITBOXES\n    printf(\"[debug] hitboxes on\\n\");\n#endif\n#ifndef HARD_MODE\n    lives = lives + 2;\n#else\n    lives = 1;\n#endif\n#if 0\n    printf(\"old title screen\\n\");\n#endif\n\n    printf(\"lives %d\\n\", lives);\n    return 0;\n}",
+   "walk": [
+    [
+     3,
+     "<b>A #define with no value.</b> It replaces nothing; it only makes the name SHOW_HITBOXES exist. That’s all a switch needs."
+    ],
+    [
+     8,
+     "<b>#ifdef</b> keeps the lines down to its <code>#endif</code> only if the name is defined. It is, so this printf stays in."
+    ],
+    [
+     11,
+     "<b>#ifndef</b> is the opposite: keep the lines if the name is <i>not</i> defined. Nothing defines HARD_MODE, so the bonus line stays."
+    ],
+    [
+     13,
+     "<b>#else</b> starts the other half. Only one half survives, so <code>lives = 1;</code> is cut out before compiling."
+    ],
+    [
+     16,
+     "<b>#if 0</b> is always false, so everything down to its #endif is dropped. A quick way to switch off a block without deleting it."
+    ],
+    [
+     20,
+     "The compiler only ever sees what survived: the debug printf, the bonus line and this one. It prints <code>lives 5</code>."
+    ]
+   ],
+   "model": "<b>Mental model:</b> scissors before the printer. The preprocessor cuts out every section whose switch is off, then hands the compiler what’s left. Cut lines never reach the compiler at all.",
+   "check": {
+    "q": "You leave this file alone but add /DHARD_MODE to FLAGS in build.bat. What does the program print?",
+    "opts": [
+     "[debug] hitboxes on, then lives 5",
+     "[debug] hitboxes on, then lives 1",
+     "Only lives 1",
+     "Nothing: the build fails because the file never #defines HARD_MODE"
+    ],
+    "a": 1,
+    "hint": "/D defines a name for the whole build, as if a #define sat at the top. Which half of the #ifndef survives now?",
+    "why": "/DHARD_MODE defines HARD_MODE, so #ifndef HARD_MODE is false and the #else half is kept instead: lives becomes 1. SHOW_HITBOXES is still defined in the file, so the debug line prints too. Output: [debug] hitboxes on, then lives 1.",
+    "miss": {
+     "0": "That’s the output without /D. Once HARD_MODE is defined, the #ifndef half is cut and the #else half is kept.",
+     "2": "SHOW_HITBOXES is still defined on line 3, so the debug printf survives.",
+     "3": "A name doesn’t need a #define in the file. /D defines it for every file in the build."
+    }
+   },
+   "tryit": {
+    "task": "Make the bonus lives line exist only when EASY_MODE is defined.",
+    "code": "#____ EASY_MODE\n    lives = lives + 2;\n#endif",
+    "answer": "ifdef   (so the line reads #ifdef EASY_MODE)"
+   },
+   "qa": [
+    [
+     "Why not an if with a variable?",
+     "An <code>if</code> is compiled: both branches end up in the exe, and both must compile. <code>#ifdef</code> cuts code before compiling, so debug code costs nothing when it’s off, and lines that call Windows-only functions can vanish on other systems."
+    ],
+    [
+     "What’s the difference between #ifdef and #if?",
+     "<code>#ifdef NAME</code> only asks whether NAME exists. <code>#if</code> takes a whole-number test, such as <code>#if MAX_OBS &gt; 8</code> or <code>#if defined(A) &amp;&amp; defined(B)</code>. A name nobody defined counts as 0 in an <code>#if</code>."
+    ],
+    [
+     "Does the compiler check code inside #if 0?",
+     "No, it never sees it. Mistakes in there only show up when you switch it back on. Don’t keep big #if 0 blocks for months: Git already remembers old code for you."
+    ],
+    [
+     "Why must _CRT_SECURE_NO_WARNINGS come before the includes?",
+     "The CRT headers test for it while they’re being pasted in, to decide whether to mark functions like scanf as deprecated. Define it after the include and the decision has already been made. WIN32_LEAN_AND_MEAN works the same way."
+    ]
+   ],
+   "bridge": "You can switch code on and off before it compiles. Next: <b>Multiple files and LNK2005</b>, splitting the runner into runner.h, runner.c and main.c.",
+   "lang": "c"
   },
   {
    "id": "lnk2005",
    "title": "Multiple files and LNK2005",
    "kick": "declarations in .h · bodies in .c · LNK2005",
    "mins": 12,
-   "lang": "text",
    "skills": [
     "lnk2005"
    ],
-   "builds": "Phase 3.75: header files and LNK2019 (declared but never defined). This is the opposite problem: defined twice.",
+   "builds": "Header files and #pragma once and Linker errors (LNK2019) from Phase 3.75. That was a body missing; this is the opposite problem, a definition twice. Preprocessor switches: what a guard does and doesn’t stop.",
    "why": "When you split the runner into main.c and runner.c, both files <code>#include \"runner.h\"</code>. An include is a copy and paste. So anything with a <i>body</i> or a variable that lives in the header gets pasted into both, and the linker finds two of it.",
+   "learn": {
+    "parts": [
+     [
+      "Declaration or definition",
+      "<p>Header files and #pragma once gave you the two words. A <b>declaration</b> says a name exists and what type it has. A <b>definition</b> creates it: memory for a variable, a body for a function. The rule: as many declarations as you like, exactly one definition in the whole program.</p><ul><li><code>void runner_reset(Runner* r);</code> declares.</li><li><code>void runner_reset(Runner* r) { ... }</code> defines.</li><li><code>extern int best_score;</code> declares.</li><li><code>int best_score = 0;</code> defines.</li><li>A typedef, #define or enum makes nothing the linker sees, so copies are harmless.</li></ul>"
+     ],
+     [
+      "How one line becomes two",
+      "<p>main.c and runner.c both include runner.h, and an include is a paste. Each .c file is compiled on its own, so each .obj ends up with its own best_score. Then the linker (Linker errors (LNK2019)) joins them, finds two definitions of one name, and stops with LNK2005, then LNK1169. #pragma once can't help: it works inside one .c file, and here each file pasted the header only once.</p>"
+     ],
+     [
+      "The extern fix",
+      "<p>Put the declaration in the header and the definition in one .c file:</p><pre>// runner.h\nextern int best_score;\n\n// runner.c\nint best_score = 0;</pre><p>Every file that includes runner.h can now use best_score, and only runner.obj creates it. Better still, move it into the Runner struct and skip the global.</p>"
+     ],
+     [
+      "The static trap",
+      "<p>Search the error and someone will suggest <code>static int best_score = 0;</code> in the header. The error goes away, which is the trap. static at file level means \"private to this file\", so main.c and runner.c each get their own private best_score. runner.c raises its copy, main.c prints its own, and it says 0. No error, wrong answer. A static function body in a header does the same: every file gets its own copy.</p>"
+     ],
+     [
+      "Never #include \"runner.c\"",
+      "<p>Another quick \"fix\": include runner.c in main.c instead of the header. With runner.c also in SOURCES, every function in it is now defined twice, so you get LNK2005 for each one. Take it out of SOURCES and it builds, but you're back to one giant file. Headers declare, .c files define, and SOURCES lists the .c files.</p>"
+     ],
+     [
+      "MSVC notes",
+      "<p class=\"warn\">On x64 the message names plain <code>best_score</code>; 32-bit builds add an underscore, as in Linker errors (LNK2019). LNK1169 always follows LNK2005, and fixing the first clears the second. A header line like <code>int best_score;</code>, with no value, may link without complaint, because MSVC can merge those. Don't rely on it.</p>"
+     ]
+    ],
+    "king": "§15.1–15.4, §18.2"
+   },
    "code": "// runner.h\n#pragma once\n\n#define LANE_LEN 50\n\ntypedef struct { int score; } Runner;\n\nint best_score = 0;\n\nvoid runner_reset(Runner* r);",
    "walk": [
     [
      2,
-     "<code>#pragma once</code> doesn’t save you here. It stops the header being included twice in <i>one</i> .c file. Two separate .c files still each get one copy."
+     "<code>#pragma once</code> (or an #ifndef guard) doesn’t save you here. It stops the header being pasted twice into <i>one</i> .c file. Two separate .c files still each get one copy."
     ],
     [
      4,
@@ -690,7 +1044,7 @@
     ],
     [
      8,
-     "<b>This is the problem.</b> It <i>creates</i> a variable. main.c and runner.c each get their own copy, and the linker reports <code>runner.obj : error LNK2005: _best_score already defined in main.obj</code>, followed by LNK1169."
+     "<b>This is the problem.</b> It <i>defines</i> a variable. main.c and runner.c each get their own copy, and the linker reports <code>runner.obj : error LNK2005: best_score already defined in main.obj</code>, followed by LNK1169."
     ],
     [
      10,
@@ -708,7 +1062,7 @@
     ],
     "a": 1,
     "hint": "Which line creates something in memory, rather than describing or announcing something?",
-    "why": "Line 8 defines a variable, so each .obj file gets its own best_score and the linker sees the same name twice. The #define, typedef and prototype only describe things, so duplicates are harmless. The same goes for a function <i>body</i> in a header.",
+    "why": "Line 8 defines a variable, so each .obj file gets its own best_score and the linker sees the same name twice. The #define, typedef and prototype only describe things, so duplicates are harmless. The same goes for a function body in a header.",
     "miss": {
      "0": "A #define is replaced before compiling and leaves nothing behind for the linker.",
      "2": "A typedef creates no variable and no code, just a new type name.",
@@ -730,6 +1084,10 @@
      "LNK2019 means a function was declared but never defined anywhere. LNK2005 means it was defined <i>more than once</i>. Missing versus doubled."
     ],
     [
+     "Can’t I just make it static?",
+     "It builds, but every .c file then has its own private best_score. One file changes its copy and another prints a different one. Use <code>extern</code> in the header and define it in one .c file."
+    ],
+    [
      "Why did my variable link fine without the = 0?",
      "For plain C, MSVC may treat an uninitialised global as a shared “common” symbol and link without an error. Don’t rely on it: keep variables out of headers either way."
     ],
@@ -738,7 +1096,8 @@
      "List both source files: <code>set SOURCES=main.c runner.c</code>. cl compiles each one and links them together."
     ]
    ],
-   "bridge": "That’s every concept in Phase 4.5. Next: <b>the starter code</b>. Write the six TODOs yourself, rebuilding after each one, then split it."
+   "bridge": "That’s every concept in Phase 4.5. Next: <b>the starter code</b>. Write the six TODOs yourself, rebuilding after each one, then split it.",
+   "lang": "text"
   }
  ]
 }

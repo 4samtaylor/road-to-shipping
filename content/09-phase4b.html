@@ -74,6 +74,21 @@
             </div>
           </div>
         </div>
+<div class="section-block" data-page="concept:ifdef">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
+              <div class="task" data-id="p45-ifdef">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Add a <span class="cmd">SHOW_FRAME</span> switch to ascii_runner.c: inside <span class="cmd">#ifdef SHOW_FRAME</span>, print the frame number after the score</div>
+                  <div class="task-note">Build it with a <span class="cmd">#define</span> at the top, then delete that line and add <span class="cmd">/DSHOW_FRAME</span> to FLAGS in build.bat instead. Same result, no source change. Never both: that&#39;s C4005. <span class="task-time">~30 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         <div class="section-block" data-page="concept:lnk2005">
           <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
@@ -92,20 +107,22 @@
 
         <div class="section-block acc-section" data-page="overview">
           <div class="section-block-header">
-            <span class="badge badge-purple">Pair with King</span>&nbsp;&nbsp;C Programming: A Modern Approach, chapters 14, 15, 18, 22 and 23
+            <span class="badge badge-purple">Pair with King</span>&nbsp;&nbsp;C Programming: A Modern Approach, chapters 5, 6, 8, 11, 14, 15, 16, 18, 20, 22 and 23
             <span class="acc-toggle-icon">▼</span>
           </div>
           <div class="acc-body section-block-body">
             <dl class="king">
-              <dt>Input without waiting</dt><dd>Not in King: standard C has no way to read one key at a time. The ch 22 Q&amp;A explains why, and why <span class="cmd">conio.h</span> is a Windows extra.</dd>
-              <dt>Frame timing with Sleep</dt><dd>§14.3 (simple macros) and §14.4 (conditional compilation), which is how <span class="cmd">WIN32_LEAN_AND_MEAN</span> works.</dd>
-              <dt>Redrawing in place</dt><dd>§22.2, “File Buffering”, explains what <span class="cmd">fflush</span> does.</dd>
-              <dt>The frame buffer</dt><dd>§23.6 for <span class="cmd">memset</span> and the other memory functions.</dd>
-              <dt>Sentinel values and state machines</dt><dd>Arrays §8.1, <span class="cmd">break</span> §6.4, <span class="cmd">switch</span> §5.3, <span class="cmd">enum</span> §16.5.</dd>
-              <dt>const pointers</dt><dd>§11.4, “Using const to Protect Arguments”, and §18.3.</dd>
-              <dt>Multiple files</dt><dd>§15.1–15.4, plus §18.2 for <span class="cmd">static</span> and <span class="cmd">extern</span>. That is exactly the runner split.</dd>
-              <dt>Note</dt><dd>King guards headers with <span class="cmd">#ifndef</span> / <span class="cmd">#define</span> / <span class="cmd">#endif</span> (§15.2, “Protecting Header Files”). <span class="cmd">#pragma once</span> does the same in one line. Know both when you see them.</dd>
-              <dt>Skip</dt><dd>Parameterised macros (back in Phase 5) and makefiles; build.bat is your makefile.</dd>
+              <dt>Input without waiting: _kbhit and _getch</dt><dd>Not in King’s main text: standard C can’t read one key at a time. The ch 22 Q&amp;A on single keystrokes explains why, and why a library like <span class="cmd">conio.h</span> is the system-specific way round it.</dd>
+              <dt>Frame timing with Sleep</dt><dd>§14.3 (simple macros) and §14.4 (conditional compilation), which is how <span class="cmd">WIN32_LEAN_AND_MEAN</span> switches parts of windows.h off. §20.3 on machine-dependent types such as <span class="cmd">WORD</span>; <span class="cmd">DWORD</span> is the same idea.</dd>
+              <dt>Redrawing in place: \r and fflush</dt><dd>§22.2, the part on file buffering: the three modes, <span class="cmd">setvbuf</span> and <span class="cmd">fflush</span>.</dd>
+              <dt>The frame buffer</dt><dd>§23.6 for <span class="cmd">memset</span> and the other memory functions in string.h.</dd>
+              <dt>The game loop</dt><dd>§5.1: relational and logical operators give 1 or 0, which is why <span class="cmd">ducking = (key == 'd')</span> works.</dd>
+              <dt>Sentinel values</dt><dd>§8.1 for one-dimensional arrays, §6.4 for <span class="cmd">break</span> leaving only the innermost loop.</dd>
+              <dt>State machines: enum and switch</dt><dd>§5.3 for <span class="cmd">switch</span>, §16.5 for <span class="cmd">enum</span>.</dd>
+              <dt>const pointers</dt><dd>§11.4 on protecting arguments with <span class="cmd">const</span>, §18.3 on type qualifiers, and §18.4 on reading declarators.</dd>
+              <dt>Preprocessor switches</dt><dd>§14.4 for <span class="cmd">#if</span>, <span class="cmd">#ifdef</span> and <span class="cmd">#ifndef</span>, §15.2 for protecting header files, and §15.4 for defining macros outside a program (cl’s <span class="cmd">/D</span>). King doesn’t mention <span class="cmd">#pragma once</span>.</dd>
+              <dt>Multiple files and LNK2005</dt><dd>§15.1–15.4, plus §18.2 for <span class="cmd">static</span> and <span class="cmd">extern</span>. That is exactly the runner split.</dd>
+              <dt>Skip</dt><dd>Parameterised macros (back in Phase 5), makefiles (build.bat is your makefile), and bitwise operators and bit-fields (§20.1–20.2).</dd>
             </dl>
           </div>
         </div>
@@ -119,7 +136,7 @@
           <div class="acc-body">
             <div class="code-wrap">
               <div class="code-label">
-                <span>ascii_runner.c, add it to build.bat, then run <span class="cmd">build</span></span>
+                <span>ascii_runner.c: set <span class="cmd">SOURCES=ascii_runner.c</span> in build.bat, then run <span class="cmd">build</span></span>
                 <button class="copy-btn">Copy</button>
               </div>
 <pre><span class="c-pp">#define</span> WIN32_LEAN_AND_MEAN
@@ -161,7 +178,7 @@
 
     <span class="c-kw">while</span> (<span class="c-var">running</span>) {
 
-        <span class="c-cm">/* --- 1. INPUT — never blocks -------------------------------- */</span>
+        <span class="c-cm">/* --- 1. INPUT: never blocks --------------------------------- */</span>
         <span class="c-var">key</span> = <span class="c-num">0</span>;
         <span class="c-kw">while</span> (<span class="c-fn">_kbhit</span>()) {      <span class="c-cm">// drain everything typed since last frame</span>
             <span class="c-var">key</span> = <span class="c-fn">_getch</span>();     <span class="c-cm">// no Enter needed, no echo to the screen</span>
@@ -170,7 +187,7 @@
             <span class="c-var">running</span> = <span class="c-num">0</span>;
         }
 
-        <span class="c-cm">/* --- 2. UPDATE — one switch, exactly like Phase 6 ------------ */</span>
+        <span class="c-cm">/* --- 2. UPDATE: one switch, exactly like Phase 6 ------------- */</span>
         <span class="c-kw">switch</span> (<span class="c-var">state</span>) {
         <span class="c-kw">case</span> <span class="c-var">STATE_MENU</span>:
             <span class="c-kw">if</span> (<span class="c-var">key</span> != <span class="c-num">0</span> &amp;&amp; <span class="c-var">running</span>) {
@@ -184,7 +201,7 @@
             <span class="c-cm">// TODO 2: if key is 'd' or 'D', set ducking = 1 for this frame.</span>
 
             <span class="c-cm">// TODO 3: move every live obstacle one column toward the player.</span>
-            <span class="c-cm">//         An obstacle that goes below 0 has been dodged — set its</span>
+            <span class="c-cm">//         An obstacle that goes below 0 has been dodged: set its</span>
             <span class="c-cm">//         slot back to -1 and add 1 to score.</span>
 
             <span class="c-cm">// TODO 4: every 20 frames, find a free slot (obs[i] == -1) and put</span>
@@ -198,12 +215,12 @@
 
         <span class="c-kw">case</span> <span class="c-var">STATE_GAME_OVER</span>:
             <span class="c-cm">// TODO 6: on 'r' or 'R', clear the board and go back to</span>
-            <span class="c-cm">//         STATE_PLAYING. Same reset as TODO 1 — so write it once,</span>
+            <span class="c-cm">//         STATE_PLAYING. Same reset as TODO 1, so write it once,</span>
             <span class="c-cm">//         as a function, and call it from both places.</span>
             <span class="c-kw">break</span>;
         }
 
-        <span class="c-cm">/* --- 3. RENDER — build the whole line, print it ONCE --------- */</span>
+        <span class="c-cm">/* --- 3. RENDER: build the whole line, print it ONCE ---------- */</span>
         <span class="c-fn">memset</span>(<span class="c-var">lane</span>, <span class="c-str">'.'</span>, LANE_LEN);
         <span class="c-var">lane</span>[LANE_LEN] = <span class="c-str">'\0'</span>;
 
@@ -219,7 +236,7 @@
         <span class="c-fn">printf</span>(<span class="c-str">"\r%s  score %-4d"</span>, <span class="c-var">lane</span>, <span class="c-var">score</span>);
         <span class="c-fn">fflush</span>(<span class="c-var">stdout</span>);   <span class="c-cm">// push it out now: no '\n', so some terminals would hold it in a buffer</span>
 
-        <span class="c-cm">/* --- 4. WAIT — give the CPU back ---------------------------- */</span>
+        <span class="c-cm">/* --- 4. WAIT: give the CPU back ----------------------------- */</span>
         <span class="c-fn">Sleep</span>(FRAME_MS);
     }
 
@@ -280,7 +297,7 @@
                 <button class="copy-btn">Copy</button>
               </div>
 <pre><span class="c-pp">#define</span> WIN32_LEAN_AND_MEAN
-<span class="c-pp">#include</span> <span class="c-str">&lt;windows.h&gt;</span>   <span class="c-cm">// Sleep — only main.c needs Windows now</span>
+<span class="c-pp">#include</span> <span class="c-str">&lt;windows.h&gt;</span>   <span class="c-cm">// Sleep: only main.c needs Windows now</span>
 <span class="c-pp">#include</span> <span class="c-str">&lt;conio.h&gt;</span>
 <span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
 <span class="c-pp">#include</span> <span class="c-str">"runner.h"</span>
@@ -322,7 +339,7 @@
     <span class="c-str">echo  BUILD FAILED.</span>
     <span class="c-kw">exit</span> /b 1
 )
-<span class="c-str">echo  BUILD OK — runner.exe</span></pre>
+<span class="c-str">echo  BUILD OK: runner.exe</span></pre>
             </div>
             <div class="code-island" style="border-top:1px solid var(--border);padding:14px 16px">
               <div class="eyebrow eyebrow--md t-muted2 mb-10">// runner.c is yours to write</div>
@@ -427,7 +444,7 @@
                 <div class="stuck-a">Two separate causes. First, your reaction window is one frame long, so at <span class="cmd">Sleep(33)</span> a key can wait up to 33 ms before the loop even looks. Lower <span class="cmd">FRAME_MS</span> to 16 and it halves. Second, holding a key down makes Windows repeat it, which stuffs dozens of characters into the buffer, if you only call <span class="cmd">_getch()</span> once per frame you're working through a backlog that gets further behind every frame. That's what the <span class="cmd">while (_kbhit())</span> loop is for: drain the buffer completely each frame and keep only the last key.</div>
               </div>
             </div>
-            <div class="prose prose--sm t-muted2 mt-12">Flicker, new lines, nothing showing until you quit, Sleep timing and LNK2005 are answered in the concept pages' Q&amp;A: see Redrawing in place, Frame timing and Multiple files.</div>
+            <div class="prose prose--sm t-muted2 mt-12">Flicker, new lines, nothing showing until you quit, Sleep timing and LNK2005 are answered in the concept pages' Q&amp;A: see Redrawing in place: \r and fflush, Frame timing with Sleep, and Multiple files and LNK2005.</div>
           </div>
         </div>
 

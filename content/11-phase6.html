@@ -14,6 +14,25 @@
     <div class="phase-body">
       <div class="phase-inner">
 
+        <!-- PAIR WITH KING -->
+        <div class="section-block acc-section" data-page="overview">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Pair with King</span>&nbsp;&nbsp;C Programming: A Modern Approach, chapters 5, 7, 14, 15, 16, 18, 19 and 22
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <dl class="king">
+              <dt>Update vs render</dt><dd>§19.1 (modules) and §19.2 (information hiding). The same one-job-each idea, at the size of a file.</dd>
+              <dt>Delta time</dt><dd>§7.2 for float and double, §7.4 for the conversions behind the <span class="cmd">f</span> suffix.</dd>
+              <dt>A state machine with next_state</dt><dd>§16.5, enumerations. Designated initialisers for arrays are in §8.1.</dd>
+              <dt>AABB collision</dt><dd>§5.1 for <span class="cmd">&amp;&amp;</span> and short-circuit evaluation, §18.6 for <span class="cmd">inline</span>.</dd>
+              <dt>Text on screen</dt><dd>§22.8 for <span class="cmd">snprintf</span>, §7.6 for <span class="cmd">sizeof</span>, §14.4 for the conditional compilation that turns TextOut into TextOutA.</dd>
+              <dt>Splitting the game into files</dt><dd>§15.3 (how to split a program into files), §18.2 (<span class="cmd">static</span> and <span class="cmd">extern</span>), §18.6 (<span class="cmd">static inline</span>) and §19.5 (naming conventions, where the prefixes come from).</dd>
+              <dt>Skip</dt><dd>§19.3–19.4 (abstract data types and the stack example). Worth reading after the prototype ships, not needed for it.</dd>
+            </dl>
+          </div>
+        </div>
+
 
         <div data-page="concept:update-render" class="section-block">
           <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
@@ -67,7 +86,7 @@
               <div class="task" data-id="p6-connect-player">
                 <div class="task-cb">✓</div>
                 <div class="task-content">
-                  <div class="task-text">Connect your Player struct from Phase 3.5 to your window from Phase 5</div>
+                  <div class="task-text">Connect your Player struct and player.h from Phase 3.75 to your window from Phase 5</div>
                   <div class="task-note">This is where it all starts coming together <span class="task-time">~45 min</span></div>
                 </div>
               </div>
@@ -81,6 +100,21 @@
             </div>
           </div>
         </div>
+        <div data-page="concept:game-files" class="section-block">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
+              <div class="task" data-id="p6-game-files">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Split the prototype into main.c, game.c/game.h and player.c/player.h, built from one SOURCES line <span class="task-tag t-industry">Industry</span></div>
+                  <div class="task-note">Prefix every public name with its module (player_, game_). Private helpers stay static in the .c, one-line helpers go in the header as static inline. Your partner should be able to build it first try. <span class="task-time">~1 hr</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         <!-- BUILD SPEC -->
         <div data-page="practice" class="section-block acc-section open" data-order="-1">
@@ -94,7 +128,7 @@
               <div class="spec-item">
                 <h4><span>the prototype</span>: it should:</h4>
                 <ul>
-                  <li>run in a window with at least three states (MENU, PLAYING, GAME_OVER) and move between them with keys</li>
+                  <li>run in a window with at least three states (MENU, PLAYING, GAME_OVER) and move between them with keys, with the code split into main.c, game.c and player.c</li>
                   <li>move your Player struct with the keyboard at the same speed whatever the frame rate (<span class="cmd">speed * dt</span>)</li>
                   <li>end the run when the player's box overlaps an obstacle's box, and restart from GAME_OVER without relaunching</li>
                 </ul>
@@ -106,13 +140,13 @@
         <!-- STARTER CODE -->
         <div data-page="build" class="section-block acc-section open">
           <div class="section-block-header">
-            <span class="badge badge-blue">Starter Code</span>&nbsp;&nbsp;game_state.h
+            <span class="badge badge-blue">Starter Code</span>&nbsp;&nbsp;game.h
             <span class="acc-toggle-icon">▼</span>
           </div>
           <div class="acc-body">
             <div class="code-wrap">
               <div class="code-label">
-                <span>game_state.h: state machine pattern</span>
+                <span>game.h: the game module (states, Game struct, AABB helper)</span>
                 <button class="copy-btn">Copy</button>
               </div>
 <pre><span class="c-pp">#pragma once</span>
@@ -120,10 +154,10 @@
 
 <span class="c-cm">// All possible game states</span>
 <span class="c-kw">typedef enum</span> {
-    <span class="c-var">STATE_MENU</span>,
-    <span class="c-var">STATE_PLAYING</span>,
-    <span class="c-var">STATE_PAUSED</span>,     <span class="c-cm">// optional fourth state</span>
-    <span class="c-var">STATE_GAME_OVER</span>
+    <span class="c-var">MENU</span>,
+    <span class="c-var">PLAYING</span>,
+    <span class="c-var">PAUSED</span>,     <span class="c-cm">// optional fourth state</span>
+    <span class="c-var">GAME_OVER</span>
 } <span class="c-type">GameState</span>;
 
 <span class="c-cm">// The whole game lives in this struct</span>
@@ -134,18 +168,20 @@
     <span class="c-type">float</span>     <span class="c-var">delta_time</span>; <span class="c-cm">// seconds since last frame</span>
 } <span class="c-type">Game</span>;
 
-<span class="c-cm">// AABB collision: do rectangles a and b overlap?</span>
-<span class="c-cm">// The same four comparisons as the AABB concept, written for float positions.</span>
-<span class="c-cm">// static inline lets it live in a header without the LNK2005 error from Phase 4.5.</span>
-<span class="c-kw">static inline</span> <span class="c-type">int</span> <span class="c-fn">aabb_overlap</span>(
-    <span class="c-type">float</span> <span class="c-var">ax</span>, <span class="c-type">float</span> <span class="c-var">ay</span>, <span class="c-type">float</span> <span class="c-var">aw</span>, <span class="c-type">float</span> <span class="c-var">ah</span>,
-    <span class="c-type">float</span> <span class="c-var">bx</span>, <span class="c-type">float</span> <span class="c-var">by</span>, <span class="c-type">float</span> <span class="c-var">bw</span>, <span class="c-type">float</span> <span class="c-var">bh</span>)
-{
-    <span class="c-kw">return</span> <span class="c-var">ax</span> &lt; <span class="c-var">bx</span>+<span class="c-var">bw</span> &amp;&amp; <span class="c-var">ax</span>+<span class="c-var">aw</span> &gt; <span class="c-var">bx</span> &amp;&amp;
-           <span class="c-var">ay</span> &lt; <span class="c-var">by</span>+<span class="c-var">bh</span> &amp;&amp; <span class="c-var">ay</span>+<span class="c-var">ah</span> &gt; <span class="c-var">by</span>;
+<span class="c-cm">// AABB collision: do boxes a and b overlap?</span>
+<span class="c-cm">// The same Box and four comparisons as the AABB concept, with float fields</span>
+<span class="c-cm">// because positions move by speed * dt.</span>
+<span class="c-kw">typedef struct</span> { <span class="c-type">float</span> <span class="c-var">x</span>, <span class="c-var">y</span>, <span class="c-var">w</span>, <span class="c-var">h</span>; } <span class="c-type">Box</span>;
+
+<span class="c-cm">// static inline: each .c that includes this gets its own copy, so no LNK2005</span>
+<span class="c-cm">// (Phase 4.5) and no LNK2019 (see Splitting the game into files).</span>
+<span class="c-kw">static inline</span> <span class="c-type">int</span> <span class="c-fn">aabb_overlap</span>(<span class="c-type">Box</span> <span class="c-var">a</span>, <span class="c-type">Box</span> <span class="c-var">b</span>) {
+    <span class="c-kw">return</span> <span class="c-var">a</span>.<span class="c-var">x</span> &lt; <span class="c-var">b</span>.<span class="c-var">x</span> + <span class="c-var">b</span>.<span class="c-var">w</span> &amp;&amp; <span class="c-var">a</span>.<span class="c-var">x</span> + <span class="c-var">a</span>.<span class="c-var">w</span> &gt; <span class="c-var">b</span>.<span class="c-var">x</span> &amp;&amp;
+           <span class="c-var">a</span>.<span class="c-var">y</span> &lt; <span class="c-var">b</span>.<span class="c-var">y</span> + <span class="c-var">b</span>.<span class="c-var">h</span> &amp;&amp; <span class="c-var">a</span>.<span class="c-var">y</span> + <span class="c-var">a</span>.<span class="c-var">h</span> &gt; <span class="c-var">b</span>.<span class="c-var">y</span>;
 }
 
-<span class="c-cm">// Your game loop structure — call each every frame:</span>
+<span class="c-cm">// The game module: bodies go in game.c, which includes this header.</span>
+<span class="c-cm">// main.c calls these every frame:</span>
 <span class="c-type">void</span> <span class="c-fn">game_init</span>(<span class="c-type">Game</span>* <span class="c-var">g</span>);
 <span class="c-type">void</span> <span class="c-fn">game_handle_input</span>(<span class="c-type">Game</span>* <span class="c-var">g</span>);
 <span class="c-type">void</span> <span class="c-fn">game_update</span>(<span class="c-type">Game</span>* <span class="c-var">g</span>);
