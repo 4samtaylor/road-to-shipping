@@ -149,7 +149,7 @@
      ],
      [
       "The stray semicolon",
-      "<p><code>if (lives == 0);</code> ends the if at the semicolon. The empty statement is the thing the if controls, and the block underneath runs every time, whatever lives is.</p><p class=\"warn\">MSVC warns (C4390, empty controlled statement found), and /WX stops the build. When you see C4390, look for a ; straight after the closing bracket of an if.</p>"
+      "<p><code>if (lives == 0);</code> ends the if at the semicolon. The empty statement is the thing the if controls, and the block underneath runs every time, whatever lives is.</p><p class=\"warn\">MSVC does not warn about this one, even at /W4, so nothing stops the build. If an if seems to run every time, look for a ; straight after its closing bracket.</p>"
      ],
      [
       "?: picks a value",

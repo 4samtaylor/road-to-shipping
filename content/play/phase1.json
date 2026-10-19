@@ -631,7 +631,7 @@
       {
         "line": 3,
         "ms": 1500,
-        "note": "The script swaps %FLAGS% for the jar's contents. The command becomes cl /W4 /WX /Zi /Od hello_world.c ...",
+        "note": "The script swaps %FLAGS% for the jar's contents. The command becomes cl /std:c17 /W4 /WX /Zi /Od hello_world.c ...",
         "do": [
           {
             "a": "expand"

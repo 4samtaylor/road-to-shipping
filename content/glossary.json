@@ -807,7 +807,7 @@
           "void print_banner(void)"
         ],
         "def": "void denotes the absence of a value: as a return type, the function returns nothing; as a parameter list (void), it takes no arguments.",
-        "model": "A machine with no output tray. It does something — prints, moves — but hands nothing back.",
+        "model": "A machine with no output tray. It does something (prints, moves) but hands nothing back.",
         "game": "print_banner draws the title screen and returns nothing.",
         "gameCode": "void print_banner(void) { printf(\"ASCII RUNNER\\n\"); }"
       },
@@ -841,7 +841,7 @@
         "match": "^#define",
         "def": "#define creates a preprocessor macro: every later occurrence of the name is textually replaced before compilation.",
         "model": "Find-and-replace on your file before the compiler reads it.",
-        "game": "MAX_SCORES, LANE_LEN, MAX_OBS — change one line and every array and loop that uses it follows.",
+        "game": "MAX_SCORES, LANE_LEN, MAX_OBS: change one line and every array and loop that uses it follows.",
         "gameCode": "#define MAX_OBS 8\nint obs[MAX_OBS];"
       },
       {
@@ -877,7 +877,7 @@
         ],
         "def": "The canonical array traversal initialises the index to 0 and continues while it is less than the element count, so it visits indices 0 to count − 1.",
         "model": "Visit every locker, starting at 0, and stop before the number that doesn't exist.",
-        "game": "The same header moves obstacles, draws them and checks collisions — three loops, one shape.",
+        "game": "The same header moves obstacles, draws them and checks collisions: three loops, one shape.",
         "gameCode": "for (i = 0; i < MAX_OBS; i++)\n    if (obs[i] >= 0) obs[i]--;"
       },
       {
@@ -886,10 +886,10 @@
         "kind": "syntax",
         "what": "How many elements an array has, where it was declared.",
         "example": "count = (int)(sizeof(scores) / sizeof(scores[0]));",
-        "gotcha": "Inside a function the array is a pointer; pass the count.",
+        "gotcha": "Inside a function you only have where the array lives, not the array; pass the count.",
         "def": "Dividing the size of an array by the size of one element yields its element count, valid only where the array's declaration (not a pointer) is in scope.",
         "model": "The length of the whole locker row divided by the width of one locker.",
-        "game": "Useful in main for the starting high-score table — but pass the count into functions, because they only get a pointer.",
+        "game": "Useful in main for the starting high-score table, but pass the count into functions, because they only get the array's location.",
         "gameCode": "int count = (int)(sizeof(scores) / sizeof(scores[0]));"
       },
       {
@@ -921,7 +921,7 @@
         ],
         "def": "'\\0' is the null character, with value 0. It marks the end of a C string. It differs from the digit '0', which has value 48.",
         "model": "The stop sign at the end of the word.",
-        "game": "Forget it at the end of the lane and printf keeps going into whatever memory comes next — a screen of junk after your track.",
+        "game": "Forget it at the end of the lane and printf keeps going into whatever memory comes next: a screen of junk after your track.",
         "gameCode": "lane[LANE_LEN] = '\\0';"
       },
       {
@@ -930,7 +930,7 @@
         "kind": "function",
         "what": "Reads a whole line safely: never writes past the size you give it.",
         "example": "fgets(name, NAME_LEN, stdin);\nname[strcspn(name, \"\\n\")] = '\\0';",
-        "gotcha": "Keeps the Enter as '\\n' — strip it.",
+        "gotcha": "Keeps the Enter as '\\n'. Strip it.",
         "aliases": [
           "fgets",
           "fgets(name, NAME_LEN, stdin)",
@@ -971,7 +971,7 @@
         ],
         "match": "strcmp\\(",
         "def": "strcmp compares two strings lexicographically, returning zero if equal, and a negative or positive value if the first sorts before or after the second.",
-        "model": "It answers \"how far apart are these?\", not \"are these the same?\" — and 0 apart means identical.",
+        "model": "It answers “how do these two sort?”, not “are these the same?”, and 0 means they’re identical.",
         "game": "Checking whether a new high score belongs to a name already on the table.",
         "gameCode": "if (strcmp(names[i], name) == 0) { /* same player */ }"
       },
@@ -979,7 +979,7 @@
         "id": "array-2d",
         "term": "2D array",
         "kind": "concept",
-        "what": "An array of arrays — e.g. five names of up to 31 characters.",
+        "what": "An array of arrays, such as five names of up to 31 characters.",
         "example": "char names[5][32];\nnames[0];   // first name",
         "aliases": [
           "names[5][32]"
@@ -987,7 +987,7 @@
         "def": "A two-dimensional array is an array of arrays; names[5][32] is five arrays of 32 chars, stored row after row.",
         "model": "A shelf of five name tags, each with room for 31 letters.",
         "game": "The high-score table keeps names[MAX_SCORES][NAME_LEN] in step with scores[MAX_SCORES].",
-        "gameCode": "char names[MAX_SCORES][NAME_LEN];\nstrcpy_s(names[0], NAME_LEN, \"SAM\");"
+        "gameCode": "char names[MAX_SCORES][NAME_LEN];\nsnprintf(names[0], NAME_LEN, \"%s\", \"SAM\");"
       },
       {
         "id": "scope",
@@ -1017,6 +1017,151 @@
         "model": "Opening a notebook, writing in it like you'd print to the screen, and closing it so the ink dries.",
         "game": "Saving the best score to best.txt so the runner's menu can show \"Best: 41\" next time.",
         "gameCode": "FILE* f = fopen(\"best.txt\", \"w\");\nif (f) { fprintf(f, \"%d\\n\", best); fclose(f); }"
+      },
+      {
+        "id": "static-local",
+        "term": "static local",
+        "kind": "syntax",
+        "what": "A local variable that keeps its value between calls. Made once, before main starts.",
+        "example": "void spawn(void) {\n    static int spawned = 0;   // set to 0 once, not every call\n    spawned++;\n}",
+        "gotcha": "The = 0 runs once. It does not reset the value on each call.",
+        "aliases": [
+          "static int",
+          "static int spawned = 0;"
+        ],
+        "def": "A block-scope variable declared static has static storage duration: it exists for the whole run and is initialised once, before program start-up (to zero if no initialiser is given). Its scope is unchanged: the name is visible only inside its block.",
+        "model": "A tally sheet in a meeting room's locked drawer. It's still there next meeting, and only that room has the key.",
+        "game": "A function that hands out a new ID for each enemy can keep its next-ID counter as a static local, so no other code can mess with it.",
+        "gameCode": "int next_enemy_id(void) {\n    static int id = 0;\n    return ++id;\n}"
+      },
+      {
+        "id": "global",
+        "term": "Global variable",
+        "kind": "concept",
+        "what": "A variable declared outside every function. Every function below it can read and change it.",
+        "example": "int wave = 1;   // above every function\n\nvoid spawn_enemy(void) { printf(\"%d\", wave); }",
+        "gotcha": "Any function can change it, so a wrong value could come from anywhere. A local with the same name is C4459.",
+        "def": "A variable declared at file scope has static storage duration (it exists for the whole run and starts at zero if not initialised) and is visible from its declaration to the end of the file.",
+        "model": "The scoreboard in the corridor. Everyone can read it, and anyone can change it.",
+        "game": "The Win32 starters keep a running flag as a global, because Windows calls the window procedure directly and you can't pass it extra arguments.",
+        "gameCode": "int running = 1;   // read by the game loop, cleared by WndProc"
+      },
+      {
+        "id": "array-param",
+        "term": "Array parameter",
+        "kind": "concept",
+        "what": "A function takes an array as int a[] plus a count, and works on the caller's real array.",
+        "example": "void add_bonus(int scores[], int count, int bonus);\nadd_bonus(scores, count, 5);",
+        "gotcha": "sizeof inside the function gives the size of a location (8 bytes on x64), not the array, and MSVC doesn't warn. Always pass the count.",
+        "aliases": [
+          "int scores[]",
+          "const int scores[]"
+        ],
+        "def": "A parameter declared as an array of T is adjusted to a pointer to T (pointers are Phase 3.5). The argument is the address of the array's first element, so the function accesses the caller's elements directly, and any length written in the brackets is ignored.",
+        "model": "Lending the key to your row of lockers, not photocopying what's inside.",
+        "game": "The high-score table's insert_score takes the scores array and its count, and shifts the caller's scores down in place.",
+        "gameCode": "void insert_score(int scores[], int count, int new_score);"
+      },
+      {
+        "id": "stdio-streams",
+        "term": "stdin / stdout / stderr",
+        "kind": "concept",
+        "what": "The three streams every program starts with: keyboard in, screen out, and a separate screen route for errors.",
+        "example": "fgets(line, sizeof(line), stdin);\nfprintf(stderr, \"Could not save\\n\");",
+        "gotcha": "> file.txt redirects stdout only. Errors on stderr still reach the screen.",
+        "aliases": [
+          "stdin",
+          "stderr"
+        ],
+        "def": "stdin, stdout and stderr are FILE streams opened before main runs: standard input, standard output and standard error. stderr is not fully buffered, so its output appears promptly.",
+        "model": "Three pipes already plumbed in: one bringing typing in, one carrying normal output, and an emergency line for problems.",
+        "game": "The save code reports a failed fopen on stderr, so the message shows even when normal output goes to a log.",
+        "gameCode": "if (f == NULL) {\n    fprintf(stderr, \"Could not save\\n\");\n    return 1;\n}"
+      },
+      {
+        "id": "sscanf",
+        "term": "sscanf",
+        "kind": "function",
+        "what": "scanf that reads from a string instead of the keyboard. Pair it with fgets to read numbers.",
+        "example": "if (sscanf(line, \"%d\", &lane) == 1) { /* got a number */ }",
+        "gotcha": "MSVC flags it C4996, like scanf.",
+        "aliases": [
+          "sscanf"
+        ],
+        "match": "^sscanf\\(",
+        "def": "sscanf parses formatted input from a string using the same conversion specifications as scanf, and returns the number of items assigned, or EOF if input ends before the first conversion.",
+        "model": "Reading the answer off a note the player already handed you, instead of listening to them type.",
+        "game": "The lane prompt reads a whole line with fgets, then sscanf pulls the number out, so stray letters never jam the next read.",
+        "gameCode": "char line[16];\nif (fgets(line, sizeof(line), stdin) && sscanf(line, \"%d\", &lane) == 1) { }"
+      },
+      {
+        "id": "snprintf",
+        "term": "snprintf",
+        "kind": "function",
+        "what": "printf into a char array, never past the size you give. The safe way to copy and join text.",
+        "example": "snprintf(name, sizeof(name), \"%s\", typed);",
+        "gotcha": "Returns the length it wanted. A result >= size means the text was cut.",
+        "aliases": [
+          "snprintf"
+        ],
+        "match": "^snprintf\\(",
+        "def": "snprintf writes formatted output to a buffer, storing at most size - 1 characters plus a terminating null (when size is not 0). It returns the number of characters the full output would have contained, or a negative value on an encoding error.",
+        "model": "printf with a box count: it writes what fits, always leaves room for the stop sign, and tells you how much it wanted.",
+        "game": "Building the score line for the screen from a name and a number, cut safely if the name is too long.",
+        "gameCode": "char line[32];\nsnprintf(line, sizeof(line), \"%s: %d\", name, score);"
+      },
+      {
+        "id": "strcpy",
+        "term": "strcpy / strncpy",
+        "kind": "function",
+        "what": "Copy a string into an array. strcpy has no size check; strncpy can leave no '\\0'.",
+        "example": "strcpy(names[i], names[i - 1]);   // same-sized rows: safe",
+        "gotcha": "MSVC flags both C4996. For text from outside, use snprintf.",
+        "aliases": [
+          "strcpy",
+          "strncpy"
+        ],
+        "match": "^strn?cpy\\(",
+        "def": "strcpy copies a string, including its terminator, into a destination array; strncpy copies at most n characters and does not add a terminator if the source is n characters or longer. Neither checks the destination's size.",
+        "model": "Pouring from one jug into another without looking at the second jug's size.",
+        "game": "Shifting the names table down a row when a new high score comes in: every row is the same size, so each copy fits.",
+        "gameCode": "for (i = MAX_SCORES - 1; i > slot; i--)\n    strcpy(names[i], names[i - 1]);"
+      },
+      {
+        "id": "strcat",
+        "term": "strcat / strncat",
+        "kind": "function",
+        "what": "Add one string onto the end of another. strcat has no size check.",
+        "example": "strncat(msg, name, sizeof(msg) - strlen(msg) - 1);",
+        "gotcha": "strncat's n is the space left minus 1, not sizeof(msg).",
+        "aliases": [
+          "strcat",
+          "strncat"
+        ],
+        "match": "^strn?cat\\(",
+        "def": "strcat appends a copy of the source string to the end of the destination string; strncat appends at most n characters and always writes a terminator. Neither knows the destination's total size.",
+        "model": "Writing more words after the last one on a line, without checking how much line is left.",
+        "game": "Joining \"Player: \" and a name for the HUD. snprintf does the same job with the size built in.",
+        "gameCode": "snprintf(hud, sizeof(hud), \"Player: %s\", name);   // instead of strcat"
+      },
+      {
+        "id": "toupper",
+        "term": "toupper / tolower",
+        "kind": "function",
+        "what": "From ctype.h: one letter to a capital (or small letter). Anything else comes back unchanged.",
+        "example": "cmd[i] = (char)toupper((unsigned char)cmd[i]);",
+        "gotcha": "Cast to unsigned char first: MSVC's char is signed.",
+        "aliases": [
+          "toupper",
+          "tolower",
+          "ctype.h",
+          "<ctype.h>"
+        ],
+        "match": "^to(upper|lower)\\(",
+        "def": "toupper and tolower, declared in <ctype.h>, convert a lowercase letter to uppercase or the reverse. The argument must be representable as unsigned char or be EOF; other values are undefined.",
+        "model": "A stamp that only works on letters: press it on a digit or a space and nothing changes.",
+        "game": "Accepting q, Q, quit or QUIT at the menu by uppercasing what the player typed before comparing.",
+        "gameCode": "for (i = 0; cmd[i] != '\\0'; i++)\n    cmd[i] = (char)toupper((unsigned char)cmd[i]);"
       }
     ],
     "phase3b": [

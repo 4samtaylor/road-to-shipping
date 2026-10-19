@@ -314,7 +314,7 @@
                 <button class="copy-btn">Copy</button>
               </div>
 <pre class="code-panel fs-11" style="overflow-x:auto"><span class="c-cm">@echo off</span>
-<span class="c-pp">set</span> FLAGS=<span class="c-num">/W4 /WX /Zi /Od /external:anglebrackets /external:W0</span>
+<span class="c-pp">set</span> FLAGS=<span class="c-num">/std:c17 /W4 /WX /Zi /Od /external:anglebrackets /external:W0</span>
 <span class="c-pp">set</span> SOURCES=<span class="c-str">main.c runner.c</span>
 
 <span class="c-str">cl</span> <span class="c-num">%FLAGS%</span> <span class="c-str">%SOURCES%</span> <span class="c-num">/Fe:runner.exe</span>
