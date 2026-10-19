@@ -272,6 +272,19 @@
       "t": "clean"
      }
     ]
+   },
+   {
+    "line": 13,
+    "ms": 1500,
+    "note": "git remote -v shows where origin points: the GitHub address you cloned from. origin is just its nickname.",
+    "out": "> git remote -v\norigin  https://github.com/4samtaylor/game-dev-exercises (fetch)\norigin  https://github.com/4samtaylor/game-dev-exercises (push)\n",
+    "do": [
+     {
+      "a": "say",
+      "p": 1,
+      "t": "this is origin"
+     }
+    ]
    }
   ]
  },
@@ -360,6 +373,32 @@
    },
    {
     "line": 3,
+    "ms": 1300,
+    "note": "git diff shows what you changed but haven't staged yet.",
+    "out": "> git diff\n",
+    "do": [
+     {
+      "a": "hl",
+      "p": 0,
+      "name": "runner.c"
+     }
+    ]
+   },
+   {
+    "line": 4,
+    "ms": 1500,
+    "note": "Minus is the old line, plus is the new one. One character changed: > became >=.",
+    "out": "-    if (col > 0 && ducking) dodged = 1;\n+    if (col >= 0 && ducking) dodged = 1;\n",
+    "do": [
+     {
+      "a": "say",
+      "p": 0,
+      "t": "> became >="
+     }
+    ]
+   },
+   {
+    "line": 6,
     "ms": 1100,
     "note": "git add puts runner.c in the next snapshot.",
     "out": "> git add runner.c\n",
@@ -377,7 +416,20 @@
     ]
    },
    {
-    "line": 4,
+    "line": 7,
+    "ms": 1400,
+    "note": "git diff --staged shows what is staged: exactly what the commit will hold. Same two lines, now in the photo pile.",
+    "out": "> git diff --staged\n-    if (col > 0 && ducking) dodged = 1;\n+    if (col >= 0 && ducking) dodged = 1;\n",
+    "do": [
+     {
+      "a": "hl",
+      "p": 0,
+      "name": "runner.c"
+     }
+    ]
+   },
+   {
+    "line": 8,
     "ms": 1800,
     "note": "Commit takes the snapshot. The message is the caption on it, and it lands on top of the history.",
     "out": "> git commit -m \"fix: ducking now dodges obstacles at column 0\"\n[main 3f2a1c9] fix: ducking now dodges obstacles at column 0\n 1 file changed, 1 insertion(+), 1 deletion(-)\n",
@@ -406,7 +458,7 @@
     ]
    },
    {
-    "line": 5,
+    "line": 9,
     "ms": 2000,
     "note": "git log reads the captions back, newest first. This is what your partner sees.",
     "out": "> git log --oneline\n",
@@ -436,10 +488,10 @@
     ]
    },
    {
-    "line": 6,
+    "line": 10,
     "ms": 1100,
-    "note": "A good one: type, then what changed. You know what to test without opening the code.",
-    "out": "3f2a1c9 fix: ducking now dodges obstacles at column 0\n",
+    "note": "A good one: type, then what changed. HEAD -> main marks where you are now. You know what to test without opening the code.",
+    "out": "3f2a1c9 (HEAD -> main) fix: ducking now dodges obstacles at column 0\n",
     "do": [
      {
       "a": "rate",
@@ -457,7 +509,7 @@
     ]
    },
    {
-    "line": 7,
+    "line": 11,
     "ms": 1100,
     "note": "'update' could mean anything. What did it update?",
     "out": "8b1e4d2 update\n",
@@ -478,7 +530,7 @@
     ]
    },
    {
-    "line": 8,
+    "line": 12,
     "ms": 1100,
     "note": "Same problem. In a month nobody can find which commit broke the jump.",
     "out": "c07a9e5 stuff\n",
@@ -669,7 +721,7 @@
     "line": 5,
     "ms": 1100,
     "note": "dir /b lists the files in your folder. We are on feature/jump.",
-    "out": "> dir /b\n",
+    "out": "> dir /b *.c\n",
     "do": [
      {
       "a": "hl",
@@ -749,7 +801,7 @@
     "line": 9,
     "ms": 900,
     "note": "Look at the folder again.",
-    "out": "> dir /b\n",
+    "out": "> dir /b *.c\n",
     "do": [
      {
       "a": "hl",
@@ -1978,6 +2030,27 @@
       "a": "hl",
       "p": 0,
       "name": "runner.exe"
+     }
+    ]
+   },
+   {
+    "line": 14,
+    "ms": 1500,
+    "note": "check-ignore names the rule that caught a file: line 2 of .gitignore, the *.obj pattern.",
+    "out": "> git check-ignore -v runner.obj\n.gitignore:2:*.obj\trunner.obj\n",
+    "do": [
+     {
+      "a": "hot",
+      "i": 1,
+      "at": 0,
+      "len": 0.1
+     },
+     {
+      "a": "hl",
+      "p": 0,
+      "name": "runner.obj",
+      "at": 0.1,
+      "len": 0.6
      }
     ]
    }

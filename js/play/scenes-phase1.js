@@ -1,5 +1,5 @@
 /* =====================================================================
-   RTSPlay phase 1 scenes: p1-recipe, p1-pipeline, p1-cursor, p1-compiler, p1-bat
+   RTSPlay phase 1 scenes: p1-recipe, p1-pipeline, p1-cursor, p1-compiler, p1-bat, p1-comments
    =====================================================================
    Load after scenes-core.js. Canvas is 400x250 logical px. Every scene lists its action names
    in `acts` (ignored by the engine, used by the spec checker).
@@ -30,6 +30,12 @@
      fix   {}                  the missing ; is added, everything goes green
    p1-bat       (build.bat) a script run in order: variable jar, the cl line, ERRORLEVEL note, the if gate
      quiet {}  set {}  cmd {}  expand {}  build {}  level { v }  gate { r:false }  ok {}
+   p1-comments  (comments) runner.c on the left, "what the compiler sees" on the right, rows aligned
+     keep  { rows:[n..] }      those source rows go across, indentation sliding away
+     cut   { rows:[n..] }      the comment part of those rows is struck out; it becomes one space chip
+     join  {}                  rows 13 and 14: two string literals glue into one
+     nest  {}                  pop-up card: wrapping code that already holds a block comment (they do not nest)
+     run   { row }             after the build: that compiler-view row runs (green marker)
    ===================================================================== */
 (function () {
   'use strict';
@@ -419,6 +425,165 @@
         /* banner */
         if (V.ok) { var ok = V.okK == null ? 1 : V.okK; c.save(); c.translate(346, 204); c.scale(Math.max(ok, 0), Math.max(ok, 0)); pill(c, 0, 0, 74, 40, C.accent, .2, 2); txt(c, 'BUILD OK', 0, 1, { size: 12, w: 800, col: C.accent }); c.restore(); }
         else { c.save(); c.globalAlpha = .4; c.strokeStyle = C.muted; c.setLineDash([3, 4]); c.strokeRect(309.5, 184.5, 74, 40); c.restore(); }
+      }
+    });
+  })();
+
+  /* ================= p1-comments ================= */
+  (function () {
+    /* s = the source row as drawn (long notes shortened), c = column where its comment starts,
+       sp = the comment leaves one space here in the compiler's view (a block comment leaves one in total) */
+    var R = [
+      { s: '#include <stdio.h>' }, { s: '' },
+      { s: '/* runner.c: shows the start screen.', c: 0, sp: 1 }, { s: '   Phase 1 practice. */', c: 0 }, { s: '' },
+      { s: 'int main(void) {' },
+      { s: '    // Title first, so the player...', c: 4, sp: 1 },
+      { s: '    printf("RUNNER\\n");' }, { s: '' },
+      { s: '    printf("Lives: 3\\n");   // three...', c: 28, sp: 1 },
+      { s: '    /* printf("Cheat mode on\\n"); */', c: 4, sp: 1 }, { s: '' },
+      { s: '    printf("Press any key"' }, { s: '           " to start\\n");' },
+      { s: '    return 0;' }, { s: '}' }
+    ];
+    var JOINED = 'printf("Press any key to start\\n");';
+    var LP = { x: 6, w: 212 }, RP = { x: 226, w: 168 }, PT = 6, PB = 220, Y0 = 30, LH = 12.1, FS = 7.2, FK = 7;
+    function rowY(r) { return Y0 + (r - 1) * LH; }
+    function codeOf(r) { var o = R[r - 1]; return (o.c == null ? o.s : o.s.slice(0, o.c)).trim(); }
+    function indentOf(r) { var s = R[r - 1].s; return s.length - s.replace(/^ +/, '').length; }
+    function mw(c, s, size, w) { c.save(); c.font = (w || 500) + ' ' + size + 'px ' + FONT; var v = c.measureText(s).width; c.restore(); return v; }
+    function spaceChip(c, C, x, y, k) {
+      c.save(); c.translate(x + 5, y); c.scale(k, k);
+      rrect(c, -5, -5, 10, 10, 2); c.fillStyle = rgba(C.purple, .22); c.fill(); c.strokeStyle = C.purple; c.lineWidth = 1; c.setLineDash([2, 1.5]); c.stroke(); c.setLineDash([]);
+      c.beginPath(); c.moveTo(-2.5, -.5); c.lineTo(-2.5, 2); c.lineTo(2.5, 2); c.lineTo(2.5, -.5); c.strokeStyle = C.purple; c.lineWidth = 1.2; c.stroke(); c.restore();
+    }
+    function panel(c, C, x, w, title, glow) {
+      c.fillStyle = C.surface2; c.fillRect(x, PT, w, PB - PT); c.fillStyle = rgba(C.border2, .8); c.fillRect(x, PT, w, 15);
+      c.strokeStyle = glow || C.border2; c.lineWidth = 1.2; c.strokeRect(x + .5, PT + .5, w - 1, PB - PT - 1);
+      txt(c, title, x + 8, PT + 8, { size: 8, col: C.muted2, align: 'left' });
+    }
+    reg('p1-comments', {
+      acts: ['keep', 'cut', 'join', 'nest', 'run'],
+      init: function () { return { kept: {}, cut: {}, focus: null, mode: '', joined: false, run: 0, ran: {}, nest: false }; },
+      apply: function (S, a) {
+        if (a.a !== 'nest') S.nest = false;
+        switch (a.a) {
+          case 'keep': a.rows.forEach(function (r) { S.kept[r] = true; }); S.focus = a.rows; S.mode = 'keep'; break;
+          case 'cut': a.rows.forEach(function (r) { S.cut[r] = true; }); S.focus = a.rows; S.mode = 'cut'; break;
+          case 'join': S.joined = true; S.focus = [13, 14]; S.mode = 'join'; break;
+          case 'nest': S.nest = true; S.focus = [10, 11]; S.mode = 'nest'; break;
+          case 'run': S.run = a.row; S.ran[a.row] = true; S.focus = null; S.mode = ''; break;
+        }
+      },
+      tween: function (V, a, lp, S) {
+        if (a.a !== 'nest' && S.nest) { V.nestFade = 1 - seg(lp, 0, .2); V.nest = V.nestFade > 0; }
+        switch (a.a) {
+          case 'keep': if (lp > 0) { V.focus = a.rows; V.mode = 'keep'; a.rows.forEach(function (r) { V.kept[r] = true; V.kk[r] = lp; }); } break;
+          case 'cut': if (lp > 0) { V.focus = a.rows; V.mode = 'cut'; a.rows.forEach(function (r) { V.cut[r] = true; V.ck[r] = lp; }); } break;
+          case 'join': if (lp > 0) { V.focus = [13, 14]; V.mode = 'join'; V.jk = lp; V.joined = lp >= .75; } break;
+          case 'nest': if (lp > 0) { V.focus = [10, 11]; V.mode = 'nest'; V.nest = true; V.nestK = lp; } break;
+          case 'run': if (lp > 0) { V.run = a.row; V.runK = lp; V.focus = null; } break;
+        }
+      },
+      prep: function (V) { V.kk = {}; V.ck = {}; V.jk = null; V.nestK = null; V.nestFade = null; V.runK = null; },
+      draw: function (c, V, T, C, rm) {
+        bg(c, C, W, H);
+        panel(c, C, LP.x, LP.w, 'runner.c  (what you wrote)');
+        panel(c, C, RP.x, RP.w, 'what the compiler sees', V.run ? rgba(C.accent, .6) : null);
+        var foc = V.focus || [], fcol = V.mode === 'cut' ? C.orange : V.mode === 'join' || V.mode === 'nest' ? C.purple : C.blue;
+        /* focus band on the source */
+        foc.forEach(function (r) { var y = rowY(r); c.fillStyle = rgba(fcol, .15); c.fillRect(LP.x + 1, y - LH / 2, LP.w - 2, LH); c.fillStyle = fcol; c.fillRect(LP.x + 1, y - LH / 2, 2.5, LH); });
+        var SX = LP.x + 24, KX = RP.x + 8;
+        /* source rows */
+        R.forEach(function (o, i) {
+          var r = i + 1, y = rowY(r);
+          txt(c, String(r), LP.x + 18, y, { size: 7, col: C.muted, align: 'right' });
+          if (!o.s) return;
+          var code = o.c == null ? o.s : o.s.slice(0, o.c), cm = o.c == null ? '' : o.s.slice(o.c);
+          if (code) txt(c, code, SX, y, { size: FS, col: C.text, align: 'left' });
+          if (cm) {
+            var cx = SX + mw(c, code, FS), cw = mw(c, cm, FS), ck = V.ck[r], gone = V.cut[r];
+            var fade = gone ? (ck != null ? seg(ck, .1, .5) : 1) : 0;
+            if (ck != null && ck > 0 && ck < 1) { c.fillStyle = rgba(C.orange, .22 * Math.sin(Math.PI * ck)); c.fillRect(cx - 1, y - 5.5, cw + 2, 11); }
+            txt(c, cm, cx, y, { size: FS, col: gone ? C.muted : C.muted2, align: 'left', al: 1 - .45 * fade });
+            if (fade > 0) { c.strokeStyle = rgba(C.orange, .75); c.lineWidth = 1; c.beginPath(); c.moveTo(cx, y + .5); c.lineTo(cx + cw * fade, y + .5); c.stroke(); }
+          }
+          /* indentation shown as dots while the row is being kept */
+          var kk = V.kk[r], ind = indentOf(r);
+          if (kk != null && ind && o.c !== ind) { var da = Math.sin(Math.PI * kk), sw = mw(c, ' ', FS);
+            for (var d = 0; d < ind; d++) txt(c, '·', SX + sw * d + sw / 2, y, { size: 9, w: 700, col: C.blue, al: da }); }
+        });
+        /* compiler's view */
+        c.save(); c.beginPath(); c.rect(RP.x + 1, PT + 15, RP.w - 2, PB - PT - 16); c.clip();
+        if (V.run) { var ry = rowY(V.run), rk = V.runK == null ? 1 : V.runK; c.fillStyle = rgba(C.accent, .1 + .1 * Math.sin(Math.PI * rk)); c.fillRect(RP.x + 1, ry - LH / 2, RP.w - 2, LH); }
+        Object.keys(V.ran).forEach(function (k) { var y = rowY(+k), on = +k === V.run;
+          c.fillStyle = on ? C.accent : rgba(C.accent, .45); c.beginPath(); c.moveTo(RP.x + 2, y - 3.5); c.lineTo(RP.x + 6, y); c.lineTo(RP.x + 2, y + 3.5); c.closePath(); c.fill(); });
+        if (V.run && !V.ran[V.run]) { var y2 = rowY(V.run); c.fillStyle = C.accent; c.beginPath(); c.moveTo(RP.x + 2, y2 - 3.5); c.lineTo(RP.x + 6, y2); c.lineTo(RP.x + 2, y2 + 3.5); c.closePath(); c.fill(); }
+        R.forEach(function (o, i) {
+          var r = i + 1, y = rowY(r);
+          if ((r === 13 || r === 14) && (V.joined || V.jk != null)) return;
+          var x = KX, code = codeOf(r);
+          if (V.kept[r] && code) {
+            var kk = V.kk[r], e = kk == null ? 1 : EZ.io(seg(kk, .2, .9)), al = kk == null ? 1 : seg(kk, 0, .35);
+            var shift = mw(c, ' ', FK) * (o.c === indentOf(r) ? 0 : indentOf(r)) * (1 - e);
+            txt(c, code, KX + shift, y, { size: FK, col: C.text, align: 'left', al: al });
+            x = KX + mw(c, code, FK) + 3;
+          } else if (o.c == null || !code) x = KX;
+          if (V.cut[r] && o.sp) {
+            if (code && !V.kept[r]) x = KX + mw(c, code, FK) + 3;
+            var ck = V.ck[r];
+            if (ck == null || ck >= .85) spaceChip(c, C, x, y, 1);
+            else if (ck > .35) { var t = EZ.io(seg(ck, .35, .85)); c.restore(); var fx = SX + mw(c, R[r - 1].s.slice(0, o.c), FS);
+              spaceChip(c, C, lerp(fx, x, t), y, .7 + .3 * t); c.save(); c.beginPath(); c.rect(RP.x + 1, PT + 15, RP.w - 2, PB - PT - 16); c.clip(); }
+          }
+        });
+        /* rows 13 and 14: two strings glued into one */
+        if (V.kept[13] && (V.joined || V.jk != null)) {
+          var a13 = codeOf(13), a14 = codeOf(14), y13 = rowY(13), y14 = rowY(14);
+          if (V.joined) {
+            txt(c, JOINED, KX, y13, { size: FK, col: C.text, align: 'left' });
+            var gk = V.jk == null ? 1 : seg(V.jk, .75, 1);
+            txt(c, 'glued into one string', KX, y14, { size: 6.8, col: C.purple, align: 'left', al: gk });
+            if (V.jk != null) { var qx = KX + mw(c, 'printf("Press any key', FK); c.fillStyle = rgba(C.purple, .3 * (1 - gk)); c.fillRect(qx - 2, y13 - 5.5, 6, 11); }
+          } else {
+            var t2 = EZ.io(seg(V.jk, .1, .55)), w13 = mw(c, a13, FK);
+            txt(c, a13, KX, y13, { size: FK, col: C.text, align: 'left' });
+            var x14 = lerp(KX, KX + w13, t2), yy = lerp(y14, y13, t2);
+            txt(c, a14, x14, yy, { size: FK, col: C.text, align: 'left' });
+            var sk = seg(V.jk, .55, .75);
+            if (sk > 0) { var qw = mw(c, '"', FK); c.fillStyle = rgba(C.orange, .35 * Math.sin(Math.PI * sk)); c.fillRect(KX + w13 - qw - 1, y13 - 5.5, qw * 2 + 2, 11); }
+          }
+        }
+        c.restore();
+        /* legend */
+        c.fillStyle = C.blue; c.fillRect(10, 230, 7, 7);
+        txt(c, 'kept, indent dropped', 21, 233.5, { size: 7.5, col: C.muted2, align: 'left' });
+        spaceChip(c, C, 136, 233.5, .9);
+        txt(c, 'comment = one space', 150, 233.5, { size: 7.5, col: C.muted2, align: 'left' });
+        c.fillStyle = C.accent; c.beginPath(); c.moveTo(262, 230); c.lineTo(267, 233.5); c.lineTo(262, 237); c.closePath(); c.fill();
+        txt(c, 'running (after build)', 272, 233.5, { size: 7.5, col: C.muted2, align: 'left' });
+        /* nesting pitfall card */
+        if (V.nest) {
+          var nk = V.nestK == null ? 1 : V.nestK, na = V.nestFade == null ? 1 : V.nestFade;
+          c.save(); c.globalAlpha = clamp(seg(nk, 0, .12)) * na;
+          rrect(c, 20, 104, 360, 112, 4); c.fillStyle = C.surface; c.fill(); c.strokeStyle = C.purple; c.lineWidth = 1.5; c.stroke();
+          txt(c, 'what if you wrap lines 10 and 11 in /* */ ?', 32, 117, { size: 8.5, w: 700, col: C.purple, align: 'left' });
+          var L1 = '/*  printf("Lives: 3\\n");', L2 = '    /* printf("Cheat mode on\\n"); */', L3 = '*/', NX = 36, NF = 8, ny = [138, 153, 168];
+          var sw2 = mw(c, L1, NF), endX = NX + mw(c, L2, NF), e2 = mw(c, L2.slice(0, L2.length - 2), NF);
+          var sweep = seg(nk, .1, .5);
+          c.fillStyle = rgba(C.purple, .2);
+          c.fillRect(NX - 2, ny[0] - 6, (sw2 + 4) * clamp(sweep * 2), 12);
+          if (sweep > .5) c.fillRect(NX - 2, ny[1] - 6, (endX - NX + 4) * clamp(sweep * 2 - 1), 12);
+          txt(c, L1, NX, ny[0], { size: NF, col: C.muted2, align: 'left' });
+          txt(c, L2, NX, ny[1], { size: NF, col: C.muted2, align: 'left' });
+          var ek = seg(nk, .45, .6);
+          if (ek > 0) { c.strokeStyle = rgba(C.purple, ek); c.lineWidth = 1.5; c.strokeRect(NX + e2 - 1.5, ny[1] - 6.5, endX - NX - e2 + 3, 13);
+            txt(c, '<- the comment ends here', endX + 8, ny[1], { size: 8, w: 700, col: C.purple, align: 'left', al: ek }); }
+          var sk2 = seg(nk, .62, .78);
+          txt(c, L3, NX, ny[2], { size: NF, w: 700, col: sk2 > 0 ? C.orange : C.muted2, align: 'left' });
+          if (sk2 > 0) { var w3 = mw(c, L3, NF, 700); c.strokeStyle = rgba(C.orange, sk2); c.lineWidth = 1.5; c.strokeRect(NX - 2, ny[2] - 6.5, w3 + 4, 13);
+            txt(c, '<- left over as code: error', NX + w3 + 10, ny[2], { size: 8, w: 700, col: C.orange, align: 'left', al: sk2 }); }
+          txt(c, 'to switch off a block like this, put // on each line', 200, 198, { size: 8, col: C.accent, al: seg(nk, .82, 1) });
+          c.restore();
+        }
       }
     });
   })();

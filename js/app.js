@@ -38,6 +38,7 @@ var GROUPS = window.RTS_GROUPS || [
   ['Setup', ['setup']],
   ['Reference', ['cheatsheet']],
   ['Sessions', ['session1', 'session2']],
+  ['Foundations', ['phase0']],
   ['Phases', ['phase1', 'phase2', 'phase2b', 'phase3', 'phase3b', 'phase3c', 'phase4', 'phase4b', 'phase5', 'phase6', 'phase7']],
   ['The Handoff', ['godot-bridge', 'sync-agenda']]
 ];
@@ -48,7 +49,7 @@ var sections = $$('#setup, .phase[id]').map(function (el) {
   return {
     el: el,
     id: el.id,
-    num: (($('.phase-n', el) || {}).textContent || '00').trim(),
+    num: (($('.phase-n', el) || {}).textContent || '>_').trim(),
     title: (t ? t.textContent : el.id).trim(),
     week: (($('.phase-week', el) || {}).textContent || '').trim(),
     isPhase: el.classList.contains('phase')

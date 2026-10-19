@@ -14,6 +14,42 @@
     <div class="phase-body">
       <div class="phase-inner">
 
+        <!-- THINGS CLAUDE MAY SHOW YOU -->
+        <div class="section-block acc-section" data-page="overview">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Things Claude may show you</span>&nbsp;&nbsp;memmove, malloc and free, function-pointer typedefs
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="prose prose--sm t-muted2 mb-14">Three things that turn up in Claude's answers before this course teaches them. You don't need to use them yet. You do need to recognise them, so you can read the line and decide whether to keep it.</div>
+
+            <div class="eyebrow eyebrow--tight eyebrow--xl t-accent mb-6">memmove vs memcpy (King §23.6)</div>
+            <div class="prose t-text mb-10">Both come from <span class="cmd">string.h</span> and copy a run of <strong>bytes</strong> from one memory address to a second one: destination first, then source, then the byte count. <span class="cmd">memcpy</span> assumes the two areas don't overlap, and if they do the result is undefined. <span class="cmd">memmove</span> is safe when they overlap, which is exactly what happens when you shift entries along the same array.</div>
+<pre class="code-panel mb-16"><span class="c-type">int</span> <span class="c-var">scores</span>[<span class="c-num">5</span>] = {<span class="c-num">50</span>, <span class="c-num">40</span>, <span class="c-num">30</span>, <span class="c-num">20</span>, <span class="c-num">10</span>};
+<span class="c-cm">// open a gap at slot 1: slots 1 to 3 move up to 2 to 4</span>
+<span class="c-fn">memmove</span>(&amp;<span class="c-var">scores</span>[<span class="c-num">2</span>], &amp;<span class="c-var">scores</span>[<span class="c-num">1</span>], <span class="c-num">3</span> * <span class="c-kw">sizeof</span> <span class="c-var">scores</span>[<span class="c-num">0</span>]);
+<span class="c-var">scores</span>[<span class="c-num">1</span>] = <span class="c-num">45</span>;   <span class="c-cm">// now 50 45 40 30 20</span></pre>
+
+            <div class="eyebrow eyebrow--tight eyebrow--xl t-accent mb-6">malloc and free (King §17.1, §17.4)</div>
+            <div class="prose t-text mb-10"><span class="cmd">malloc</span> from <span class="cmd">stdlib.h</span> asks for a block of bytes while the program runs and gives back a pointer to it, or <span class="cmd">NULL</span> if there's none to spare, so always check. The block stays yours until you hand it back with <span class="cmd">free</span>. Forget and the game leaks memory; use the pointer after freeing it and you get undefined behaviour. If the size is fixed and small, a plain array is simpler, so ask why before you accept it.</div>
+<pre class="code-panel mb-16"><span class="c-type">int</span> <span class="c-var">count</span> = <span class="c-num">64</span>;   <span class="c-cm">// say, read from a level file</span>
+<span class="c-type">Enemy</span> *<span class="c-var">enemies</span> = <span class="c-fn">malloc</span>((<span class="c-type">size_t</span>)<span class="c-var">count</span> * <span class="c-kw">sizeof</span> *<span class="c-var">enemies</span>);
+<span class="c-kw">if</span> (<span class="c-var">enemies</span> == <span class="c-kw">NULL</span>) {
+    <span class="c-kw">return</span> <span class="c-num">1</span>;
+}
+<span class="c-cm">// ... use enemies[0] to enemies[count - 1] ...</span>
+<span class="c-fn">free</span>(<span class="c-var">enemies</span>);
+<span class="c-var">enemies</span> = <span class="c-kw">NULL</span>;   <span class="c-cm">// so a stray use fails loudly</span></pre>
+
+            <div class="eyebrow eyebrow--tight eyebrow--xl t-accent mb-6">Function-pointer typedefs (King §17.7, §18.4)</div>
+            <div class="prose t-text mb-10">You met function pointers in Phase 3.75. Claude usually wraps the type in a <span class="cmd">typedef</span> so it reads like any other type. Read it from the name outwards: <span class="cmd">HitFn</span> names a pointer to any function taking an <span class="cmd">Enemy *</span> and an <span class="cmd">int</span> and returning nothing. Without the typedef, an array of four of them is <span class="cmd">void (*on_hit[4])(Enemy *, int);</span>, which is much harder to read.</div>
+<pre class="code-panel"><span class="c-kw">typedef</span> <span class="c-type">void</span> (*<span class="c-type">HitFn</span>)(<span class="c-type">Enemy</span> *<span class="c-var">e</span>, <span class="c-type">int</span> <span class="c-var">damage</span>);
+
+<span class="c-type">HitFn</span> <span class="c-var">on_hit</span> = <span class="c-var">hit_armoured</span>;   <span class="c-cm">// no (): the function itself, not a call</span>
+<span class="c-fn">on_hit</span>(&amp;<span class="c-var">boss</span>, <span class="c-num">30</span>);              <span class="c-cm">// calls hit_armoured(&amp;boss, 30)</span></pre>
+          </div>
+        </div>
+
         <div class="section-block" data-page="concept:prompt-signature">
           <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
           <div class="section-block-body">

@@ -1,0 +1,1028 @@
+{
+ "_about": "Concept ladder for the Learn stage. One concept per rung. Rung ids are progress keys: never rename. skills are glossary.json ids that move to Practiced when the check is passed. goals maps checkpoint data-ids to the rung ids that teach them. lang: c programs are compiled and run to verify each check; text rungs are diagrams to read.",
+ "phase": "phase0",
+ "rungs": [
+  {
+   "id": "bits",
+   "title": "Bits and bytes",
+   "kick": "bit · byte · 8 bits · 256 patterns · sizes",
+   "mins": 12,
+   "skills": [
+    "bit",
+    "byte"
+   ],
+   "builds": "Nothing yet. This is the first page of the roadmap: no setup, no code to type.",
+   "why": "Everything your game stores, from the score to every pixel on screen, ends up as bits. Once you know how many bits a thing gets, you know how big a number it can hold, and why some bugs turn a 2-byte counter at 32,767 into a negative number.",
+   "learn": {
+    "parts": [
+     [
+      "The idea",
+      "<p>A computer stores everything as switches that are either off or on. One switch is a <b>bit</b>, and we write its two states as 0 and 1. A single bit can only say yes or no: is the player alive, is the shield up. To store anything bigger you line bits up, and the pattern they make is the value.</p>"
+     ],
+     [
+      "Eight bits make a byte",
+      "<p>Bits are handled in groups of eight called a <b>byte</b>. Memory is counted in bytes, files are measured in bytes, and every type in C is some whole number of bytes. Each extra bit doubles the number of patterns you can make:</p><ul><li>1 bit: 2 patterns (0, 1)</li><li>2 bits: 4 patterns (00, 01, 10, 11)</li><li>8 bits, one byte: 256 patterns, so 0 to 255</li><li>16 bits, two bytes: 65,536 patterns</li><li>32 bits, four bytes: about 4.29 billion patterns</li></ul><p>That's the whole trick. A type with more bytes can hold a bigger number, and a type with fewer bytes runs out sooner.</p>"
+     ],
+     [
+      "How big things get",
+      "<p>A kilobyte (KB) is 1,024 bytes and a megabyte (MB) is 1,024 KB, the way Windows counts them. Picture one frame of a game at 1920 by 1080 pixels, with 4 bytes per pixel (red, green, blue and one spare). That's 2,073,600 pixels times 4, or 8,294,400 bytes: nearly 8 MB redrawn 60 times a second. Your score, by comparison, is 4 bytes.</p>"
+     ],
+     [
+      "Mistakes beginners make",
+      "<p>Mixing up bits and bytes is the classic. Internet speeds are quoted in megabits, so a 100 Mbps line moves at most about 12 MB a second. The other mistake is assuming a number can grow forever. It can't: a byte that holds 255 has nowhere to go when you add 1. You'll see exactly what happens in Why C looks the way it does.</p>"
+     ],
+     [
+      "On your PC",
+      "<p>Your PC is <b>x64</b>, which means its processor works on 64 bits at a time. With MSVC on x64 Windows, a <code>char</code> is 1 byte, a <code>short</code> 2, an <code>int</code> 4, a <code>long</code> also 4 (unlike Linux, where it's 8), a <code>long long</code> 8, and an address 8. You'll meet each of these types properly in Phase 02.</p><p><b>This pays off in</b> Phase 02's types and “How big a number can be”, where every type's range comes straight from its byte count.</p>"
+     ]
+    ],
+    "king": "§7.1 (integer types and their ranges); King's chapter 7 assumes you know bits already, so read it after this page"
+   },
+   "code": "#include <stdio.h>\n\nint main(void) {\n    unsigned char lives = 3;\n    short level = 12;\n    int score = 1500;\n\n    printf(\"lives %d: %d byte\\n\", lives, (int)sizeof lives);\n    printf(\"level %d: %d bytes\\n\", level, (int)sizeof level);\n    printf(\"score %d: %d bytes\\n\", score, (int)sizeof score);\n    printf(\"1 byte = 8 bits = 256 patterns\\n\");\n    return 0;\n}",
+   "walk": [
+    [
+     1,
+     "<b>#include &lt;stdio.h&gt;</b> brings in printf, the tool that prints text. Phase 01 explains this line properly. For now, read the program as a story."
+    ],
+    [
+     4,
+     "<code>unsigned char lives = 3;</code> makes a box called lives that is <b>one byte</b> big and puts 3 in it. One byte holds 0 to 255, plenty for lives."
+    ],
+    [
+     5,
+     "A <code>short</code> is two bytes: 16 bits, room for 65,536 patterns."
+    ],
+    [
+     6,
+     "An <code>int</code> is four bytes: 32 bits. This is C's everyday whole number, and the type your score will use."
+    ],
+    [
+     8,
+     "<code>printf</code> prints the text in quotes. Each <code>%d</code> is a gap that gets filled with a number, in order: first lives, then its size. <code>sizeof lives</code> asks the compiler how many bytes lives takes. The <code>(int)</code> in front turns that answer into a plain whole number so <code>%d</code> can print it."
+    ],
+    [
+     10,
+     "Same again for score: 1500, using 4 bytes. <code>\\n</code> at the end of each line moves to a new line."
+    ],
+    [
+     11,
+     "A reminder of the rule: 8 bits make a byte, and 8 bits can be arranged 256 ways."
+    ],
+    [
+     12,
+     "<code>return 0;</code> ends the program and tells Windows it finished fine."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a row of light switches. One switch is a bit. A panel of eight is a byte. The pattern of ons and offs is the number.",
+   "check": {
+    "q": "How many bits does score use on x64 Windows?",
+    "opts": [
+     "4",
+     "8",
+     "16",
+     "32"
+    ],
+    "a": 3,
+    "hint": "The program prints its size in bytes. How many bits are in each byte?",
+    "why": "score is an int: 4 bytes, and 4 times 8 is 32 bits.",
+    "miss": {
+     "0": "4 is the number of bytes. Each byte is 8 bits.",
+     "1": "8 is the bits in one byte. An int has four of them.",
+     "2": "16 bits is two bytes, the size of a short."
+    }
+   },
+   "tryit": {
+    "task": "Fill in the gaps without running anything: how many patterns fit in each size?",
+    "code": "1 bit   ->  2 patterns\n4 bits  ->  ____ patterns\n8 bits  ->  ____ patterns\n16 bits ->  ____ patterns",
+    "answer": "16, 256 and 65,536. Each extra bit doubles the count."
+   },
+   "qa": [
+    [
+     "Why 8 bits in a byte and not 10?",
+     "Eight became the standard in the 1960s and 70s because it fits one character of text comfortably and splits neatly into two halves of four. Every PC you'll ever use works in 8-bit bytes."
+    ],
+    [
+     "What does the 64 in “64-bit Windows” mean?",
+     "The processor's working storage (its registers, in Registers and the stack) is 64 bits wide, and so are addresses. That's why an address is 8 bytes on your PC. It doesn't make an int bigger: int stays 4 bytes."
+    ],
+    [
+     "Is a kilobyte 1,000 or 1,024 bytes?",
+     "Both are in use. Windows Explorer counts 1,024. Drive makers and some standards use 1,000 (and call 1,024 a kibibyte, KiB). For this course, either answer is close enough; just know why the numbers on a drive box don't match Explorer."
+    ],
+    [
+     "How many bytes is a letter?",
+     "A plain English letter fits in one byte: that's what <code>char</code> is for. You'll see the numbers behind letters in Input and output."
+    ]
+   ],
+   "bridge": "You know what a byte is. Next: <b>binary and hex</b>, the two ways programmers write a byte's pattern down.",
+   "lang": "c"
+  },
+  {
+   "id": "binary-hex",
+   "title": "Binary and hex",
+   "kick": "base 2 · base 16 · 0x · %x · colours",
+   "mins": 15,
+   "skills": [
+    "binary",
+    "hex"
+   ],
+   "builds": "Bits and bytes: a byte is 8 bits, 256 patterns.",
+   "why": "The debugger, colour values and error codes all show numbers in hex, and Windows crash messages look like 0xC0000005. Reading hex turns those from noise into information, and it's the only sane way to write a byte's bit pattern.",
+   "learn": {
+    "parts": [
+     [
+      "The idea",
+      "<p>Decimal is one way to write a number, using ten digits. <b>Binary</b> writes the same number with two digits, 0 and 1, so it shows the bits exactly. <b>Hexadecimal</b> (hex) uses sixteen digits, and each hex digit stands for exactly four bits. Same number, three spellings.</p>"
+     ],
+     [
+      "Reading binary",
+      "<p>In decimal each place is worth ten times the one to its right: ones, tens, hundreds. In binary each place is worth double: 1, 2, 4, 8, 16, 32, 64, 128 for a byte, reading right to left. Add up the places that hold a 1:</p><pre>binary  1 1 0 1\nworth   8 4 2 1\n        8+4+0+1 = 13</pre><p>So the byte <code>11001000</code> is 128 + 64 + 8 = 200. Counting up in binary goes 0, 1, 10, 11, 100, 101, 110, 111, 1000: the same carrying you do in decimal, just at 2 instead of 10.</p>"
+     ],
+     [
+      "Hex: four bits per digit",
+      "<p>Hex digits run 0 to 9, then A (10), B (11), C (12), D (13), E (14), F (15). Four bits make 16 patterns, so one hex digit covers four bits, and a byte is always exactly two hex digits. To convert, split the bits into fours:</p><pre>200 = 1100 1000\n         C    8   -> 0xC8</pre><p>Going back: C is 12, times 16 is 192, plus 8 is 200. In C code, <code>0x</code> in front marks a hex number, so <code>0xFF</code> is 255, the biggest byte. Colours are three bytes side by side: <code>0xFF8800</code> is red FF, green 88, blue 00, a bright orange.</p>"
+     ],
+     [
+      "Mistakes beginners make",
+      "<ul><li>Forgetting which base a number is in. Is “10” ten, two or sixteen? Writing <code>0x</code> removes the doubt.</li><li>A leading zero in C means <b>octal</b> (base 8), an old base you won't use. <code>010</code> is 8, not 10. Never pad numbers with zeros in code.</li><li>Expecting printf's <code>%x</code> to add the 0x. It doesn't, and it prints lowercase letters: 200 comes out as <code>c8</code>.</li></ul>"
+     ],
+     [
+      "On your PC",
+      "<p>Windows Calculator has a Programmer mode (menu, then Programmer) that shows any number in HEX, DEC and BIN at once. It's the fastest way to check your conversions. When a program crashes, Windows reports codes like 0xC0000005 (access violation) in hex, and the Visual Studio debugger shows addresses in hex too. One catch for later: Win32's <code>RGB()</code> stores a colour with blue in the high byte and red in the low byte, the reverse of web-style 0xRRGGBB.</p><p><b>This pays off in</b> the debugger in Phase 3.75, and in Phase 05, where colours and bit flags are written in hex.</p>"
+     ]
+    ],
+    "king": "§7.1 (octal and hexadecimal numbers and constants), then §20.1 (bitwise operators) when you reach Phase 05"
+   },
+   "code": "#include <stdio.h>\n\nint main(void) {\n    unsigned int coins = 200;\n    unsigned int orange = 0xFF8800;\n\n    printf(\"coins:  %u in decimal, %x in hex\\n\", coins, coins);\n    printf(\"orange: %u in decimal, %x in hex\\n\", orange, orange);\n    printf(\"0x10 = %u, 0xFF = %u\\n\", 0x10u, 0xFFu);\n    return 0;\n}",
+   "walk": [
+    [
+     4,
+     "<code>unsigned int</code> is a 4-byte whole number with no negatives. Hex is about bit patterns, and bit patterns are best kept unsigned. coins starts at 200."
+    ],
+    [
+     5,
+     "<code>0xFF8800</code> is a hex number in the source code. The compiler turns it into the same bits it would store for 16,746,496."
+    ],
+    [
+     7,
+     "Two gaps in one line. <code>%u</code> prints an unsigned number in decimal, <code>%x</code> prints the same number in hex. Both are filled with coins, so you see 200 and c8."
+    ],
+    [
+     8,
+     "The colour: decimal 16746496, hex ff8800. The hex shows the three bytes; the decimal hides them. That's why programmers use hex for colours."
+    ],
+    [
+     9,
+     "<code>0x10u</code> is hex 10: one sixteen and no ones, so 16. The <code>u</code> on the end just marks it unsigned to match <code>%u</code>."
+    ],
+    [
+     10,
+     "Done. The value never changed; only the way printf spelled it."
+    ]
+   ],
+   "model": "<b>Mental model:</b> one number, three outfits. Decimal is for people, binary shows every switch, and hex is binary in shorthand: one hex digit per four switches.",
+   "check": {
+    "q": "What does the first line print?",
+    "opts": [
+     "coins:  200 in decimal, 200 in hex",
+     "coins:  200 in decimal, c8 in hex",
+     "coins:  200 in decimal, 0xC8 in hex",
+     "coins:  c8 in decimal, 200 in hex"
+    ],
+    "a": 1,
+    "hint": "Split 200 into 1100 1000. What hex digit is each group of four?",
+    "why": "200 is 1100 1000 in binary; 1100 is C and 1000 is 8. %x prints hex in lowercase with no 0x in front, so it shows c8.",
+    "miss": {
+     "0": "The second gap is %x, so the same value is spelled in hex, and 200 in hex isn't 200.",
+     "2": "%x never adds 0x, and it uses lowercase letters.",
+     "3": "The gaps are filled in order: %u (decimal) first, then %x (hex)."
+    }
+   },
+   "tryit": {
+    "task": "Convert these on paper, then check them in Windows Calculator's Programmer mode.",
+    "code": "binary 0000 1111  =  ____ decimal  =  0x____\ndecimal 255       =  0x____\n0x40              =  ____ decimal\n0xFF0000          =  which colour?",
+    "answer": "15 and 0x0F (or 0xF); 0xFF; 64; pure red (red FF, green 00, blue 00)."
+   },
+   "qa": [
+    [
+     "How do I convert a decimal number to binary in my head?",
+     "Take away the biggest place value that fits, write 1 there, and repeat. 200: 128 fits (72 left), 64 fits (8 left), 32 and 16 don't, 8 fits (0 left), the rest are 0. That gives 11001000."
+    ],
+    [
+     "How are negative numbers stored?",
+     "In a form called two's complement: the top bit means negative. In a 4-byte int, -1 is all 32 bits on, which prints as <code>ffffffff</code> with %x. You don't need the details now; just don't be surprised when the debugger shows a negative number as a hex value starting with f."
+    ],
+    [
+     "Why not just write everything in binary?",
+     "It's too long to read. A 4-byte value is 32 binary digits but only 8 hex digits, and you can still see every bit by expanding each hex digit to four."
+    ],
+    [
+     "Can C write binary numbers directly?",
+     "Standard C17 can't. C23 adds <code>0b1010</code>, and gcc and clang already accept it, but under /std:c17 MSVC may not, so this course writes bit patterns in hex."
+    ]
+   ],
+   "bridge": "You can read a byte in hex. Next: <b>memory as numbered boxes</b>, where those bytes actually live.",
+   "lang": "c"
+  },
+  {
+   "id": "memory",
+   "title": "Memory as numbered boxes",
+   "kick": "RAM · address · %p · 8-byte addresses · little-endian",
+   "mins": 15,
+   "skills": [
+    "address",
+    "little-endian"
+   ],
+   "builds": "Bits and bytes (every type is some bytes) and Binary and hex (addresses are written in hex).",
+   "why": "Every variable you make is a few bytes at a numbered spot in memory. Variables, arrays and pointers, the three things that make or break a C program, all make sense the moment you picture memory as a long numbered row.",
+   "learn": {
+    "parts": [
+     [
+      "The idea",
+      "<p>Memory (RAM) is one enormous row of bytes, and every byte has a number called its <b>address</b>, like house numbers on a very long street. To read or change a value, the processor names the address. A variable is just a name you give to a few bytes on that street, so you don't have to remember the number.</p>"
+     ],
+     [
+      "A variable takes several boxes",
+      "<p>An int is 4 bytes, so it fills four neighbouring addresses, and its address is the number of the first one. Here's score holding 1500 (hex 0x000005DC), with made-up addresses:</p><pre>address   byte\n0x1000    DC    &lt;- score starts here\n0x1001    05\n0x1002    00\n0x1003    00\n0x1004    03    &lt;- lives starts here\n0x1005    00\n0x1006    00\n0x1007    00</pre><p>Notice the bytes look backwards: the lowest byte (DC) sits at the lowest address. That's called <b>little-endian</b>, and every x64 processor works this way. You rarely notice, except when you look at raw memory in the debugger.</p>"
+     ],
+     [
+      "Addresses are big numbers",
+      "<p>On 64-bit Windows an address is 8 bytes, which is why <code>%p</code> prints 16 hex digits. Each program sees its own private set of addresses (that's virtual memory, in The OS, processes and files), and Windows shuffles where things go on every run, so the numbers change each time you run. That's deliberate: it makes some attacks harder.</p>"
+     ],
+     [
+      "Mistakes beginners make",
+      "<ul><li>Mixing up the address and the value. The house number isn't who lives there: score's address might be 0x1000 while its value is 1500.</li><li>Assuming variables sit in the order you wrote them. The compiler decides the layout, and it may leave gaps.</li><li>Expecting the same address next run. It changes, so never write down an address and use it later.</li></ul>"
+     ],
+     [
+      "On your PC",
+      "<p>MSVC prints <code>%p</code> as 16 hex digits with no 0x, like <code>000000A3F9D6FBA0</code>. gcc on Linux prints a shorter form with 0x in front. Your PC probably has 8 or 16 GB of RAM, billions of these numbered boxes, and the debugger's Memory window in Visual Studio shows them as rows of hex bytes.</p><p><b>This pays off in</b> Phase 02's variables, Phase 03's arrays (boxes side by side) and Phase 3.5's pointers, which are variables that hold an address.</p>"
+     ]
+    ],
+    "king": "§11.1 opens with memory as numbered bytes, though it's in the pointers chapter: skim its first page now, read the rest in Phase 3.5"
+   },
+   "code": "#include <stdio.h>\n\nint main(void) {\n    int score = 1500;\n    int lives = 3;\n    char key = 'w';\n\n    printf(\"score holds %d at %p\\n\", score, (void *)&score);\n    printf(\"lives holds %d at %p\\n\", lives, (void *)&lives);\n    printf(\"key holds %c at %p\\n\", key, (void *)&key);\n    printf(\"an address is %d bytes\\n\", (int)sizeof &score);\n    return 0;\n}",
+   "walk": [
+    [
+     4,
+     "score gets 4 bytes somewhere in memory, and 1500 goes into them."
+    ],
+    [
+     5,
+     "lives gets another 4 bytes. Where they land relative to score is up to the compiler."
+    ],
+    [
+     6,
+     "A <code>char</code> is a single byte. Here it holds the letter w (stored as a number, as Input and output shows)."
+    ],
+    [
+     8,
+     "<code>&amp;score</code> means “the address of score”. <code>%p</code> prints an address in hex. The <code>(void *)</code> is a label printf expects on an address; read it as “this is an address”. Your number will differ from anyone else's, and from your next run."
+    ],
+    [
+     10,
+     "<code>%c</code> prints a value as a character, so you see w, then key's address."
+    ],
+    [
+     11,
+     "<code>sizeof &amp;score</code>: how many bytes an address takes. On x64 the answer is always 8."
+    ],
+    [
+     12,
+     "The program ends, and Windows takes all those boxes back."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a street of identical houses, each with a number on the door. A variable is a family that rents a few houses in a row; its address is the number of the first one.",
+   "check": {
+    "q": "What does the last line print on x64 Windows?",
+    "opts": [
+     "an address is 4 bytes",
+     "an address is 8 bytes",
+     "an address is 16 bytes",
+     "It changes every run"
+    ],
+    "a": 1,
+    "hint": "64-bit Windows means 64-bit addresses. How many bytes is 64 bits?",
+    "why": "On x64 every address is 64 bits, which is 8 bytes. The addresses themselves change from run to run, but their size never does.",
+    "miss": {
+     "0": "4 bytes was the address size on old 32-bit Windows. Your PC is 64-bit.",
+     "2": "%p prints 16 hex digits, but each hex digit is half a byte, so that's 8 bytes.",
+     "3": "The addresses change; the number of bytes an address takes doesn't."
+    }
+   },
+   "tryit": {
+    "task": "An int at address 0x2000 holds 258 (hex 0x00000102). Fill in its four bytes, remembering x64 is little-endian.",
+    "code": "address   byte\n0x2000    ____\n0x2001    ____\n0x2002    ____\n0x2003    ____",
+    "answer": "02, 01, 00, 00. The lowest byte (02) goes at the lowest address."
+   },
+   "qa": [
+    [
+     "Why do my addresses differ from the ones on this page?",
+     "Windows picks different starting points every run (address space layout randomisation, ASLR), and the compiler chooses the layout. Only the pattern matters: different variables, different addresses."
+    ],
+    [
+     "Is memory the same as storage on my drive?",
+     "No. RAM is fast and is wiped when the power goes off or the program ends. The drive (SSD) is slow but keeps files. A running game lives in RAM; its save file lives on the drive."
+    ],
+    [
+     "Why would anyone need little-endian?",
+     "It's how Intel's chips have always worked, and it makes a few things simpler for the hardware. For you it only matters when you look at raw bytes in the debugger or read a file someone else's program wrote."
+    ],
+    [
+     "What's at address 0?",
+     "Nothing your program may touch. Windows keeps the lowest addresses unmapped on purpose, so a program that uses address 0 by mistake crashes straight away instead of corrupting something. Phase 3.5 calls that address NULL."
+    ]
+   ],
+   "bridge": "You know where data lives. Next: <b>the CPU's loop</b>, the part that actually does the work on it.",
+   "lang": "c"
+  },
+  {
+   "id": "cpu",
+   "title": "The CPU's loop",
+   "kick": "fetch · decode · execute · RIP · GHz · cores",
+   "mins": 12,
+   "skills": [
+    "cpu",
+    "instruction"
+   ],
+   "builds": "Memory as numbered boxes: instructions live at addresses too.",
+   "why": "The CPU does one simple thing over and over: grab an instruction, do it, move on. Knowing that explains why code runs in order, why one C line can cost several steps, and how a game manages 60 frames a second.",
+   "learn": {
+    "parts": [
+     [
+      "The idea",
+      "<p>The <b>CPU</b> (central processing unit) is the chip that runs programs. It doesn't understand C. It understands <b>instructions</b>: tiny commands like “copy these 4 bytes”, “add these two numbers” or “jump to that address”, each stored as a few bytes in memory. A program is a long list of them.</p>"
+     ],
+     [
+      "The loop, step by step",
+      "<p>The CPU keeps the address of the next instruction in a special slot called <b>RIP</b> (the instruction pointer). Then it repeats four steps forever:</p><ol><li><b>Fetch</b>: read the bytes at the address in RIP.</li><li><b>Decode</b>: work out which instruction they are.</li><li><b>Execute</b>: do it.</li><li><b>Next</b>: move RIP to the following instruction.</li></ol><p>Decisions and loops are just instructions that change RIP. A compare sets a flag; a jump says “if that flag is set, carry on from address X instead”. Every <code>if</code> and <code>while</code> you'll write becomes compares and jumps.</p>"
+     ],
+     [
+      "How fast is that?",
+      "<p>A 3 GHz CPU ticks 3 billion times a second, and modern chips finish several instructions per tick by overlapping them. A game at 60 frames a second has 16.7 milliseconds per frame, which is about 50 million ticks. That sounds endless, but drawing a whole screen, moving every enemy and checking every collision eats into it fast. Your CPU also has several <b>cores</b>: each is a complete fetch-decode-execute engine, so several programs (or parts of one) really do run at once.</p><p>Memory is slow compared with the CPU. To hide that, the chip keeps copies of recently used bytes in small fast stores called <b>caches</b>. Reading memory in order, box after box, is much faster than jumping about.</p>"
+     ],
+     [
+      "Mistakes beginners make",
+      "<ul><li>Thinking one C line is one step. <code>score = score + 10;</code> is three instructions, and a printf call is thousands.</li><li>Thinking the CPU reads your .c file. It never sees C: the compiler translates it first (Source to machine code).</li><li>Thinking faster means cleverer. The CPU only follows instructions, in order, exactly. If they're wrong, it's wrong very quickly.</li></ul>"
+     ],
+     [
+      "On your PC",
+      "<p>Task Manager's Performance tab shows your CPU's speed in GHz and how many cores it has. Later, the Visual Studio debugger's Disassembly window shows the real instructions MSVC made from your code, written like the listing on this page (with <code>dword ptr</code> meaning “4 bytes at”).</p><p><b>This pays off in</b> Phase 2.5's loops (why each pass costs time) and Phase 4.5's game loop, where the whole frame has to fit in its 16.7 ms.</p>"
+     ]
+    ],
+    "king": "Not in King. General background; see Microsoft Learn: x64 Architecture (Windows debugger docs)"
+   },
+   "code": "; one line of C:   score = score + 10;\n; what MSVC makes of it (x64, /Od, simplified, made-up addresses)\n\naddress  bytes        instruction        meaning\n0x1000   8B 44 24 20  mov eax, [score]   eax = score (memory to CPU)\n0x1004   83 C0 0A     add eax, 10        eax = eax + 10\n0x1007   89 44 24 20  mov [score], eax   score = eax (CPU to memory)\n0x100B   ...          (the next line's instructions)\n\n; the CPU's loop, billions of times a second:\n;   1 fetch    read the instruction at the address in RIP\n;   2 decode   work out what those bytes mean\n;   3 execute  do it: add, copy, compare, jump\n;   4 next     move RIP on to the following instruction",
+   "walk": [
+    [
+     1,
+     "One ordinary line of C. You'll write lines like this in Phase 02. The lines starting with <code>;</code> are notes, not instructions."
+    ],
+    [
+     5,
+     "<b>mov</b> copies. This one copies the 4 bytes of score from memory into <b>eax</b>, a storage slot inside the CPU (a register, the next concept). The CPU can only do maths on values it's holding."
+    ],
+    [
+     6,
+     "<b>add</b> adds 10 to eax. This happens entirely inside the CPU: memory still says the old score."
+    ],
+    [
+     7,
+     "Another mov, the other way: eax goes back into score's 4 bytes. Only now has score changed in memory."
+    ],
+    [
+     8,
+     "The addresses go up by each instruction's size (4, 3, then 4 bytes), and RIP moves through them in order."
+    ],
+    [
+     11,
+     "<b>Fetch</b>: RIP says where the next instruction is."
+    ],
+    [
+     13,
+     "<b>Execute</b>: the actual work. A jump instruction would change RIP here, which is how if and loops work."
+    ],
+    [
+     14,
+     "<b>Next</b>: RIP moves on, and the loop starts again. It never stops while the PC is on."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a very fast cook with a recipe and a finger on the current line. Read the line, do it, move the finger down. A jump is “go back to step 3”.",
+   "check": {
+    "q": "The CPU has just finished the add at 0x1004. Which address does it fetch next?",
+    "opts": [
+     "0x1005",
+     "0x1007",
+     "0x1000",
+     "0x100B"
+    ],
+    "a": 1,
+    "hint": "The add takes 3 bytes (83 C0 0A). Where does the next instruction start?",
+    "why": "The add starts at 0x1004 and is 3 bytes long, so the next instruction starts at 0x1007. RIP moves past the whole instruction, not one byte.",
+    "miss": {
+     "0": "Instructions have different lengths. RIP jumps past all 3 bytes of the add.",
+     "2": "That would be a jump back to the start. Nothing here jumps, so RIP keeps going forward.",
+     "3": "That's the instruction after next. The mov at 0x1007 comes first."
+    }
+   },
+   "tryit": {
+    "task": "Predict what the CPU does for lives = lives - 1; using the same pattern.",
+    "code": "mov eax, [lives]\n____ eax, 1\nmov ____, eax",
+    "answer": "sub eax, 1   then   mov [lives], eax. Load, change in the register, store back."
+   },
+   "qa": [
+    [
+     "What is machine code, exactly?",
+     "The bytes on the left of the listing: 8B 44 24 20 and so on. The words beside them (mov, add) are assembly language, a human spelling of the same thing. The CPU only ever sees the bytes."
+    ],
+    [
+     "Why not write in assembly then, if it's what the CPU runs?",
+     "It's slow to write, easy to get wrong, and tied to one kind of CPU. C gives you most of the control with far less typing, and the compiler is very good at choosing instructions."
+    ],
+    [
+     "Does more cores make my game faster?",
+     "Only if the game splits its work across threads. A simple game like yours runs on one core; the others run Windows and everything else. That's plenty for a 2D game."
+    ],
+    [
+     "What does the 'x64' in the listing's title mean?",
+     "The instruction set: the list of instructions this family of CPUs understands. AMD and Intel desktop chips both use x64. Phones use ARM, a different set, which is why an .exe built for your PC won't run on a phone."
+    ]
+   ],
+   "bridge": "You've met registers in passing. Next: <b>registers and the stack</b>, where the CPU keeps working values and function calls.",
+   "lang": "text"
+  },
+  {
+   "id": "stack",
+   "title": "Registers and the stack",
+   "kick": "registers · RSP · stack frame · grows down · 1 MB",
+   "mins": 15,
+   "skills": [
+    "register",
+    "stack",
+    "stack-frame"
+   ],
+   "builds": "Memory as numbered boxes and The CPU's loop (eax and RIP are registers).",
+   "why": "Every function call builds a little workspace on the stack and throws it away on return. That one fact explains why local variables vanish, why the debugger's Call Stack window looks the way it does, and what a stack overflow crash is.",
+   "learn": {
+    "parts": [
+     [
+      "Registers: the CPU's hands",
+      "<p>A <b>register</b> is a storage slot inside the CPU itself, the fastest memory there is. x64 has 16 general-purpose registers, each 64 bits wide, with names like RAX, RCX, RDX and R8 to R15 (EAX is the lower half of RAX). The CPU loads values into registers, works on them there, and stores results back. Two registers have special jobs: <b>RIP</b> holds the next instruction's address, and <b>RSP</b> holds the top of the stack.</p>"
+     ],
+     [
+      "The stack: a pile of workspaces",
+      "<p>Sixteen registers aren't enough for a whole program, so each running thread also gets a <b>stack</b>: a block of memory used like a pile of plates. When a function is called, a <b>stack frame</b> goes on top. It holds the address to come back to, plus the function's local variables. When the function returns, its frame comes off and that memory is free for the next call.</p><p>For the program on this page:</p><ol><li>main's frame holds score.</li><li>main calls score_hit: a frame with base and doubled goes on top.</li><li>score_hit calls add_bonus: a third frame, with points and bonus.</li><li>add_bonus returns 250: its frame is gone. Then score_hit's goes. main is left holding the answer.</li></ol>"
+     ],
+     [
+      "Which way it grows",
+      "<p>On x64 Windows the stack starts at a high address and grows <b>down</b>: each new frame sits at lower addresses than the one before, and RSP moves down as frames are added and back up as they're removed. Last on, first off: the function that was called last always finishes first.</p>"
+     ],
+     [
+      "Mistakes beginners make",
+      "<ul><li>Expecting a local variable to survive its function. Its frame is gone at return; the next call writes over that memory.</li><li>Putting something huge in a local. The stack is small: 1 MB by default for a program MSVC builds. A local array of a million ints (4 MB) won't fit, and the program dies with a stack overflow (code 0xC00000FD).</li><li>A function that calls itself forever does the same thing, one frame at a time.</li></ul>"
+     ],
+     [
+      "On your PC",
+      "<p>On x64 Windows the first four whole-number arguments travel in registers (RCX, RDX, R8, R9) rather than on the stack, and the return value comes back in RAX. In a debug build MSVC also copies them into the frame so the debugger can show them. The Visual Studio Call Stack window lists the frames that are live right now, newest at the top, with a few Windows start-up frames under main.</p><p><b>This pays off in</b> Phase 03's functions and “Scope: where a variable lives”, Phase 3.5's warning about returning the address of a local, and the debugger in Phase 3.75.</p>"
+     ]
+    ],
+    "king": "§10.1 covers local variables in C's terms (made on each call, gone at return). Registers and the hardware stack are not in King; see Microsoft Learn: x64 calling convention, and Thread Stack Size"
+   },
+   "code": "#include <stdio.h>\n\nint add_bonus(int points) {\n    int bonus = 50;\n    return points + bonus;\n}\n\nint score_hit(int base) {\n    int doubled = base * 2;\n    return add_bonus(doubled);\n}\n\nint main(void) {\n    int score = 0;\n    score = score_hit(100);\n    printf(\"score = %d\\n\", score);\n    return 0;\n}",
+   "walk": [
+    [
+     3,
+     "A <b>function</b>: a named piece of work. add_bonus takes a number called points and hands a number back. Phase 03 teaches functions properly."
+    ],
+    [
+     13,
+     "The program starts in main. Its stack frame holds one local: score."
+    ],
+    [
+     15,
+     "main calls score_hit with 100. The return address and a new frame go on top of the stack. The 100 travels in register RCX."
+    ],
+    [
+     9,
+     "Inside score_hit: base is 100, and doubled (200) lives in this frame."
+    ],
+    [
+     10,
+     "score_hit calls add_bonus. A third frame goes on top, lower in memory than the other two."
+    ],
+    [
+     5,
+     "points + bonus is 250. It goes back in register EAX, and add_bonus's frame is popped: bonus no longer exists."
+    ],
+    [
+     16,
+     "score_hit has returned too, so only main's frame is left. score is 250 and printf shows it."
+    ],
+    [
+     17,
+     "main returns, and its frame goes as well."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a pile of sticky notes. Each call sticks a fresh note on top for its scribbles; each return tears the top note off and bins it. You can only ever write on the top note.",
+   "check": {
+    "q": "While add_bonus is running, how many of this program's frames are on the stack?",
+    "opts": [
+     "1",
+     "2",
+     "3",
+     "4"
+    ],
+    "a": 2,
+    "hint": "Count the functions that have started but not yet returned.",
+    "why": "main called score_hit, which called add_bonus, and none of them has returned yet: three frames, with add_bonus on top. (The debugger also shows Windows start-up frames under main; they belong to the C runtime, not to this program's code.)",
+    "miss": {
+     "0": "add_bonus's frame is on top, but the callers are still waiting underneath.",
+     "1": "main and score_hit are both still waiting, plus add_bonus itself.",
+     "3": "There are only three functions in this program, and printf hasn't been called yet."
+    }
+   },
+   "tryit": {
+    "task": "Draw the stack at the moment line 5 runs, top frame first, with each variable's value.",
+    "code": "top    add_bonus: points = ____, bonus = ____\n       score_hit: base = ____, doubled = ____\nbottom main:      score = ____",
+    "answer": "points 200, bonus 50; base 100, doubled 200; score 0 (it only becomes 250 when score_hit returns)."
+   },
+   "qa": [
+    [
+     "If registers are so fast, why not keep everything in them?",
+     "There are only 16, and they're all 8 bytes. A single array of scores wouldn't fit. The compiler juggles values between registers and memory for you; with optimisation on it keeps busy values in registers as long as it can."
+    ],
+    [
+     "Is the stack the same as memory?",
+     "Yes: it's an ordinary part of the program's memory, set aside for one thread. What makes it a stack is how it's used, top only, push and pop."
+    ],
+    [
+     "What's the heap, then?",
+     "Another part of memory, for things that must outlive a function and whose size you choose while the program runs. You ask for it with malloc and give it back with free. This course doesn't need it until well after the prototype."
+    ],
+    [
+     "Why does main's score still say 0 while add_bonus runs?",
+     "Because nothing has stored into it yet. <code>score = score_hit(100);</code> only writes score when the call has completely finished and handed back 250."
+    ]
+   ],
+   "bridge": "You know what a running program looks like inside. Next: <b>source to machine code</b>, how your .c file becomes those instructions.",
+   "lang": "c"
+  },
+  {
+   "id": "toolchain",
+   "title": "Source to machine code",
+   "kick": "preprocess · compile · .obj · link · .exe",
+   "mins": 12,
+   "skills": [
+    "machine-code",
+    "object-file"
+   ],
+   "builds": "The CPU's loop: the CPU only runs machine code, so something has to make it.",
+   "why": "In Phase 01 you'll type cl and get an .exe. Knowing the three steps inside that command tells you what each error means: a C-numbered error comes from the compiler, an LNK-numbered one from the linker, and they're fixed in different ways.",
+   "learn": {
+    "parts": [
+     [
+      "The idea",
+      "<p>You write C as text in a .c file. The CPU runs machine code. A set of tools, the <b>toolchain</b>, translates one into the other. With MSVC the command is <code>cl</code> (cl.exe). It runs the first two steps below itself, then hands the third to the linker, link.exe.</p>"
+     ],
+     [
+      "The three steps",
+      "<ol><li><b>Preprocess</b>: lines starting with <code>#</code> are handled first. <code>#include &lt;stdio.h&gt;</code> pastes in the text of that header, and <code>#define</code> names are swapped for what they stand for. The result is still C, just longer.</li><li><b>Compile</b>: each .c file is turned into machine code on its own, and saved as an <b>object file</b> (.obj). The compiler checks your C here and stops with errors like C2065 if something's wrong. An .obj also lists the names it uses but doesn't contain, such as printf.</li><li><b>Link</b>: link.exe joins all the .obj files, plus the C runtime library (where printf's machine code lives and the start-up code that calls main), and fills in every missing name. The result is the <b>.exe</b>, a file Windows knows how to load and run.</li></ol>"
+     ],
+     [
+      "Why compile files separately?",
+      "<p>A real game has dozens of .c files. Because each one compiles to its own .obj, changing player.c means compiling only player.c again, then re-linking. The other .obj files are reused. Phase 3.75 splits your code into files exactly like this.</p>"
+     ],
+     [
+      "Mistakes beginners make",
+      "<ul><li>Editing the .c file and running the old .exe. The .exe only changes when you build again. If the build failed, the old one is still sitting there.</li><li>Thinking a clean compile means a working program. The linker can still fail, and a program that links can still have bugs.</li><li>Typing cl in an ordinary terminal. It needs the x64 Developer Command Prompt (or vcvars64), which tells cl where Windows' headers and libraries are.</li></ul>"
+     ],
+     [
+      "On your PC",
+      "<p>cl names the .exe after the first .c file you list, so <code>cl game.c player.c</code> makes game.exe; <code>/Fe:</code> picks another name. <code>/c</code> stops after compiling and leaves just the .obj files. <code>/P</code> saves the preprocessed text to a .i file if you're curious what #include really pastes. Your build.bat adds <code>/Zi</code>, which also writes .pdb files: the map the debugger uses to match machine code back to your lines.</p><p><b>This pays off in</b> Phase 01's “Compiling and running with cl”, Phase 3.75's linker errors, and Phase 05, where you link Windows' own libraries.</p>"
+     ]
+    ],
+    "king": "§2.1 (compiling and linking), §14.1 (how the preprocessor works) and §15.4 (building a program from several files)"
+   },
+   "code": "C:\\dev\\p00> dir /b\ngame.c\nplayer.c\n\nC:\\dev\\p00> cl /nologo /W4 /WX game.c player.c\n(cl prints each file's name as it works on it)\n\nwhat happens inside that one command:\n  game.c   -> 1 preprocess -> 2 compile -> game.obj\n  player.c -> 1 preprocess -> 2 compile -> player.obj\n  game.obj + player.obj + C library -> 3 link (link.exe) -> game.exe\n\nC:\\dev\\p00> dir /b\ngame.c\ngame.exe\ngame.obj\nplayer.c\nplayer.obj",
+   "walk": [
+    [
+     1,
+     "<code>dir /b</code> lists the folder's files, names only. Before the build there are just two source files."
+    ],
+    [
+     5,
+     "One command builds both. <code>/nologo</code> hides the banner, <code>/W4</code> turns warnings up and <code>/WX</code> treats them as errors. Phase 01 sets this up in build.bat."
+    ],
+    [
+     9,
+     "game.c is preprocessed (stdio.h pasted in) and compiled on its own into game.obj: machine code with gaps where printf and player functions will go."
+    ],
+    [
+     10,
+     "player.c gets the same treatment, separately. Neither file knows what's in the other yet."
+    ],
+    [
+     11,
+     "The linker joins both .obj files with the C library and fills in the gaps by name. Out comes game.exe."
+    ],
+    [
+     15,
+     "game.exe is named after the first file on the command line. This is the file you run."
+    ],
+    [
+     16,
+     "The .obj files stay behind. They're build leftovers: useful to the next build, never committed to Git."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a book being made. Each chapter is typeset on its own (compile), then the binder puts the chapters together with the publisher's standard pages and checks every “see chapter 4” has a chapter 4 (link).",
+   "check": {
+    "q": "After this build you change one line in player.c. What has to run again?",
+    "opts": [
+     "Nothing: game.exe updates itself",
+     "Compile player.c, then link",
+     "Only the link step",
+     "Compile both files, but no link"
+    ],
+    "a": 1,
+    "hint": "Which .obj is now out of date, and what is game.exe made from?",
+    "why": "player.obj no longer matches player.c, so player.c must be compiled again, and game.exe must be re-linked from the new player.obj and the old game.obj. (Running cl with both files, as build.bat does, simply redoes everything, which is fine for a small game.)",
+    "miss": {
+     "0": "The .exe is a separate file made at build time. It knows nothing about later edits.",
+     "2": "The linker joins .obj files. player.obj still holds the old code until player.c is compiled again.",
+     "3": "Without a link step, game.exe is never rebuilt, so it still runs the old code."
+    }
+   },
+   "tryit": {
+    "task": "You build with cl /c game.c player.c (compile only, no link). Which files are in the folder afterwards?",
+    "code": "game.c\nplayer.c\n____\n____",
+    "answer": "game.obj and player.obj. No game.exe, because /c skips the link."
+   },
+   "qa": [
+    [
+     "Where is printf's code if it isn't in my file?",
+     "In the C runtime library that ships with MSVC and Windows. stdio.h only describes printf so the compiler can check your call; the linker pulls in the real machine code."
+    ],
+    [
+     "What's the difference between an error starting with C and one starting with LNK?",
+     "C errors (like C2065) come from the compiler, about the C in one file. LNK errors (like LNK2019) come from the linker, about a name that was used but never defined in any file in the build. Phase 3.75 covers the second kind."
+    ],
+    [
+     "Can I run the .obj file?",
+     "No. It's unfinished: it has gaps where other files' functions belong, and no start-up code. Only the linked .exe runs."
+    ],
+    [
+     "Why doesn't Windows just run .c files?",
+     "Some languages work that way (an interpreter reads the source as it runs). C translates everything up front, which takes a moment but means the CPU runs straight machine code with no translator in between. That's a big part of why C is fast."
+    ]
+   ],
+   "bridge": "You know how an .exe is made. Next: <b>the OS, processes and files</b>, what Windows does when you run it.",
+   "lang": "text"
+  },
+  {
+   "id": "os",
+   "title": "The OS, processes and files",
+   "kick": "Windows · process · thread · virtual memory · fopen",
+   "mins": 15,
+   "skills": [
+    "os",
+    "process",
+    "thread",
+    "virtual-memory"
+   ],
+   "builds": "Memory as numbered boxes, Registers and the stack (each thread has one) and Source to machine code (the .exe Windows loads).",
+   "why": "Your program never touches the hardware directly: it asks Windows. Knowing what Windows gives a running program explains why a crash only kills your game and not the PC, why fopen can fail, and why a save file ends up in the wrong folder.",
+   "learn": {
+    "parts": [
+     [
+      "The idea",
+      "<p>The <b>operating system</b> (OS), Windows 11 on your PC, is the program in charge of all the others. It owns the CPU, the memory, the drive, the screen and the keyboard, and it shares them out. A running program can't grab any of those itself: it asks Windows, and Windows says yes or no.</p>"
+     ],
+     [
+      "What happens when you run game.exe",
+      "<ol><li>Windows creates a <b>process</b>: a container for one running program, with its own memory and an ID number (the PID).</li><li>It loads game.exe's machine code into that memory.</li><li>It starts one <b>thread</b> inside the process: a line of execution with its own registers and its own stack (1 MB by default).</li><li>The thread runs the C runtime's start-up code, which calls your main.</li><li>When main returns, the process ends, Windows takes back everything it was given, and your return value becomes the exit code.</li></ol>"
+     ],
+     [
+      "Virtual memory and sharing the CPU",
+      "<p>Each process gets its own private <b>virtual memory</b>: a full range of addresses that only it can see. Windows maps them, in 4 KB pages, onto real RAM (or onto the drive's page file when RAM is short). So two programs can both use the same address, say 0x7FF612340000, and never collide, and if your game writes somewhere it has no page, Windows stops it with an access violation (0xC0000005) instead of letting it damage anything else.</p><p>There are far more threads than cores, so Windows' scheduler takes turns: a thread runs for a few milliseconds, then another gets the core. It happens so fast that everything looks simultaneous. It also means your program never knows exactly when it will be paused.</p>"
+     ],
+     [
+      "Files go through Windows",
+      "<p>When your code calls <code>fopen</code>, the C library asks Windows to open the file. Windows checks the file exists, that you're allowed to read it, and that nothing has it locked. If any check fails, fopen hands back <code>NULL</code> and your program has to cope. A plain name like save.txt is looked for in the <b>current folder</b>: the folder your terminal is in, not necessarily the folder the .exe is in.</p>"
+     ],
+     [
+      "Mistakes and MSVC notes",
+      "<ul><li>Assuming a file is always there. Every fopen can fail; check for NULL every time.</li><li>Running the .exe from another folder and wondering where the save went. It went to that other folder.</li><li>Expecting a paused game to resume at an exact moment: the scheduler decides.</li></ul><p class=\"warn\">MSVC calls fopen “unsafe” (C4996) and /WX stops the build, which is why the program here starts with <code>#define _CRT_SECURE_NO_WARNINGS</code>. Phase 03 explains it.</p><p><b>This pays off in</b> Phase 03's “Saving and loading with files”, Phase 4.5's Sleep (a thread asking the scheduler for a pause) and Phase 05, where Windows sends your window messages.</p>"
+     ]
+    ],
+    "king": "Not in King. General background; see Microsoft Learn: About Processes and Threads, and Virtual Address Space"
+   },
+   "code": "#define _CRT_SECURE_NO_WARNINGS\n#include <stdio.h>\n\nint main(void) {\n    FILE *save = fopen(\"save.txt\", \"r\");\n\n    if (save == NULL) {\n        printf(\"No save file: starting a new game\\n\");\n        return 0;\n    }\n    printf(\"Found save.txt: loading\\n\");\n    fclose(save);\n    return 0;\n}",
+   "walk": [
+    [
+     1,
+     "Turns off MSVC's C4996 “unsafe function” warning for fopen. It must come before any #include. Phase 03 explains why it exists."
+    ],
+    [
+     5,
+     "<code>fopen</code> asks Windows to open save.txt for reading (<code>\"r\"</code>), in the current folder. If Windows says yes, save holds a ticket for the open file. <code>FILE *</code> is the type of that ticket."
+    ],
+    [
+     7,
+     "If Windows said no (no such file, no permission, locked), the ticket is <code>NULL</code>: “nothing”. The program checks before using it."
+    ],
+    [
+     8,
+     "No save file is perfectly normal on the first run, so the game just starts fresh."
+    ],
+    [
+     9,
+     "<code>return 0;</code> here ends main early: the process finishes and Windows tidies up."
+    ],
+    [
+     11,
+     "Only reached when the file opened."
+    ],
+    [
+     12,
+     "<code>fclose</code> hands the ticket back so Windows can release the file."
+    ]
+   ],
+   "model": "<b>Mental model:</b> Windows is a hotel. Each program is a guest with a private room (its process and memory). Guests can't walk into each other's rooms, and anything else, a file or the screen, is a request to the front desk.",
+   "check": {
+    "q": "You run this from a new, empty folder. What does it print?",
+    "opts": [
+     "Found save.txt: loading",
+     "No save file: starting a new game",
+     "Nothing: it crashes because the file is missing",
+     "Windows creates save.txt, then it prints Found save.txt: loading"
+    ],
+    "a": 1,
+    "hint": "What does fopen hand back when the file isn't there, and which branch does that pick?",
+    "why": "There's no save.txt, so Windows refuses and fopen returns NULL. The if catches that, prints the new-game line, and returns 0.",
+    "miss": {
+     "0": "That line only runs when fopen succeeds, and the folder is empty.",
+     "2": "A missing file isn't a crash: fopen returns NULL and the program checks for it.",
+     "3": "Mode \"r\" only opens a file that already exists. Mode \"w\" would create one."
+    }
+   },
+   "tryit": {
+    "task": "Open Task Manager (Ctrl+Shift+Esc), go to the Details tab, right-click a column header, choose Select columns and tick Threads. Then fill in the gaps.",
+    "code": "A program with several windows open (a browser) has ____ processes.\nYour terminal's process has ____ threads.\nThe PID column is each process's ____.",
+    "answer": "Browsers usually show many processes; most programs have several threads, not one; the PID is the process ID number Windows gave it. Exact numbers vary by PC."
+   },
+   "qa": [
+    [
+     "What's the difference between a process and a thread?",
+     "A process is the container: memory, open files, the loaded program. A thread is something running inside it, with its own registers and stack. Every process has at least one thread. Your games in this course use one."
+    ],
+    [
+     "If my program crashes, can it break Windows?",
+     "No. Virtual memory keeps it inside its own process. Windows ends the process and takes back its memory. The worst it can do is leave a half-written file."
+    ],
+    [
+     "Where does return 0 go?",
+     "To Windows, as the process's exit code. A terminal can read it: build.bat checks the compiler's exit code with %ERRORLEVEL% in Phase 01."
+    ],
+    [
+     "Is the page file why my PC slows down with too many tabs open?",
+     "Often, yes. When RAM is full Windows moves pages that haven't been used lately out to the drive, and fetching them back is far slower than RAM."
+    ]
+   ],
+   "bridge": "You know what Windows gives a program. Next: <b>input and output</b>, how keys reach your program and text reaches the screen.",
+   "lang": "c"
+  },
+  {
+   "id": "io",
+   "title": "Input and output",
+   "kick": "keyboard · buffer · stdin · stdout · character codes",
+   "mins": 15,
+   "skills": [
+    "buffer",
+    "ascii"
+   ],
+   "builds": "The OS, processes and files: the keyboard and screen belong to Windows, and your program asks for them.",
+   "why": "When a game ignores a key or prints in the wrong order, the cause is almost always a buffer. Seeing the route from keyboard to program to screen makes Phase 02's scanf, Phase 03's fgets and Phase 4.5's live keys much less mysterious.",
+   "learn": {
+    "parts": [
+     [
+      "The idea",
+      "<p>Input is anything coming into your program (keys, files, a mouse); output is anything going out (text, pixels, sound, files). None of it goes direct. Each route has a <b>buffer</b> on it: a waiting area in memory where data queues up until someone takes it.</p>"
+     ],
+     [
+      "A key's journey",
+      "<ol><li>You press 2. The keyboard tells Windows which key went down.</li><li>Windows passes it to the console window your program is running in.</li><li>The console shows a 2 on screen (that's the console echoing, not your program) and adds it to a line it's holding.</li><li>Only when you press Enter does the whole line, 2 and the Enter, go into your program's input buffer, called <code>stdin</code>.</li><li><code>getchar()</code> takes the first character out of stdin. The Enter is still waiting in the queue for the next read.</li></ol><p>That last point causes more beginner bugs than anything else in input. Phase 02's scanf and Phase 03's fgets both deal with that leftover Enter.</p>"
+     ],
+     [
+      "Characters are numbers",
+      "<p>A computer can't store a letter, only bits, so each character has a number, its code. The standard table is <b>ASCII</b>: '0' is 48, '1' is 49, '2' is 50, 'A' is 65, 'a' is 97, and the Enter key arrives as 10 (the newline). When getchar reads a 2, it gets the number 50. Printed with <code>%c</code> it looks like 2 again; printed with <code>%d</code> you see the 50.</p>"
+     ],
+     [
+      "Output has a buffer too",
+      "<p>printf doesn't put text straight on screen. It writes into <code>stdout</code>, the output buffer, and the C library sends the buffer on to Windows, which draws it in the console. When stdout goes to a file, text waits until the buffer fills. MSVC's console usually shows text straight away, but on other systems text without a <code>\\n</code> can sit in the buffer for a while.</p>"
+     ],
+     [
+      "Mistakes and MSVC notes",
+      "<ul><li>Forgetting the Enter is still in stdin, so the next read gets it instead of waiting.</li><li>Treating the character '2' as the number 2. It's 50; '2' - '0' gives 2.</li><li>Expecting a key press to arrive without Enter. With getchar it can't; Phase 4.5 uses _kbhit and _getch to read keys live.</li></ul><p><b>This pays off in</b> Phase 02's scanf, Phase 2.5's getchar loop, Phase 03's fgets and Phase 4.5's live keys and fflush.</p>"
+     ]
+    ],
+    "king": "§22.1 (streams: stdin, stdout and stderr). King's character codes are in §7.3"
+   },
+   "code": "#include <stdio.h>\n\nint main(void) {\n    int key;\n\n    printf(\"Pick a lane (1-3) and press Enter: \");\n    key = getchar();\n    printf(\"You picked lane %c\\n\", key);\n    printf(\"Its character code is %d\\n\", key);\n    return 0;\n}",
+   "walk": [
+    [
+     4,
+     "key is an <code>int</code>, not a char, because getchar can also report “no more input” with a special value (EOF) that doesn't fit in a char."
+    ],
+    [
+     6,
+     "printf writes the prompt into stdout. There's no <code>\\n</code>, so the cursor waits at the end of the line."
+    ],
+    [
+     7,
+     "<code>getchar()</code> takes one character from stdin. If stdin is empty, the program waits here, and it keeps waiting until you press Enter, because the console holds the line till then."
+    ],
+    [
+     8,
+     "<code>%c</code> prints key as a character: if you typed 2, you see 2."
+    ],
+    [
+     9,
+     "<code>%d</code> prints the same value as a number: the code for '2', which is 50."
+    ],
+    [
+     10,
+     "The Enter you typed is still in stdin, unread. The program ends anyway, so nobody minds this time."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a letterbox. The console posts a whole line through it when you press Enter; getchar takes out one letter at a time; whatever you don't take is still there for the next read.",
+   "check": {
+    "q": "The player types 2 and presses Enter. What is the program's last line?",
+    "opts": [
+     "Its character code is 2",
+     "Its character code is 50",
+     "Its character code is 10",
+     "Its character code is 0"
+    ],
+    "a": 1,
+    "hint": "getchar hands back the character's code, not the digit. What is '2' in ASCII?",
+    "why": "getchar returns the code of the first character in stdin. The character '2' is 50 in ASCII, and %d prints that number.",
+    "miss": {
+     "0": "That would be the digit's value. getchar gives the character's code, which is 50.",
+     "2": "10 is the Enter key. It's second in the queue, still unread.",
+     "3": "0 isn't any key on the keyboard, and getchar did read a character."
+    }
+   },
+   "tryit": {
+    "task": "Predict both lines if the player types A then Enter. Use the ASCII codes from Learn it.",
+    "code": "You picked lane ____\nIts character code is ____",
+    "answer": "You picked lane A   and   Its character code is 65. getchar doesn't check it's a valid lane; that's your job in Phase 2.5."
+   },
+   "qa": [
+    [
+     "What about letters that aren't in ASCII, like é or emoji?",
+     "ASCII only covers 128 characters. Others use longer codes (Unicode, usually stored as UTF-8, which takes 2 to 4 bytes for them). Phase 4.5 uses a few block characters and shows the setting MSVC needs for them."
+    ],
+    [
+     "What is stderr?",
+     "A third stream, beside stdin and stdout, for error messages. It goes to the screen even when normal output is sent to a file. Phase 03 uses it."
+    ],
+    [
+     "Why does the console echo my typing if the program hasn't read it?",
+     "Echoing is the console's job, done by Windows before your program sees anything. That's also why you can backspace over a typo before pressing Enter."
+    ],
+    [
+     "How do games read keys without Enter, then?",
+     "They skip the line-at-a-time route. A console game asks Windows directly whether a key is waiting (Phase 4.5); a windowed game gets a message for every key press (Phase 05)."
+    ]
+   ],
+   "bridge": "That's the whole machine. Last: <b>why C looks the way it does</b>, and how each part of it maps onto what you've just seen.",
+   "lang": "c"
+  },
+  {
+   "id": "why-c",
+   "title": "Why C looks the way it does",
+   "kick": "1972 · close to the hardware · sizes · pointers · C17",
+   "mins": 12,
+   "skills": [
+    "c-standard"
+   ],
+   "builds": "Every concept in this phase: bytes, hex, addresses, the CPU, the stack, the toolchain, the OS and buffers.",
+   "why": "C has fixed-size types, raw addresses and almost no safety checks, and that can look odd next to newer languages. It all makes sense once you see C as a thin layer over the machine you've just learned about, which is exactly why it's still the language under game engines and operating systems.",
+   "learn": {
+    "parts": [
+     [
+      "Where C came from",
+      "<p>C was created by Dennis Ritchie at Bell Labs in the early 1970s, to rewrite the Unix operating system in something easier than assembly but nearly as fast. Computers were small and slow, so C was designed to translate almost line for line into machine instructions, with no hidden work. Fifty years on, Windows, Linux, game engines and console firmware are still largely C and its descendant C++.</p>"
+     ],
+     [
+      "Each feature is a piece of hardware",
+      "<ul><li><b>Types are byte counts.</b> An int is 4 bytes because the CPU handles 4-byte numbers natively. That's why types have limits: Bits and bytes.</li><li><b>Pointers are addresses.</b> C lets you hold and use a memory address directly: Memory as numbered boxes.</li><li><b>Locals live on the stack.</b> They're made on each call and gone at return, at almost no cost: Registers and the stack.</li><li><b>Compiled up front.</b> Your code becomes machine code before it runs, so nothing is translating while the game plays: Source to machine code.</li><li><b>A small library.</b> Files, keyboard and screen are requests to the OS, wrapped in functions like fopen and printf: The OS, processes and files.</li></ul>"
+     ],
+     [
+      "What C doesn't do for you",
+      "<p>Speed comes from skipping checks. C won't stop you reading past the end of an array, won't set a new variable to zero, and won't warn at run time when a number overflows. An unsigned byte holding 250 plus 10 just wraps round to 4, because only 8 bits exist. Many such mistakes are <b>undefined behaviour</b>: the C rules say nothing about what happens, so the program might seem fine, print garbage or crash. Your defence is the compiler's warnings (with /W4 /WX in build.bat) and the debugger.</p>"
+     ],
+     [
+      "Versions of C",
+      "<p>C is defined by a standard, revised over the years: C89 (the first official one), C99, C11, C17 and C23. This course uses <b>C17</b>, switched on in MSVC with <code>/std:c17</code>. You'll sometimes see newer C23 features in other people's code, and a few C99 extras (like variable-length arrays) that MSVC doesn't support at all.</p>"
+     ],
+     [
+      "Mistakes beginners make",
+      "<ul><li>Thinking a program that runs once is correct. With undefined behaviour it may only be lucky.</li><li>Treating warnings as optional. In C they're often the only warning you'll get.</li></ul><p><b>This pays off in</b> every phase from 01 on, and most of all in Phase 02's “How big a number can be”, Phase 3.5's pointers and Phase 4.5's frame timing.</p>"
+     ]
+    ],
+    "king": "Chapter 1: §1.1 (history) and §1.2 (strengths and weaknesses)"
+   },
+   "code": "#include <stdio.h>\n\nint main(void) {\n    unsigned char ammo = 250;\n    int frames = 0;\n    int *where = &frames;\n\n    ammo = (unsigned char)(ammo + 10);\n    *where = 60;\n    printf(\"ammo after +10: %d\\n\", ammo);\n    printf(\"frames: %d\\n\", frames);\n    printf(\"a pointer is %d bytes\\n\", (int)sizeof where);\n    return 0;\n}",
+   "walk": [
+    [
+     4,
+     "ammo is one byte, so it can hold 0 to 255. It starts at 250."
+    ],
+    [
+     6,
+     "<code>int *where</code> is a <b>pointer</b>: a variable that holds an address. <code>&amp;frames</code> is frames' address, so where now says where frames lives."
+    ],
+    [
+     8,
+     "250 + 10 is 260, but one byte can't hold 260. The <code>(unsigned char)</code> squeezes it back into one byte, and only the low 8 bits survive: 260 minus 256 is 4. No error, no warning at run time."
+    ],
+    [
+     9,
+     "<code>*where = 60;</code> means “store 60 at the address in where”. That's frames' box, so frames changes without being named."
+    ],
+    [
+     10,
+     "Prints 4: the byte wrapped round."
+    ],
+    [
+     11,
+     "Prints 60: changed through the pointer."
+    ],
+    [
+     12,
+     "A pointer is an address, and addresses on x64 are 8 bytes."
+    ]
+   ],
+   "model": "<b>Mental model:</b> C is a manual car. Every control is wired straight to the machine, nothing is done behind your back, and nothing stops you redlining the engine. The warnings are your dashboard lights.",
+   "check": {
+    "q": "What is the first line of output?",
+    "opts": [
+     "ammo after +10: 260",
+     "ammo after +10: 255",
+     "ammo after +10: 4",
+     "The program stops with an overflow error"
+    ],
+    "a": 2,
+    "hint": "A byte has 256 patterns, 0 to 255. What's left of 260 after the 256 that don't fit?",
+    "why": "An unsigned char has only 8 bits. 260 needs 9, so the top bit is dropped, leaving 260 - 256 = 4. C does this silently.",
+    "miss": {
+     "0": "260 needs more than 8 bits. ammo only has one byte, so it can't hold it.",
+     "1": "C doesn't stop at the maximum: unsigned values wrap round, like a mileage counter.",
+     "3": "C never checks this at run time. The extra bit is simply lost."
+    }
+   },
+   "tryit": {
+    "task": "Predict the result in the same way: one-byte values, wrapping at 256.",
+    "code": "unsigned char a = 255;  a + 1   ->  ____\nunsigned char b = 200;  b + 100 ->  ____\nunsigned char c = 0;    c - 1   ->  ____",
+    "answer": "0, 44 and 255. Going below 0 wraps round to the top, just as going past 255 wraps to the bottom."
+   },
+   "qa": [
+    [
+     "Is C still worth learning when there are newer languages?",
+     "For games, yes. Engines and the graphics libraries they use are written in C and C++, and nearly every other language can call C code. Learning C means learning how the machine works, which carries over to everything else."
+    ],
+    [
+     "What's the difference between C and C++?",
+     "C++ started as C with extra features (classes, templates and much more) and has grown into a much bigger language. Most C is valid C++ or close to it. MSVC compiles both; your .c files are compiled as C."
+    ],
+    [
+     "If C doesn't check anything, how do people write safe programs?",
+     "With habits and tools: compiler warnings at full strength, the debugger, checking every return value (like fopen's), and keeping functions small. This course builds those habits phase by phase."
+    ],
+    [
+     "What does undefined behaviour actually do on my PC?",
+     "Anything the compiler and CPU happen to produce: often it seems to work, sometimes it crashes, and it can change between debug and release builds. The fix is never to rely on it, not to work out what it does."
+    ]
+   ],
+   "bridge": "That's Phase 00. Next: <b>Phase 01, Hello World</b>, where you write and build your first C program.",
+   "lang": "c"
+  }
+ ],
+ "goals": {
+  "cp-p0-1": [
+   "bits",
+   "binary-hex"
+  ],
+  "cp-p0-2": [
+   "memory",
+   "cpu",
+   "stack"
+  ],
+  "cp-p0-3": [
+   "toolchain",
+   "os",
+   "io",
+   "why-c"
+  ]
+ }
+}

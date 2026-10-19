@@ -76,14 +76,39 @@
     ]
    ],
    "skills": [],
-   "lang": "text"
+   "lang": "text",
+   "learn": {
+    "parts": [
+     [
+      "Gaps become guesses",
+      "<p>Claude can't see what's in your head. Every detail you leave out of a prompt, it fills with the most likely guess. Most guesses compile, which is the trouble: code that builds but takes a copy of your Player instead of a pointer looks fine until the jump never happens. The fix is to close the gaps before any code exists, and the biggest gap is the function's shape.</p>"
+     ],
+     [
+      "Four parts of a tight prompt",
+      "<ol><li><b>Context.</b> The language, the game, and the structs or functions that already exist. Paste them, or name the file: Claude Code can read your project, so “my Player struct in player.h” works.</li><li><b>The signature.</b> Return type, name and parameters, written exactly as a prototype: <code>void player_jump(Player *p)</code>.</li><li><b>The behaviour, with numbers.</b> “If p-&gt;y is 0, set p-&gt;vy to 3” instead of “make it jump nicely”.</li><li><b>The fence.</b> What not to touch: “Only this function. No new structs, no new files.”</li></ol>"
+     ],
+     [
+      "Why the signature matters most",
+      "<p>The signature is the contract between the function and every line that calls it. You learned in void and function prototypes that this one line decides what goes in and what comes out. If you write it, you can check Claude's answer in two seconds: does the first line match yours? If it says <code>int</code> where you wrote <code>void</code>, or <code>Player p</code> where you wrote <code>Player *p</code>, you know something else was guessed too.</p>"
+     ],
+     [
+      "Mistakes that cost you",
+      "<ul><li>Asking for a system (“all the movement code”) instead of one function. You get a pile you can't review.</li><li>Taste words like “clean”, “good” or “feel nice”. They mean nothing to a compiler.</li><li>Forgetting the pointer. A function that changes your struct needs <code>Player *</code>, as in Passing by pointer.</li><li>Leaving out existing names, so Claude invents <code>playerY</code> when you already have <code>p-&gt;y</code>.</li></ul>"
+     ],
+     [
+      "Your build flags still apply",
+      "<p class=\"warn\">Tell Claude you build with MSVC <code>cl /std:c17 /W4 /WX</code>. Otherwise it may use things that fail under your flags, such as a variable it never uses, or a GCC-only feature.</p>"
+     ]
+    ],
+    "king": "§9.1–9.2 (defining functions and prototypes), if you want the C side again"
+   }
   },
   {
    "id": "read-every-line",
    "title": "Read every line before you run it",
    "kick": "trace it · check bounds · off-by-one",
    "mins": 12,
-   "builds": "Phase 3: the high-score table, arrays and loops. Concept 1: asking for exact functions.",
+   "builds": "Phase 3: the high-score table, arrays and loops. Name the function signature in your prompt: asking for exact functions.",
    "why": "Code that compiles and looks tidy can still be wrong. Your name is on the commit, and an out-of-bounds write may print fine today and crash next week. The only defence is reading each line and tracing it with a real number.",
    "model": "<b>Mental model:</b> proofreading a contract before you sign. The font is nice and every sentence sounds fine, but you’re the one who’s bound by it.",
    "check": {
@@ -115,7 +140,7 @@
     ],
     [
      "How do I check code I can’t follow?",
-     "Pick a small real input, like a table of 50 40 30 20 10 and a score of 45, and step through with a pencil. Concept 3 covers asking Claude to explain the parts you can’t trace."
+     "Pick a small real input, like a table of 50 40 30 20 10 and a score of 45, and step through with a pencil. Ask for explanations of code you don't understand covers the parts you can't trace."
     ],
     [
      "Should I read the code even for tiny functions?",
@@ -151,14 +176,39 @@
     ]
    ],
    "skills": [],
-   "lang": "text"
+   "lang": "text",
+   "learn": {
+    "parts": [
+     [
+      "Compiling isn't checking",
+      "<p>The compiler checks that code is legal C. It doesn't check that it does what you asked. An off-by-one loop, a missing bounds check or a wrong number all build cleanly under <code>/W4 /WX</code>. Your name goes on the commit, and Person A will trust it, so every line gets read before it runs.</p>"
+     ],
+     [
+      "Trace it with a real number",
+      "<p>Reading isn't skimming. Pick a small, real input and follow it through by hand:</p><ol><li>Write the input on paper: a table of 50 40 30 20 10 and a new score of 45.</li><li>Go line by line. Each time a variable changes, write its new value.</li><li>At every array access, write the index you're about to use and check it's inside the array.</li><li>Check the result matches what you asked for in the prompt.</li></ol><p>Then try an edge case: the lowest score, the highest, an empty table. Bugs live at the edges.</p>"
+     ],
+     [
+      "What to look at hardest",
+      "<ul><li><b>Loop bounds.</b> Does the first and last pass touch a valid index? An array of 5 has indexes 0 to 4.</li><li><b>Every index and pointer.</b> Where does it point on the first pass and the last?</li><li><b>Return values.</b> Is the result of <code>fopen</code>, <code>malloc</code> or <code>scanf</code> checked?</li><li><b>Casts.</b> A cast can hide a real problem just to silence a warning.</li><li><b>Anything you don't recognise.</b> That's a question for Ask for explanations of code you don't understand, not something to skip.</li></ul>"
+     ],
+     [
+      "Why “it ran fine” proves little",
+      "<p>Writing past the end of an array is undefined behaviour. C doesn't check, so the program might print the right answer, crash later somewhere else, or quietly change a neighbouring variable. Running once and seeing good output tells you that one run worked. Tracing tells you why.</p>"
+     ],
+     [
+      "Let the debugger help",
+      "<p class=\"warn\">For a loop you can't trace on paper, set a breakpoint and step through it in the debugger, watching the index in the Locals panel. Seeing <code>j</code> hit 5 on a five-slot array is hard to argue with.</p>"
+     ]
+    ],
+    "king": "Not in King: this is a habit, not a C feature"
+   }
   },
   {
    "id": "ask-explain",
    "title": "Ask for explanations of code you don’t understand",
    "kick": "explain first · pick the edge case · then decide",
    "mins": 10,
-   "builds": "Concept 2: reading every line. Phase 3.5: addresses with &.",
+   "builds": "Read every line before you run it. Phase 3.5: addresses with &.",
    "why": "Claude will happily use functions you’ve never met. Running code you can’t explain is how bugs get into the project and stay there. A good question costs one message and turns a mystery line into something you own.",
    "model": "<b>Mental model:</b> a mechanic who shows you the old part. You don’t need to rebuild the engine, but you want to hear what broke and why before you pay.",
    "check": {
@@ -174,7 +224,7 @@
     "why": "A targeted question gets a targeted answer. You learn memmove, and you can test the “i is 4” answer yourself. You stay in charge of what goes in.",
     "miss": {
      "0": "You’d be running a line you can’t explain. That’s the habit this rung is about breaking.",
-     "1": "You throw away working code and learn nothing about memmove. Sometimes simpler is right (Concept 4), but ask for that on purpose, not as a reflex.",
+     "1": "You throw away working code and learn nothing about memmove. Sometimes simpler is right (Push back when code is overcomplicated), but ask for that on purpose, not as a reflex.",
      "2": "Too broad. You’ll get a long answer and still not know the one line you asked about."
     }
    },
@@ -222,14 +272,39 @@
     ]
    ],
    "skills": [],
-   "lang": "text"
+   "lang": "text",
+   "learn": {
+    "parts": [
+     [
+      "Own every line",
+      "<p>Claude knows the whole C library and will use any of it. Sooner or later it hands you a line with a function you've never met. Running code you can't explain means the project has a part nobody understands. One focused question fixes that, and it usually takes a minute.</p>"
+     ],
+     [
+      "A question that gets a useful answer",
+      "<p>Good follow-ups have three parts:</p><ol><li><b>The exact line.</b> Paste it, so there's no doubt which one you mean.</li><li><b>The part you don't know.</b> “What is the third argument?” beats “what does this do?”.</li><li><b>A case to test.</b> “What happens when i is 4?” gives you an answer you can check.</li></ol><p>Adding “what could go wrong with this line?” often turns up the edge case you hadn't thought of.</p>"
+     ],
+     [
+      "Check the explanation",
+      "<p>Explanations can be wrong too. Test the claim with a tiny program: a five-slot table, the line in question, and a <code>printf</code> loop to show the result. If the output matches what Claude said, you've learned it for real. If not, paste the output back and ask why. Microsoft Learn's page for any C library function is a good second opinion.</p>"
+     ],
+     [
+      "Mistakes to avoid",
+      "<ul><li>Asking for an explanation of the whole function when one line is the problem. The answer you need gets buried.</li><li>Asking for a rewrite with “only things I know” as a reflex. Sometimes simpler is right, as in Push back when code is overcomplicated, but ask for it on purpose.</li><li>Nodding along to an answer you didn't follow. Ask again in different words, or ask for a smaller example.</li></ul>"
+     ],
+     [
+      "Keep a list",
+      "<p>Each new function you learn this way, add to your notes with one line of your own words and a tiny example. The Things Claude may show you box on this phase's overview covers three that turn up often: memmove, malloc and free, and function-pointer typedefs.</p>"
+     ]
+    ],
+    "king": "§23.6 for memmove and the other memory functions in string.h"
+   }
   },
   {
    "id": "push-back",
    "title": "Push back when code is overcomplicated",
    "kick": "simplify · “I don’t need X yet” · smallest thing that works",
    "mins": 10,
-   "builds": "Phase 3: functions and return values, the guessing game. Concept 2: reading every line.",
+   "builds": "Phase 3: functions and return values, the guessing game. Phase 3.75: function pointers. Read every line before you run it.",
    "why": "Claude tends to build for needs you haven’t got. Extra structs, allocation and callbacks look professional but give you more to read, more to break and more you don’t understand. You can tell it to cut them, and it will.",
    "model": "<b>Mental model:</b> asking for a bike and being handed a motorcycle. It does the job and more, but you have to learn the engine just to get to the shops.",
    "check": {
@@ -261,7 +336,7 @@
     ],
     [
      "How do I know it’s overcomplicated?",
-     "If you can’t say in one sentence what each piece is for, or it uses things this course skipped (malloc, function pointers), push back."
+     "If you can't say in one sentence what each piece is for, or it uses things you haven't met yet (like malloc), push back. The Things Claude may show you box explains the common ones."
     ],
     [
      "Will Claude be offended?",
@@ -277,7 +352,7 @@
    "walk": [
     [
      1,
-     "A vague prompt (Concept 1) is how this happens. Claude guessed you wanted something “extensible”."
+     "A vague prompt (see Name the function signature in your prompt) is how this happens. Claude guessed you wanted something “extensible”."
     ],
     [
      3,
@@ -285,7 +360,7 @@
     ],
     [
      4,
-     "A function pointer holds a function to call later. You don’t need this yet."
+     "A function pointer type (you met these in Phase 3.75) for a callback: a function to call later. Nothing here needs one."
     ],
     [
      6,
@@ -309,14 +384,39 @@
     ]
    ],
    "skills": [],
-   "lang": "text"
+   "lang": "text",
+   "learn": {
+    "parts": [
+     [
+      "More code is more risk",
+      "<p>Ask a vague question and Claude often builds for needs you don't have yet: a struct for the result, an enum for three outcomes, a callback “for flexibility”, memory from <code>malloc</code>. Each piece is something you have to read, test and keep working. Code you don't need still has bugs, so asking for less is a normal, sensible request.</p>"
+     ],
+     [
+      "Signs it's overbuilt",
+      "<ul><li>You can't say in one sentence what a piece is for.</li><li><code>malloc</code> for something small with a fixed size, where a local variable or array would do.</li><li>New types or files you didn't ask for.</li><li>A function pointer passed in when there's only ever one thing to call.</li><li>The answer is three times longer than the job sounds.</li></ul>"
+     ],
+     [
+      "How to push back",
+      "<p>Be as specific as your first prompt should have been:</p><ol><li>Name what to keep: the exact signature you want.</li><li>Name what to remove: “no struct, no callback, no malloc”.</li><li>Give the reason in four words: “I don't need X yet”.</li></ol><p>“Do it properly” or “that's wrong” leave the same gaps, so you'll get another guess. To stop it rewriting a whole file, ask it to show only the lines to add and where they go.</p>"
+     ],
+     [
+      "When the extra is right",
+      "<p>Sometimes the bigger version is the right call: a buffer whose size comes from a level file really does need <code>malloc</code>. If you're not sure, ask “why did you use malloc here, and what would break with a plain array?” before you cut it. Then decide. The choice should be yours, made on purpose.</p>"
+     ],
+     [
+      "Watch for leaks",
+      "<p class=\"warn\">If you keep a <code>malloc</code>, find the matching <code>free</code> before you accept the code. A function that allocates every frame and never frees will slowly eat memory while the game runs, and nothing warns you at build time.</p>"
+     ]
+    ],
+    "king": "§17.1 and §17.4 (malloc and free), §17.7 (function pointers), to read about what you're cutting"
+   }
   },
   {
    "id": "own-architecture",
    "title": "Design the structs and prototypes first",
    "kick": "design first · prototypes as a plan · one piece at a time",
    "mins": 12,
-   "builds": "Phase 3.5: structs. Phase 4.5: the ASCII runner. Concepts 1 to 4 of this phase.",
+   "builds": "Phase 3.5: structs. Phase 4.5: the ASCII runner. Every earlier concept in this phase.",
    "why": "Claude can write code quickly, but the design is your job. If it picks the structs and the function list, you maintain a design you don’t understand. If you pick them, every piece it writes fits a plan you can explain.",
    "model": "<b>Mental model:</b> you’re the architect with the blueprint, Claude is the builder. A builder will happily improvise a house. It just won’t be the house you wanted.",
    "check": {
@@ -333,7 +433,7 @@
     "miss": {
      "0": "Claude will pick the design for you, including things you won’t understand. You’ll own code you can’t explain.",
      "1": "It’s fine to ask Claude to critique your plan. Handing the plan over entirely isn’t. You’d still be taking its design on trust.",
-     "3": "One huge reply is too much to read properly (Concept 2). Pieces that match come from your shared design, not from asking for everything at once."
+     "3": "One huge reply is too much to read properly (see Read every line before you run it). Pieces that match come from your shared design, not from asking for everything at once."
     }
    },
    "tryit": {
@@ -356,7 +456,7 @@
     ]
    ],
    "bridge": "That’s every concept in Phase 7. Next: <b>keep using these habits</b> in every phase from here. The goal is code you can explain.",
-   "code": "// My design, written by me before asking Claude:\ntypedef struct { int x; int y; int vy; bool alive; } Player;\ntypedef struct { int x; int width; } Obstacle;\n\nvoid player_jump(Player *p);\nvoid player_update(Player *p);\nbool hits_obstacle(const Player *p, const Obstacle *o);\nvoid draw_frame(const Player *p, const Obstacle *o);\n\n// Prompt: Here are my structs and prototypes. Write only\n// player_update(Player *p): apply vy to y, subtract 1 from vy each\n// frame, and when y lands back on 0 clamp it there and set vy to 0.\n// Match my style.",
+   "code": "// My design, written by me before asking Claude:\n#include <stdbool.h>   // bool, true, false in C17\ntypedef struct { int x; int y; int vy; bool alive; } Player;\ntypedef struct { int x; int width; } Obstacle;\n\nvoid player_jump(Player *p);\nvoid player_update(Player *p);\nbool hits_obstacle(const Player *p, const Obstacle *o);\nvoid draw_frame(const Player *p, const Obstacle *o);\n\n// Prompt: Here are my structs and prototypes. Write only\n// player_update(Player *p): apply vy to y, subtract 1 from vy each\n// frame, and when y lands back on 0 clamp it there and set vy to 0.\n// Match my style.",
    "walk": [
     [
      1,
@@ -364,23 +464,52 @@
     ],
     [
      2,
+     "In C17 the name <code>bool</code> (and <code>true</code>, <code>false</code>) comes from <code>&lt;stdbool.h&gt;</code>. Leave this out and MSVC stops at the first bool."
+    ],
+    [
+     3,
      "Your data. Every function Claude writes will use these exact fields, so nothing is invented."
     ],
     [
-     5,
+     6,
      "The list of jobs, as prototypes (Phase 3). The <code>*</code> parameters are pointers (Phase 3.5): the function works on your real Player, not a copy. Each is small enough to ask for on its own and to check on its own."
     ],
     [
-     7,
+     8,
      "Even the return types are your decisions. A yes/no question returns <code>bool</code>. <code>const</code> promises the function only looks at the Player and Obstacle and won’t change them (Phase 4.5 covers const pointers)."
     ],
     [
-     10,
+     11,
      "One piece at a time, with your design pasted in as context. Claude fills in a body that has to fit your pieces."
     ]
    ],
    "skills": [],
-   "lang": "text"
+   "lang": "text",
+   "learn": {
+    "parts": [
+     [
+      "The design is your job",
+      "<p>Claude writes code quickly. Deciding what the code should be is slower, and it's yours. If Claude picks the structs and the list of functions, you end up maintaining a design you didn't choose and can't fully explain. If you pick them, every piece Claude writes has to fit a plan you understand.</p>"
+     ],
+     [
+      "What “the design” means in C",
+      "<p>For a small game, the design is just two things:</p><ul><li><b>The structs.</b> What data exists and what each field means: Player has x, y, vy and alive.</li><li><b>The prototypes.</b> Every function's name, inputs and output, with <code>const</code> on pointers it only reads.</li></ul><p>Written in a header, that's ten or twenty lines. It's the same split you used in Header files and #pragma once, and again in Multiple files and LNK2005: the .h says what exists, the .c files hold the bodies.</p>"
+     ],
+     [
+      "Working one piece at a time",
+      "<ol><li>Write the structs and prototypes yourself.</li><li>Optionally, ask Claude to critique the plan, with no code yet. Keep the suggestions you understand and agree with.</li><li>Ask for one function, pasting the design as context.</li><li>Read it, build it, test it, commit it.</li><li>Then the next function.</li></ol><p>Each reply stays small enough to read line by line, and because they all use your structs, the pieces fit together.</p>"
+     ],
+     [
+      "Write your rules down once",
+      "<p>Claude Code reads a file called <code>CLAUDE.md</code> in your project folder at the start of a session. Put your standing rules there: build with <code>cl /std:c17 /W4 /WX</code>, snake_case names, include <code>&lt;stdbool.h&gt;</code> for bool, one function per request. Then you don't repeat them in every prompt.</p>"
+     ],
+     [
+      "The bool include",
+      "<p class=\"warn\">In C17, <code>bool</code>, <code>true</code> and <code>false</code> come from <code>&lt;stdbool.h&gt;</code>. Leave the include out and MSVC stops at the first <code>bool</code> as an unknown name. C23 makes bool a keyword, so you'll see newer code without the include; your build isn't C23.</p>"
+     ]
+    ],
+    "king": "§19.1–19.2 (modules and information hiding), the same idea at the size of a file"
+   }
   }
  ]
 }

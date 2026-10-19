@@ -1,5 +1,30 @@
 # Phase 3.5 page map (phase3b)
 
+## Current shape (v23)
+
+Phase 3.5 Structs & Pointers. File `content/07-phase3b.html`, ladder `content/ladders/phase3b.json`, phase id `phase3b`. Comes after `phase3`, before `phase3c`.
+
+Pages: Overview, 7 concepts, Trace, Build, Practice, Review.
+
+Concepts (every one has a Learn it section with a King line; new in v23: `struct-arrays`, `pointer-arrays`):
+
+1. `structs` Structs and the dot operator. King: §16.1–16.2
+2. `struct-arrays` Arrays of structs. King: §16.3
+3. `struct-copy` Structs are copied. King: §16.1–16.2
+4. `pointers` Pointers: & and *. King: §11.1–11.3
+5. `by-pointer` Passing by pointer and ->. King: §11.4–11.5, §17.5
+6. `pointer-arrays` Pointers and arrays. King: §12.1–12.3, §13.1–13.2
+7. `null` NULL. King: §17.1, §17.4, §11.2
+
+Notes:
+- Split in R4: `enum`, `headers`, `linker` and `debugger` moved to Phase 3.75 (`phase3c`); ticks move with `LAD_MIGRATIONS` entry `v23-phase3b-split`. The rows about them in the table below now live in 3.75.
+- Builds are single-file now (player_demo.c, the guess.c refactor); player.h/player.c, the debugger setup and the multi-file build.bat moved to 3.75.
+- The page no longer relies on breakpoints, player.h or enum.
+
+## v22 page map (record)
+
+Written for v22. Concept numbers and phase names in this part are from before v23; use the list above for the current order.
+
 Words: 5506 before, 2430 after (-56%). Pages: Overview, 9 concepts, Practice, Trace, Build, Review.
 
 | Original block | Decision |

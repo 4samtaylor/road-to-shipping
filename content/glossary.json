@@ -8,6 +8,290 @@
     "tool": "Tools & commands"
   },
   "phases": {
+    "phase0": [
+      {
+        "id": "bit",
+        "term": "bit",
+        "kind": "concept",
+        "what": "One switch: 0 or 1. The smallest piece of data a computer stores.",
+        "example": "1 bit = 2 patterns, 8 bits = 256",
+        "aliases": [
+          "bit",
+          "bits"
+        ],
+        "def": "A bit (binary digit) is a single value that is either 0 or 1. All data in a computer is stored as patterns of bits.",
+        "model": "A light switch: off or on, nothing in between.",
+        "game": "An alive flag needs only one bit of information: alive or not. Phase 05 packs several such flags into one number."
+      },
+      {
+        "id": "byte",
+        "term": "byte",
+        "kind": "concept",
+        "what": "8 bits, 256 patterns (0 to 255). Memory and every C type are measured in bytes.",
+        "example": "char = 1 byte, int = 4 bytes, address = 8 bytes (x64)",
+        "aliases": [
+          "byte",
+          "bytes"
+        ],
+        "def": "A byte is 8 bits, the smallest addressable unit of memory on your PC. sizeof reports sizes in bytes.",
+        "model": "A panel of eight light switches; each arrangement is one of 256 values.",
+        "game": "A 1280 by 720 frame at 4 bytes per pixel is 3,686,400 bytes, rebuilt every frame."
+      },
+      {
+        "id": "binary",
+        "term": "binary",
+        "kind": "concept",
+        "what": "Writing numbers with only 0 and 1. Place values double: 1, 2, 4, 8, 16...",
+        "example": "1101 = 8 + 4 + 0 + 1 = 13",
+        "aliases": [
+          "binary"
+        ],
+        "def": "Binary is base 2: each digit is a bit, and each place is worth twice the place to its right.",
+        "model": "Decimal with only two fingers: you carry to the next place at 2 instead of 10.",
+        "game": "A byte of status bits like 00000101 reads as: bit 0 (alive) on, bit 2 (shielded) on."
+      },
+      {
+        "id": "hex",
+        "term": "hex (0x)",
+        "kind": "concept",
+        "what": "Base 16, digits 0-9 and A-F. One hex digit is 4 bits, so a byte is two digits.",
+        "example": "0xC8 = 200 = 1100 1000",
+        "gotcha": "%x prints lowercase with no 0x, and a leading 0 in C (010) means octal, not decimal.",
+        "aliases": [
+          "0x",
+          "0xFF",
+          "hex"
+        ],
+        "def": "Hexadecimal is base 16. In C a 0x prefix marks a hex constant. It's the usual way to show bit patterns, addresses and colours.",
+        "model": "Shorthand for binary: swap every group of four bits for one symbol.",
+        "game": "0xFF8800 is a colour: red FF, green 88, blue 00. The debugger shows addresses in hex too.",
+        "gameCode": "unsigned int orange = 0xFF8800;"
+      },
+      {
+        "id": "address",
+        "term": "memory address",
+        "kind": "concept",
+        "what": "The number of a byte in memory. A variable's address is the number of its first byte.",
+        "example": "printf(\"%p\\n\", (void *)&score);",
+        "gotcha": "Addresses change between runs, and the compiler decides the layout. Never rely on a value.",
+        "aliases": [
+          "address",
+          "%p"
+        ],
+        "def": "Memory is a sequence of bytes, each identified by an address. On x64 Windows an address is 64 bits (8 bytes); %p prints one as 16 hex digits on MSVC.",
+        "model": "House numbers on a long street. The address says where; the value is who lives there.",
+        "game": "score might live at 000000A3F9D6FBA0 this run and somewhere else next run. A pointer (Phase 3.5) is a variable that holds one."
+      },
+      {
+        "id": "little-endian",
+        "term": "little-endian",
+        "kind": "concept",
+        "what": "Multi-byte numbers are stored lowest byte first. Every x64 CPU does this.",
+        "example": "1500 = 0x000005DC is stored as DC 05 00 00",
+        "aliases": [
+          "little-endian"
+        ],
+        "def": "In little-endian byte order, the least significant byte of a value is stored at the lowest address.",
+        "model": "Writing a number's digits starting from the ones column.",
+        "game": "Only matters when you read raw bytes: the debugger's Memory window, or a file another program wrote."
+      },
+      {
+        "id": "cpu",
+        "term": "CPU",
+        "kind": "concept",
+        "what": "The chip that runs programs: fetch an instruction, decode it, execute it, move on. Billions of times a second.",
+        "example": "3 GHz = 3 billion ticks a second, about 50 million per 60 fps frame",
+        "aliases": [
+          "CPU"
+        ],
+        "def": "The central processing unit executes machine instructions in a fetch-decode-execute cycle. A modern CPU has several cores, each able to run a thread.",
+        "model": "A very fast cook following a recipe line by line, with a finger on the current line.",
+        "game": "Every frame of your game is a few million instructions that must finish inside 16.7 ms."
+      },
+      {
+        "id": "instruction",
+        "term": "machine instruction",
+        "kind": "concept",
+        "what": "One tiny CPU command (copy, add, compare, jump), stored as a few bytes.",
+        "example": "mov eax, [score]   add eax, 10   mov [score], eax",
+        "aliases": [
+          "mov eax"
+        ],
+        "def": "An instruction is an operation from the CPU's instruction set (x64 on your PC), encoded as 1 to 15 bytes. One C statement usually becomes several.",
+        "model": "One line on the cook's recipe card.",
+        "game": "score = score + 10; is three instructions: load, add, store. The debugger's Disassembly window shows them."
+      },
+      {
+        "id": "register",
+        "term": "register",
+        "kind": "concept",
+        "what": "A storage slot inside the CPU, the fastest there is. x64 has 16 general ones of 64 bits.",
+        "example": "RAX (return value), RSP (top of stack), RIP (next instruction)",
+        "aliases": [
+          "RAX",
+          "RSP",
+          "RIP",
+          "EAX"
+        ],
+        "def": "Registers hold the values the CPU is working on. On x64 Windows the first four integer arguments are passed in RCX, RDX, R8 and R9, and the result comes back in RAX.",
+        "model": "The cook's hands: tiny, but the only place work actually happens.",
+        "game": "When add_bonus returns 250, the 250 travels back in EAX (the lower half of RAX)."
+      },
+      {
+        "id": "stack",
+        "term": "the stack",
+        "kind": "concept",
+        "what": "Each thread's pile of function workspaces. Grows down; 1 MB by default for MSVC programs.",
+        "example": "main -> score_hit -> add_bonus: three frames, newest on top",
+        "gotcha": "A huge local array (say a million ints) doesn't fit: stack overflow, 0xC00000FD.",
+        "aliases": [
+          "stack",
+          "stack overflow"
+        ],
+        "def": "The call stack is a region of a thread's memory used last-in, first-out for return addresses and local variables. On x64 Windows it grows toward lower addresses; RSP points at its top.",
+        "model": "A pile of plates: you only ever add to or take from the top.",
+        "game": "Locals in runner_render live on the stack: made every frame, gone when it returns."
+      },
+      {
+        "id": "stack-frame",
+        "term": "stack frame",
+        "kind": "concept",
+        "what": "One function call's slice of the stack: its return address and local variables.",
+        "example": "Visual Studio's Call Stack window lists the live frames",
+        "aliases": [
+          "stack frame",
+          "Call Stack"
+        ],
+        "def": "A stack frame is created when a function is called and removed when it returns, which is why local variables do not outlive their function.",
+        "model": "A sticky note stuck on top of the pile for one call's scribbles, torn off at return.",
+        "game": "Returning the address of a local hands back a pointer into a frame that's already gone (Phase 3.5)."
+      },
+      {
+        "id": "machine-code",
+        "term": "machine code",
+        "kind": "concept",
+        "what": "The bytes the CPU actually runs. The compiler turns your C into it.",
+        "example": "83 C0 0A   means   add eax, 10",
+        "aliases": [
+          "machine code"
+        ],
+        "def": "Machine code is a program encoded as the CPU's instructions. C is compiled ahead of time into machine code, stored in .obj files and then the .exe.",
+        "model": "The recipe translated into the only language the cook reads.",
+        "game": "Your game.exe is machine code plus data; nothing translates C while the game runs, which is why C is fast."
+      },
+      {
+        "id": "object-file",
+        "term": ".obj file",
+        "kind": "tool",
+        "what": "One .c file compiled to machine code, with gaps for names defined elsewhere. The linker joins them.",
+        "example": "cl /c game.c player.c   ->  game.obj, player.obj",
+        "aliases": [
+          ".obj",
+          "game.obj",
+          "player.obj"
+        ],
+        "def": "An object file (COFF format on Windows) holds one translation unit's machine code, data, and a list of symbols it defines and needs. link.exe combines object files and libraries into an executable.",
+        "model": "One typeset chapter of a book, waiting for the binder.",
+        "game": "Change only player.c and only player.obj needs rebuilding before the link. Never commit .obj files to Git."
+      },
+      {
+        "id": "os",
+        "term": "operating system (OS)",
+        "kind": "concept",
+        "what": "The program in charge of the others. Windows shares out the CPU, memory, files, screen and keyboard.",
+        "example": "fopen, printf and Sleep all end up as requests to Windows",
+        "aliases": [
+          "OS"
+        ],
+        "def": "The operating system manages hardware and provides services to processes: memory, scheduling, files, devices and windows.",
+        "model": "A hotel's front desk: guests can't walk into the kitchen; they ask the desk.",
+        "game": "Your game can't draw on the screen itself; in Phase 05 it asks Windows for a window and paints into it."
+      },
+      {
+        "id": "process",
+        "term": "process",
+        "kind": "concept",
+        "what": "A running program: its own memory, at least one thread, and an ID (PID).",
+        "example": "Task Manager, Details tab: one row per process",
+        "aliases": [
+          "process",
+          "PID"
+        ],
+        "def": "A process is an instance of a running program with its own virtual address space, handles and one or more threads. It ends when main returns or the program exits, and its exit code goes back to whoever started it.",
+        "model": "A guest with a private hotel room.",
+        "game": "Run game.exe twice and you get two processes with separate scores; neither can see the other's memory."
+      },
+      {
+        "id": "thread",
+        "term": "thread",
+        "kind": "concept",
+        "what": "One line of execution inside a process, with its own registers and stack.",
+        "example": "Your games in this course run on one thread",
+        "aliases": [
+          "thread"
+        ],
+        "def": "A thread is the unit Windows schedules on a CPU core. Each has its own register state and stack; threads in one process share its memory.",
+        "model": "One cook in the kitchen. More cooks can work at once, but they share the same fridge.",
+        "game": "Big engines run rendering, audio and loading on separate threads. A 2D prototype is fine on one."
+      },
+      {
+        "id": "virtual-memory",
+        "term": "virtual memory",
+        "kind": "concept",
+        "what": "Each process sees its own private addresses; Windows maps them, in 4 KB pages, to real RAM.",
+        "example": "Two programs can both use the same address without colliding",
+        "gotcha": "Touching an address with no page behind it crashes with an access violation, 0xC0000005.",
+        "aliases": [
+          "virtual memory",
+          "page file"
+        ],
+        "def": "Virtual memory gives each process its own address space. The OS maps virtual pages (4 KB on x64) to physical RAM or to the page file on disk.",
+        "model": "Every guest's room is numbered 1 to 100 on their own key card; the hotel knows where each room really is.",
+        "game": "A bad pointer in your game crashes only your game; Windows ends the process and the rest of the PC carries on."
+      },
+      {
+        "id": "buffer",
+        "term": "buffer",
+        "kind": "concept",
+        "what": "A waiting area in memory where data queues until it's used. stdin and stdout both have one.",
+        "example": "Type 2 and Enter: stdin holds '2' and '\\n'",
+        "gotcha": "After reading one character, the Enter is still waiting in stdin for the next read.",
+        "aliases": [
+          "buffer"
+        ],
+        "def": "A buffer is memory that holds data between a producer and a consumer. The console delivers input a line at a time, and the C library collects output in stdout's buffer before passing it to Windows.",
+        "model": "A letterbox: post arrives in batches; you take it out one letter at a time.",
+        "game": "Phase 4.5 reads keys live with _kbhit and _getch to skip the line buffer, and builds each frame in a frame buffer."
+      },
+      {
+        "id": "ascii",
+        "term": "ASCII codes",
+        "kind": "concept",
+        "what": "The number behind each character. '0' is 48, 'A' is 65, 'a' is 97, newline is 10.",
+        "example": "getchar() on a typed 2 returns 50",
+        "gotcha": "'2' is not 2. '2' - '0' is 2.",
+        "aliases": [
+          "ASCII"
+        ],
+        "def": "ASCII assigns the numbers 0 to 127 to letters, digits, punctuation and control characters. A char in C holds such a number; %c prints it as a character and %d as a number.",
+        "model": "A codebook: every letter has a number, and the computer only ever stores the numbers.",
+        "game": "Lane keys '1', '2', '3' arrive as 49, 50, 51; subtract '0' to get lane numbers."
+      },
+      {
+        "id": "c-standard",
+        "term": "C standard (C17)",
+        "kind": "concept",
+        "what": "The official rules of C. Versions: C89, C99, C11, C17, C23. This course uses C17 (/std:c17).",
+        "example": "cl /std:c17 /W4 /WX game.c",
+        "aliases": [
+          "C17",
+          "/std:c17"
+        ],
+        "def": "ISO C is revised every few years. MSVC supports C11 and C17 with /std:c11 or /std:c17, but not optional features such as variable-length arrays.",
+        "model": "The rulebook every compiler agrees to follow; each edition adds a few rules.",
+        "game": "Code written to C17 builds with MSVC, gcc and clang, so a partner on another compiler can build your game."
+      }
+    ],
     "phase1": [
       {
         "id": "cl",
@@ -49,7 +333,7 @@
           "#include"
         ],
         "match": "^#include",
-        "def": "#include is a preprocessor directive that inserts the contents of another file — usually a header of declarations — at that point before compilation.",
+        "def": "#include is a preprocessor directive that inserts the contents of another file, usually a header of declarations, at that point before compilation.",
         "model": "Borrowing a toolbox. The toolbox (stdio.h) doesn't do any work itself; it tells the compiler which tools exist and how to hold them.",
         "game": "The runner needs three toolboxes: stdio.h for printf, conio.h for keys and windows.h for Sleep. Leave one out and those names don't exist.",
         "gameCode": "#include <stdio.h>\n#include <conio.h>\n#include <windows.h>"
@@ -99,7 +383,7 @@
           "\\\\"
         ],
         "def": "Escape sequences are backslash-prefixed character codes inside string and character literals that represent characters you can't type directly, like newline (\\n) or carriage return (\\r).",
-        "model": "A backslash means \"the next character is a control, not a letter\" — like a shift key for meanings.",
+        "model": "A backslash means \"the next character is a control, not a letter\", like a shift key for meanings.",
         "game": "\\n moves down a line, which would make the runner scroll. \\r jumps back to the start of the same line so the next frame paints over the last one.",
         "gameCode": "printf(\"\\r%s\", lane);   // redraw in place, no \\n"
       },
@@ -132,7 +416,7 @@
         ],
         "def": "return ends the current function and hands a value back to its caller. Returning 0 from main reports successful termination to the host environment.",
         "model": "Handing in your answer and leaving the room. From main, 0 means \"all good\", anything else means \"something went wrong\".",
-        "game": "When the player presses Q the runner leaves the loop, prints the final score, and returns 0 — and build.bat-style scripts can check that.",
+        "game": "When the player presses Q the runner leaves the loop, prints the final score, and returns 0, and build.bat-style scripts can check that.",
         "gameCode": "printf(\"Final score: %d\\n\", score);\nreturn 0;"
       },
       {
@@ -156,7 +440,7 @@
           "C4244: possible loss of data"
         ],
         "def": "A compiler error is a diagnostic that prevents an object file from being produced. A warning is a diagnostic that still allows compilation, unless /WX treats warnings as errors.",
-        "model": "An error is a locked door. A warning is a sign on an open door saying \"are you sure?\" — /WX locks that door too.",
+        "model": "An error is a locked door. A warning is a sign on an open door saying \"are you sure?\". /WX locks that door too.",
         "game": "Storing a float position into an int lane column raises C4244. Under /WX the runner won't build until you cast on purpose.",
         "gameCode": "int col = (int)x;   // the cast clears C4244"
       },
@@ -172,7 +456,7 @@
           "set SOURCES="
         ],
         "def": "A batch file (.bat) is a Windows script: a text file of shell commands run in order. build.bat holds the project's compiler flags and source list so one command builds everything.",
-        "model": "A recipe card for your game: ingredients (the .c files), oven settings (the flags), and one instruction — bake.",
+        "model": "A recipe card for your game: ingredients (the .c files), oven settings (the flags), and one instruction: bake.",
         "game": "Phase 4.5 adds runner.c to the SOURCES line. Nothing else changes; you still type build.",
         "gameCode": "set SOURCES=main.c runner.c\ncl %FLAGS% %SOURCES% /Fe:runner.exe"
       },
@@ -214,10 +498,10 @@
         "term": "git add · commit · push",
         "kind": "tool",
         "what": "Stage changes, save a labelled snapshot, send it to GitHub.",
-        "example": "git add .\ngit commit -m \"feat: hello world\"\ngit push",
+        "example": "git add hello_world.c build.bat\ngit commit -m \"feat: hello world\"\ngit push",
         "aliases": [
           "git push",
-          "git add .",
+          "git add",
           "git add",
           "git commit"
         ],
@@ -225,7 +509,7 @@
         "def": "git add stages changes for the next commit, git commit records a snapshot of the staged changes with a message, and git push uploads local commits to a remote repository.",
         "model": "Choose what goes in the photo, take the photo with a caption, then post it to the shared album.",
         "game": "After the runner's restart works: add the files, commit \"feat: restart from game over\", push so your partner can play it.",
-        "gameCode": "git add .\ngit commit -m \"feat: restart from game over\"\ngit push"
+        "gameCode": "git add main.c game.c\ngit commit -m \"feat: restart from game over\"\ngit push"
       },
       {
         "id": "comments",
@@ -390,7 +674,7 @@
           "&",
           "&x"
         ],
-        "def": "The unary & operator yields the address of its operand — a pointer to it.",
+        "def": "The unary & operator yields the address of its operand, a pointer to it.",
         "model": "Writing down where a box lives instead of what's in it, so someone else can come and fill it.",
         "game": "scanf needs &guess because it has to put your number into the guess box in main, not into a copy.",
         "gameCode": "scanf(\"%d\", &guess);"
@@ -597,7 +881,7 @@
         "match": "^if \\(",
         "def": "if evaluates a controlling expression and executes its statement when the result is non-zero; else if and else chain alternatives that are tested in order.",
         "model": "A row of gates. You go through the first one that's open and skip all the rest.",
-        "game": "The guessing game's whole personality: too high, too low, or correct — exactly one message per guess.",
+        "game": "The guessing game's whole personality: too high, too low, or correct: exactly one message per guess.",
         "gameCode": "if (guess > secret)      printf(\"Lower\\n\");\nelse if (guess < secret) printf(\"Higher\\n\");\nelse                     won = 1;"
       },
       {
@@ -614,7 +898,7 @@
         ],
         "def": "== is the equality operator and yields 1 or 0. = is the assignment operator; the expression's value is the value assigned.",
         "model": "== asks a question. = gives an order. Mixing them up asks nothing and quietly changes your data.",
-        "game": "if (health = 0) sets health to zero and never runs the block — the player can't die and also has no health.",
+        "game": "if (health = 0) sets health to zero and never runs the block: the player can't die and also has no health.",
         "gameCode": "if (health == 0) alive = false;"
       },
       {
@@ -658,7 +942,7 @@
         "match": "^do \\{",
         "def": "do-while executes its body, then tests the controlling expression, so the body always runs at least once.",
         "model": "Try first, ask after. You always get one go.",
-        "game": "Guess v2's \"Play again? (y/n)\" — play one round, then ask whether to loop.",
+        "game": "Guess v2's \"Play again? (y/n)\": play one round, then ask whether to loop.",
         "gameCode": "do {\n    play_round();\n    again = ask_again();\n} while (again == 'y');"
       },
       {
@@ -1613,14 +1897,14 @@
         "example": "*.exe\n*.obj\n*.pdb",
         "def": ".gitignore lists file patterns Git should not track, typically generated files like build output.",
         "model": "A \"don't photocopy these\" list taped to the notebook.",
-        "game": "runner.exe, *.obj and *.pdb are rebuilt every time — keep them out so they never conflict.",
+        "game": "runner.exe, *.obj and *.pdb are rebuilt every time. Keep them out so they never conflict.",
         "gameCode": "*.exe\n*.obj\n*.pdb"
       },
       {
         "id": "commit-msg",
         "term": "Commit message",
         "kind": "concept",
-        "what": "type: short description — feat, fix, refactor, docs.",
+        "what": "type: short description. Types: feat, fix, refactor, docs.",
         "example": "feat: add player_take_damage function",
         "aliases": [
           "type: short description",
@@ -1628,9 +1912,73 @@
           "git reset --soft HEAD~1"
         ],
         "def": "A commit message describes a change. A common convention is type: summary, with types such as feat, fix, refactor and docs.",
-        "model": "The caption on the photo — what changed and why, readable by someone who wasn't there.",
+        "model": "The caption on the photo: what changed and why, readable by someone who wasn't there.",
         "game": "\"fix: obstacle at column 0 no longer kills a ducking player\" tells your partner exactly what to test.",
         "gameCode": "git commit -m \"fix: ducking now dodges obstacles at column 0\""
+      },
+      {
+        "id": "git-areas",
+        "term": "Working tree · staging area · repository",
+        "kind": "concept",
+        "what": "The three places a change passes through: files on disk, picked for the next commit, saved in a commit.",
+        "example": "edit runner.c      -> working tree\ngit add runner.c   -> staging area\ngit commit -m \"...\" -> repository",
+        "aliases": [
+          "working tree",
+          "staging area",
+          "staged"
+        ],
+        "def": "The working tree is the checked-out files; the staging area (index) holds the snapshot for the next commit; the repository in .git stores the commits.",
+        "model": "Your desk, the out-tray, and the filing cabinet.",
+        "game": "You fix ducking in runner.c, stage only that file, and commit it, while a half-done jump.c stays on your desk.",
+        "gameCode": "git add runner.c\ngit commit -m \"fix: ducking at column 0\""
+      },
+      {
+        "id": "git-head",
+        "term": "HEAD",
+        "kind": "concept",
+        "what": "Git's name for the commit you're on right now, usually through the current branch.",
+        "example": "git log --oneline\n3f2a1c9 (HEAD -> main) fix: ducking",
+        "gotcha": "The <<<<<<< HEAD block in a conflict is your side.",
+        "aliases": [
+          "HEAD",
+          "HEAD -> main"
+        ],
+        "def": "HEAD is a reference to the currently checked-out commit, normally via a branch name; new commits take HEAD as their parent.",
+        "model": "The \"you are here\" pin on the history map.",
+        "game": "Switch to feature/jump and HEAD moves there; your next commit lands on that branch.",
+        "gameCode": "git switch feature/jump"
+      },
+      {
+        "id": "git-diff",
+        "term": "git diff / git diff --staged",
+        "kind": "tool",
+        "what": "Show changed lines: not yet staged, or staged for the next commit.",
+        "example": "git diff\ngit diff --staged",
+        "gotcha": "After git add, plain git diff shows nothing for that file. Use --staged.",
+        "aliases": [
+          "git diff",
+          "git diff --staged"
+        ],
+        "def": "git diff compares the working tree with the staging area; git diff --staged compares the staging area with HEAD.",
+        "model": "Proofreading the page before it goes in the envelope.",
+        "game": "Check exactly which lines of runner.c you're about to commit before writing the message.",
+        "gameCode": "git diff --staged"
+      },
+      {
+        "id": "git-merge",
+        "term": "Merge (fast-forward or merge commit)",
+        "kind": "concept",
+        "what": "Joining one branch's commits into another: slide the label forward, or make a commit with two parents.",
+        "example": "git merge feature/jump",
+        "aliases": [
+          "fast-forward",
+          "merge commit",
+          "git merge"
+        ],
+        "def": "A fast-forward moves the branch pointer when no divergent work exists; otherwise Git creates a merge commit whose two parents are the tips of both branches.",
+        "model": "If nobody else wrote in the book, just add your pages. If they did, write a page that joins both stories.",
+        "game": "Person A merged a score fix while you built jump, so your PR merges with a merge commit.",
+        "gameCode": "git pull   # fetch + merge"
       }
     ],
     "phase4b": [
@@ -2174,6 +2522,40 @@
         "game": "player.c moves the player, game.c runs the states, and main.c only holds the loop.",
         "gameCode": "set SOURCES=main.c game.c player.c\ncl %FLAGS% %SOURCES% /Fe:game.exe",
         "phase": "phase6"
+      }
+    ],
+    "phase7": [
+      {
+        "id": "memmove",
+        "term": "memmove / memcpy",
+        "kind": "function",
+        "what": "Copy a block of bytes. memmove is safe when source and destination overlap; memcpy isn't.",
+        "example": "memmove(&scores[2], &scores[1], 3 * sizeof scores[0]);",
+        "gotcha": "The count is in bytes, not elements: multiply by sizeof.",
+        "aliases": [
+          "memmove",
+          "memcpy"
+        ],
+        "def": "memmove and memcpy (string.h) copy n bytes from source to destination; memcpy has undefined behaviour if the regions overlap, memmove does not.",
+        "model": "Sliding books along one shelf: you have to move them in the right order or you overwrite one.",
+        "game": "Opening a gap in the high-score table to insert a new score.",
+        "gameCode": "memmove(&table[i + 1], &table[i], (size_t)(4 - i) * sizeof table[0]);"
+      },
+      {
+        "id": "malloc-free",
+        "term": "malloc / free",
+        "kind": "function",
+        "what": "Ask for memory while the program runs, and hand it back when done.",
+        "example": "Enemy *e = malloc(sizeof *e);\nif (e == NULL) return 1;\nfree(e);",
+        "gotcha": "Every malloc needs exactly one free. Using the pointer after free is undefined.",
+        "aliases": [
+          "malloc",
+          "free"
+        ],
+        "def": "malloc (stdlib.h) allocates a block of the requested size and returns a pointer to it, or NULL on failure; free releases it.",
+        "model": "Borrowing a table at the library: it's yours until you give it back.",
+        "game": "An enemy list whose size comes from a level file.",
+        "gameCode": "Enemy *enemies = malloc((size_t)count * sizeof *enemies);"
       }
     ]
   }

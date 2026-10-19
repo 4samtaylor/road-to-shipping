@@ -1,5 +1,28 @@
 # Phase 4 page map
 
+## Current shape (v23)
+
+Phase 04 Git & Working With Your Partner. File `content/08-phase4.html`, ladder `content/ladders/phase4.json`, phase id `phase4`. Comes after `phase3c`, before `phase4b`.
+
+Pages: Overview, 6 concepts, Practice, Review.
+
+Concepts (every one has a Learn it section with a King line; new in v23: none (`gitignore` moved to 2nd)):
+
+1. `clone-pull` Clone and pull. Not in King (Pro Git)
+2. `gitignore` .gitignore. Not in King (Pro Git)
+3. `commit-messages` Writing good commit messages. Not in King (Pro Git)
+4. `branches` Branches. Not in King (Pro Git)
+5. `pull-requests` Pull requests. Not in King (Pro Git)
+6. `merge-conflicts` Merge conflicts. Not in King (Pro Git)
+
+Notes:
+- R7: Learn-it written for all six rungs from Pro Git, since King has no Git; `pull-requests` now explains what a merge is.
+- No Overview, Trace or Build blocks: the Overview page is generated from the ladder.
+
+## v22 page map (record)
+
+Written for v22. Concept numbers and phase names in this part are from before v23; use the list above for the current order.
+
 Words: 570 -> ~270.
 
 | Original block | Decision |

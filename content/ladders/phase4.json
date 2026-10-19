@@ -18,7 +18,7 @@
   {
    "id": "clone-pull",
    "title": "Clone and pull",
-   "kick": "git clone · git pull · git status",
+   "kick": "git clone · git pull · git status · origin",
    "mins": 10,
    "lang": "shell",
    "skills": [
@@ -26,7 +26,7 @@
    ],
    "builds": "Phase 1: you already have the repo on your PC and have pushed to it. Now Person A needs their own copy.",
    "why": "You and Person A each keep a full copy of the game on your own PC. Clone makes that copy once. Pull brings in whatever the other person has pushed since. Skip the pull and you end up editing an old version of the game.",
-   "code": "rem Person A, once: copy Sam's repo to their PC\ncd %USERPROFILE%\\Documents\\Dev\ngit clone https://github.com/4samtaylor/game-dev-exercises\ncd game-dev-exercises\ngit log --oneline\nrem Every session, before touching anything:\ngit pull\nrem Already up to date.\ngit status\nrem On branch main\nrem Your branch is up to date with 'origin/main'.\nrem nothing to commit, working tree clean",
+   "code": "rem Person A, once: copy Sam's repo to their PC\ncd %USERPROFILE%\\Documents\\Dev\ngit clone https://github.com/4samtaylor/game-dev-exercises\ncd game-dev-exercises\ngit log --oneline\nrem Every session, before touching anything:\ngit pull\nrem Already up to date.\ngit status\nrem On branch main\nrem Your branch is up to date with 'origin/main'.\nrem nothing to commit, working tree clean\ngit remote -v\nrem origin  https://github.com/4samtaylor/game-dev-exercises (fetch)\nrem origin  https://github.com/4samtaylor/game-dev-exercises (push)",
    "walk": [
     [
      3,
@@ -50,11 +50,15 @@
     ],
     [
      9,
-     "<b>git status</b> tells you where you stand: which branch (branches come in rung 3), and whether you have changes."
+     "<b>git status</b> tells you where you stand: which branch you're on (the Branches concept explains those), and whether you have changes."
     ],
     [
      12,
      "“working tree clean” means every file matches the last commit. A good place to start work from."
+    ],
+    [
+     13,
+     "<b>git remote -v</b> lists the remotes this repo knows. <b>origin</b> is the nickname clone gave the GitHub address, used for both fetching and pushing."
     ]
    ],
    "model": "<b>Mental model:</b> a shared notebook. Clone is photocopying it once. Pull is copying in the new pages your partner wrote since you last looked.",
@@ -87,50 +91,205 @@
     ],
     [
      "git pull says “Need to specify how to reconcile divergent branches”.",
-     "You and Person A both have commits the other lacks. Git needs a one-time setting to merge them. Rung 5 shows it, and what happens next."
+     "You and Person A both have commits the other lacks. Git needs a one-time setting to merge them. Merge conflicts shows it, and what happens next."
     ],
     [
      "Clone asks me to sign in or says not found.",
      "Person A isn’t a collaborator yet, hasn’t accepted the invite, or isn’t signed in to GitHub on that PC. Check Settings, then Collaborators, on the repo page."
+    ],
+    [
+     "What's in the hidden .git folder?",
+     "The whole history: every commit, every branch and the repo's settings. Your project files are one version laid out from it. Never edit inside .git, and never delete it, or the folder stops being a repo."
     ]
    ],
-   "bridge": "You can get the repo and keep it current. Next: <b>writing good commit messages</b>, so the history makes sense to both of you."
+   "bridge": "You can get the repo and keep it current. Next: <b>.gitignore</b>, so build files never get into the history you share.",
+   "learn": {
+    "parts": [
+     [
+      "What a repo is",
+      "<p>A <b>repository</b> (repo for short) is your project folder plus its whole history. The history lives in a hidden folder called <code>.git</code> at the top of the project: every commit, every branch and Git's settings for this project. The files you open and edit are the <b>working tree</b>, one version of the project laid out on disk so you can work on it.</p><p>That split explains a lot. Delete a .c file by accident and Git can bring it back from <code>.git</code>. Delete <code>.git</code> and the folder is just a folder again, with no history at all. You never edit anything inside <code>.git</code> by hand. File Explorer hides it; View, then Show, then Hidden items if you want to see it's there.</p>"
+     ],
+     [
+      "Three places your work can be",
+      "<p>Every change you make passes through three places:</p><ol><li><b>Working tree</b>: the files on disk. Saving in VS Code changes these and nothing else.</li><li><b>Staging area</b>: the changes you've picked for the next commit. <code>git add runner.c</code> puts a file's current state here.</li><li><b>Repository</b>: the commits inside <code>.git</code>. <code>git commit</code> turns everything staged into a new commit.</li></ol><p><code>git status</code> reports the gaps between them. “Changes not staged for commit” means edited but not added. “Changes to be committed” means staged. “nothing to commit, working tree clean” means all three agree.</p>"
+     ],
+     [
+      "What clone does",
+      "<p><code>git clone</code> does three jobs at once. It downloads every commit into a new <code>.git</code> folder, lays out the latest <code>main</code> as your working tree, and records where it came from under the name <b>origin</b>. origin is only a nickname for the GitHub address, so you don't have to type the URL again. <code>git remote -v</code> shows it.</p><p>Clone also makes <code>origin/main</code>: your PC's note of where GitHub's main was the last time the two talked. It's a bookmark, not a live view.</p>"
+     ],
+     [
+      "Why status can be out of date",
+      "<p><code>git status</code> and <code>git log</code> never contact GitHub. Status compares your main with <code>origin/main</code>, and that bookmark only moves when you fetch or pull. So “Your branch is up to date with 'origin/main'” really means “up to date with what I last heard”. If Person A pushed ten minutes ago, status won't know until you ask.</p><p><code>git pull</code> is the asking. It contacts GitHub, downloads any new commits, moves <code>origin/main</code>, then brings those commits into your main. The Merge conflicts concept splits pull into its two halves.</p>"
+     ],
+     [
+      "Clone once, pull every session",
+      "<p class=\"warn\">Don't clone again to get your partner's changes. You'd end up with two folders, and sooner or later you'd edit the old one. Clone once per PC, then start every session with <code>git pull</code> inside that folder.</p>"
+     ]
+    ],
+    "king": "Not in King; see Pro Git ch 1–3: 1.3 What is Git?, 2.1 Getting a Git Repository, 2.2 Recording Changes to the Repository, 2.5 Working with Remotes"
+   }
+  },
+  {
+   "id": "gitignore",
+   "title": ".gitignore",
+   "kick": "*.exe · *.obj · git check-ignore -v · git rm --cached",
+   "mins": 10,
+   "lang": "shell",
+   "skills": [
+    "gitignore"
+   ],
+   "builds": "Phase 1: build.bat leaves .exe, .obj and .pdb files in your folder, and you met the three-line .gitignore. Clone and pull: from now on Person A gets whatever you commit.",
+   "why": "Every build rewrites your .exe, .obj, .pdb and .ilk files. If any of them gets into Git, you and Person A will conflict over files neither of you can read, from the first day. A .gitignore tells Git to leave them alone, so set it up before you share any code.",
+   "code": "echo *.exe> .gitignore\necho *.obj>> .gitignore\necho *.pdb>> .gitignore\ntype .gitignore\nrem *.exe\nrem *.obj\nrem *.pdb\ngit add .gitignore\ngit commit -m \"chore: ignore build output\"\nrem runner.exe was committed before .gitignore existed:\ngit rm --cached runner.exe\ngit commit -m \"chore: stop tracking runner.exe\"\ndir /b runner.exe\ngit check-ignore -v runner.obj\nrem .gitignore:2:*.obj    runner.obj",
+   "walk": [
+    [
+     1,
+     "This writes one pattern per line into a file called <b>.gitignore</b> in the repo root. <code>&gt;</code> creates the file, <code>&gt;&gt;</code> adds to it. In VS Code you can just create the file instead. Run this in the Developer Command Prompt, not Windows PowerShell 5.1: its echo writes UTF-16, which Git can’t read as patterns. (PowerShell 7 writes UTF-8 and is fine.)"
+    ],
+    [
+     4,
+     "<b>type</b> shows what you wrote."
+    ],
+    [
+     5,
+     "<b>*.exe</b> means “any file ending in .exe”. Same for .obj and .pdb."
+    ],
+    [
+     8,
+     "The .gitignore is itself committed, so Person A gets the same rules when they pull."
+    ],
+    [
+     10,
+     "The catch: .gitignore only affects files Git <b>isn’t tracking yet</b>. A file already committed keeps being tracked."
+    ],
+    [
+     11,
+     "<b>git rm --cached</b> removes it from Git’s tracking but leaves the real file on your disk."
+    ],
+    [
+     13,
+     "The .exe is still in your folder. Git just stopped caring about it."
+    ],
+    [
+     14,
+     "<b>git check-ignore -v</b> answers “which rule skips this file?”. It prints the file the rule is in, the line number, the pattern and the file name. No output means no rule matched, or Git already tracks the file."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a “don’t photocopy these” list taped to the notebook. It works for pages not yet copied. Pages already in the book have to be taken out by hand.",
+   "check": {
+    "q": "runner.exe got committed before your .gitignore existed. You now add *.exe to .gitignore and rebuild. What does git status -s show for runner.exe?",
+    "opts": [
+     "Nothing",
+     " M runner.exe",
+     "?? runner.exe",
+     " D runner.exe"
+    ],
+    "a": 1,
+    "hint": "Think about which files .gitignore applies to.",
+    "why": "Git already tracks runner.exe, so the ignore rule doesn’t apply to it. The rebuild changed it, so it shows as modified. git rm --cached stops the tracking.",
+    "miss": {
+     "0": "That’s what you’d get for an .exe that was never committed. This one was, so Git still watches it.",
+     "2": "?? is for files Git has never seen. This one is in history.",
+     "3": "The rebuild replaced the file. Nothing deleted it."
+    }
+   },
+   "tryit": {
+    "task": "Stop Git tracking game.pdb (already committed) without deleting the file.",
+    "code": "git ____ ____ game.pdb\ngit commit -m \"chore: stop tracking game.pdb\"",
+    "answer": "git rm --cached game.pdb"
+   },
+   "qa": [
+    [
+     "What happens on Person A’s PC when they pull the “stop tracking” commit?",
+     "Git deletes runner.exe from their folder, since the commit removed it from the repo. They just rebuild with build.bat."
+    ],
+    [
+     "What else should be in it?",
+     "The starter list just below this concept also covers .ilk, .exp, .lib, .dll and build folders like Debug/. Paste it in your repo root."
+    ],
+    [
+     "I added a rule and nothing changed.",
+     "Check the file is named exactly <code>.gitignore</code> (no .txt on the end) and sits in the repo’s top folder. Then check whether the file was tracked before."
+    ],
+    [
+     "Why keep .exe, .obj and .pdb out of the repo?",
+     "They’re generated, so anyone can rebuild them in seconds. They’re binary, so Git can’t merge them, and every version is kept forever. Commit the recipe (your .c files and build.bat), not the cake."
+    ],
+    [
+     "What is a .pdb, and do I need it?",
+     "The program database: the debug information <code>/Zi</code> writes, which the debugger uses to match machine code to your lines and variable names. You need it on your disk to debug, but every build remakes it, so it stays out of Git."
+    ]
+   ],
+   "bridge": "Build output is out of the way. Next: <b>writing good commit messages</b>, so the history makes sense to both of you.",
+   "learn": {
+    "parts": [
+     [
+      "Why this comes first",
+      "<p>The first problem most pairs hit isn't a merge conflict, it's a committed .exe. One of you stages every changed file in one go, the build output goes in, and from then on every build changes files that both of you track. Those files are binary, so Git can't merge them, and every version stays in the history for good. Set up the .gitignore before you share any code and the problem never starts.</p>"
+     ],
+     [
+      "What a build leaves behind",
+      "<p>With build.bat's <code>/Zi</code> flag, one build of runner.c leaves these next to your code:</p><ul><li><code>runner.obj</code>: the object file. cl turns each .c file into machine code here, then the linker joins the pieces.</li><li><code>runner.exe</code>: the finished program the linker makes from the .obj files.</li><li><code>runner.pdb</code>, plus one named like <code>vc140.pdb</code> (cl’s own default name): the program database. <code>/Zi</code> writes the debug information here, such as which line each instruction came from and your variable names. The debugger reads it.</li><li><code>runner.ilk</code>: the incremental link file. <code>/Zi</code> turns on the linker's debug mode, and in that mode it keeps notes here so the next link can patch the .exe instead of starting over.</li></ul><p>Every one of them is made from your .c files and build.bat. Delete them all and the next build puts them back.</p>"
+     ],
+     [
+      "How the patterns work",
+      "<p>Each line of <code>.gitignore</code> is one pattern, checked against file names:</p><ul><li><code>*</code> matches any run of characters, so <code>*.obj</code> catches every object file in every folder.</li><li>A trailing slash means a folder: <code>build/</code> skips the folder and everything in it.</li><li><code>!</code> brings a file back after a wider rule skipped it, like <code>!.vscode/launch.json</code> in the starter list.</li><li>A line starting with <code>#</code> is a comment.</li></ul>"
+     ],
+     [
+      "Checking a rule works",
+      "<p><code>git check-ignore -v runner.obj</code> tells you which rule caught a file. It prints the .gitignore it came from, the line number, the pattern and the file name. If it prints nothing, no rule matched, or Git is already tracking the file, because tracked files are never ignored.</p>"
+     ],
+     [
+      "Already tracked means not ignored",
+      "<p class=\"warn\">A .gitignore only affects files Git isn't tracking yet. If runner.exe got committed before the rule existed, Git keeps watching it. <code>git rm --cached runner.exe</code> stops the tracking and leaves the file on your disk. Commit that, and the rule takes over from then on.</p>"
+     ]
+    ],
+    "king": "Not in King; see Pro Git ch 1–3: 2.2 Recording Changes to the Repository (the part on ignoring files)"
+   }
   },
   {
    "id": "commit-messages",
    "title": "Writing good commit messages",
-   "kick": "type: summary · feat · fix · refactor · docs",
+   "kick": "git diff · git diff --staged · HEAD · type: summary",
    "mins": 8,
    "lang": "shell",
    "skills": [
     "commit-msg"
    ],
-   "builds": "Phase 1: git add, git commit -m and git push. You wrote one message already.",
+   "builds": "Phase 1: git add, git commit -m and git push. Clone and pull: the three places your work can be.",
    "why": "Once two people share a repo, the commit list becomes how you talk to each other. “fixed stuff” tells your partner nothing. A message that says what changed lets them know what to test, and lets you find a bug’s start weeks later.",
-   "code": "git status -s\nrem  M runner.c\ngit add runner.c\ngit commit -m \"fix: ducking now dodges obstacles at column 0\"\ngit log --oneline\nrem 3f2a1c9 fix: ducking now dodges obstacles at column 0\nrem 8b1e4d2 update\nrem c07a9e5 stuff",
+   "code": "git status -s\nrem  M runner.c\ngit diff\nrem -    if (col > 0 && ducking) dodged = 1;\nrem +    if (col >= 0 && ducking) dodged = 1;\ngit add runner.c\ngit diff --staged\ngit commit -m \"fix: ducking now dodges obstacles at column 0\"\ngit log --oneline\nrem 3f2a1c9 (HEAD -> main) fix: ducking now dodges obstacles at column 0\nrem 8b1e4d2 update\nrem c07a9e5 stuff",
    "walk": [
     [
      1,
-     "<b>-s</b> gives the short form of status: one line per changed file."
+     "<b>-s</b> gives the short form of status: one line per changed file. The M in the second column means “modified, not yet staged”."
     ],
     [
-     2,
-     "The M in the second column means “modified, not yet staged”."
+     3,
+     "<b>git diff</b> shows the changes you haven't staged yet, line by line."
     ],
     [
      4,
-     "The pattern is <b>type: short description</b>. <b>feat</b> is a new feature, <b>fix</b> a bug fix, <b>refactor</b> a restructure that changes nothing visible, <b>docs</b> readme changes. Use double quotes in cmd."
-    ],
-    [
-     6,
-     "Reads well: you can tell what changed and what to test without opening the code."
+     "<code>-</code> is the old line, <code>+</code> the new one. Here <code>&gt;</code> became <code>&gt;=</code>, so column 0 now counts."
     ],
     [
      7,
-     "What not to do. “update” could mean anything."
+     "<b>git diff --staged</b> shows what's staged: exactly what the commit will hold. Plain <code>git diff</code> would now print nothing, because nothing is left unstaged."
     ],
     [
      8,
+     "The pattern is <b>type: short description</b>. <b>feat</b> is a new feature, <b>fix</b> a bug fix, <b>refactor</b> a restructure that changes nothing visible, <b>docs</b> readme changes, <b>merge</b> finishing a merge. Use double quotes in cmd."
+    ],
+    [
+     10,
+     "<b>HEAD -&gt; main</b>: HEAD is the commit you're on, reached through the main branch. The new commit reads well: you can tell what changed and what to test without opening the code."
+    ],
+    [
+     11,
+     "What not to do. “update” could mean anything."
+    ],
+    [
+     12,
      "Same problem. In a month nobody can find which commit broke the jump."
     ]
    ],
@@ -164,7 +323,7 @@
     ],
     [
      "Is there a rule about length?",
-     "Keep it to one line under about 70 characters. If you need more, a short message now and a note in the pull request (rung 4) works better."
+     "Keep it to one line under about 70 characters. If you need more, a short message now and a note in the pull request (see Pull requests) works better."
     ],
     [
      "Are there other types?",
@@ -179,7 +338,32 @@
      "A full snapshot of every tracked file, plus a note of which commit came before it, who made it and why. The long hex string (<code>a3f9c2e…</code>) is a fingerprint of all that, so change one byte and it changes. That is why history can’t be changed without every later fingerprint changing too."
     ]
    ],
-   "bridge": "You can write messages worth reading. Next: <b>branches</b>, so new work doesn’t break the game both of you run."
+   "bridge": "You can write messages worth reading. Next: <b>branches</b>, so new work doesn’t break the game both of you run.",
+   "learn": {
+    "parts": [
+     [
+      "Look before you commit",
+      "<p>A good message starts with knowing exactly what you're committing. Two commands show you:</p><ul><li><code>git diff</code> shows changes in your working tree that you <b>haven't</b> staged yet.</li><li><code>git diff --staged</code> shows what you <b>have</b> staged: exactly what the next commit will hold.</li></ul><p>Lines starting with <code>-</code> are the old version and lines starting with <code>+</code> are the new one. After <code>git add runner.c</code>, plain <code>git diff</code> goes quiet for that file, because nothing is left unstaged. That catches people out: the changes didn't vanish, they moved to the staging area. Press <code>q</code> if the diff opens in a pager and you want your prompt back.</p>"
+     ],
+     [
+      "HEAD",
+      "<p><b>HEAD</b> is Git's name for “the commit you're on right now”. Usually it points at a branch, and the branch points at its newest commit. That's why <code>git log --oneline</code> prints <code>(HEAD -&gt; main)</code> beside the top line. When you commit, the new commit's parent is HEAD, and HEAD moves along to it. <code>git diff --staged</code> is really comparing the staging area with HEAD.</p>"
+     ],
+     [
+      "The message pattern",
+      "<p>Write <b>type: summary</b>, one line, under about 70 characters. Your team's types:</p><ul><li><code>feat</code> a new feature, <code>fix</code> a bug fix</li><li><code>refactor</code> a restructure that changes nothing visible</li><li><code>docs</code> readme or comment changes, <code>chore</code> housekeeping like the .gitignore</li><li><code>merge</code> finishing a merge, including the line you chose in a conflict</li></ul><p>Write the summary as an instruction: “add jump”, not “added jump”. A handy test is that it should finish the sentence “If applied, this commit will…”.</p>"
+     ],
+     [
+      "Who made it",
+      "<p>Every commit records a name and an email. Git takes them from two settings you make once per PC:</p><pre>git config --global user.name \"Sam Taylor\"\ngit config --global user.email \"you@example.com\"</pre><p>Use the email on your GitHub account, so GitHub can link each commit to your profile. <code>git config user.email</code> with no value prints the current setting.</p>"
+     ],
+     [
+      "Common slips",
+      "<p class=\"warn\">If Git opens a text editor when you run <code>git commit</code>, you forgot <code>-m</code>. Type the message on the first line, save and close. If the editor is Vim (a black screen with tildes), press Esc, type <code>:wq</code> and Enter.</p>"
+     ]
+    ],
+    "king": "Not in King; see Pro Git ch 1–3: 1.6 First-Time Git Setup, 2.2 Recording Changes to the Repository, 2.3 Viewing the Commit History"
+   }
   },
   {
    "id": "branches",
@@ -190,9 +374,9 @@
    "skills": [
     "git-branch"
    ],
-   "builds": "Rungs 1 and 2: a repo with a clean main, and commits that say what they do.",
+   "builds": "Clone and pull: a repo with a clean main. Writing good commit messages: commits that say what they do, and HEAD.",
    "why": "If you both edit main directly, one half-finished feature can stop the game building for the other. The team rule is “main always builds”. Features get their own branch, and only come back when they work.",
-   "code": "git switch -c feature/jump\nrem Edit and save jump.c, then:\ngit add jump.c\ngit commit -m \"feat: add jump\"\ndir /b\nrem jump.c\nrem runner.c\ngit switch main\ndir /b\nrem runner.c\ngit branch\nrem   feature/jump\nrem * main",
+   "code": "git switch -c feature/jump\nrem Edit and save jump.c, then:\ngit add jump.c\ngit commit -m \"feat: add jump\"\ndir /b *.c\nrem jump.c\nrem runner.c\ngit switch main\ndir /b *.c\nrem runner.c\ngit branch\nrem   feature/jump\nrem * main",
    "walk": [
     [
      1,
@@ -208,7 +392,7 @@
     ],
     [
      5,
-     "<b>dir /b</b> lists just the file names."
+     "<b>dir /b *.c</b> lists just the names of the .c files."
     ],
     [
      8,
@@ -257,10 +441,39 @@
     ],
     [
      "Does the branch exist on GitHub?",
-     "Not yet. It lives only on your PC until you push it. Rung 4 does that."
+     "Not yet. It lives only on your PC until you push it. Pull requests does that."
+    ],
+    [
+     "Is a branch a copy of all my files?",
+     "No. It's a label pointing at one commit. Switching moves HEAD to another label and Git rewrites the files on disk to match that commit. Nothing is duplicated."
     ]
    ],
-   "bridge": "You can work on a branch. Next: <b>pull requests</b>, the way a finished branch gets back into main."
+   "bridge": "You can work on a branch. Next: <b>pull requests</b>, the way a finished branch gets back into main.",
+   "learn": {
+    "parts": [
+     [
+      "A branch is a label",
+      "<p>It's tempting to picture a branch as a copy of all your files. It isn't. A branch is a small label that points at one commit. <code>main</code> is a label. <code>feature/jump</code> is another. Making a branch writes one tiny file inside <code>.git</code>, which is why it's instant however big the game gets.</p>"
+     ],
+     [
+      "How the label moves",
+      "<ol><li><code>git switch -c feature/jump</code> makes a new label on the commit you're on, and points HEAD at it.</li><li>When you commit, the new commit's parent is the old one, and the label you're on slides forward to the new commit. Other labels stay put.</li><li><code>git switch main</code> points HEAD at main, and Git rewrites the working tree to match main's commit.</li></ol><p>So after one commit on the branch, main and feature/jump point at different commits that share the same history up to the split. That's all a branch is: two lines of work that can grow apart and later join.</p>"
+     ],
+     [
+      "Uncommitted edits when you switch",
+      "<p>Commits belong to branches. Edits you haven't committed belong to no branch, they're just in your working tree. When you switch:</p><ul><li>If the files you changed are the same on both branches, Git carries your edits across. They now look like edits on main.</li><li>If a file you changed is different on the other branch, Git refuses: “Your local changes to the following files would be overwritten”. It won't throw your work away.</li><li>A brand-new file Git has never seen stays in the folder whichever branch you're on.</li></ul><p>The safe habit: commit (or stash, with <code>git stash</code>) before you switch.</p>"
+     ],
+     [
+      "Throwing an edit away",
+      "<p><code>git restore runner.c</code> puts the file back to how it was at the last commit. Modern Git uses <code>switch</code> for branches and <code>restore</code> for files; older guides use <code>git checkout</code> for both.</p><p class=\"warn\">restore can't be undone. Edits that were never committed or stashed are gone for good, so read <code>git diff</code> first.</p>"
+     ],
+     [
+      "Naming",
+      "<p>Use <code>feature/</code> for new work and <code>fix/</code> for bug fixes, then a few words with hyphens: <code>feature/duck-key</code>. <code>git switch -</code> jumps back to the branch you were on before.</p>"
+     ]
+    ],
+    "king": "Not in King; see Pro Git ch 1–3: 3.1 Branches in a Nutshell, 3.2 Basic Branching and Merging, 2.4 Undoing Things"
+   }
   },
   {
    "id": "pull-requests",
@@ -271,7 +484,7 @@
    "skills": [
     "pull-request"
    ],
-   "builds": "Rung 3: your feature/jump branch with a commit on it. Switch back to it if you’re on main.",
+   "builds": "Branches: your feature/jump branch with a commit on it. Switch back to it if you're on main.",
    "why": "A branch is only on your PC until you share it. A pull request is the review step: Person A sees exactly what changed, plays it, comments, and merges it into main. That’s how main stays buildable with two people working.",
    "code": "git switch feature/jump\nrem ...edit, git add, git commit as usual...\ngit push -u origin feature/jump\nrem GitHub prints a link. Open it and click Create pull request.\nrem Person A reads the changes, plays the build, clicks Merge.\ngit switch main\ngit pull\ngit branch -d feature/jump",
    "walk": [
@@ -285,7 +498,7 @@
     ],
     [
      5,
-     "The reviewer sees the diff (every changed line), can comment on lines, and when happy clicks <b>Merge pull request</b>. GitHub does the merge."
+     "The reviewer reads the diff on the Files changed tab (every changed line), can comment on lines, and when happy clicks <b>Merge pull request</b>. GitHub does the merge, in one of three ways depending on which merge button is picked. Learn it explains each one."
     ],
     [
      6,
@@ -335,9 +548,42 @@
     [
      "Is there a way to open the PR from the terminal?",
      "Yes, with GitHub’s gh tool: <code>gh pr create --fill</code>. You need to install gh first. The website is fine to start with."
+    ],
+    [
+     "How does Person A play my branch before merging?",
+     "On their PC: <code>git fetch</code>, then <code>git switch feature/jump</code>, then build. fetch downloads the branch, and switch makes a local copy that tracks it."
+    ],
+    [
+     "What do the three merge options mean?",
+     "Create a merge commit keeps every commit and adds a merge commit. Squash and merge rolls the branch into one new commit. Rebase and merge copies each commit onto main with no merge commit. The Learn it section has the detail."
     ]
    ],
-   "bridge": "You can get a branch reviewed and merged. Next: <b>merge conflicts</b>, which happen when you both change the same line."
+   "bridge": "You can get a branch reviewed and merged. Next: <b>merge conflicts</b>, which happen when you both change the same line.",
+   "learn": {
+    "parts": [
+     [
+      "What a merge is",
+      "<p>A merge takes the commits from one branch and joins them into another. It happens in one of two ways:</p><ul><li><b>Fast-forward.</b> If main hasn't moved since you made feature/jump, your branch is just main plus some commits. Git slides the main label forward to your newest commit. No new commit is made.</li><li><b>Merge commit.</b> If main has moved on (Person A merged something), the two lines have grown apart. Git makes a new commit with <b>two parents</b>, one from each line, holding both sets of changes.</li></ul><p>Either way, nothing is copied by hand and nothing on either branch is lost.</p>"
+     ],
+     [
+      "Reading a diff on GitHub",
+      "<p>The pull request's <b>Files changed</b> tab shows every change. Red lines with <code>-</code> were removed, green lines with <code>+</code> were added, and plain lines around them are unchanged context. A header like <code>@@ -40,6 +40,9 @@</code> means “starting at line 40, 6 lines became 9”. Click the <code>+</code> beside a line to leave a comment on it. Review for one thing at a time: does it build, does it do what the title says, is anything in there that shouldn't be?</p>"
+     ],
+     [
+      "Playing your partner's branch",
+      "<p>Reading isn't testing. To run Person A's branch on your PC:</p><pre>git fetch\ngit switch feature/duck\nbuild</pre><p><code>git fetch</code> downloads their branch without touching yours. <code>git switch</code> with the branch name then makes a local copy that tracks theirs. Play it, then <code>git switch main</code> when you're done.</p>"
+     ],
+     [
+      "GitHub's three merge buttons",
+      "<p>The arrow beside the green button offers three choices:</p><ul><li><b>Create a merge commit</b>: always adds a merge commit, even when a fast-forward would do. The history shows exactly when each branch came in.</li><li><b>Squash and merge</b>: rolls all the branch's commits into one new commit on main. Tidy, but the separate steps are gone from main.</li><li><b>Rebase and merge</b>: copies each commit onto the end of main one by one, with no merge commit. The copies get new hashes.</li></ul><p>Pick one with Person A and stick to it. Create a merge commit is the easiest to follow when you're starting out.</p>"
+     ],
+     [
+      "After the merge",
+      "<p class=\"warn\">After a squash or rebase merge, <code>git branch -d</code> may say the branch is “not fully merged”, because main holds copies, not your original commits. Check the PR shows Merged, then use <code>-D</code>.</p>"
+     ]
+    ],
+    "king": "Not in King; see Pro Git ch 1–3: 3.2 Basic Branching and Merging, 3.5 Remote Branches (GitHub's side is ch 6.2, Contributing to a Project)"
+   }
   },
   {
    "id": "merge-conflicts",
@@ -348,7 +594,7 @@
    "skills": [
     "merge-conflict"
    ],
-   "builds": "Rungs 1 and 3: pulling, and two copies that drift apart.",
+   "builds": "Clone and pull, Branches and Pull requests: pulling, two copies that drift apart, and what a merge is.",
    "why": "Git merges most changes by itself. When you both change the same line, it can’t guess whose is right and stops. It’s normal, not a disaster. Practise on purpose now, so the first real one doesn’t feel like an emergency.",
    "code": "git config --global pull.rebase false\ngit pull\nrem CONFLICT (content): Merge conflict in runner.c\nrem Automatic merge failed; fix conflicts and then commit the result.\ntype runner.c\nrem <<<<<<< HEAD\nrem #define FRAME_MS 20\nrem =======\nrem #define FRAME_MS 16\nrem >>>>>>> cb284f65b60eec7847a6ee9ebcc097c1b9354948\nrem Edit runner.c: keep one line, delete all three marker lines\ngit add runner.c\ngit commit -m \"merge: keep 16ms frame time\"\ngit push",
    "walk": [
@@ -358,7 +604,7 @@
     ],
     [
      3,
-     "Git tells you which file clashed and that the merge is paused. Nothing is lost."
+     "Git tells you which file clashed and that the merge is paused. Nothing is lost. Run <code>git status</code> any time: it lists the file as <b>both modified</b>."
     ],
     [
      5,
@@ -378,7 +624,7 @@
     ],
     [
      11,
-     "The fix is by hand: pick one line (or write a blend) and delete the marker lines. VS Code shows buttons for this."
+     "The fix is by hand: pick one line (or write a blend) and delete the marker lines. In VS Code, Accept Current Change keeps yours and Accept Incoming Change keeps theirs."
     ],
     [
      12,
@@ -420,94 +666,42 @@
     [
      "How do I avoid conflicts?",
      "Pull often, keep commits small, and tell each other which file you’re in. You can’t avoid them forever, and that’s fine."
+    ],
+    [
+     "Why is there a merge commit I didn't write?",
+     "pull is fetch plus merge. If you both committed since your last pull, the merge can't just slide main forward, so Git makes a merge commit for you. That's normal."
     ]
    ],
-   "bridge": "You can resolve a conflict. Next: <b>.gitignore</b>, so compiled files never cause one."
-  },
-  {
-   "id": "gitignore",
-   "title": ".gitignore",
-   "kick": "*.exe · *.obj · git rm --cached",
-   "mins": 10,
-   "lang": "shell",
-   "skills": [
-    "gitignore"
-   ],
-   "builds": "Phase 1: cl and build.bat produce .exe, .obj and .pdb files in your project folder.",
-   "why": "Every build rewrites your .exe, .obj and .pdb files. If those are in Git, you and Person A will constantly conflict over files neither of you can read. A .gitignore tells Git to leave them alone.",
-   "code": "echo *.exe> .gitignore\necho *.obj>> .gitignore\necho *.pdb>> .gitignore\ntype .gitignore\nrem *.exe\nrem *.obj\nrem *.pdb\ngit add .gitignore\ngit commit -m \"chore: ignore build output\"\nrem runner.exe was committed before .gitignore existed:\ngit rm --cached runner.exe\ngit commit -m \"chore: stop tracking runner.exe\"\ndir /b runner.exe",
-   "walk": [
-    [
-     1,
-     "This writes one pattern per line into a file called <b>.gitignore</b> in the repo root. <code>&gt;</code> creates the file, <code>&gt;&gt;</code> adds to it. In VS Code you can just create the file instead. Run this in the Developer Command Prompt, not Windows PowerShell 5.1: its echo writes UTF-16, which Git can’t read as patterns. (PowerShell 7 writes UTF-8 and is fine.)"
+   "bridge": "That's every concept in Phase 4. Next: <b>Phase 4.5</b>, the ASCII Runner.",
+   "learn": {
+    "parts": [
+     [
+      "pull is two steps",
+      "<p><code>git pull</code> is really two commands run back to back:</p><ol><li><code>git fetch</code> downloads new commits from GitHub and moves <code>origin/main</code>. Your files don't change.</li><li><code>git merge origin/main</code> joins those commits into your current branch, exactly like the merges in Pull requests.</li></ol><p>If you both committed since you last pulled, the merge can't fast-forward, so Git makes a merge commit. That's the “Merge branch 'main' of github.com/…” commit you didn't write. It's normal.</p>"
+     ],
+     [
+      "How Git spots a conflict",
+      "<p>Git finds the last commit both sides share, then looks at what each side changed since. Changes in different places combine on their own. If both sides changed the <b>same lines</b>, or lines right next to each other, Git can't know which you want, so it stops and asks. Most merges never conflict at all.</p>"
+     ],
+     [
+      "Where you stand mid-conflict",
+      "<p><code>git status</code> is your map while a merge is paused. It says “You have unmerged paths”, lists each clashing file as <b>both modified</b>, and reminds you of the two ways out: fix the files and commit, or <code>git merge --abort</code> to go back to how things were before the pull. Files that merged cleanly are already listed as staged.</p>"
+     ],
+     [
+      "Fixing it in VS Code",
+      "<p>Open the file and VS Code colours the two sides. Above the markers it shows small buttons:</p><ul><li><b>Accept Current Change</b> keeps your side (the HEAD block).</li><li><b>Accept Incoming Change</b> keeps their side.</li><li><b>Accept Both Changes</b> keeps both, one after the other. You'll usually need to tidy the result.</li><li><b>Compare Changes</b> shows the two side by side.</li></ul><p>Then build and run before you commit. A file with no markers can still be wrong. Finish with <code>git add</code> on the file and <code>git commit</code>, using a <code>merge:</code> message.</p>"
+     ],
+     [
+      "Rebase, in two lines",
+      "<p>You'll see <code>git pull --rebase</code> online. It replays your commits on top of theirs instead of making a merge commit, which keeps history in a straight line but rewrites your commits. This course sets <code>pull.rebase false</code> so pull always merges.</p>"
+     ],
+     [
+      "The editor that pops up",
+      "<p class=\"warn\">When pull makes a merge commit on its own, Git may open a text editor for the message. The default message is fine: save and close. If it's Vim, press Esc, type <code>:wq</code> and Enter.</p>"
+     ]
     ],
-    [
-     4,
-     "<b>type</b> shows what you wrote."
-    ],
-    [
-     5,
-     "<b>*.exe</b> means “any file ending in .exe”. Same for .obj and .pdb."
-    ],
-    [
-     8,
-     "The .gitignore is itself committed, so Person A gets the same rules when they pull."
-    ],
-    [
-     10,
-     "The catch: .gitignore only affects files Git <b>isn’t tracking yet</b>. A file already committed keeps being tracked."
-    ],
-    [
-     11,
-     "<b>git rm --cached</b> removes it from Git’s tracking but leaves the real file on your disk."
-    ],
-    [
-     13,
-     "The .exe is still in your folder. Git just stopped caring about it."
-    ]
-   ],
-   "model": "<b>Mental model:</b> a “don’t photocopy these” list taped to the notebook. It works for pages not yet copied. Pages already in the book have to be taken out by hand.",
-   "check": {
-    "q": "runner.exe was committed in Phase 1. You now add *.exe to .gitignore and rebuild. What does git status -s show for runner.exe?",
-    "opts": [
-     "Nothing",
-     " M runner.exe",
-     "?? runner.exe",
-     " D runner.exe"
-    ],
-    "a": 1,
-    "hint": "Think about which files .gitignore applies to.",
-    "why": "Git already tracks runner.exe, so the ignore rule doesn’t apply to it. The rebuild changed it, so it shows as modified. git rm --cached stops the tracking.",
-    "miss": {
-     "0": "That’s what you’d get for an .exe that was never committed. This one was, so Git still watches it.",
-     "2": "?? is for files Git has never seen. This one is in history.",
-     "3": "The rebuild replaced the file. Nothing deleted it."
-    }
-   },
-   "tryit": {
-    "task": "Stop Git tracking game.pdb (already committed) without deleting the file.",
-    "code": "git ____ ____ game.pdb\ngit commit -m \"chore: stop tracking game.pdb\"",
-    "answer": "git rm --cached game.pdb"
-   },
-   "qa": [
-    [
-     "What happens on Person A’s PC when they pull the “stop tracking” commit?",
-     "Git deletes runner.exe from their folder, since the commit removed it from the repo. They just rebuild with build.bat."
-    ],
-    [
-     "What else should be in it?",
-     "The starter list just below this concept also covers .ilk, .exp, .lib, .dll and build folders like Debug/. Paste it in your repo root."
-    ],
-    [
-     "I added a rule and nothing changed.",
-     "Check the file is named exactly <code>.gitignore</code> (no .txt on the end) and sits in the repo’s top folder. Then check whether the file was tracked before."
-    ],
-    [
-     "Why keep .exe, .obj and .pdb out of the repo?",
-     "They’re generated, so anyone can rebuild them in seconds. They’re binary, so Git can’t merge them, and every version is kept forever. Commit the recipe (your .c files and build.bat), not the cake."
-    ]
-   ],
-   "bridge": "That’s every concept in Phase 4. Next: <b>Phase 4.5</b>, the ASCII Runner."
+    "king": "Not in King; see Pro Git ch 1–3: 3.2 Basic Branching and Merging (Basic Merge Conflicts), 2.5 Working with Remotes (Fetching and Pulling), 3.6 Rebasing"
+   }
   }
  ]
 }
