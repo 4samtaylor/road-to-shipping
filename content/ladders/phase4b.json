@@ -172,7 +172,7 @@
      ],
      [
       "Sleep takes a DWORD",
-      "<p>The parameter is a <code>DWORD</code>: Windows' name for a 32-bit unsigned whole number, made with a typedef. Unsigned means it has no negatives. Pass a negative int and it wraps round to a huge value, the way How big a number can be showed. -1 becomes 4,294,967,295, which is the exact value Windows calls <code>INFINITE</code>. <code>Sleep(-1)</code> never comes back. -2 waits about 49 days.</p><p>This matters in Phase 5. There you'll sleep for \"frame length minus the time this frame already took\", and a slow frame makes that negative. Check it first: <code>if (wait &gt; 0) Sleep((DWORD)wait);</code></p>"
+      "<p>The parameter is a <code>DWORD</code>: Windows' name for a 32-bit unsigned whole number, made with a typedef. Unsigned means it has no negatives. Pass a negative int and it wraps round to a huge value, the way How big a number can be showed. -1 becomes 4,294,967,295, which is the exact value Windows calls <code>INFINITE</code>. <code>Sleep(-1)</code> never comes back. Typed as a literal like that, MSVC catches it: warning C4245, and /WX stops the build. A negative <em>variable</em> gets no warning at all, and that is how this bug really gets in. -2 waits about 49 days.</p><p>This matters in Phase 5. There you'll sleep for \"frame length minus the time this frame already took\", and a slow frame makes that negative. Check it first: <code>if (wait &gt; 0) Sleep((DWORD)wait);</code></p>"
      ],
      [
       "It's approximate",
@@ -242,7 +242,7 @@
     ],
     [
      "What does Sleep(-1) do?",
-     "Waits forever. Sleep takes an unsigned DWORD, so -1 wraps round to 0xFFFFFFFF, which Windows reads as INFINITE. Any negative wait becomes enormous, so check <code>wait &gt; 0</code> before you call it."
+     "Waits forever. Sleep takes an unsigned DWORD, so -1 wraps round to 0xFFFFFFFF, which Windows reads as INFINITE. Typed as a literal it won’t build here (warning C4245, stopped by /WX). A negative variable gets no warning, so check <code>wait &gt; 0</code> before you call it."
     ],
     [
      "Why not just count to a big number to waste time?",

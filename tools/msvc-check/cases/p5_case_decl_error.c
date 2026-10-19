@@ -1,4 +1,4 @@
-/* expect: an error (declaration straight after a case label) */
+/* expect: none (MSVC accepts a declaration straight after case, even with /std:c17) */
 int main(void) {
     int k = 1;
     switch (k) {

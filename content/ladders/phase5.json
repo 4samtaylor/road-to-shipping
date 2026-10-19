@@ -56,7 +56,7 @@
      ],
      [
       "Mistakes and MSVC notes",
-      "<ul><li>A global or static starts at zero, so g_hwnd would be NULL even without <code>= NULL</code> (Static locals and globals). A local doesn't: without <code>= {0}</code>, wc is full of garbage and RegisterClass can fail.</li><li>The class name in RegisterClass and CreateWindowEx must match exactly, or CreateWindowEx returns NULL.</li><li>Both calls report failure through their return value. Check it while you're learning.</li></ul><p class=\"warn\">An unused parameter is a warning at /W4, so /WX stops the build. The <code>(void)hPrev;</code> line \"uses\" it. build.bat's /external:W0 keeps windows.h's own warnings quiet.</p>"
+      "<ul><li>A global or static starts at zero, so g_hwnd would be NULL even without <code>= NULL</code> (Static locals and globals). A local doesn't: without <code>= {0}</code>, wc is full of garbage and RegisterClass can fail.</li><li>The class name in RegisterClass and CreateWindowEx must match exactly, or CreateWindowEx returns NULL.</li><li>Both calls report failure through their return value. Check it while you're learning.</li></ul><p class=\"warn\">An unused parameter is warning C4100 at /W4, so /WX stops the build. The <code>(void)hPrev;</code> line \"uses\" it. build.bat's /external:W0 keeps windows.h's own warnings quiet.</p>"
      ]
     ],
     "king": "§7.5, §19.3, §20.3, §14.3–14.4"
@@ -639,7 +639,7 @@
      ],
      [
       "Braces after case WM_PAINT:",
-      "<p>In C17 a case label must be followed by a statement, and a declaration like <code>PAINTSTRUCT ps;</code> isn't one. The braces make a block, which is a statement. They also keep ps and hdc inside this case, so no other case can use them by mistake. C23 relaxes the rule, so you may see code without the braces.</p>"
+      "<p>In C17 a case label must be followed by a statement, and a declaration like <code>PAINTSTRUCT ps;</code> isn't one. The braces make a block, which is a statement. They also keep ps and hdc inside this case, so no other case can use them by mistake. C23 relaxes the rule, and MSVC already accepts the brace-less form even with /std:c17, so you will see code without them. Keep the braces anyway: gcc in C17 mode rejects that code, and the braces keep ps and hdc in their own case.</p>"
      ],
      [
       "Mistakes to watch for",
