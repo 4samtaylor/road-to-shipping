@@ -37,5 +37,11 @@
  "p375_c4062_expect_none": "none",
  "p5_c4068_unknown_pragma": "C4068",
  "p5_windows_h_c17": "none",
- "p5_crt_define_twice": "C4005"
+ "p5_crt_define_twice": "C4005",
+ "p3_c2106_assign_array": "C2106",
+ "p3_exact_length_expect_none": "none",
+ "p3_c4477_sizet_with_d": "C4477",
+ "p3_c4996_strcpy": "C4996",
+ "p3_snprintf_expect_none": "none",
+ "p3_c4244_toupper_to_char": "C4244"
 }

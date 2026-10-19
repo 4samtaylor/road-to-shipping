@@ -24,12 +24,19 @@
           </div>
           <div class="acc-body section-block-body">
             <dl class="king">
-              <dt>Functions and prototypes</dt><dd>§9.1–9.2 and §9.4–9.5. §9.3 covers argument conversions and passing arrays.</dd>
-              <dt>Scope</dt><dd>§10.1–10.4, including static local variables (§10.1) and external variables (§10.2). §18.5 explains what an uninitialised variable holds.</dd>
-              <dt><span class="cmd">#define</span></dt><dd>§2.6, then §14.1–14.3: how the preprocessor works, simple macros, and why to put brackets around them.</dd>
-              <dt>Arrays and grids</dt><dd>§8.1–8.2: initialising, <span class="cmd">sizeof</span> on arrays, two-dimensional arrays and constant arrays.</dd>
-              <dt>Strings, fgets and strcmp</dt><dd>§13.1–13.5, skipping “Character Arrays versus Character Pointers” until Phase 3.5. <span class="cmd">fgets</span> is §22.5 and streams are §22.1. <span class="cmd">strcspn</span> and the other <span class="cmd">&lt;string.h&gt;</span> functions are in §23.6.</dd>
-              <dt>Files</dt><dd>§22.1–22.3: streams, file modes, buffering, and what <span class="cmd">fscanf</span> returns.</dd>
+              <dt>Functions: parameters and return values</dt><dd>§9.1–9.2 for defining, calling and declaring functions, §9.4 for <span class="cmd">return</span>, and §9.5 for <span class="cmd">exit</span>.</dd>
+              <dt>void and function prototypes</dt><dd>§9.2–9.3: declarations, and how a prototype converts arguments. The usual file layout is in §10.5.</dd>
+              <dt>Scope: where a variable lives</dt><dd>§10.1, §10.3–10.4 for local variables, blocks and scope rules. §18.5 says what an uninitialised local holds. King treats a name hidden by an inner block as legal; under <span class="cmd">/W4 /WX</span> it stops the build.</dd>
+              <dt>Static locals and globals</dt><dd>§10.1 (static locals) and §10.2 (external variables, and why they cause trouble), then §18.2 for how long each kind lasts.</dd>
+              <dt>Named constants with <span class="cmd">#define</span></dt><dd>§2.6, then §14.1–14.3: how the preprocessor works, simple macros, and why to put brackets round them.</dd>
+              <dt>Arrays: many values, one name</dt><dd>§8.1–8.2: initialising, <span class="cmd">sizeof</span> on arrays, constant arrays and two-dimensional arrays.</dd>
+              <dt>Passing arrays to functions</dt><dd>§9.3, the part on array arguments. Skip the variable-length array parameters: MSVC doesn’t have them.</dd>
+              <dt>Strings and the '\0' at the end</dt><dd>§13.1–13.4: literals, string variables and their initialisers, printing strings with <span class="cmd">%s</span>, and reaching single characters. Skip “Character Arrays versus Character Pointers” in §13.2 until Phase 3.5.</dd>
+              <dt>Reading a line of text with fgets</dt><dd>§22.1 for the three streams, §22.5 for <span class="cmd">fgets</span>, §22.8 for <span class="cmd">sscanf</span>. §13.3 shows why <span class="cmd">scanf(&quot;%s&quot;)</span> and <span class="cmd">gets</span> are risky; <span class="cmd">gets</span> no longer exists in C11.</dd>
+              <dt>Copying and joining strings</dt><dd>§13.5 for <span class="cmd">strcpy</span>, <span class="cmd">strcat</span> and their n versions, then §22.8 for <span class="cmd">snprintf</span>. King uses <span class="cmd">strcpy</span> freely: here, text from outside goes in with <span class="cmd">snprintf</span>.</dd>
+              <dt>Comparing strings with strcmp</dt><dd>§13.5 for <span class="cmd">strcmp</span>. <span class="cmd">toupper</span> is in §23.5 and <span class="cmd">strncmp</span> in §23.6.</dd>
+              <dt>2D arrays: grids</dt><dd>§8.2 for two-dimensional arrays, §9.3 for passing one to a function, and the first part of §13.7 for arrays of strings.</dd>
+              <dt>Saving and loading with files</dt><dd>§22.1–22.3: streams, text and binary files, <span class="cmd">fopen</span> modes, buffering and <span class="cmd">fflush</span>, and what <span class="cmd">fscanf</span> returns. <span class="cmd">fwrite</span> is §22.6, for later.</dd>
               <dt>Skip for now</dt><dd>Variable-length arrays (§8.3; MSVC doesn’t have them), recursion (§9.6), the pointer idioms in §13.6 and command-line arguments at the end of §13.7. Come back to §13.6 after Phase 3.5.</dd>
             </dl>
           </div>
@@ -49,6 +56,21 @@
             </div>
           </div>
         </div>
+        <div class="section-block" data-page="concept:static-global">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
+              <div class="task" data-id="p3-static-global">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Count calls with a static local, then break a loop with a shared global</div>
+                  <div class="task-note">Write int next_id(void) with a static counter and print three IDs. Then make a global i, use it as the loop counter in draw_row and draw_map, and see how many rows you get. Fix it with a local i in each loop and delete the global. <span class="task-time">~30 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
 
         <div class="section-block" data-page="concept:arrays">
@@ -72,6 +94,21 @@
             </div>
           </div>
         </div>
+        <div class="section-block" data-page="concept:array-args">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
+              <div class="task" data-id="p3-array-args">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Pass your scores array to print_scores and add_bonus, and prove the function changes main’s array <span class="task-tag t-crucial">Crucial</span></div>
+                  <div class="task-note">Give print_scores a const parameter and try writing to it to see the build stop. Then print sizeof(scores) inside a function and inside main, and explain the two numbers. <span class="task-time">~30 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         <div class="section-block" data-page="concept:fgets">
           <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
@@ -87,6 +124,21 @@
             </div>
           </div>
         </div>
+        <div class="section-block" data-page="concept:string-copy">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
+              <div class="task" data-id="p3-string-copy">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Build a &quot;name: score&quot; line with snprintf into a small buffer and print what snprintf returns <span class="task-tag t-crucial">Crucial</span></div>
+                  <div class="task-note">Then shrink the buffer one box at a time until the return value says the text was cut short. Compare it with what printed. <span class="task-time">~30 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         <div class="section-block" data-page="concept:strcmp">
           <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
@@ -195,7 +247,7 @@
     <span class="c-type">int</span>  <span class="c-var">i</span>;
 
     <span class="c-cm">// sizeof(the whole array) / sizeof(one box) = how many boxes.</span>
-    <span class="c-cm">// sizeof hands back a size_t, so cast it — same move as (int)x in session 1.</span>
+    <span class="c-cm">// sizeof hands back a size_t, so cast it, same move as (int)x in session 1.</span>
     <span class="c-var">count</span> = (<span class="c-type">int</span>)(<span class="c-kw">sizeof</span>(<span class="c-var">scores</span>) / <span class="c-kw">sizeof</span>(<span class="c-var">scores</span>[<span class="c-num">0</span>]));
 
     <span class="c-cm">// Boxes are numbered from 0, so the last one is count - 1.</span>
@@ -206,7 +258,7 @@
 
     <span class="c-cm">// Assume box 0 wins, then let every other box challenge it.</span>
     <span class="c-var">max</span> = <span class="c-var">scores</span>[<span class="c-num">0</span>];
-    <span class="c-kw">for</span> (<span class="c-var">i</span> = <span class="c-num">1</span>; <span class="c-var">i</span> &lt; <span class="c-var">count</span>; <span class="c-var">i</span>++) {   <span class="c-cm">// starts at 1 — 0 is already the champion</span>
+    <span class="c-kw">for</span> (<span class="c-var">i</span> = <span class="c-num">1</span>; <span class="c-var">i</span> &lt; <span class="c-var">count</span>; <span class="c-var">i</span>++) {   <span class="c-cm">// starts at 1, 0 is already the champion</span>
         <span class="c-kw">if</span> (<span class="c-var">scores</span>[<span class="c-var">i</span>] &gt; <span class="c-var">max</span>) {
             <span class="c-var">max</span> = <span class="c-var">scores</span>[<span class="c-var">i</span>];
         }
@@ -221,10 +273,10 @@
     <span class="c-fn">printf</span>(<span class="c-str">"What's your name? "</span>);
     <span class="c-kw">if</span> (<span class="c-fn">fgets</span>(<span class="c-var">name</span>, NAME_LEN, <span class="c-var">stdin</span>) != <span class="c-kw">NULL</span>) {
         <span class="c-cm">// fgets keeps the Enter key as a '\n' on the end. Chop it off by</span>
-        <span class="c-cm">// writing a '\0' over it — strcspn finds where the '\n' is.</span>
+        <span class="c-cm">// writing a '\0' over it, strcspn finds where the '\n' is.</span>
         <span class="c-var">name</span>[<span class="c-fn">strcspn</span>(<span class="c-var">name</span>, <span class="c-str">"\n"</span>)] = <span class="c-str">'\0'</span>;
     } <span class="c-kw">else</span> {
-        <span class="c-var">name</span>[<span class="c-num">0</span>] = <span class="c-str">'\0'</span>;   <span class="c-cm">// read failed — make it an empty string, not garbage</span>
+        <span class="c-var">name</span>[<span class="c-num">0</span>] = <span class="c-str">'\0'</span>;   <span class="c-cm">// read failed, make it an empty string, not garbage</span>
     }
 
     <span class="c-cm">// strlen counts characters up to the '\0'. It does NOT count the '\0'.</span>
@@ -237,7 +289,7 @@
     }
 
     <span class="c-cm">// TODO 2: print the name one char at a time with a for loop and %c.</span>
-    <span class="c-cm">// TODO 3: printf("%d\n", name[0]); — why does that print a number?</span>
+    <span class="c-cm">// TODO 3: printf("%d\n", name[0]);, why does that print a number?</span>
     <span class="c-cm">// TODO 4: print strcmp(name, "Sam") directly with %d for a match and a</span>
     <span class="c-cm">//         mismatch. Three different answers. Work out what they mean.</span>
 
@@ -291,11 +343,11 @@
 <span class="c-type">void</span> <span class="c-fn">save_scores</span>(<span class="c-type">char</span> <span class="c-var">names</span>[][NAME_LEN], <span class="c-type">int</span> <span class="c-var">scores</span>[], <span class="c-type">int</span> <span class="c-var">count</span>) {
     <span class="c-type">FILE</span>* <span class="c-var">f</span> = <span class="c-fn">fopen</span>(<span class="c-str">"scores.txt"</span>, <span class="c-str">"w"</span>);   <span class="c-cm">// "w" = write: creates the file, or wipes it</span>
     <span class="c-type">int</span> <span class="c-var">i</span>;
-    <span class="c-kw">if</span> (<span class="c-var">f</span> == <span class="c-kw">NULL</span>) { <span class="c-fn">printf</span>(<span class="c-str">"Couldn't save scores\n"</span>); <span class="c-kw">return</span>; }
+    <span class="c-kw">if</span> (<span class="c-var">f</span> == <span class="c-kw">NULL</span>) { <span class="c-fn">fprintf</span>(<span class="c-var">stderr</span>, <span class="c-str">"Couldn't save scores\n"</span>); <span class="c-kw">return</span>; }
     <span class="c-kw">for</span> (<span class="c-var">i</span> = <span class="c-num">0</span>; <span class="c-var">i</span> &lt; <span class="c-var">count</span>; <span class="c-var">i</span>++) {
         <span class="c-fn">fprintf</span>(<span class="c-var">f</span>, <span class="c-str">"%s %d\n"</span>, <span class="c-var">names</span>[<span class="c-var">i</span>], <span class="c-var">scores</span>[<span class="c-var">i</span>]);   <span class="c-cm">// printf, but into the file</span>
     }
-    <span class="c-fn">fclose</span>(<span class="c-var">f</span>);   <span class="c-cm">// always close — the last writes may not reach the disk until you do</span>
+    <span class="c-fn">fclose</span>(<span class="c-var">f</span>);   <span class="c-cm">// always close, the last writes may not reach the disk until you do</span>
 }
 
 <span class="c-type">int</span> <span class="c-fn">load_scores</span>(<span class="c-type">char</span> <span class="c-var">names</span>[][NAME_LEN], <span class="c-type">int</span> <span class="c-var">scores</span>[], <span class="c-type">int</span> <span class="c-var">count</span>) {
@@ -354,7 +406,7 @@
 strlen 3
 4</pre>
                   <span class="cmd">sizeof</span> asks about <strong class="t-text">the box</strong>: how many bytes you reserved, known before the program runs. <span class="cmd">strlen</span> asks about <strong class="t-text">the contents</strong>: it walks forward to the first <span class="cmd">'\0'</span> at run time. <span class="cmd">sizeof("Sam")</span> is 4 because a string literal carries its terminator.<br><br>
-                  One trap for later: pass <span class="cmd">name</span> to a function and <span class="cmd">sizeof</span> in there gives the size of a pointer, not 32. That's why buffer sizes travel as a separate argument, like <span class="cmd">fgets(name, NAME_LEN, stdin)</span>.</div>
+                  One trap for later: pass <span class="cmd">name</span> to a function and <span class="cmd">sizeof</span> in there gives the size of a pointer (8 on x64, with no warning), not 32. Passing arrays to functions covers it. That's why buffer sizes travel as a separate argument, like <span class="cmd">fgets(name, NAME_LEN, stdin)</span>.</div>
                 </details>
               </div>
 
@@ -446,7 +498,7 @@ el</pre>
                 <div class="quiz-q">2. Why does <span class="cmd">printf("Len: %d\n", strlen(name));</span> break your build under <span class="cmd">/W4 /WX</span>?</div>
                 <details>
                   <summary>Reveal answer</summary>
-                  <div class="quiz-a">strlen returns a <span class="cmd">size_t</span>, not an <span class="cmd">int</span>, and <span class="cmd">%d</span> expects an int, so MSVC raises a format mismatch warning and <span class="cmd">/WX</span> turns it into a stopped build. Same family as the <span class="cmd">C4244</span> you hit in session 1: the type and the specifier have to agree. Fix it with an explicit cast, <span class="cmd">(int)strlen(name)</span>, which is you telling the compiler "yes, on purpose."</div>
+                  <div class="quiz-a">strlen returns a <span class="cmd">size_t</span>, not an <span class="cmd">int</span>, and <span class="cmd">%d</span> expects an int, so MSVC warns <span class="cmd">C4477</span> (the format and the argument's type disagree) and <span class="cmd">/WX</span> turns it into a stopped build. Fix it with <span class="cmd">%zu</span>, the size_t format from How big a number can be, or with an explicit cast, <span class="cmd">(int)strlen(name)</span>, which is you telling the compiler "yes, on purpose."</div>
                 </details>
               </div>
 
@@ -517,11 +569,11 @@ el</pre>
               </div>
               <div class="stuck-item">
                 <div class="stuck-q">%s printed my name and then a screenful of junk characters</div>
-                <div class="stuck-a">Missing null terminator. <span class="cmd">%s</span> starts at the address you gave it and prints bytes until it finds a <span class="cmd">'\0'</span>, no terminator means no stop signal, so it keeps reading memory that isn't yours. Usually you filled the buffer character by character and forgot the last byte, or you used exactly as many boxes as characters with none left for the terminator. <span class="cmd">char name[3] = "Sam"</span> has nowhere to put it. You need <span class="cmd">char name[4]</span>.</div>
+                <div class="stuck-a">Missing null terminator. <span class="cmd">%s</span> starts at the address you gave it and prints bytes until it finds a <span class="cmd">'\0'</span>, no terminator means no stop signal, so it keeps reading memory that isn't yours. Usually you filled the buffer character by character and forgot the last byte, or you used exactly as many boxes as characters with none left for the terminator. <span class="cmd">char name[3] = "Sam"</span> has nowhere to put it. C accepts that line without a warning, which is what makes it a trap. You need <span class="cmd">char name[4]</span>.</div>
               </div>
               <div class="stuck-item">
                 <div class="stuck-q">My strcmp check is backwards, it runs when the names DON'T match</div>
-                <div class="stuck-a">The classic. <span class="cmd">strcmp</span> returns <strong class="t-text">0 when the strings are equal</strong>, negative or positive when they differ, it's answering "how far apart are these," not "are these the same." So <span class="cmd">if (strcmp(a, b))</span> runs when they're DIFFERENT, because 0 is false in C and anything non-zero is true. Always write it out in full: <span class="cmd">if (strcmp(a, b) == 0)</span> for equal, <span class="cmd">!= 0</span> for different. Never rely on the bare call.</div>
+                <div class="stuck-a">The classic. <span class="cmd">strcmp</span> returns <strong class="t-text">0 when the strings are equal</strong>, negative or positive when they differ, it's answering "how do these two sort?", not "are these the same?" So <span class="cmd">if (strcmp(a, b))</span> runs when they're DIFFERENT, because 0 is false in C and anything non-zero is true. Always write it out in full: <span class="cmd">if (strcmp(a, b) == 0)</span> for equal, <span class="cmd">!= 0</span> for different. Never rely on the bare call.</div>
               </div>
             </div>
           </div>
@@ -537,7 +589,7 @@ el</pre>
             <div class="callout callout--purple callout--bar mb-16">
               <div class="eyebrow eyebrow--md t-purple mb-8">// Why you should be extra suspicious of AI string code</div>
               <div class="prose t-muted2 italic">
-                C string handling is where decades of real security bugs live, and AI has read all of that code, the safe versions and the dangerous ones. It will happily hand you <span class="cmd upright">strcpy</span> and <span class="cmd upright">scanf("%s")</span> because they appear in a million tutorials, and both can write straight past the end of your buffer.<br><br>
+                C string handling is where decades of real security bugs live, and AI has read all of that code, the safe versions and the dangerous ones. It will happily hand you <span class="cmd upright">strcpy</span> and <span class="cmd upright">scanf("%s")</span> because they appear in a million tutorials, and both can write straight past the end of your buffer. Ask for snprintf and fgets instead: Copying and joining strings and Reading a line of text with fgets show why.<br><br>
                 <strong class="t-text">Your check at this phase is simple: for every line that writes into a buffer, ask "what stops this at 32 characters?"</strong> If you can't point at the thing that stops it, don't paste it in.
               </div>
             </div>

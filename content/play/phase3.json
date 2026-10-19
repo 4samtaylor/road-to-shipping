@@ -1,2132 +1,2888 @@
 {
- "functions": {
-  "scene": "p3-rooms",
-  "steps": [
-   {
-    "line": 8,
-    "ms": 1300,
-    "note": "The program starts in main. The add_score machine waits on the right until somebody calls it.",
-    "do": [
-     {
-      "a": "room",
-      "i": 0,
-      "on": true,
-      "name": "main",
-      "sig": "",
-      "kind": "room"
-     },
-     {
-      "a": "room",
-      "i": 1,
-      "on": true,
-      "name": "add_score",
-      "sig": "(int score, int points) -> int",
-      "kind": "machine",
-      "at": 0.2
-     },
-     {
-      "a": "lit",
-      "i": 0,
-      "at": 0.6
-     }
-    ]
-   },
-   {
-    "line": 9,
-    "ms": 1000,
-    "note": "main makes its own box called score and puts 0 in it.",
-    "do": [
-     {
-      "a": "var",
-      "i": 0,
-      "n": "score",
-      "t": "int",
-      "v": "0"
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 1700,
-    "note": "Calling add_score(score, 10): a copy of score (0) and the number 10 go into the machine's slot.",
-    "do": [
-     {
-      "a": "fly",
-      "from": [
-       0,
-       "score"
-      ],
-      "to": [
-       1,
-       "score",
-       0
-      ],
-      "v": "0",
-      "copy": true,
-      "at": 0,
-      "len": 0.65
-     },
-     {
-      "a": "fly",
-      "from": [
-       0,
-       "score"
-      ],
-      "to": [
-       1,
-       "points",
-       1
-      ],
-      "v": "10",
-      "at": 0.1,
-      "len": 0.65
-     },
-     {
-      "a": "lit",
-      "i": 1,
-      "at": 0.7
-     },
-     {
-      "a": "var",
-      "i": 1,
-      "n": "score",
-      "t": "int",
-      "v": "0",
-      "copy": true,
-      "at": 0.7,
-      "len": 0.3
-     },
-     {
-      "a": "var",
-      "i": 1,
-      "n": "points",
-      "t": "int",
-      "v": "10",
-      "at": 0.75,
-      "len": 0.25
-     }
-    ]
-   },
-   {
-    "line": 3,
-    "ms": 1200,
-    "note": "Inside, score and points are the machine's own variables, holding what was passed in: 0 and 10.",
-    "do": [
-     {
-      "a": "cap",
-      "t": "parameters = the machine's inputs"
-     }
-    ]
-   },
-   {
-    "line": 4,
-    "ms": 1000,
-    "note": "total is made inside the machine: 0 + 10 is 10.",
-    "do": [
-     {
-      "a": "var",
-      "i": 1,
-      "n": "total",
-      "t": "int",
-      "v": "10"
-     },
-     {
-      "a": "cap",
-      "t": ""
-     }
-    ]
-   },
-   {
-    "line": 5,
-    "ms": 1000,
-    "note": "return hands total back. The 10 drops into the OUT tray.",
-    "do": [
-     {
-      "a": "tray",
-      "i": 1,
-      "v": "10"
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 1700,
-    "note": "The 10 comes out of the machine and lands in main's score. The machine's insides vanish.",
-    "do": [
-     {
-      "a": "tray",
-      "i": 1,
-      "v": null,
-      "at": 0,
-      "len": 0.3
-     },
-     {
-      "a": "fly",
-      "from": [
-       1,
-       "@tray"
-      ],
-      "to": [
-       0,
-       "score"
-      ],
-      "v": "10",
-      "at": 0,
-      "len": 0.7
-     },
-     {
-      "a": "lit",
-      "i": 0,
-      "at": 0.7
-     },
-     {
-      "a": "var",
-      "i": 0,
-      "n": "score",
-      "t": "int",
-      "v": "10",
-      "at": 0.7,
-      "len": 0.3
-     },
-     {
-      "a": "clear",
-      "i": 1,
-      "at": 0.75,
-      "len": 0.25
-     }
-    ]
-   },
-   {
-    "line": 11,
-    "ms": 1700,
-    "note": "Calling it again: a copy of the new score (10) and the number 5 go in.",
-    "do": [
-     {
-      "a": "fly",
-      "from": [
-       0,
-       "score"
-      ],
-      "to": [
-       1,
-       "score",
-       0
-      ],
-      "v": "10",
-      "copy": true,
-      "at": 0,
-      "len": 0.65
-     },
-     {
-      "a": "fly",
-      "from": [
-       0,
-       "score"
-      ],
-      "to": [
-       1,
-       "points",
-       1
-      ],
-      "v": "5",
-      "at": 0.1,
-      "len": 0.65
-     },
-     {
-      "a": "lit",
-      "i": 1,
-      "at": 0.7
-     },
-     {
-      "a": "var",
-      "i": 1,
-      "n": "score",
-      "t": "int",
-      "v": "10",
-      "copy": true,
-      "at": 0.7,
-      "len": 0.3
-     },
-     {
-      "a": "var",
-      "i": 1,
-      "n": "points",
-      "t": "int",
-      "v": "5",
-      "at": 0.75,
-      "len": 0.25
-     }
-    ]
-   },
-   {
-    "line": 3,
-    "ms": 900,
-    "note": "A fresh score and points, this time 10 and 5.",
-    "do": []
-   },
-   {
-    "line": 4,
-    "ms": 1000,
-    "note": "total is 10 + 5, which is 15.",
-    "do": [
-     {
-      "a": "var",
-      "i": 1,
-      "n": "total",
-      "t": "int",
-      "v": "15"
-     }
-    ]
-   },
-   {
-    "line": 5,
-    "ms": 1000,
-    "note": "return drops the 15 into the tray.",
-    "do": [
-     {
-      "a": "tray",
-      "i": 1,
-      "v": "15"
-     }
-    ]
-   },
-   {
-    "line": 11,
-    "ms": 1700,
-    "note": "15 comes out and lands in main's score, replacing 10.",
-    "do": [
-     {
-      "a": "tray",
-      "i": 1,
-      "v": null,
-      "at": 0,
-      "len": 0.3
-     },
-     {
-      "a": "fly",
-      "from": [
-       1,
-       "@tray"
-      ],
-      "to": [
-       0,
-       "score"
-      ],
-      "v": "15",
-      "at": 0,
-      "len": 0.7
-     },
-     {
-      "a": "lit",
-      "i": 0,
-      "at": 0.7
-     },
-     {
-      "a": "var",
-      "i": 0,
-      "n": "score",
-      "t": "int",
-      "v": "15",
-      "at": 0.7,
-      "len": 0.3
-     },
-     {
-      "a": "clear",
-      "i": 1,
-      "at": 0.75,
-      "len": 0.25
-     }
-    ]
-   },
-   {
-    "line": 12,
-    "ms": 1000,
-    "note": "printf prints main's score: 15.",
-    "out": "Score: 15\n",
-    "outAt": 0.4,
-    "do": [
-     {
-      "a": "cap",
-      "t": "Score: 15"
-     }
-    ]
-   },
-   {
-    "line": 13,
-    "ms": 1000,
-    "note": "return 0 ends the program.",
-    "do": [
-     {
-      "a": "cap",
-      "t": ""
-     }
-    ]
-   }
-  ]
- },
- "prototypes": {
-  "scene": "p3-contents",
-  "steps": [
-   {
-    "line": 3,
-    "ms": 1300,
-    "note": "Before running anything, the compiler reads this prototype and writes print_menu on its contents page.",
-    "do": [
-     {
-      "a": "entry",
-      "i": 0
-     }
-    ]
-   },
-   {
-    "line": 4,
-    "ms": 1200,
-    "note": "A second entry: square takes an int and hands back an int.",
-    "do": [
-     {
-      "a": "entry",
-      "i": 1
-     }
-    ]
-   },
-   {
-    "line": 6,
-    "ms": 1300,
-    "note": "Now main starts. Its two functions are written further down, but the contents page already lists them.",
-    "do": [
-     {
-      "a": "main",
-      "t": "int main(void) {"
-     }
-    ]
-   },
-   {
-    "line": 7,
-    "ms": 1700,
-    "note": "main calls print_menu. The compiler already allowed this, because the contents page listed it.",
-    "do": [
-     {
-      "a": "main",
-      "t": "print_menu();",
-      "at": 0,
-      "len": 0.2
-     },
-     {
-      "a": "look",
-      "i": 0,
-      "at": 0.15,
-      "len": 0.45
-     },
-     {
-      "a": "call",
-      "i": 0,
-      "t": "( )",
-      "at": 0.45,
-      "len": 0.55
-     }
-    ]
-   },
-   {
-    "line": 12,
-    "ms": 1400,
-    "note": "The call jumps down to the real print_menu. void and (void) match the contents entry.",
-    "do": [
-     {
-      "a": "match",
-      "i": 0,
-      "at": 0.5,
-      "len": 0.5
-     }
-    ]
-   },
-   {
-    "line": 13,
-    "ms": 1000,
-    "note": "Its one line runs: the menu prints.",
-    "out": "1 Play  2 Quit\n",
-    "outAt": 0.4,
-    "do": [
-     {
-      "a": "cap",
-      "t": "prints the menu"
-     }
-    ]
-   },
-   {
-    "line": 14,
-    "ms": 1300,
-    "note": "print_menu is finished. It is void, so nothing comes back.",
-    "do": [
-     {
-      "a": "ret",
-      "i": 0,
-      "v": null
-     },
-     {
-      "a": "cap",
-      "t": ""
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 1700,
-    "note": "main calls square(4). The compiler already allowed this, because the contents page listed it.",
-    "do": [
-     {
-      "a": "main",
-      "t": "printf(\"%d\\n\", square(4));",
-      "at": 0,
-      "len": 0.2
-     },
-     {
-      "a": "look",
-      "i": 1,
-      "at": 0.15,
-      "len": 0.45
-     },
-     {
-      "a": "call",
-      "i": 1,
-      "t": "4",
-      "at": 0.45,
-      "len": 0.55
-     }
-    ]
-   },
-   {
-    "line": 16,
-    "ms": 1400,
-    "note": "The call jumps down to the real square. int and (int n) match its contents entry. n is 4.",
-    "do": [
-     {
-      "a": "match",
-      "i": 1,
-      "at": 0.5,
-      "len": 0.5
-     }
-    ]
-   },
-   {
-    "line": 17,
-    "ms": 1200,
-    "note": "n * n is 4 * 4, which is 16. return sends it back.",
-    "do": [
-     {
-      "a": "cap",
-      "t": "4 * 4 = 16"
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 1500,
-    "note": "16 comes back to main and printf prints it.",
-    "out": "16\n",
-    "outAt": 0.7,
-    "do": [
-     {
-      "a": "ret",
-      "i": 1,
-      "v": "16"
-     },
-     {
-      "a": "cap",
-      "t": ""
-     }
-    ]
-   },
-   {
-    "line": 9,
-    "ms": 1000,
-    "note": "return 0 ends the program.",
-    "do": [
-     {
-      "a": "main",
-      "t": "return 0;"
-     }
-    ]
-   }
-  ]
- },
- "scope": {
-  "scene": "p3-rooms",
-  "steps": [
-   {
-    "line": 8,
-    "ms": 1200,
-    "note": "The program starts in main, which is its own room.",
-    "do": [
-     {
-      "a": "room",
-      "i": 0,
-      "on": true,
-      "name": "main",
-      "sig": "",
-      "kind": "room"
-     },
-     {
-      "a": "lit",
-      "i": 0,
-      "at": 0.5
-     }
-    ]
-   },
-   {
-    "line": 9,
-    "ms": 1000,
-    "note": "Inside main's room, score is a box holding 99.",
-    "do": [
-     {
-      "a": "var",
-      "i": 0,
-      "n": "score",
-      "t": "int",
-      "v": "99"
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 1800,
-    "note": "reset(score) builds a new room. A photocopy of 99 goes in. The original stays put.",
-    "do": [
-     {
-      "a": "room",
-      "i": 1,
-      "on": true,
-      "name": "reset",
-      "sig": "(int score)",
-      "kind": "room",
-      "at": 0,
-      "len": 0.35
-     },
-     {
-      "a": "fly",
-      "from": [
-       0,
-       "score"
-      ],
-      "to": [
-       1,
-       "score",
-       0
-      ],
-      "v": "99",
-      "copy": true,
-      "at": 0.3,
-      "len": 0.55
-     },
-     {
-      "a": "lit",
-      "i": 1,
-      "at": 0.85
-     },
-     {
-      "a": "var",
-      "i": 1,
-      "n": "score",
-      "t": "int",
-      "v": "99",
-      "copy": true,
-      "at": 0.85,
-      "len": 0.15
-     }
-    ]
-   },
-   {
-    "line": 3,
-    "ms": 1400,
-    "note": "Inside reset, score is a new variable holding the copy. Same name as main's, but a different box.",
-    "do": [
-     {
-      "a": "cap",
-      "t": "two boxes, both called score"
-     }
-    ]
-   },
-   {
-    "line": 4,
-    "ms": 1400,
-    "note": "score = 0 scribbles on the copy only. Look left: main's score is still 99.",
-    "do": [
-     {
-      "a": "var",
-      "i": 1,
-      "n": "score",
-      "t": "int",
-      "v": "0",
-      "copy": true
-     },
-     {
-      "a": "cap",
-      "t": "main's score didn't change"
-     }
-    ]
-   },
-   {
-    "line": 5,
-    "ms": 1000,
-    "note": "reset prints its own score: 0.",
-    "out": "Inside reset: 0\n",
-    "outAt": 0.4,
-    "do": []
-   },
-   {
-    "line": 6,
-    "ms": 1200,
-    "note": "reset finishes and its room vanishes, copy and all.",
-    "do": [
-     {
-      "a": "room",
-      "i": 1,
-      "on": false
-     },
-     {
-      "a": "lit",
-      "i": 0,
-      "at": 0.6
-     },
-     {
-      "a": "cap",
-      "t": ""
-     }
-    ]
-   },
-   {
-    "line": 11,
-    "ms": 1000,
-    "note": "Back in main, score is still 99. The change never left reset's room.",
-    "out": "Back in main: 99\n",
-    "outAt": 0.4,
-    "do": [
-     {
-      "a": "cap",
-      "t": "the original was never touched"
-     }
-    ]
-   },
-   {
-    "line": 12,
-    "ms": 1000,
-    "note": "return 0 ends the program.",
-    "do": [
-     {
-      "a": "cap",
-      "t": ""
-     }
-    ]
-   }
-  ]
- },
- "define": {
-  "scene": "p3-define",
-  "steps": [
-   {
-    "line": 3,
-    "ms": 1200,
-    "note": "A sticky note: wherever MAX_SCORES appears, write 5 instead.",
-    "do": [
-     {
-      "a": "note",
-      "k": 0
-     }
-    ]
-   },
-   {
-    "line": 4,
-    "ms": 1200,
-    "note": "A second note for START_LIVES. Capitals tell you it's a constant.",
-    "do": [
-     {
-      "a": "note",
-      "k": 1
-     }
-    ]
-   },
-   {
-    "line": 7,
-    "ms": 2600,
-    "note": "Before compiling, both names are swapped for their numbers: START_LIVES becomes 3 and MAX_SCORES becomes 5. The compiler only ever sees the numbers.",
-    "do": [
-     {
-      "a": "swap",
-      "k": 0,
-      "at": 0,
-      "len": 0.3
-     },
-     {
-      "a": "swap",
-      "k": 1,
-      "at": 0.3,
-      "len": 0.3
-     },
-     {
-      "a": "lives",
-      "v": "3",
-      "at": 0.65,
-      "len": 0.3
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 1300,
-    "note": "The loop starts with i at 0. Is 0 < 5? Yes.",
-    "do": [
-     {
-      "a": "loop",
-      "i": 0,
-      "done": 0,
-      "chk": "0 < 5",
-      "r": true
-     }
-    ]
-   },
-   {
-    "line": 9,
-    "ms": 1000,
-    "note": "printf prints Slot 0.",
-    "out": "Slot 0\n",
-    "outAt": 0.4,
-    "do": [
-     {
-      "a": "loop",
-      "i": 0,
-      "done": 1
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 900,
-    "note": "i goes up to 1. Is 1 < 5? Yes, so round again.",
-    "do": [
-     {
-      "a": "loop",
-      "i": 1,
-      "done": 1,
-      "chk": "1 < 5",
-      "r": true
-     }
-    ]
-   },
-   {
-    "line": 9,
-    "ms": 1000,
-    "note": "printf prints Slot 1.",
-    "out": "Slot 1\n",
-    "outAt": 0.4,
-    "do": [
-     {
-      "a": "loop",
-      "i": 1,
-      "done": 2
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 900,
-    "note": "i goes up to 2. Is 2 < 5? Yes, so round again.",
-    "do": [
-     {
-      "a": "loop",
-      "i": 2,
-      "done": 2,
-      "chk": "2 < 5",
-      "r": true
-     }
-    ]
-   },
-   {
-    "line": 9,
-    "ms": 1000,
-    "note": "printf prints Slot 2.",
-    "out": "Slot 2\n",
-    "outAt": 0.4,
-    "do": [
-     {
-      "a": "loop",
-      "i": 2,
-      "done": 3
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 900,
-    "note": "i goes up to 3. Is 3 < 5? Yes, so round again.",
-    "do": [
-     {
-      "a": "loop",
-      "i": 3,
-      "done": 3,
-      "chk": "3 < 5",
-      "r": true
-     }
-    ]
-   },
-   {
-    "line": 9,
-    "ms": 1000,
-    "note": "printf prints Slot 3.",
-    "out": "Slot 3\n",
-    "outAt": 0.4,
-    "do": [
-     {
-      "a": "loop",
-      "i": 3,
-      "done": 4
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 900,
-    "note": "i goes up to 4. Is 4 < 5? Yes, so round again.",
-    "do": [
-     {
-      "a": "loop",
-      "i": 4,
-      "done": 4,
-      "chk": "4 < 5",
-      "r": true
-     }
-    ]
-   },
-   {
-    "line": 9,
-    "ms": 1000,
-    "note": "printf prints Slot 4.",
-    "out": "Slot 4\n",
-    "outAt": 0.4,
-    "do": [
-     {
-      "a": "loop",
-      "i": 4,
-      "done": 5
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 1300,
-    "note": "i is 5. Is 5 < 5? No, so the loop is over. Five slots, from the one number on line 3.",
-    "do": [
-     {
-      "a": "loop",
-      "i": 5,
-      "done": 5,
-      "chk": "5 < 5",
-      "r": false
-     }
-    ]
-   },
-   {
-    "line": 11,
-    "ms": 1000,
-    "note": "printf prints lives, which is 3.",
-    "out": "Lives: 3\n",
-    "outAt": 0.4,
-    "do": [
-     {
-      "a": "loop",
-      "i": null,
-      "done": 5
-     }
-    ]
-   },
-   {
-    "line": 12,
-    "ms": 1000,
-    "note": "return 0 ends the program.",
-    "do": []
-   }
-  ]
- },
- "arrays": {
-  "scene": "p3-lockers",
-  "steps": [
-   {
-    "line": 5,
-    "ms": 800,
-    "note": "main starts. No lockers yet.",
-    "do": []
-   },
-   {
-    "line": 6,
-    "ms": 1900,
-    "note": "Five lockers in a row, numbered 0 to 4. The braces fill them in order.",
-    "do": [
-     {
-      "a": "make",
-      "name": "int scores[5]",
-      "kind": "int",
-      "cells": [
-       "90",
-       "75",
-       "60",
-       "40",
-       "10"
-      ]
-     }
-    ]
-   },
-   {
-    "line": 7,
-    "ms": 3000,
-    "note": "The whole row is 20 bytes and one locker is 4 bytes. 20 / 4 = 5, so count is 5.",
-    "do": [
-     {
-      "a": "span",
-      "s0": 0,
-      "b": 4,
-      "t": "sizeof(scores) = 20 bytes",
-      "at": 0,
-      "len": 0.3
-     },
-     {
-      "a": "span",
-      "s0": 0,
-      "b": 0,
-      "t": "sizeof(scores[0]) = 4",
-      "at": 0.45,
-      "len": 0.25
-     },
-     {
-      "a": "tag",
-      "k": "count",
-      "v": "5",
-      "at": 0.78,
-      "len": 0.22
-     }
-    ]
-   },
-   {
-    "line": 9,
-    "ms": 1500,
-    "note": "scores[0] is the first locker, not scores[1]. It holds 90.",
-    "out": "Top score: 90\n",
-    "outAt": 0.6,
-    "do": [
-     {
-      "a": "span",
-      "s0": null,
-      "at": 0,
-      "len": 0.3
-     },
-     {
-      "a": "cur",
-      "i": 0,
-      "name": "scores[0]",
-      "at": 0.1,
-      "len": 0.4
-     },
-     {
-      "a": "read",
-      "i": 0,
-      "at": 0.4,
-      "len": 0.5
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 1500,
-    "note": "scores[4] is the last locker (count - 1). Its 10 is replaced with 25.",
-    "do": [
-     {
-      "a": "cur",
-      "i": 4,
-      "name": "scores[4]",
-      "at": 0,
-      "len": 0.5
-     },
-     {
-      "a": "set",
-      "i": 4,
-      "v": "25",
-      "at": 0.5,
-      "len": 0.5
-     }
-    ]
-   },
-   {
-    "line": 12,
-    "ms": 1200,
-    "note": "i starts at 0. Is 0 < 5? Yes.",
-    "do": [
-     {
-      "a": "tag",
-      "k": "i",
-      "v": "0"
-     },
-     {
-      "a": "cur",
-      "i": 0,
-      "name": "scores[i]"
-     }
-    ]
-   },
-   {
-    "line": 13,
-    "ms": 1100,
-    "note": "printf shows i + 1 and scores[i]: 1: 90.",
-    "out": "1: 90\n",
-    "outAt": 0.5,
-    "do": [
-     {
-      "a": "read",
-      "i": 0
-     }
-    ]
-   },
-   {
-    "line": 12,
-    "ms": 1200,
-    "note": "i is 1. Is 1 < 5? Yes.",
-    "do": [
-     {
-      "a": "tag",
-      "k": "i",
-      "v": "1"
-     },
-     {
-      "a": "cur",
-      "i": 1,
-      "name": "scores[i]"
-     }
-    ]
-   },
-   {
-    "line": 13,
-    "ms": 1100,
-    "note": "printf shows i + 1 and scores[i]: 2: 75.",
-    "out": "2: 75\n",
-    "outAt": 0.5,
-    "do": [
-     {
-      "a": "read",
-      "i": 1
-     }
-    ]
-   },
-   {
-    "line": 12,
-    "ms": 1200,
-    "note": "i is 2. Is 2 < 5? Yes.",
-    "do": [
-     {
-      "a": "tag",
-      "k": "i",
-      "v": "2"
-     },
-     {
-      "a": "cur",
-      "i": 2,
-      "name": "scores[i]"
-     }
-    ]
-   },
-   {
-    "line": 13,
-    "ms": 1100,
-    "note": "printf shows i + 1 and scores[i]: 3: 60.",
-    "out": "3: 60\n",
-    "outAt": 0.5,
-    "do": [
-     {
-      "a": "read",
-      "i": 2
-     }
-    ]
-   },
-   {
-    "line": 12,
-    "ms": 1200,
-    "note": "i is 3. Is 3 < 5? Yes.",
-    "do": [
-     {
-      "a": "tag",
-      "k": "i",
-      "v": "3"
-     },
-     {
-      "a": "cur",
-      "i": 3,
-      "name": "scores[i]"
-     }
-    ]
-   },
-   {
-    "line": 13,
-    "ms": 1100,
-    "note": "printf shows i + 1 and scores[i]: 4: 40.",
-    "out": "4: 40\n",
-    "outAt": 0.5,
-    "do": [
-     {
-      "a": "read",
-      "i": 3
-     }
-    ]
-   },
-   {
-    "line": 12,
-    "ms": 1200,
-    "note": "i is 4. Is 4 < 5? Yes.",
-    "do": [
-     {
-      "a": "tag",
-      "k": "i",
-      "v": "4"
-     },
-     {
-      "a": "cur",
-      "i": 4,
-      "name": "scores[i]"
-     }
-    ]
-   },
-   {
-    "line": 13,
-    "ms": 1100,
-    "note": "printf shows i + 1 and scores[i]: 5: 25.",
-    "out": "5: 25\n",
-    "outAt": 0.5,
-    "do": [
-     {
-      "a": "read",
-      "i": 4
-     }
-    ]
-   },
-   {
-    "line": 12,
-    "ms": 1400,
-    "note": "i is 5. Is 5 < 5? No, the loop ends. There is no locker 5.",
-    "do": [
-     {
-      "a": "tag",
-      "k": "i",
-      "v": "5"
-     },
-     {
-      "a": "cur",
-      "i": null
-     },
-     {
-      "a": "cap",
-      "t": "lockers stop at 4"
-     }
-    ]
-   },
-   {
-    "line": 15,
-    "ms": 1000,
-    "note": "return 0 ends the program.",
-    "do": [
-     {
-      "a": "cap",
-      "t": ""
-     }
-    ]
-   }
-  ]
- },
- "strings": {
-  "scene": "p3-lockers",
-  "steps": [
-   {
-    "line": 2,
-    "ms": 1100,
-    "note": "string.h is the string toolbox: strlen, strcmp and friends.",
-    "do": [
-     {
-      "a": "cap",
-      "t": "string.h = the string toolbox"
-     }
-    ]
-   },
-   {
-    "line": 4,
-    "ms": 700,
-    "note": "main starts.",
-    "do": [
-     {
-      "a": "cap",
-      "t": ""
-     }
-    ]
-   },
-   {
-    "line": 5,
-    "ms": 2200,
-    "note": "Eight char lockers. Sam fills the first three, then C adds a stop sign, \\0, in locker 3. The rest are zero too.",
-    "do": [
-     {
-      "a": "make",
-      "name": "char name[8]",
-      "kind": "char",
-      "cells": [
-       "S",
-       "a",
-       "m",
-       "\\0",
-       "\\0",
-       "\\0",
-       "\\0",
-       "\\0"
-      ]
-     }
-    ]
-   },
-   {
-    "line": 6,
-    "ms": 2100,
-    "note": "%s prints letters one by one until it hits the stop sign.",
-    "out": "Name: Sam\n",
-    "outAt": 0.85,
-    "do": [
-     {
-      "a": "cur",
-      "i": 3,
-      "from": 0,
-      "name": "%s",
-      "mark": true
-     }
-    ]
-   },
-   {
-    "line": 7,
-    "ms": 1500,
-    "note": "strlen counts the letters before the stop sign: 3.",
-    "out": "Length: 3\n",
-    "outAt": 0.6,
-    "do": [
-     {
-      "a": "cur",
-      "i": null,
-      "at": 0,
-      "len": 0.2
-     },
-     {
-      "a": "span",
-      "s0": 0,
-      "b": 2,
-      "t": "strlen = 3",
-      "at": 0.25,
-      "len": 0.4
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 1500,
-    "note": "sizeof counts every locker, used or not: 8.",
-    "out": "Array size: 8\n",
-    "outAt": 0.6,
-    "do": [
-     {
-      "a": "span",
-      "s0": 0,
-      "b": 7,
-      "t": "sizeof = 8 lockers",
-      "at": 0,
-      "len": 0.5
-     }
-    ]
-   },
-   {
-    "line": 9,
-    "ms": 1400,
-    "note": "A string is just lockers, so you can change one letter. Locker 1 becomes u.",
-    "do": [
-     {
-      "a": "span",
-      "s0": null,
-      "at": 0,
-      "len": 0.3
-     },
-     {
-      "a": "cur",
-      "i": 1,
-      "name": "name[1]",
-      "at": 0.1,
-      "len": 0.4
-     },
-     {
-      "a": "set",
-      "i": 1,
-      "v": "u",
-      "at": 0.5,
-      "len": 0.5
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 2000,
-    "note": "Walking along again: S, u, m, then the stop sign. It reads Sum.",
-    "out": "Now: Sum\n",
-    "outAt": 0.85,
-    "do": [
-     {
-      "a": "cur",
-      "i": 3,
-      "from": 0,
-      "name": "%s",
-      "mark": true
-     }
-    ]
-   },
-   {
-    "line": 11,
-    "ms": 1000,
-    "note": "return 0 ends the program.",
-    "do": [
-     {
-      "a": "cur",
-      "i": null
-     },
-     {
-      "a": "cap",
-      "t": "the stop sign decides where a string ends"
-     }
-    ]
-   }
-  ]
- },
- "fgets": {
-  "scene": "p3-lockers",
-  "steps": [
-   {
-    "line": 4,
-    "ms": 700,
-    "note": "main starts.",
-    "do": []
-   },
-   {
-    "line": 5,
-    "ms": 2000,
-    "note": "name has 32 lockers (we can see the first 8). They hold leftover junk, shown as ?. One locker is kept for the stop sign.",
-    "do": [
-     {
-      "a": "make",
-      "name": "char name[32]",
-      "kind": "char",
-      "cells": [
-       "?",
-       "?",
-       "?",
-       "?",
-       "?",
-       "?",
-       "?",
-       "?"
-      ],
-      "tail": "[31]"
-     }
-    ]
-   },
-   {
-    "line": 6,
-    "ms": 1000,
-    "note": "The prompt appears.",
-    "out": "Your name: ",
-    "outAt": 0.4,
-    "do": []
-   },
-   {
-    "line": 7,
-    "ms": 3200,
-    "note": "fgets waits. Sample input: Sam, then Enter. It scoops the whole line into name, Enter (\\n) included, and adds the stop sign.",
-    "do": [
-     {
-      "a": "stdin",
-      "t": [
-       "S",
-       "a",
-       "m",
-       "\\n"
-      ],
-      "at": 0,
-      "len": 0.3
-     },
-     {
-      "a": "scoop",
-      "vals": [
-       "S",
-       "a",
-       "m",
-       "\\n",
-       "\\0"
-      ],
-      "n": 4,
-      "at": 0.4,
-      "len": 0.6
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 2300,
-    "note": "Printing name shows [Sam. The Enter jumps to a new line, so the ] lands on the next line.",
-    "out": "[Sam\n]\n",
-    "outAt": 0.85,
-    "do": [
-     {
-      "a": "cur",
-      "i": 4,
-      "from": 0,
-      "name": "%s",
-      "mark": true
-     }
-    ]
-   },
-   {
-    "line": 9,
-    "ms": 2300,
-    "note": "strcspn finds the first Enter: locker 3. Writing the stop sign there cuts the line short.",
-    "do": [
-     {
-      "a": "cur",
-      "i": 3,
-      "from": 0,
-      "name": "strcspn",
-      "mark": true,
-      "at": 0,
-      "len": 0.5
-     },
-     {
-      "a": "tag",
-      "k": "strcspn",
-      "v": "3",
-      "at": 0.5,
-      "len": 0.2
-     },
-     {
-      "a": "set",
-      "i": 3,
-      "v": "\\0",
-      "at": 0.65,
-      "len": 0.35
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 2000,
-    "note": "Now the string ends right after Sam, so the ] sits next to it.",
-    "out": "[Sam]\n",
-    "outAt": 0.85,
-    "do": [
-     {
-      "a": "tag",
-      "k": "strcspn",
-      "v": null,
-      "at": 0,
-      "len": 0.1
-     },
-     {
-      "a": "cur",
-      "i": 3,
-      "from": 0,
-      "name": "%s",
-      "mark": true
-     }
-    ]
-   },
-   {
-    "line": 11,
-    "ms": 1000,
-    "note": "return 0 ends the program.",
-    "do": [
-     {
-      "a": "cur",
-      "i": null
-     }
-    ]
-   }
-  ]
- },
- "strcmp": {
-  "scene": "p3-cmp",
-  "steps": [
-   {
-    "line": 4,
-    "ms": 700,
-    "note": "main starts.",
-    "do": []
-   },
-   {
-    "line": 5,
-    "ms": 1500,
-    "note": "cmd holds q u i t, then the stop sign.",
-    "do": [
-     {
-      "a": "words",
-      "a1": "quit",
-      "b": "quit",
-      "la": "cmd",
-      "lb": "\"quit\""
-     }
-    ]
-   },
-   {
-    "line": 7,
-    "ms": 2700,
-    "note": "strcmp walks along both words together, letter against letter. Every pair matches, and both end together.",
-    "do": [
-     {
-      "a": "cmp",
-      "from": -1,
-      "to": 4,
-      "at": 0,
-      "len": 0.75
-     },
-     {
-      "a": "res",
-      "v": "0",
-      "w": "the same",
-      "col": "accent",
-      "at": 0.8,
-      "len": 0.2
-     }
-    ]
-   },
-   {
-    "line": 7,
-    "ms": 1300,
-    "note": "No difference means strcmp gives 0, so == 0 is true and the block runs.",
-    "do": [
-     {
-      "a": "ans",
-      "t": "strcmp == 0 ?",
-      "r": true
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 1000,
-    "note": "The if block runs: Bye.",
-    "out": "Bye\n",
-    "outAt": 0.4,
-    "do": []
-   },
-   {
-    "line": 10,
-    "ms": 2900,
-    "note": "apple against banana: the very first letters already differ. a comes before b, so strcmp gives a negative number.",
-    "do": [
-     {
-      "a": "words",
-      "a1": "apple",
-      "b": "banana",
-      "la": "\"apple\"",
-      "lb": "\"banana\"",
-      "at": 0,
-      "len": 0.3
-     },
-     {
-      "a": "cmp",
-      "from": -1,
-      "to": 0,
-      "at": 0.35,
-      "len": 0.3
-     },
-     {
-      "a": "res",
-      "v": "negative",
-      "w": "apple sorts first",
-      "col": "purple",
-      "at": 0.72,
-      "len": 0.28
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 1500,
-    "note": "Is that negative number less than 0? Yes, so the comparison is true, which prints as 1.",
-    "out": "1\n",
-    "outAt": 0.6,
-    "do": [
-     {
-      "a": "ans",
-      "t": "strcmp < 0 ?",
-      "r": true
-     }
-    ]
-   },
-   {
-    "line": 11,
-    "ms": 2900,
-    "note": "Sam against sam: capital S is 83, small s is 115. They differ at the first letter, and S sorts earlier.",
-    "do": [
-     {
-      "a": "words",
-      "a1": "Sam",
-      "b": "sam",
-      "la": "\"Sam\"",
-      "lb": "\"sam\"",
-      "at": 0,
-      "len": 0.3
-     },
-     {
-      "a": "cmp",
-      "from": -1,
-      "to": 0,
-      "at": 0.35,
-      "len": 0.3
-     },
-     {
-      "a": "res",
-      "v": "negative",
-      "w": "S sorts first",
-      "col": "purple",
-      "at": 0.72,
-      "len": 0.28
-     }
-    ]
-   },
-   {
-    "line": 11,
-    "ms": 1500,
-    "note": "Not zero, so they don't match: == 0 is false, which prints as 0.",
-    "out": "0\n",
-    "outAt": 0.6,
-    "do": [
-     {
-      "a": "ans",
-      "t": "strcmp == 0 ?",
-      "r": false
-     }
-    ]
-   },
-   {
-    "line": 12,
-    "ms": 1000,
-    "note": "return 0 ends the program.",
-    "do": []
-   }
-  ]
- },
- "grid": {
-  "scene": "p3-grid",
-  "steps": [
-   {
-    "line": 6,
-    "ms": 800,
-    "note": "main starts. The map isn't built yet.",
-    "do": []
-   },
-   {
-    "line": 7,
-    "ms": 1500,
-    "note": "map[ROWS][COLS] is 3 rows of 5 tiles, all empty so far. Row number first, then column.",
-    "do": [
-     {
-      "a": "frame"
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 1200,
-    "note": "Row 0 is a wall of five #.",
-    "do": [
-     {
-      "a": "row",
-      "r": 0,
-      "s": "#####"
-     }
-    ]
-   },
-   {
-    "line": 9,
-    "ms": 1400,
-    "note": "Row 1: wall, floor, the player P, floor, wall. P sits at column 2.",
-    "do": [
-     {
-      "a": "row",
-      "r": 1,
-      "s": "#.P.#"
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 1200,
-    "note": "Row 2 is another wall.",
-    "do": [
-     {
-      "a": "row",
-      "r": 2,
-      "s": "#####"
-     }
-    ]
-   },
-   {
-    "line": 12,
-    "ms": 1900,
-    "note": "map[1][3] is row 1, column 3: the floor right of P. It becomes E, the exit.",
-    "do": [
-     {
-      "a": "cur",
-      "r": 1,
-      "c": 3,
-      "at": 0,
-      "len": 0.45
-     },
-     {
-      "a": "fm",
-      "t": "map[1][3] = 'E'",
-      "at": 0.3,
-      "len": 0.1
-     },
-     {
-      "a": "set",
-      "r": 1,
-      "c": 3,
-      "ch": "E",
-      "at": 0.5,
-      "len": 0.5
-     }
-    ]
-   },
-   {
-    "line": 14,
-    "ms": 1000,
-    "note": "The outer loop picks row 0. r starts at 0.",
-    "do": [
-     {
-      "a": "cur",
-      "r": 0,
-      "c": 0
-     }
-    ]
-   },
-   {
-    "line": 15,
-    "ms": 800,
-    "note": "The inner loop starts at column 0.",
-    "do": [
-     {
-      "a": "cur",
-      "r": 0,
-      "c": 0
-     }
-    ]
-   },
-   {
-    "line": 16,
-    "ms": 2400,
-    "note": "printf prints each tile as c goes 0 to 4. The loop repeats for every column.",
-    "out": "#####",
-    "outAt": 0.92,
-    "do": [
-     {
-      "a": "cur",
-      "r": 0,
-      "c": 4,
-      "from": 0,
-      "mark": true
-     }
-    ]
-   },
-   {
-    "line": 18,
-    "ms": 900,
-    "note": "The row is done, so print a newline.",
-    "out": "\n",
-    "outAt": 0.3,
-    "do": []
-   },
-   {
-    "line": 14,
-    "ms": 1000,
-    "note": "The outer loop picks row 1.",
-    "do": [
-     {
-      "a": "cur",
-      "r": 1,
-      "c": 0
-     }
-    ]
-   },
-   {
-    "line": 15,
-    "ms": 800,
-    "note": "The inner loop starts at column 0.",
-    "do": [
-     {
-      "a": "cur",
-      "r": 1,
-      "c": 0
-     }
-    ]
-   },
-   {
-    "line": 16,
-    "ms": 2400,
-    "note": "printf prints each tile as c goes 0 to 4. The loop repeats for every column.",
-    "out": "#.PE#",
-    "outAt": 0.92,
-    "do": [
-     {
-      "a": "cur",
-      "r": 1,
-      "c": 4,
-      "from": 0,
-      "mark": true
-     }
-    ]
-   },
-   {
-    "line": 18,
-    "ms": 900,
-    "note": "The row is done, so print a newline.",
-    "out": "\n",
-    "outAt": 0.3,
-    "do": []
-   },
-   {
-    "line": 14,
-    "ms": 1000,
-    "note": "The outer loop picks row 2.",
-    "do": [
-     {
-      "a": "cur",
-      "r": 2,
-      "c": 0
-     }
-    ]
-   },
-   {
-    "line": 15,
-    "ms": 800,
-    "note": "The inner loop starts at column 0.",
-    "do": [
-     {
-      "a": "cur",
-      "r": 2,
-      "c": 0
-     }
-    ]
-   },
-   {
-    "line": 16,
-    "ms": 2400,
-    "note": "printf prints each tile as c goes 0 to 4. The loop repeats for every column.",
-    "out": "#####",
-    "outAt": 0.92,
-    "do": [
-     {
-      "a": "cur",
-      "r": 2,
-      "c": 4,
-      "from": 0,
-      "mark": true
-     }
-    ]
-   },
-   {
-    "line": 18,
-    "ms": 900,
-    "note": "The row is done, so print a newline.",
-    "out": "\n",
-    "outAt": 0.3,
-    "do": []
-   },
-   {
-    "line": 14,
-    "ms": 1200,
-    "note": "r is 3. Is 3 < 3? No, so the outer loop ends.",
-    "do": [
-     {
-      "a": "nocur"
-     }
-    ]
-   },
-   {
-    "line": 20,
-    "ms": 1000,
-    "note": "return 0 ends the program.",
-    "do": []
-   }
-  ]
- },
- "files": {
-  "scene": "p3-save",
-  "steps": [
-   {
-    "line": 1,
-    "ms": 1000,
-    "note": "This line only quiets a Microsoft warning. Nothing changes in the picture.",
-    "do": []
-   },
-   {
-    "line": 4,
-    "ms": 1100,
-    "note": "main starts. The notebook best.txt will live in the drawer called the disk.",
-    "do": []
-   },
-   {
-    "line": 5,
-    "ms": 2100,
-    "note": "fopen opens best.txt for writing. The notebook comes out with a fresh page, and f is the handle that points at it.",
-    "do": [
-     {
-      "a": "open",
-      "mode": "w",
-      "at": 0,
-      "len": 0.7
-     },
-     {
-      "a": "f",
-      "v": "best.txt",
-      "at": 0.5,
-      "len": 0.3
-     }
-    ]
-   },
-   {
-    "line": 6,
-    "ms": 1500,
-    "note": "fopen worked, so f is not NULL. The check is false and we skip the error message.",
-    "do": [
-     {
-      "a": "chk",
-      "t": "f == NULL",
-      "r": false
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 1700,
-    "note": "fprintf writes 120 and a new line onto the page.",
-    "do": [
-     {
-      "a": "write",
-      "t": "120"
-     }
-    ]
-   },
-   {
-    "line": 11,
-    "ms": 1700,
-    "note": "fclose saves the page and puts the notebook back in the drawer.",
-    "do": [
-     {
-      "a": "close",
-      "at": 0,
-      "len": 0.7
-     },
-     {
-      "a": "f",
-      "v": "closed",
-      "at": 0.5,
-      "len": 0.3
-     }
-    ]
-   },
-   {
-    "line": 13,
-    "ms": 1000,
-    "note": "best starts at 0.",
-    "do": [
-     {
-      "a": "best",
-      "v": 0
-     }
-    ]
-   },
-   {
-    "line": 14,
-    "ms": 2000,
-    "note": "\"r\" opens the same notebook for reading. The 120 we wrote is still on the page.",
-    "do": [
-     {
-      "a": "open",
-      "mode": "r",
-      "at": 0,
-      "len": 0.7
-     },
-     {
-      "a": "f",
-      "v": "best.txt",
-      "at": 0.5,
-      "len": 0.3
-     }
-    ]
-   },
-   {
-    "line": 15,
-    "ms": 1400,
-    "note": "f is not NULL, so the notebook opened fine and we go inside.",
-    "do": [
-     {
-      "a": "chk",
-      "t": "f != NULL",
-      "r": true
-     }
-    ]
-   },
-   {
-    "line": 16,
-    "ms": 2100,
-    "note": "fscanf reads the number off the page and stores it in best.",
-    "do": [
-     {
-      "a": "fread",
-      "t": "120",
-      "at": 0,
-      "len": 0.7
-     },
-     {
-      "a": "best",
-      "v": 120,
-      "at": 0.7,
-      "len": 0.3
-     }
-    ]
-   },
-   {
-    "line": 17,
-    "ms": 1500,
-    "note": "fclose puts the notebook back.",
-    "do": [
-     {
-      "a": "close",
-      "at": 0,
-      "len": 0.7
-     },
-     {
-      "a": "f",
-      "v": "closed",
-      "at": 0.5,
-      "len": 0.3
-     }
-    ]
-   },
-   {
-    "line": 19,
-    "ms": 1300,
-    "note": "printf prints best: 120, read back from the file.",
-    "out": "Best: 120\n",
-    "outAt": 0.4,
-    "do": []
-   },
-   {
-    "line": 20,
-    "ms": 1000,
-    "note": "return 0 ends the program.",
-    "do": []
-   }
-  ]
- }
+  "functions": {
+    "scene": "p3-rooms",
+    "steps": [
+      {
+        "line": 8,
+        "ms": 1300,
+        "note": "The program starts in main. The add_score machine waits on the right until somebody calls it.",
+        "do": [
+          {
+            "a": "room",
+            "i": 0,
+            "on": true,
+            "name": "main",
+            "sig": "",
+            "kind": "room"
+          },
+          {
+            "a": "room",
+            "i": 1,
+            "on": true,
+            "name": "add_score",
+            "sig": "(int score, int points) -> int",
+            "kind": "machine",
+            "at": 0.2
+          },
+          {
+            "a": "lit",
+            "i": 0,
+            "at": 0.6
+          }
+        ]
+      },
+      {
+        "line": 9,
+        "ms": 1000,
+        "note": "main makes its own box called score and puts 0 in it.",
+        "do": [
+          {
+            "a": "var",
+            "i": 0,
+            "n": "score",
+            "t": "int",
+            "v": "0"
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 1700,
+        "note": "Calling add_score(score, 10): a copy of score (0) and the number 10 go into the machine's slot.",
+        "do": [
+          {
+            "a": "fly",
+            "from": [
+              0,
+              "score"
+            ],
+            "to": [
+              1,
+              "score",
+              0
+            ],
+            "v": "0",
+            "copy": true,
+            "at": 0,
+            "len": 0.65
+          },
+          {
+            "a": "fly",
+            "from": [
+              0,
+              "score"
+            ],
+            "to": [
+              1,
+              "points",
+              1
+            ],
+            "v": "10",
+            "at": 0.1,
+            "len": 0.65
+          },
+          {
+            "a": "lit",
+            "i": 1,
+            "at": 0.7
+          },
+          {
+            "a": "var",
+            "i": 1,
+            "n": "score",
+            "t": "int",
+            "v": "0",
+            "copy": true,
+            "at": 0.7,
+            "len": 0.3
+          },
+          {
+            "a": "var",
+            "i": 1,
+            "n": "points",
+            "t": "int",
+            "v": "10",
+            "at": 0.75,
+            "len": 0.25
+          }
+        ]
+      },
+      {
+        "line": 3,
+        "ms": 1200,
+        "note": "Inside, score and points are the machine's own variables, holding what was passed in: 0 and 10.",
+        "do": [
+          {
+            "a": "cap",
+            "t": "parameters = the machine's inputs"
+          }
+        ]
+      },
+      {
+        "line": 4,
+        "ms": 1000,
+        "note": "total is made inside the machine: 0 + 10 is 10.",
+        "do": [
+          {
+            "a": "var",
+            "i": 1,
+            "n": "total",
+            "t": "int",
+            "v": "10"
+          },
+          {
+            "a": "cap",
+            "t": ""
+          }
+        ]
+      },
+      {
+        "line": 5,
+        "ms": 1000,
+        "note": "return hands total back. The 10 drops into the OUT tray.",
+        "do": [
+          {
+            "a": "tray",
+            "i": 1,
+            "v": "10"
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 1700,
+        "note": "The 10 comes out of the machine and lands in main's score. The machine's insides vanish.",
+        "do": [
+          {
+            "a": "tray",
+            "i": 1,
+            "v": null,
+            "at": 0,
+            "len": 0.3
+          },
+          {
+            "a": "fly",
+            "from": [
+              1,
+              "@tray"
+            ],
+            "to": [
+              0,
+              "score"
+            ],
+            "v": "10",
+            "at": 0,
+            "len": 0.7
+          },
+          {
+            "a": "lit",
+            "i": 0,
+            "at": 0.7
+          },
+          {
+            "a": "var",
+            "i": 0,
+            "n": "score",
+            "t": "int",
+            "v": "10",
+            "at": 0.7,
+            "len": 0.3
+          },
+          {
+            "a": "clear",
+            "i": 1,
+            "at": 0.75,
+            "len": 0.25
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 1700,
+        "note": "Calling it again: a copy of the new score (10) and the number 5 go in.",
+        "do": [
+          {
+            "a": "fly",
+            "from": [
+              0,
+              "score"
+            ],
+            "to": [
+              1,
+              "score",
+              0
+            ],
+            "v": "10",
+            "copy": true,
+            "at": 0,
+            "len": 0.65
+          },
+          {
+            "a": "fly",
+            "from": [
+              0,
+              "score"
+            ],
+            "to": [
+              1,
+              "points",
+              1
+            ],
+            "v": "5",
+            "at": 0.1,
+            "len": 0.65
+          },
+          {
+            "a": "lit",
+            "i": 1,
+            "at": 0.7
+          },
+          {
+            "a": "var",
+            "i": 1,
+            "n": "score",
+            "t": "int",
+            "v": "10",
+            "copy": true,
+            "at": 0.7,
+            "len": 0.3
+          },
+          {
+            "a": "var",
+            "i": 1,
+            "n": "points",
+            "t": "int",
+            "v": "5",
+            "at": 0.75,
+            "len": 0.25
+          }
+        ]
+      },
+      {
+        "line": 3,
+        "ms": 900,
+        "note": "A fresh score and points, this time 10 and 5.",
+        "do": []
+      },
+      {
+        "line": 4,
+        "ms": 1000,
+        "note": "total is 10 + 5, which is 15.",
+        "do": [
+          {
+            "a": "var",
+            "i": 1,
+            "n": "total",
+            "t": "int",
+            "v": "15"
+          }
+        ]
+      },
+      {
+        "line": 5,
+        "ms": 1000,
+        "note": "return drops the 15 into the tray.",
+        "do": [
+          {
+            "a": "tray",
+            "i": 1,
+            "v": "15"
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 1700,
+        "note": "15 comes out and lands in main's score, replacing 10.",
+        "do": [
+          {
+            "a": "tray",
+            "i": 1,
+            "v": null,
+            "at": 0,
+            "len": 0.3
+          },
+          {
+            "a": "fly",
+            "from": [
+              1,
+              "@tray"
+            ],
+            "to": [
+              0,
+              "score"
+            ],
+            "v": "15",
+            "at": 0,
+            "len": 0.7
+          },
+          {
+            "a": "lit",
+            "i": 0,
+            "at": 0.7
+          },
+          {
+            "a": "var",
+            "i": 0,
+            "n": "score",
+            "t": "int",
+            "v": "15",
+            "at": 0.7,
+            "len": 0.3
+          },
+          {
+            "a": "clear",
+            "i": 1,
+            "at": 0.75,
+            "len": 0.25
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 1000,
+        "note": "printf prints main's score: 15.",
+        "out": "Score: 15\n",
+        "outAt": 0.4,
+        "do": [
+          {
+            "a": "cap",
+            "t": "Score: 15"
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 1000,
+        "note": "return 0 ends the program.",
+        "do": [
+          {
+            "a": "cap",
+            "t": ""
+          }
+        ]
+      }
+    ]
+  },
+  "prototypes": {
+    "scene": "p3-contents",
+    "steps": [
+      {
+        "line": 3,
+        "ms": 1300,
+        "note": "Before running anything, the compiler reads this prototype and writes print_menu on its contents page.",
+        "do": [
+          {
+            "a": "entry",
+            "i": 0
+          }
+        ]
+      },
+      {
+        "line": 4,
+        "ms": 1200,
+        "note": "A second entry: square takes an int and hands back an int.",
+        "do": [
+          {
+            "a": "entry",
+            "i": 1
+          }
+        ]
+      },
+      {
+        "line": 6,
+        "ms": 1300,
+        "note": "Now main starts. Its two functions are written further down, but the contents page already lists them.",
+        "do": [
+          {
+            "a": "main",
+            "t": "int main(void) {"
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1700,
+        "note": "main calls print_menu. The compiler already allowed this, because the contents page listed it.",
+        "do": [
+          {
+            "a": "main",
+            "t": "print_menu();",
+            "at": 0,
+            "len": 0.2
+          },
+          {
+            "a": "look",
+            "i": 0,
+            "at": 0.15,
+            "len": 0.45
+          },
+          {
+            "a": "call",
+            "i": 0,
+            "t": "( )",
+            "at": 0.45,
+            "len": 0.55
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 1400,
+        "note": "The call jumps down to the real print_menu. void and (void) match the contents entry.",
+        "do": [
+          {
+            "a": "match",
+            "i": 0,
+            "at": 0.5,
+            "len": 0.5
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 1000,
+        "note": "Its one line runs: the menu prints.",
+        "out": "1 Play  2 Quit\n",
+        "outAt": 0.4,
+        "do": [
+          {
+            "a": "cap",
+            "t": "prints the menu"
+          }
+        ]
+      },
+      {
+        "line": 14,
+        "ms": 1300,
+        "note": "print_menu is finished. It is void, so nothing comes back.",
+        "do": [
+          {
+            "a": "ret",
+            "i": 0,
+            "v": null
+          },
+          {
+            "a": "cap",
+            "t": ""
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1700,
+        "note": "main calls square(4). The compiler already allowed this, because the contents page listed it.",
+        "do": [
+          {
+            "a": "main",
+            "t": "printf(\"%d\\n\", square(4));",
+            "at": 0,
+            "len": 0.2
+          },
+          {
+            "a": "look",
+            "i": 1,
+            "at": 0.15,
+            "len": 0.45
+          },
+          {
+            "a": "call",
+            "i": 1,
+            "t": "4",
+            "at": 0.45,
+            "len": 0.55
+          }
+        ]
+      },
+      {
+        "line": 16,
+        "ms": 1400,
+        "note": "The call jumps down to the real square. int and (int n) match its contents entry. n is 4.",
+        "do": [
+          {
+            "a": "match",
+            "i": 1,
+            "at": 0.5,
+            "len": 0.5
+          }
+        ]
+      },
+      {
+        "line": 17,
+        "ms": 1200,
+        "note": "n * n is 4 * 4, which is 16. return sends it back.",
+        "do": [
+          {
+            "a": "cap",
+            "t": "4 * 4 = 16"
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1500,
+        "note": "16 comes back to main and printf prints it.",
+        "out": "16\n",
+        "outAt": 0.7,
+        "do": [
+          {
+            "a": "ret",
+            "i": 1,
+            "v": "16"
+          },
+          {
+            "a": "cap",
+            "t": ""
+          }
+        ]
+      },
+      {
+        "line": 9,
+        "ms": 1000,
+        "note": "return 0 ends the program.",
+        "do": [
+          {
+            "a": "main",
+            "t": "return 0;"
+          }
+        ]
+      }
+    ]
+  },
+  "scope": {
+    "scene": "p3-rooms",
+    "steps": [
+      {
+        "line": 8,
+        "ms": 1200,
+        "note": "The program starts in main, which is its own room.",
+        "do": [
+          {
+            "a": "room",
+            "i": 0,
+            "on": true,
+            "name": "main",
+            "sig": "",
+            "kind": "room"
+          },
+          {
+            "a": "lit",
+            "i": 0,
+            "at": 0.5
+          }
+        ]
+      },
+      {
+        "line": 9,
+        "ms": 1000,
+        "note": "Inside main's room, score is a box holding 99.",
+        "do": [
+          {
+            "a": "var",
+            "i": 0,
+            "n": "score",
+            "t": "int",
+            "v": "99"
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 1800,
+        "note": "reset(score) builds a new room. A photocopy of 99 goes in. The original stays put.",
+        "do": [
+          {
+            "a": "room",
+            "i": 1,
+            "on": true,
+            "name": "reset",
+            "sig": "(int score)",
+            "kind": "room",
+            "at": 0,
+            "len": 0.35
+          },
+          {
+            "a": "fly",
+            "from": [
+              0,
+              "score"
+            ],
+            "to": [
+              1,
+              "score",
+              0
+            ],
+            "v": "99",
+            "copy": true,
+            "at": 0.3,
+            "len": 0.55
+          },
+          {
+            "a": "lit",
+            "i": 1,
+            "at": 0.85
+          },
+          {
+            "a": "var",
+            "i": 1,
+            "n": "score",
+            "t": "int",
+            "v": "99",
+            "copy": true,
+            "at": 0.85,
+            "len": 0.15
+          }
+        ]
+      },
+      {
+        "line": 3,
+        "ms": 1400,
+        "note": "Inside reset, score is a new variable holding the copy. Same name as main's, but a different box.",
+        "do": [
+          {
+            "a": "cap",
+            "t": "two boxes, both called score"
+          }
+        ]
+      },
+      {
+        "line": 4,
+        "ms": 1400,
+        "note": "score = 0 scribbles on the copy only. Look left: main's score is still 99.",
+        "do": [
+          {
+            "a": "var",
+            "i": 1,
+            "n": "score",
+            "t": "int",
+            "v": "0",
+            "copy": true
+          },
+          {
+            "a": "cap",
+            "t": "main's score didn't change"
+          }
+        ]
+      },
+      {
+        "line": 5,
+        "ms": 1000,
+        "note": "reset prints its own score: 0.",
+        "out": "Inside reset: 0\n",
+        "outAt": 0.4,
+        "do": []
+      },
+      {
+        "line": 6,
+        "ms": 1200,
+        "note": "reset finishes and its room vanishes, copy and all.",
+        "do": [
+          {
+            "a": "room",
+            "i": 1,
+            "on": false
+          },
+          {
+            "a": "lit",
+            "i": 0,
+            "at": 0.6
+          },
+          {
+            "a": "cap",
+            "t": ""
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 1000,
+        "note": "Back in main, score is still 99. The change never left reset's room.",
+        "out": "Back in main: 99\n",
+        "outAt": 0.4,
+        "do": [
+          {
+            "a": "cap",
+            "t": "the original was never touched"
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 1000,
+        "note": "return 0 ends the program.",
+        "do": [
+          {
+            "a": "cap",
+            "t": ""
+          }
+        ]
+      }
+    ]
+  },
+  "define": {
+    "scene": "p3-define",
+    "steps": [
+      {
+        "line": 3,
+        "ms": 1200,
+        "note": "A sticky note: wherever MAX_SCORES appears, write 5 instead.",
+        "do": [
+          {
+            "a": "note",
+            "k": 0
+          }
+        ]
+      },
+      {
+        "line": 4,
+        "ms": 1200,
+        "note": "A second note for START_LIVES. Capitals tell you it's a constant.",
+        "do": [
+          {
+            "a": "note",
+            "k": 1
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 2600,
+        "note": "Before compiling, both names are swapped for their numbers: START_LIVES becomes 3 and MAX_SCORES becomes 5. The compiler only ever sees the numbers.",
+        "do": [
+          {
+            "a": "swap",
+            "k": 0,
+            "at": 0,
+            "len": 0.3
+          },
+          {
+            "a": "swap",
+            "k": 1,
+            "at": 0.3,
+            "len": 0.3
+          },
+          {
+            "a": "lives",
+            "v": "3",
+            "at": 0.65,
+            "len": 0.3
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1300,
+        "note": "The loop starts with i at 0. Is 0 < 5? Yes.",
+        "do": [
+          {
+            "a": "loop",
+            "i": 0,
+            "done": 0,
+            "chk": "0 < 5",
+            "r": true
+          }
+        ]
+      },
+      {
+        "line": 9,
+        "ms": 1000,
+        "note": "printf prints Slot 0.",
+        "out": "Slot 0\n",
+        "outAt": 0.4,
+        "do": [
+          {
+            "a": "loop",
+            "i": 0,
+            "done": 1
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 900,
+        "note": "i goes up to 1. Is 1 < 5? Yes, so round again.",
+        "do": [
+          {
+            "a": "loop",
+            "i": 1,
+            "done": 1,
+            "chk": "1 < 5",
+            "r": true
+          }
+        ]
+      },
+      {
+        "line": 9,
+        "ms": 1000,
+        "note": "printf prints Slot 1.",
+        "out": "Slot 1\n",
+        "outAt": 0.4,
+        "do": [
+          {
+            "a": "loop",
+            "i": 1,
+            "done": 2
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 900,
+        "note": "i goes up to 2. Is 2 < 5? Yes, so round again.",
+        "do": [
+          {
+            "a": "loop",
+            "i": 2,
+            "done": 2,
+            "chk": "2 < 5",
+            "r": true
+          }
+        ]
+      },
+      {
+        "line": 9,
+        "ms": 1000,
+        "note": "printf prints Slot 2.",
+        "out": "Slot 2\n",
+        "outAt": 0.4,
+        "do": [
+          {
+            "a": "loop",
+            "i": 2,
+            "done": 3
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 900,
+        "note": "i goes up to 3. Is 3 < 5? Yes, so round again.",
+        "do": [
+          {
+            "a": "loop",
+            "i": 3,
+            "done": 3,
+            "chk": "3 < 5",
+            "r": true
+          }
+        ]
+      },
+      {
+        "line": 9,
+        "ms": 1000,
+        "note": "printf prints Slot 3.",
+        "out": "Slot 3\n",
+        "outAt": 0.4,
+        "do": [
+          {
+            "a": "loop",
+            "i": 3,
+            "done": 4
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 900,
+        "note": "i goes up to 4. Is 4 < 5? Yes, so round again.",
+        "do": [
+          {
+            "a": "loop",
+            "i": 4,
+            "done": 4,
+            "chk": "4 < 5",
+            "r": true
+          }
+        ]
+      },
+      {
+        "line": 9,
+        "ms": 1000,
+        "note": "printf prints Slot 4.",
+        "out": "Slot 4\n",
+        "outAt": 0.4,
+        "do": [
+          {
+            "a": "loop",
+            "i": 4,
+            "done": 5
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1300,
+        "note": "i is 5. Is 5 < 5? No, so the loop is over. Five slots, from the one number on line 3.",
+        "do": [
+          {
+            "a": "loop",
+            "i": 5,
+            "done": 5,
+            "chk": "5 < 5",
+            "r": false
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 1000,
+        "note": "printf prints lives, which is 3.",
+        "out": "Lives: 3\n",
+        "outAt": 0.4,
+        "do": [
+          {
+            "a": "loop",
+            "i": null,
+            "done": 5
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 1000,
+        "note": "return 0 ends the program.",
+        "do": []
+      }
+    ]
+  },
+  "arrays": {
+    "scene": "p3-lockers",
+    "steps": [
+      {
+        "line": 5,
+        "ms": 800,
+        "note": "main starts. No lockers yet.",
+        "do": []
+      },
+      {
+        "line": 6,
+        "ms": 1900,
+        "note": "Five lockers in a row, numbered 0 to 4. The braces fill them in order.",
+        "do": [
+          {
+            "a": "make",
+            "name": "int scores[5]",
+            "kind": "int",
+            "cells": [
+              "90",
+              "75",
+              "60",
+              "40",
+              "10"
+            ]
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 3000,
+        "note": "The whole row is 20 bytes and one locker is 4 bytes. 20 / 4 = 5, so count is 5.",
+        "do": [
+          {
+            "a": "span",
+            "s0": 0,
+            "b": 4,
+            "t": "sizeof(scores) = 20 bytes",
+            "at": 0,
+            "len": 0.3
+          },
+          {
+            "a": "span",
+            "s0": 0,
+            "b": 0,
+            "t": "sizeof(scores[0]) = 4",
+            "at": 0.45,
+            "len": 0.25
+          },
+          {
+            "a": "tag",
+            "k": "count",
+            "v": "5",
+            "at": 0.78,
+            "len": 0.22
+          }
+        ]
+      },
+      {
+        "line": 9,
+        "ms": 1500,
+        "note": "scores[0] is the first locker, not scores[1]. It holds 90.",
+        "out": "Top score: 90\n",
+        "outAt": 0.6,
+        "do": [
+          {
+            "a": "span",
+            "s0": null,
+            "at": 0,
+            "len": 0.3
+          },
+          {
+            "a": "cur",
+            "i": 0,
+            "name": "scores[0]",
+            "at": 0.1,
+            "len": 0.4
+          },
+          {
+            "a": "read",
+            "i": 0,
+            "at": 0.4,
+            "len": 0.5
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 1500,
+        "note": "scores[4] is the last locker (count - 1). Its 10 is replaced with 25.",
+        "do": [
+          {
+            "a": "cur",
+            "i": 4,
+            "name": "scores[4]",
+            "at": 0,
+            "len": 0.5
+          },
+          {
+            "a": "set",
+            "i": 4,
+            "v": "25",
+            "at": 0.5,
+            "len": 0.5
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 1200,
+        "note": "i starts at 0. Is 0 < 5? Yes.",
+        "do": [
+          {
+            "a": "tag",
+            "k": "i",
+            "v": "0"
+          },
+          {
+            "a": "cur",
+            "i": 0,
+            "name": "scores[i]"
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 1100,
+        "note": "printf shows i + 1 and scores[i]: 1: 90.",
+        "out": "1: 90\n",
+        "outAt": 0.5,
+        "do": [
+          {
+            "a": "read",
+            "i": 0
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 1200,
+        "note": "i is 1. Is 1 < 5? Yes.",
+        "do": [
+          {
+            "a": "tag",
+            "k": "i",
+            "v": "1"
+          },
+          {
+            "a": "cur",
+            "i": 1,
+            "name": "scores[i]"
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 1100,
+        "note": "printf shows i + 1 and scores[i]: 2: 75.",
+        "out": "2: 75\n",
+        "outAt": 0.5,
+        "do": [
+          {
+            "a": "read",
+            "i": 1
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 1200,
+        "note": "i is 2. Is 2 < 5? Yes.",
+        "do": [
+          {
+            "a": "tag",
+            "k": "i",
+            "v": "2"
+          },
+          {
+            "a": "cur",
+            "i": 2,
+            "name": "scores[i]"
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 1100,
+        "note": "printf shows i + 1 and scores[i]: 3: 60.",
+        "out": "3: 60\n",
+        "outAt": 0.5,
+        "do": [
+          {
+            "a": "read",
+            "i": 2
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 1200,
+        "note": "i is 3. Is 3 < 5? Yes.",
+        "do": [
+          {
+            "a": "tag",
+            "k": "i",
+            "v": "3"
+          },
+          {
+            "a": "cur",
+            "i": 3,
+            "name": "scores[i]"
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 1100,
+        "note": "printf shows i + 1 and scores[i]: 4: 40.",
+        "out": "4: 40\n",
+        "outAt": 0.5,
+        "do": [
+          {
+            "a": "read",
+            "i": 3
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 1200,
+        "note": "i is 4. Is 4 < 5? Yes.",
+        "do": [
+          {
+            "a": "tag",
+            "k": "i",
+            "v": "4"
+          },
+          {
+            "a": "cur",
+            "i": 4,
+            "name": "scores[i]"
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 1100,
+        "note": "printf shows i + 1 and scores[i]: 5: 25.",
+        "out": "5: 25\n",
+        "outAt": 0.5,
+        "do": [
+          {
+            "a": "read",
+            "i": 4
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 1400,
+        "note": "i is 5. Is 5 < 5? No, the loop ends. There is no locker 5.",
+        "do": [
+          {
+            "a": "tag",
+            "k": "i",
+            "v": "5"
+          },
+          {
+            "a": "cur",
+            "i": null
+          },
+          {
+            "a": "cap",
+            "t": "lockers stop at 4"
+          }
+        ]
+      },
+      {
+        "line": 15,
+        "ms": 1000,
+        "note": "return 0 ends the program.",
+        "do": [
+          {
+            "a": "cap",
+            "t": ""
+          }
+        ]
+      }
+    ]
+  },
+  "strings": {
+    "scene": "p3-lockers",
+    "steps": [
+      {
+        "line": 2,
+        "ms": 1100,
+        "note": "string.h is the string toolbox: strlen, strcmp and friends.",
+        "do": [
+          {
+            "a": "cap",
+            "t": "string.h = the string toolbox"
+          }
+        ]
+      },
+      {
+        "line": 4,
+        "ms": 700,
+        "note": "main starts.",
+        "do": [
+          {
+            "a": "cap",
+            "t": ""
+          }
+        ]
+      },
+      {
+        "line": 5,
+        "ms": 2200,
+        "note": "Eight char lockers. Sam fills the first three, then C adds a stop sign, \\0, in locker 3. The rest are zero too.",
+        "do": [
+          {
+            "a": "make",
+            "name": "char name[8]",
+            "kind": "char",
+            "cells": [
+              "S",
+              "a",
+              "m",
+              "\\0",
+              "\\0",
+              "\\0",
+              "\\0",
+              "\\0"
+            ]
+          }
+        ]
+      },
+      {
+        "line": 6,
+        "ms": 2100,
+        "note": "%s prints letters one by one until it hits the stop sign.",
+        "out": "Name: Sam\n",
+        "outAt": 0.85,
+        "do": [
+          {
+            "a": "cur",
+            "i": 3,
+            "from": 0,
+            "name": "%s",
+            "mark": true
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1500,
+        "note": "strlen counts the letters before the stop sign: 3.",
+        "out": "Length: 3\n",
+        "outAt": 0.6,
+        "do": [
+          {
+            "a": "cur",
+            "i": null,
+            "at": 0,
+            "len": 0.2
+          },
+          {
+            "a": "span",
+            "s0": 0,
+            "b": 2,
+            "t": "strlen = 3",
+            "at": 0.25,
+            "len": 0.4
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1500,
+        "note": "sizeof counts every locker, used or not: 8.",
+        "out": "Array size: 8\n",
+        "outAt": 0.6,
+        "do": [
+          {
+            "a": "span",
+            "s0": 0,
+            "b": 7,
+            "t": "sizeof = 8 lockers",
+            "at": 0,
+            "len": 0.5
+          }
+        ]
+      },
+      {
+        "line": 9,
+        "ms": 1400,
+        "note": "A string is just lockers, so you can change one letter. Locker 1 becomes u.",
+        "do": [
+          {
+            "a": "span",
+            "s0": null,
+            "at": 0,
+            "len": 0.3
+          },
+          {
+            "a": "cur",
+            "i": 1,
+            "name": "name[1]",
+            "at": 0.1,
+            "len": 0.4
+          },
+          {
+            "a": "set",
+            "i": 1,
+            "v": "u",
+            "at": 0.5,
+            "len": 0.5
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 2000,
+        "note": "Walking along again: S, u, m, then the stop sign. It reads Sum.",
+        "out": "Now: Sum\n",
+        "outAt": 0.85,
+        "do": [
+          {
+            "a": "cur",
+            "i": 3,
+            "from": 0,
+            "name": "%s",
+            "mark": true
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 1000,
+        "note": "return 0 ends the program.",
+        "do": [
+          {
+            "a": "cur",
+            "i": null
+          },
+          {
+            "a": "cap",
+            "t": "the stop sign decides where a string ends"
+          }
+        ]
+      }
+    ]
+  },
+  "fgets": {
+    "scene": "p3-lockers",
+    "steps": [
+      {
+        "line": 4,
+        "ms": 700,
+        "note": "main starts.",
+        "do": []
+      },
+      {
+        "line": 5,
+        "ms": 2000,
+        "note": "name has 32 lockers (we can see the first 8). They hold leftover junk, shown as ?. One locker is kept for the stop sign.",
+        "do": [
+          {
+            "a": "make",
+            "name": "char name[32]",
+            "kind": "char",
+            "cells": [
+              "?",
+              "?",
+              "?",
+              "?",
+              "?",
+              "?",
+              "?",
+              "?"
+            ],
+            "tail": "[31]"
+          }
+        ]
+      },
+      {
+        "line": 6,
+        "ms": 1000,
+        "note": "The prompt appears.",
+        "out": "Your name: ",
+        "outAt": 0.4,
+        "do": []
+      },
+      {
+        "line": 7,
+        "ms": 3200,
+        "note": "fgets waits. Sample input: Sam, then Enter. It scoops the whole line into name, Enter (\\n) included, and adds the stop sign.",
+        "do": [
+          {
+            "a": "stdin",
+            "t": [
+              "S",
+              "a",
+              "m",
+              "\\n"
+            ],
+            "at": 0,
+            "len": 0.3
+          },
+          {
+            "a": "scoop",
+            "vals": [
+              "S",
+              "a",
+              "m",
+              "\\n",
+              "\\0"
+            ],
+            "n": 4,
+            "at": 0.4,
+            "len": 0.6
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1300,
+        "note": "fgets read a line, so it didn't return NULL. The check is false, and lines 8 and 9 are skipped.",
+        "do": [
+          {
+            "a": "cap",
+            "t": "fgets != NULL: a line arrived"
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 2300,
+        "note": "Printing name shows [Sam. The Enter jumps to a new line, so the ] lands on the next line.",
+        "out": "[Sam\n]\n",
+        "outAt": 0.85,
+        "do": [
+          {
+            "a": "cap",
+            "t": ""
+          },
+          {
+            "a": "cur",
+            "i": 4,
+            "from": 0,
+            "name": "%s",
+            "mark": true
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 2300,
+        "note": "strcspn finds the first Enter: locker 3. Writing the stop sign there cuts the line short.",
+        "do": [
+          {
+            "a": "cur",
+            "i": 3,
+            "from": 0,
+            "name": "strcspn",
+            "mark": true,
+            "at": 0,
+            "len": 0.5
+          },
+          {
+            "a": "tag",
+            "k": "strcspn",
+            "v": "3",
+            "at": 0.5,
+            "len": 0.2
+          },
+          {
+            "a": "set",
+            "i": 3,
+            "v": "\\0",
+            "at": 0.65,
+            "len": 0.35
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 2000,
+        "note": "Now the string ends right after Sam, so the ] sits next to it.",
+        "out": "[Sam]\n",
+        "outAt": 0.85,
+        "do": [
+          {
+            "a": "tag",
+            "k": "strcspn",
+            "v": null,
+            "at": 0,
+            "len": 0.1
+          },
+          {
+            "a": "cur",
+            "i": 3,
+            "from": 0,
+            "name": "%s",
+            "mark": true
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 1000,
+        "note": "return 0 ends the program.",
+        "do": [
+          {
+            "a": "cur",
+            "i": null
+          }
+        ]
+      }
+    ]
+  },
+  "strcmp": {
+    "scene": "p3-cmp",
+    "steps": [
+      {
+        "line": 4,
+        "ms": 700,
+        "note": "main starts.",
+        "do": []
+      },
+      {
+        "line": 5,
+        "ms": 1500,
+        "note": "cmd holds q u i t, then the stop sign.",
+        "do": [
+          {
+            "a": "words",
+            "a1": "quit",
+            "b": "quit",
+            "la": "cmd",
+            "lb": "\"quit\""
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 2700,
+        "note": "strcmp walks along both words together, letter against letter. Every pair matches, and both end together.",
+        "do": [
+          {
+            "a": "cmp",
+            "from": -1,
+            "to": 4,
+            "at": 0,
+            "len": 0.75
+          },
+          {
+            "a": "res",
+            "v": "0",
+            "w": "the same",
+            "col": "accent",
+            "at": 0.8,
+            "len": 0.2
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1300,
+        "note": "No difference means strcmp gives 0, so == 0 is true and the block runs.",
+        "do": [
+          {
+            "a": "ans",
+            "t": "strcmp == 0 ?",
+            "r": true
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1000,
+        "note": "The if block runs: Bye.",
+        "out": "Bye\n",
+        "outAt": 0.4,
+        "do": []
+      },
+      {
+        "line": 10,
+        "ms": 2900,
+        "note": "apple against banana: the very first letters already differ. a comes before b, so strcmp gives a negative number.",
+        "do": [
+          {
+            "a": "words",
+            "a1": "apple",
+            "b": "banana",
+            "la": "\"apple\"",
+            "lb": "\"banana\"",
+            "at": 0,
+            "len": 0.3
+          },
+          {
+            "a": "cmp",
+            "from": -1,
+            "to": 0,
+            "at": 0.35,
+            "len": 0.3
+          },
+          {
+            "a": "res",
+            "v": "negative",
+            "w": "apple sorts first",
+            "col": "purple",
+            "at": 0.72,
+            "len": 0.28
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 1500,
+        "note": "Is that negative number less than 0? Yes, so the comparison is true, which prints as 1.",
+        "out": "1\n",
+        "outAt": 0.6,
+        "do": [
+          {
+            "a": "ans",
+            "t": "strcmp < 0 ?",
+            "r": true
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 2900,
+        "note": "Sam against sam: capital S is 83, small s is 115. They differ at the first letter, and S sorts earlier.",
+        "do": [
+          {
+            "a": "words",
+            "a1": "Sam",
+            "b": "sam",
+            "la": "\"Sam\"",
+            "lb": "\"sam\"",
+            "at": 0,
+            "len": 0.3
+          },
+          {
+            "a": "cmp",
+            "from": -1,
+            "to": 0,
+            "at": 0.35,
+            "len": 0.3
+          },
+          {
+            "a": "res",
+            "v": "negative",
+            "w": "S sorts first",
+            "col": "purple",
+            "at": 0.72,
+            "len": 0.28
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 1500,
+        "note": "Not zero, so they don't match: == 0 is false, which prints as 0.",
+        "out": "0\n",
+        "outAt": 0.6,
+        "do": [
+          {
+            "a": "ans",
+            "t": "strcmp == 0 ?",
+            "r": false
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 1000,
+        "note": "return 0 ends the program.",
+        "do": []
+      }
+    ]
+  },
+  "grid": {
+    "scene": "p3-grid",
+    "steps": [
+      {
+        "line": 6,
+        "ms": 800,
+        "note": "main starts. The map isn't built yet.",
+        "do": []
+      },
+      {
+        "line": 7,
+        "ms": 1500,
+        "note": "map[ROWS][COLS] is 3 rows of 5 tiles, all empty so far. Row number first, then column.",
+        "do": [
+          {
+            "a": "frame"
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1200,
+        "note": "Row 0 is a wall of five #.",
+        "do": [
+          {
+            "a": "row",
+            "r": 0,
+            "s": "#####"
+          }
+        ]
+      },
+      {
+        "line": 9,
+        "ms": 1400,
+        "note": "Row 1: wall, floor, the player P, floor, wall. P sits at column 2.",
+        "do": [
+          {
+            "a": "row",
+            "r": 1,
+            "s": "#.P.#"
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 1200,
+        "note": "Row 2 is another wall.",
+        "do": [
+          {
+            "a": "row",
+            "r": 2,
+            "s": "#####"
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 1900,
+        "note": "map[1][3] is row 1, column 3: the floor right of P. It becomes E, the exit.",
+        "do": [
+          {
+            "a": "cur",
+            "r": 1,
+            "c": 3,
+            "at": 0,
+            "len": 0.45
+          },
+          {
+            "a": "fm",
+            "t": "map[1][3] = 'E'",
+            "at": 0.3,
+            "len": 0.1
+          },
+          {
+            "a": "set",
+            "r": 1,
+            "c": 3,
+            "ch": "E",
+            "at": 0.5,
+            "len": 0.5
+          }
+        ]
+      },
+      {
+        "line": 14,
+        "ms": 1000,
+        "note": "The outer loop picks row 0. r starts at 0.",
+        "do": [
+          {
+            "a": "cur",
+            "r": 0,
+            "c": 0
+          }
+        ]
+      },
+      {
+        "line": 15,
+        "ms": 800,
+        "note": "The inner loop starts at column 0.",
+        "do": [
+          {
+            "a": "cur",
+            "r": 0,
+            "c": 0
+          }
+        ]
+      },
+      {
+        "line": 16,
+        "ms": 2400,
+        "note": "printf prints each tile as c goes 0 to 4. The loop repeats for every column.",
+        "out": "#####",
+        "outAt": 0.92,
+        "do": [
+          {
+            "a": "cur",
+            "r": 0,
+            "c": 4,
+            "from": 0,
+            "mark": true
+          }
+        ]
+      },
+      {
+        "line": 18,
+        "ms": 900,
+        "note": "The row is done, so print a newline.",
+        "out": "\n",
+        "outAt": 0.3,
+        "do": []
+      },
+      {
+        "line": 14,
+        "ms": 1000,
+        "note": "The outer loop picks row 1.",
+        "do": [
+          {
+            "a": "cur",
+            "r": 1,
+            "c": 0
+          }
+        ]
+      },
+      {
+        "line": 15,
+        "ms": 800,
+        "note": "The inner loop starts at column 0.",
+        "do": [
+          {
+            "a": "cur",
+            "r": 1,
+            "c": 0
+          }
+        ]
+      },
+      {
+        "line": 16,
+        "ms": 2400,
+        "note": "printf prints each tile as c goes 0 to 4. The loop repeats for every column.",
+        "out": "#.PE#",
+        "outAt": 0.92,
+        "do": [
+          {
+            "a": "cur",
+            "r": 1,
+            "c": 4,
+            "from": 0,
+            "mark": true
+          }
+        ]
+      },
+      {
+        "line": 18,
+        "ms": 900,
+        "note": "The row is done, so print a newline.",
+        "out": "\n",
+        "outAt": 0.3,
+        "do": []
+      },
+      {
+        "line": 14,
+        "ms": 1000,
+        "note": "The outer loop picks row 2.",
+        "do": [
+          {
+            "a": "cur",
+            "r": 2,
+            "c": 0
+          }
+        ]
+      },
+      {
+        "line": 15,
+        "ms": 800,
+        "note": "The inner loop starts at column 0.",
+        "do": [
+          {
+            "a": "cur",
+            "r": 2,
+            "c": 0
+          }
+        ]
+      },
+      {
+        "line": 16,
+        "ms": 2400,
+        "note": "printf prints each tile as c goes 0 to 4. The loop repeats for every column.",
+        "out": "#####",
+        "outAt": 0.92,
+        "do": [
+          {
+            "a": "cur",
+            "r": 2,
+            "c": 4,
+            "from": 0,
+            "mark": true
+          }
+        ]
+      },
+      {
+        "line": 18,
+        "ms": 900,
+        "note": "The row is done, so print a newline.",
+        "out": "\n",
+        "outAt": 0.3,
+        "do": []
+      },
+      {
+        "line": 14,
+        "ms": 1200,
+        "note": "r is 3. Is 3 < 3? No, so the outer loop ends.",
+        "do": [
+          {
+            "a": "nocur"
+          }
+        ]
+      },
+      {
+        "line": 20,
+        "ms": 1000,
+        "note": "return 0 ends the program.",
+        "do": []
+      }
+    ]
+  },
+  "files": {
+    "scene": "p3-save",
+    "steps": [
+      {
+        "line": 1,
+        "ms": 1000,
+        "note": "This line only quiets a Microsoft warning. Nothing changes in the picture.",
+        "do": []
+      },
+      {
+        "line": 4,
+        "ms": 1100,
+        "note": "main starts. The notebook best.txt will live in the drawer called the disk.",
+        "do": []
+      },
+      {
+        "line": 5,
+        "ms": 2100,
+        "note": "fopen opens best.txt for writing. The notebook comes out with a fresh page, and f is the handle that points at it.",
+        "do": [
+          {
+            "a": "open",
+            "mode": "w",
+            "at": 0,
+            "len": 0.7
+          },
+          {
+            "a": "f",
+            "v": "best.txt",
+            "at": 0.5,
+            "len": 0.3
+          }
+        ]
+      },
+      {
+        "line": 6,
+        "ms": 1500,
+        "note": "fopen worked, so f is not NULL. The check is false and we skip the error message.",
+        "do": [
+          {
+            "a": "chk",
+            "t": "f == NULL",
+            "r": false
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 1700,
+        "note": "fprintf writes 120 and a new line onto the page.",
+        "do": [
+          {
+            "a": "write",
+            "t": "120"
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 1700,
+        "note": "fclose saves the page and puts the notebook back in the drawer.",
+        "do": [
+          {
+            "a": "close",
+            "at": 0,
+            "len": 0.7
+          },
+          {
+            "a": "f",
+            "v": "closed",
+            "at": 0.5,
+            "len": 0.3
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 1000,
+        "note": "best starts at 0.",
+        "do": [
+          {
+            "a": "best",
+            "v": 0
+          }
+        ]
+      },
+      {
+        "line": 14,
+        "ms": 2000,
+        "note": "\"r\" opens the same notebook for reading. The 120 we wrote is still on the page.",
+        "do": [
+          {
+            "a": "open",
+            "mode": "r",
+            "at": 0,
+            "len": 0.7
+          },
+          {
+            "a": "f",
+            "v": "best.txt",
+            "at": 0.5,
+            "len": 0.3
+          }
+        ]
+      },
+      {
+        "line": 15,
+        "ms": 1400,
+        "note": "f is not NULL, so the notebook opened fine and we go inside.",
+        "do": [
+          {
+            "a": "chk",
+            "t": "f != NULL",
+            "r": true
+          }
+        ]
+      },
+      {
+        "line": 16,
+        "ms": 2100,
+        "note": "fscanf reads the number off the page and stores it in best.",
+        "do": [
+          {
+            "a": "fread",
+            "t": "120",
+            "at": 0,
+            "len": 0.7
+          },
+          {
+            "a": "best",
+            "v": 120,
+            "at": 0.7,
+            "len": 0.3
+          }
+        ]
+      },
+      {
+        "line": 17,
+        "ms": 1500,
+        "note": "fclose puts the notebook back.",
+        "do": [
+          {
+            "a": "close",
+            "at": 0,
+            "len": 0.7
+          },
+          {
+            "a": "f",
+            "v": "closed",
+            "at": 0.5,
+            "len": 0.3
+          }
+        ]
+      },
+      {
+        "line": 19,
+        "ms": 1300,
+        "note": "printf prints best: 120, read back from the file.",
+        "out": "Best: 120\n",
+        "outAt": 0.4,
+        "do": []
+      },
+      {
+        "line": 20,
+        "ms": 1000,
+        "note": "return 0 ends the program.",
+        "do": []
+      }
+    ]
+  },
+  "static-global": {
+    "scene": "p3-rooms",
+    "steps": [
+      {
+        "line": 3,
+        "ms": 1900,
+        "note": "Before main runs, the global wave is made and set to 1. So is spawned: static locals are made once, up front. The left box holds what lasts all game.",
+        "do": [
+          {
+            "a": "room",
+            "i": 0,
+            "on": true,
+            "name": "lasts all game",
+            "sig": "global and static",
+            "kind": "room"
+          },
+          {
+            "a": "var",
+            "i": 0,
+            "n": "wave",
+            "t": "int (global)",
+            "v": "1",
+            "at": 0.35,
+            "len": 0.3
+          },
+          {
+            "a": "var",
+            "i": 0,
+            "n": "spawned",
+            "t": "static int",
+            "v": "0",
+            "at": 0.65,
+            "len": 0.3
+          }
+        ]
+      },
+      {
+        "line": 14,
+        "ms": 1300,
+        "note": "main calls spawn_enemy. Its room opens.",
+        "do": [
+          {
+            "a": "room",
+            "i": 1,
+            "on": true,
+            "name": "spawn_enemy",
+            "sig": "(void)",
+            "kind": "room"
+          },
+          {
+            "a": "lit",
+            "i": 1,
+            "at": 0.6
+          },
+          {
+            "a": "cap",
+            "t": "spawned only answers to spawn_enemy",
+            "at": 0.6
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1100,
+        "note": "fresh is an ordinary local: a new box, set to 0.",
+        "do": [
+          {
+            "a": "var",
+            "i": 1,
+            "n": "fresh",
+            "t": "int",
+            "v": "0"
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1100,
+        "note": "spawned++ changes the long-lived box: 0 becomes 1.",
+        "do": [
+          {
+            "a": "var",
+            "i": 0,
+            "n": "spawned",
+            "t": "static int",
+            "v": "1"
+          }
+        ]
+      },
+      {
+        "line": 9,
+        "ms": 1000,
+        "note": "fresh++ makes fresh 1.",
+        "do": [
+          {
+            "a": "var",
+            "i": 1,
+            "n": "fresh",
+            "t": "int",
+            "v": "1"
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 1200,
+        "note": "printf reads the global wave, plus both counters.",
+        "out": "Wave 1: spawned 1, fresh 1\n",
+        "outAt": 0.4,
+        "do": []
+      },
+      {
+        "line": 11,
+        "ms": 1300,
+        "note": "The function ends. fresh is wiped. spawned stays, because it's static.",
+        "do": [
+          {
+            "a": "clear",
+            "i": 1
+          },
+          {
+            "a": "lit",
+            "i": -1,
+            "at": 0.6
+          },
+          {
+            "a": "cap",
+            "t": "fresh is gone, spawned is kept"
+          }
+        ]
+      },
+      {
+        "line": 15,
+        "ms": 1500,
+        "note": "Second call. A brand-new fresh starts at 0. spawned still holds 1.",
+        "do": [
+          {
+            "a": "lit",
+            "i": 1
+          },
+          {
+            "a": "var",
+            "i": 1,
+            "n": "fresh",
+            "t": "int",
+            "v": "0",
+            "at": 0.3,
+            "len": 0.4
+          },
+          {
+            "a": "cap",
+            "t": "",
+            "at": 0.3
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 1700,
+        "note": "Lines 7 to 9 ran again: spawned climbed to 2, fresh only reached 1.",
+        "out": "Wave 1: spawned 2, fresh 1\n",
+        "outAt": 0.7,
+        "do": [
+          {
+            "a": "var",
+            "i": 0,
+            "n": "spawned",
+            "t": "static int",
+            "v": "2",
+            "at": 0,
+            "len": 0.4
+          },
+          {
+            "a": "var",
+            "i": 1,
+            "n": "fresh",
+            "t": "int",
+            "v": "1",
+            "at": 0.2,
+            "len": 0.4
+          }
+        ]
+      },
+      {
+        "line": 16,
+        "ms": 1500,
+        "note": "The call has ended and fresh is wiped. Back in main, wave = 2 changes the global.",
+        "do": [
+          {
+            "a": "clear",
+            "i": 1,
+            "at": 0,
+            "len": 0.3
+          },
+          {
+            "a": "lit",
+            "i": -1,
+            "at": 0.3
+          },
+          {
+            "a": "var",
+            "i": 0,
+            "n": "wave",
+            "t": "int (global)",
+            "v": "2",
+            "at": 0.4,
+            "len": 0.5
+          }
+        ]
+      },
+      {
+        "line": 17,
+        "ms": 1300,
+        "note": "Third call. Another fresh at 0.",
+        "do": [
+          {
+            "a": "lit",
+            "i": 1
+          },
+          {
+            "a": "var",
+            "i": 1,
+            "n": "fresh",
+            "t": "int",
+            "v": "0",
+            "at": 0.3,
+            "len": 0.4
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 1900,
+        "note": "spawned reaches 3, fresh is 1 again, and spawn_enemy sees the new wave without being passed it.",
+        "out": "Wave 2: spawned 3, fresh 1\n",
+        "outAt": 0.7,
+        "do": [
+          {
+            "a": "var",
+            "i": 0,
+            "n": "spawned",
+            "t": "static int",
+            "v": "3",
+            "at": 0,
+            "len": 0.4
+          },
+          {
+            "a": "var",
+            "i": 1,
+            "n": "fresh",
+            "t": "int",
+            "v": "1",
+            "at": 0.2,
+            "len": 0.4
+          },
+          {
+            "a": "cap",
+            "t": "static remembers, local starts over",
+            "at": 0.5
+          }
+        ]
+      },
+      {
+        "line": 18,
+        "ms": 1100,
+        "note": "return 0 ends the program. Only now do the global and the static go away.",
+        "do": [
+          {
+            "a": "clear",
+            "i": 1
+          },
+          {
+            "a": "lit",
+            "i": -1
+          },
+          {
+            "a": "cap",
+            "t": ""
+          }
+        ]
+      }
+    ]
+  },
+  "array-args": {
+    "scene": "p3-lockers",
+    "steps": [
+      {
+        "line": 16,
+        "ms": 800,
+        "note": "main starts. No lockers yet.",
+        "do": []
+      },
+      {
+        "line": 17,
+        "ms": 1800,
+        "note": "Capacity 5: five lockers. Three get scores and the two left over start at 0.",
+        "do": [
+          {
+            "a": "make",
+            "name": "int scores[5]",
+            "kind": "int",
+            "cells": [
+              "40",
+              "95",
+              "60",
+              "0",
+              "0"
+            ]
+          }
+        ]
+      },
+      {
+        "line": 18,
+        "ms": 1300,
+        "note": "count says how many lockers hold real scores: 3.",
+        "do": [
+          {
+            "a": "span",
+            "s0": 0,
+            "b": 2,
+            "t": "count = 3",
+            "at": 0,
+            "len": 0.4
+          },
+          {
+            "a": "tag",
+            "k": "count",
+            "v": "3",
+            "at": 0.5,
+            "len": 0.3
+          }
+        ]
+      },
+      {
+        "line": 19,
+        "ms": 1900,
+        "note": "add_bonus(scores, count, 5): the function gets where the lockers are, not a copy of them, plus 3 and 5.",
+        "do": [
+          {
+            "a": "span",
+            "s0": null,
+            "at": 0,
+            "len": 0.2
+          },
+          {
+            "a": "tag",
+            "k": "bonus",
+            "v": "5",
+            "at": 0.2,
+            "len": 0.3
+          },
+          {
+            "a": "cap",
+            "t": "no copy: add_bonus opens main's lockers",
+            "at": 0.4
+          }
+        ]
+      },
+      {
+        "line": 5,
+        "ms": 1100,
+        "note": "i is 0. Is 0 < 3? Yes.",
+        "do": [
+          {
+            "a": "tag",
+            "k": "i",
+            "v": "0"
+          },
+          {
+            "a": "cur",
+            "i": 0,
+            "name": "scores[i]"
+          }
+        ]
+      },
+      {
+        "line": 6,
+        "ms": 1200,
+        "note": "scores[0] += 5 changes main's box 0: 40 becomes 45.",
+        "do": [
+          {
+            "a": "set",
+            "i": 0,
+            "v": "45"
+          }
+        ]
+      },
+      {
+        "line": 5,
+        "ms": 1100,
+        "note": "i is 1. Is 1 < 3? Yes.",
+        "do": [
+          {
+            "a": "tag",
+            "k": "i",
+            "v": "1"
+          },
+          {
+            "a": "cur",
+            "i": 1,
+            "name": "scores[i]"
+          }
+        ]
+      },
+      {
+        "line": 6,
+        "ms": 1200,
+        "note": "scores[1] += 5 changes main's box 1: 95 becomes 100.",
+        "do": [
+          {
+            "a": "set",
+            "i": 1,
+            "v": "100"
+          }
+        ]
+      },
+      {
+        "line": 5,
+        "ms": 1100,
+        "note": "i is 2. Is 2 < 3? Yes.",
+        "do": [
+          {
+            "a": "tag",
+            "k": "i",
+            "v": "2"
+          },
+          {
+            "a": "cur",
+            "i": 2,
+            "name": "scores[i]"
+          }
+        ]
+      },
+      {
+        "line": 6,
+        "ms": 1200,
+        "note": "scores[2] += 5: 60 becomes 65.",
+        "do": [
+          {
+            "a": "set",
+            "i": 2,
+            "v": "65"
+          }
+        ]
+      },
+      {
+        "line": 5,
+        "ms": 1500,
+        "note": "i is 3. Is 3 < 3? No. The loop stops at count, so lockers 3 and 4 are never touched.",
+        "do": [
+          {
+            "a": "tag",
+            "k": "i",
+            "v": "3"
+          },
+          {
+            "a": "cur",
+            "i": null
+          },
+          {
+            "a": "cap",
+            "t": "loops stop at count, not capacity"
+          }
+        ]
+      },
+      {
+        "line": 20,
+        "ms": 1900,
+        "note": "print_scores reads the same lockers. They've changed, because add_bonus worked on main's array.",
+        "out": "45\n100\n65\n",
+        "outAt": 0.6,
+        "do": [
+          {
+            "a": "tag",
+            "k": "i",
+            "v": null
+          },
+          {
+            "a": "tag",
+            "k": "bonus",
+            "v": null
+          },
+          {
+            "a": "span",
+            "s0": 0,
+            "b": 2,
+            "t": "printed",
+            "at": 0.2,
+            "len": 0.3
+          },
+          {
+            "a": "cap",
+            "t": "",
+            "at": 0.2
+          }
+        ]
+      },
+      {
+        "line": 21,
+        "ms": 900,
+        "note": "return 0 ends the program.",
+        "do": [
+          {
+            "a": "span",
+            "s0": null
+          }
+        ]
+      }
+    ]
+  },
+  "string-copy": {
+    "scene": "p3-lockers",
+    "steps": [
+      {
+        "line": 5,
+        "ms": 700,
+        "note": "main starts.",
+        "do": []
+      },
+      {
+        "line": 6,
+        "ms": 1500,
+        "note": "typed holds the name the player gave: Alexandra, 9 letters.",
+        "do": [
+          {
+            "a": "tag",
+            "k": "typed",
+            "v": "\"Alexandra\""
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1800,
+        "note": "name gets NAME_MAX + 1 boxes: 9. They hold leftover junk for now, shown as ?.",
+        "do": [
+          {
+            "a": "make",
+            "name": "char name[NAME_MAX + 1]",
+            "kind": "char",
+            "cells": [
+              "?",
+              "?",
+              "?",
+              "?",
+              "?",
+              "?",
+              "?",
+              "?",
+              "?"
+            ]
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 900,
+        "note": "line has 32 boxes. It's used later, for joining.",
+        "do": []
+      },
+      {
+        "line": 10,
+        "ms": 3400,
+        "note": "snprintf copies letter by letter. After 8 letters only one box is left, and it's kept for the stop sign. The final a never goes in.",
+        "do": [
+          {
+            "a": "set",
+            "i": 0,
+            "v": "A",
+            "at": 0.0,
+            "len": 0.1
+          },
+          {
+            "a": "set",
+            "i": 1,
+            "v": "l",
+            "at": 0.08,
+            "len": 0.1
+          },
+          {
+            "a": "set",
+            "i": 2,
+            "v": "e",
+            "at": 0.16,
+            "len": 0.1
+          },
+          {
+            "a": "set",
+            "i": 3,
+            "v": "x",
+            "at": 0.24,
+            "len": 0.1
+          },
+          {
+            "a": "set",
+            "i": 4,
+            "v": "a",
+            "at": 0.32,
+            "len": 0.1
+          },
+          {
+            "a": "set",
+            "i": 5,
+            "v": "n",
+            "at": 0.4,
+            "len": 0.1
+          },
+          {
+            "a": "set",
+            "i": 6,
+            "v": "d",
+            "at": 0.48,
+            "len": 0.1
+          },
+          {
+            "a": "set",
+            "i": 7,
+            "v": "r",
+            "at": 0.56,
+            "len": 0.1
+          },
+          {
+            "a": "set",
+            "i": 8,
+            "v": "\\0",
+            "at": 0.66,
+            "len": 0.12
+          },
+          {
+            "a": "span",
+            "s0": 0,
+            "b": 8,
+            "t": "9 boxes: 8 letters + \\0",
+            "at": 0.8,
+            "len": 0.2
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 1500,
+        "note": "snprintf returns 9: how long the whole name would have been. That goes into need.",
+        "do": [
+          {
+            "a": "tag",
+            "k": "need",
+            "v": "9"
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 2000,
+        "note": "%s walks along to the stop sign: Alexandr.",
+        "do": [
+          {
+            "a": "span",
+            "s0": null,
+            "at": 0,
+            "len": 0.2
+          },
+          {
+            "a": "cur",
+            "i": 8,
+            "from": 0,
+            "name": "%s",
+            "mark": true
+          }
+        ],
+        "out": "Name: Alexandr\n",
+        "outAt": 0.85
+      },
+      {
+        "line": 12,
+        "ms": 1700,
+        "note": "need >= 9 is 9 >= 9: true. The return value is how you know the name was cut.",
+        "do": [
+          {
+            "a": "cur",
+            "i": null
+          },
+          {
+            "a": "cap",
+            "t": "need >= size means cut short"
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 1100,
+        "note": "The warning prints the length snprintf wanted.",
+        "do": [],
+        "out": "Cut short: 9 letters wanted\n",
+        "outAt": 0.4
+      },
+      {
+        "line": 16,
+        "ms": 2000,
+        "note": "Joining: name, \" scored \" and 4500 go into line in one call. 20 letters plus the stop sign fit in 32 boxes, so nothing is cut.",
+        "do": [
+          {
+            "a": "cap",
+            "t": ""
+          },
+          {
+            "a": "tag",
+            "k": "typed",
+            "v": null,
+            "at": 0,
+            "len": 0.2
+          },
+          {
+            "a": "tag",
+            "k": "line",
+            "v": "\"Alexandr scored 4500\"",
+            "at": 0.3,
+            "len": 0.4
+          }
+        ]
+      },
+      {
+        "line": 17,
+        "ms": 1100,
+        "note": "line is an ordinary string, so %s prints it.",
+        "do": [],
+        "out": "Alexandr scored 4500\n",
+        "outAt": 0.4
+      },
+      {
+        "line": 18,
+        "ms": 1000,
+        "note": "return 0 ends the program.",
+        "do": [
+          {
+            "a": "cap",
+            "t": "snprintf: never past the size, always a stop sign"
+          }
+        ]
+      }
+    ]
+  }
 }
