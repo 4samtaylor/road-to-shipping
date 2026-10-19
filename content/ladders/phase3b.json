@@ -277,7 +277,7 @@
           ],
           [
             "Returning a struct",
-            "<p>A function can hand a struct back, and the caller gets a copy of it:</p><pre>Player make_player(int health) {\n    Player p = {0};\n    p.health = health;\n    return p;\n}\n\nPlayer hero = make_player(100);</pre><p>That's a tidy way to build something with sensible starting values. The starter code's player_create on the Build page works like this.</p>"
+            "<p>A function can hand a struct back, and the caller gets a copy of it:</p><pre>Player make_player(int health) {\n    Player p = {0};\n    p.health = health;\n    return p;\n}\n\nPlayer hero = make_player(100);</pre><p>That's a tidy way to build something with sensible starting values. Phase 3.75's starter code builds its Player with a player_create that works this way.</p>"
           ],
           [
             "Arrays inside are copied too",
@@ -409,7 +409,7 @@
           ],
           [
             "Printing an address",
-            "<p><code>printf(\"%p\\n\", (void*)p);</code> prints the address p holds. On x64 MSVC shows 16 hex digits with no 0x in front, like <code>000000A3F9D6FBA0</code>, because a 64-bit address is 8 bytes. The number changes from run to run, so never write code that depends on its value. The <code>(void*)</code> cast is what %p officially expects. MSVC doesn't insist, but other compilers do.</p>"
+            "<p><code>printf(\"%p\\n\", (void*)p);</code> prints the address p holds. On x64 MSVC shows 16 hex digits with no 0x in front, like <code>000000A3F9D6FBA0</code>, because a 64-bit address is 8 bytes. The number changes from run to run, so never write code that depends on its value. The <code>(void*)</code> cast is what %p officially expects. MSVC doesn't insist, but other compilers can warn without it.</p>"
           ]
         ],
         "king": "§11.1–11.3"

@@ -83,8 +83,8 @@
     }
    },
    "tryit": {
-    "task": "Add STATE_PAUSED between PLAYING and GAMEOVER.",
-    "code": "typedef enum {\n    STATE_MENU,\n    STATE_PLAYING,\n    ____,\n    STATE_GAMEOVER\n} GameState;",
+    "task": "Add STATE_PAUSED between MENU and PLAYING.",
+    "code": "typedef enum {\n    STATE_MENU,\n    ____,\n    STATE_PLAYING,\n    STATE_GAMEOVER\n} GameState;",
     "answer": "STATE_PAUSED"
    },
    "qa": [
@@ -106,7 +106,7 @@
     ],
     [
      "Where will I use this?",
-     "Straight away, in Function pointers, as the index into a table of update functions. Then Phase 4.5’s State machines: enum and switch and the Phase 6 prototype both run on a state enum."
+     "Straight away, in Function pointers, as the index into a table of update functions. Then Phase 4.5’s State machines: enum and switch, and the Phase 6 prototype, both run on a state enum."
     ]
    ],
    "bridge": "You can name your states. Next: <b>Function pointers</b>, a table that picks the right update function for each state.",
@@ -120,13 +120,13 @@
    "skills": [
     "func-pointer"
    ],
-   "builds": "Pointers: & and * and NULL (Phase 3.5), enum, and Arrays: many values, one name (Phase 3).",
+   "builds": "Pointers: & and *, and NULL (Phase 3.5), enum, and Arrays: many values, one name (Phase 3).",
    "why": "A game runs different code in each state: the menu waits for a key, play moves the enemies, game over shows the score. A switch can do it, but it grows with every state. Keep a pointer to each state’s update function in a table, and one line, <code>updates[state](frame)</code>, runs the right one. Win32 uses the same trick in Phase 5: you hand Windows a pointer to your function, and it calls you.",
    "learn": {
     "parts": [
      [
       "Functions live at addresses",
-      "<p>Your compiled functions sit in memory just like your variables, so each one has an address. A <b>function pointer</b> is a variable that holds one of those addresses. Write a function's name without the brackets and you get its address: <code>update_menu</code> is a pointer, <code>update_menu(0)</code> is a call. That's why the bracket-less <code>print_menu;</code> from Functions: parameters and return values compiled at all (with warning C4550): it named the address and then did nothing with it.</p>"
+      "<p>Your compiled functions sit in memory just like your variables, so each one has an address. A <b>function pointer</b> is a variable that holds one of those addresses. Write a function's name without the brackets and you get its address: <code>update_menu</code> is a pointer, <code>update_menu(0)</code> is a call. That's what the bracket-less <code>print_menu;</code> from Functions: parameters and return values was doing: it named the address and then did nothing with it. MSVC flagged it as C4550, and /WX stopped the build.</p>"
      ],
      [
       "Declaring and calling one",
@@ -306,7 +306,7 @@
     "why": "#include pastes the file’s text in. Twice means the typedef struct appears twice in one file, and the compiler refuses to define Player a second time (MSVC says C2371, redefinition). #pragma once stops the second paste.",
     "miss": {
      "0": "Nothing skips the second copy unless #pragma once (or a guard like it) is there.",
-     "1": "Linker errors are about missing function bodies. This fails earlier, in the compiler.",
+     "1": "Nothing is missing from the build, and this fails earlier, in the compiler.",
      "2": "A repeated prototype is harmless, and the function isn’t called by the include. The struct is the problem."
     }
    },
@@ -366,7 +366,7 @@
      ],
      [
       "MSVC notes",
-      "<p class=\"warn\">If build.bat passes <code>/D_CRT_SECURE_NO_WARNINGS</code> and a file still has its own #define for it, MSVC warns C4005 (macro redefinition), and /WX adds C2220. Delete the one in the file. On x64 the name in a linker error is plain <code>player_heal</code>; 32-bit builds add a leading underscore, so older posts show <code>_player_heal</code>.</p>"
+      "<p class=\"warn\">If you ever move _CRT_SECURE_NO_WARNINGS into build.bat as <code>/D_CRT_SECURE_NO_WARNINGS</code>, delete the #define from each file. With both, MSVC warns C4005 (macro redefinition), and /WX turns that into error C2220 and stops the build. On x64 the name in a linker error is plain <code>player_heal</code>; 32-bit builds add a leading underscore, so older posts show <code>_player_heal</code>.</p>"
      ]
     ],
     "king": "§15.4"
@@ -450,7 +450,7 @@
    "skills": [
     "debugger"
    ],
-   "builds": "Passing by pointer and -> and NULL (Phase 3.5), enum, and the /Zi and /Od flags from build.bat and compiler flags (Phase 1).",
+   "builds": "Passing by pointer and ->, and NULL (Phase 3.5), enum, and the /Zi and /Od flags from build.bat and compiler flags (Phase 1).",
    "why": "printf debugging means edit, rebuild, run, read, repeat. A debugger freezes the program mid-run so you can look at everything at once. It’s also the best way to see a pointer: you can watch the real hero change from inside a function that never names it.",
    "learn": {
     "parts": [
@@ -485,7 +485,7 @@
     ],
     [
      14,
-     "Run build.bat first (it keeps /Zi and /Od), then <b>F5</b>. The program starts and freezes here with a yellow arrow. In the Watch window, <code>hero.health</code> shows 100."
+     "Run build.bat first (it keeps /Zi and /Od), then <b>F5</b>. The program starts and freezes here with a yellow arrow. In the Locals panel, <code>hero.health</code> shows 100 (or add it to Watch)."
     ],
     [
      14,

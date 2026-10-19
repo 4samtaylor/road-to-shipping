@@ -150,12 +150,9 @@
           <div class="acc-body section-block-body">
             <div class="prose prose--sm t-muted2 mb-10">After each build works, break it once and read what the tools say. Errors you have met on purpose are less scary later.</div>
             <div class="stack gap-8 prose prose--sm t-muted2">
-            <div class="prose prose--sm t-muted2 mb-10">After each build works, break it once and read what happens. Bugs you have met on purpose are less scary later.</div>
-            <div class="stack gap-8 prose prose--sm t-muted2">
               <div><strong class="t-text">The photocopy.</strong> In player_demo.c, change <span class="cmd">player_move(Player* p, ...)</span> to <span class="cmd">player_move(Player p, ...)</span>, swap its arrows for dots, and call it as <span class="cmd">player_move(hero, ...)</span> so it compiles. Run it. The player refuses to move. Say why in one sentence, then put the * back.</div>
               <div><strong class="t-text">The empty note.</strong> Add <span class="cmd">Player* nobody = NULL;</span> to main and call <span class="cmd">player_heal(nobody, 10);</span>. It builds without a word. Run it, then type <span class="cmd">echo %ERRORLEVEL%</span>: -1073741819 is Windows' code for an access violation. Add <span class="cmd">if (p == NULL) { return; }</span> at the top of player_heal and run it again.</div>
             </div>
-</div>
           </div>
         </div>
 
@@ -166,7 +163,6 @@
           </div>
           <div class="acc-body section-block-body">
             <div class="prose prose--sm t-muted2 stack gap-8">
-            <div class="prose prose--sm t-muted2 stack gap-8">
               <div><span class="cmd">git add player_demo.c</span></div>
               <div><span class="cmd">git commit -m "feat: Player struct changed through pointers, health kept between 0 and 100"</span></div>
               <div>After the guessing game refactor:</div>
@@ -174,7 +170,6 @@
               <div><span class="cmd">git commit -m "refactor: guessing game round state in one struct passed by pointer"</span></div>
               <div><span class="cmd">git push</span></div>
             </div>
-</div>
           </div>
         </div>
 
@@ -206,7 +201,7 @@
             </div>
             <div class="callout callout--yellow mt-14">
               <div class="eyebrow eyebrow--md t-yellow mb-8">// The one new idea</div>
-              <div class="prose prose--sm t-muted2"><span class="cmd">&amp;enemies[2]</span> is the address of the third enemy, exactly like <span class="cmd">&amp;hero</span>, just with an index first. Inside <span class="cmd">damage_enemy</span> you use the arrow as normal. Put a breakpoint in it and compare <span class="cmd">e</span> with <span class="cmd">&amp;enemies[2]</span> in the Watch panel: same number.</div>
+              <div class="prose prose--sm t-muted2"><span class="cmd">&amp;enemies[2]</span> is the address of the third enemy, exactly like <span class="cmd">&amp;hero</span>, just with an index first. Inside <span class="cmd">damage_enemy</span> you use the arrow as normal. Print <span class="cmd">(void*)e</span> with %p inside it and <span class="cmd">(void*)&amp;enemies[2]</span> with %p in main: same number.</div>
             </div>
           </div>
         </div>
@@ -219,7 +214,7 @@
           </div>
           <div class="acc-body section-block-body">
 
-            <div class="prose prose--sm t-muted2 mb-14">Predict on paper, run, compare. Then step through each one with a breakpoint and the Watch panel open.</div>
+            <div class="prose prose--sm t-muted2 mb-14">Predict on paper, run, compare. You'll step through these with the debugger in Phase 3.75.</div>
             <div class="quiz-items">
 
               <div class="quiz-item drill-item">
@@ -358,7 +353,7 @@
                 </div>
                 <div style="border-left:2px solid var(--accent);padding:8px 12px;background:var(--accent-wash)">
                   <div class="eyebrow eyebrow--tight eyebrow--md t-accent mb-4">✓ Good: you own the architecture</div>
-                  <div class="t-text">"I have a Player struct with fields: float x, float y, int health, bool alive. Write ONLY the body of player_heal(Player* p, int amount): it should add amount to p-&gt;health, cap it at 100, and not change alive. Declaration already exists in player.h."</div>
+                  <div class="t-text">"I have a Player struct with fields: float x, float y, int health, bool alive. Write ONLY the body of player_heal(Player* p, int amount): it should add amount to p-&gt;health, cap it at 100, and not change alive. The declaration is already at the top of my file."</div>
                   <div class="t-muted fs-10 mt-4">The struct and the signature are yours. AI wrote the 3 lines inside.</div>
                 </div>
               </div>
@@ -371,7 +366,7 @@
               </div>
               <div class="prompt-item">
                 <div class="prompt-label">Design a new struct: get the fields, not the code</div>
-                <div class="prompt-text">I'm building a 2D game in C. I need an Enemy struct. The enemy has a position, health, a type (melee or ranged as an enum), and a flag for whether it's alive. List the fields with types only, no functions, no code, no extra fields I didn't ask for. I'll write the rest.</div>
+                <div class="prompt-text">I'm building a 2D game in C. I need an Enemy struct. The enemy has a position, health, a type (melee or ranged, stored as an int: 0 or 1), and a flag for whether it's alive. List the fields with types only, no functions, no code, no extra fields I didn't ask for. I'll write the rest.</div>
               </div>
               <div class="prompt-item">
                 <div class="prompt-label">Review your struct design before writing code</div>

@@ -135,7 +135,7 @@
     ],
     [
      "What does the .h in stdio.h mean?",
-     "It is a <em>header</em>. It holds a promise: a function called printf exists and this is how you call it. The compiler checks your calls against that promise, and the real code is added later when the program is linked. Phase 3.5 has you write your own header."
+     "It is a <em>header</em>. It holds a promise: a function called printf exists and this is how you call it. The compiler checks your calls against that promise, and the real code is added later when the program is linked. Phase 3.75 has you write your own header."
     ],
     [
      "Why is the compiler so strict about a missing ; or a misspelled name?",
@@ -230,7 +230,7 @@
     ],
     [
      "What is the .obj file?",
-     "A halfway step: your code compiled but not yet linked into a program. Phase 3.5 explains linking. You can ignore it for now."
+     "A halfway step: your code compiled but not yet linked into a program. Phase 3.75 explains linking. You can ignore it for now."
     ],
     [
      "Can I name the .exe something else?",
@@ -716,7 +716,7 @@
     ],
     [
      2,
-     "<b>set FLAGS=</b> saves the compiler flags in one place. /std:c17 follows the C17 rulebook, /W4 turns on most warnings, /WX makes any warning stop the build, /Zi writes debug information into a .pdb file and /Od turns off optimisation, so the debugger (Phase 3.5) can follow your code line by line."
+     "<b>set FLAGS=</b> saves the compiler flags in one place. /std:c17 follows the C17 rulebook, /W4 turns on most warnings, /WX makes any warning stop the build, /Zi writes debug information into a .pdb file and /Od turns off optimisation, so the debugger (Phase 3.75) can follow your code line by line."
     ],
     [
      3,
@@ -773,7 +773,7 @@
     ],
     [
      "When do I add more .c files?",
-     "From Phase 3.5. You’ll list them in a SOURCES variable and pass them all to cl."
+     "From Phase 3.75. You’ll list them in a SOURCES variable and pass them all to cl."
     ],
     [
      "When do I switch /Od to /O2?",

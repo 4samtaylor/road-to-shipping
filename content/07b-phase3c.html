@@ -91,7 +91,7 @@
               <div class="spec-item">
                 <h4><span>player.h + player.c</span>: it should:</h4>
                 <ul>
-                  <li>keep only the struct and the declarations in <span class="cmd">player.h</span>, the bodies in <span class="cmd">player.c</span>, and include nothing but <span class="cmd">player.h</span> from main.c</li>
+                  <li>keep only the struct and the declarations in <span class="cmd">player.h</span>, the bodies in <span class="cmd">player.c</span>, and have main.c include <span class="cmd">player.h</span>, never <span class="cmd">player.c</span></li>
                   <li>never let <span class="cmd">player_take_damage</span> push health below 0 (and set <span class="cmd">alive</span> to false at 0), and never let <span class="cmd">player_heal</span> push it above 100</li>
                   <li>create a Player in main, move it, damage it and heal it, printing after each step, and the printed values change</li>
                 </ul>
@@ -136,7 +136,7 @@
 <span class="c-type">Player</span> <span class="c-fn">player_create</span>(<span class="c-type">float</span> <span class="c-var">start_x</span>, <span class="c-type">float</span> <span class="c-var">start_y</span>);
 <span class="c-type">void</span>   <span class="c-fn">player_move</span>(<span class="c-type">Player</span>* <span class="c-var">p</span>, <span class="c-type">float</span> <span class="c-var">dx</span>, <span class="c-type">float</span> <span class="c-var">dy</span>);
 <span class="c-type">void</span>   <span class="c-fn">player_take_damage</span>(<span class="c-type">Player</span>* <span class="c-var">p</span>, <span class="c-type">int</span> <span class="c-var">amount</span>);
-<span class="c-type">void</span>   <span class="c-fn">player_print</span>(<span class="c-type">Player</span>* <span class="c-var">p</span>);</pre>
+<span class="c-type">void</span>   <span class="c-fn">player_print</span>(<span class="c-kw">const</span> <span class="c-type">Player</span>* <span class="c-var">p</span>);</pre>
             </div>
             <div class="code-wrap mt-2">
               <div class="code-label">
@@ -170,13 +170,13 @@
     }
 }
 
-<span class="c-type">void</span> <span class="c-fn">player_print</span>(<span class="c-type">Player</span>* <span class="c-var">p</span>) {
+<span class="c-type">void</span> <span class="c-fn">player_print</span>(<span class="c-kw">const</span> <span class="c-type">Player</span>* <span class="c-var">p</span>) {
     <span class="c-fn">printf</span>(<span class="c-str">"Player pos: (%.1f, %.1f) health: %d alive: %s\n"</span>,
            <span class="c-var">p</span>-&gt;<span class="c-var">x</span>, <span class="c-var">p</span>-&gt;<span class="c-var">y</span>, <span class="c-var">p</span>-&gt;<span class="c-var">health</span>,
            <span class="c-var">p</span>-&gt;<span class="c-var">alive</span> ? <span class="c-str">"yes"</span> : <span class="c-str">"no"</span>);
 }
 
-<span class="c-cm">// TODO: Add player_heal(Player* p, int amount)</span>
+<span class="c-cm">// TODO: Add player_heal(Player* p, int amount), and its prototype in player.h</span>
 <span class="c-cm">// TODO: Add player_is_dead(Player* p) that returns bool</span>
 <span class="c-cm">// TODO: Add bounds checking to player_move so x/y can't go negative</span></pre>
             </div>
@@ -185,7 +185,22 @@
 
         <div class="section-block" data-page="build">
           <div class="section-block-body">
-            <div class="prose prose--sm t-muted2">Build both files with the multi-file build.bat from Phase 1: <span class="cmd">set SOURCES=main.c player.c</span>, so one word builds everything.</div>
+            <div class="code-wrap mb-14">
+              <div class="code-label">
+                <span>build.bat, multi-file version</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+<pre class="code-panel fs-11" style="overflow-x:auto"><span class="c-cm">@echo off</span>
+<span class="c-pp">set</span> FLAGS=<span class="c-num">/std:c17 /W4 /WX /Zi /Od</span>
+<span class="c-pp">set</span> SOURCES=<span class="c-num">main.c player.c</span>
+<span class="c-str">cl</span> <span class="c-num">%FLAGS%</span> <span class="c-num">%SOURCES%</span> <span class="c-num">/Fe:game.exe</span>
+<span class="c-kw">if</span> <span class="c-num">%ERRORLEVEL%</span> <span class="c-kw">neq</span> 0 (
+    <span class="c-str">echo BUILD FAILED</span>
+    <span class="c-kw">exit</span> /b 1
+)
+<span class="c-str">echo BUILD OK</span></pre>
+            </div>
+            <div class="prose prose--sm t-muted2">Make build.bat build both files: add <span class="cmd">set SOURCES=main.c player.c</span> under the FLAGS line and change the cl line to <span class="cmd">cl %FLAGS% %SOURCES% /Fe:game.exe</span>, as in the build.bat above. One word still builds everything.</div>
           </div>
         </div>
 
@@ -211,7 +226,7 @@
           <div class="acc-body section-block-body">
             <div class="prose prose--sm t-muted2 stack gap-8">
               <div><span class="cmd">git add player.h player.c main.c build.bat .vscode/launch.json</span></div>
-              <div><span class="cmd">git commit -m "feat: Player struct with pointer-based move and damage"</span></div>
+              <div><span class="cmd">git commit -m "refactor: split Player into player.h and player.c"</span></div>
               <div><span class="cmd">git push</span></div>
               <div>After the guessing game split, <span class="cmd">git add guess.h guess.c main.c build.bat</span> and commit again.</div>
             </div>
@@ -281,12 +296,12 @@
                 <div class="t-purple">2</div><div>Open player.c. Put the cursor on the first line inside <span class="cmd">player_take_damage</span> and press <span class="cmd">F9</span>.</div>
                 <div class="t-purple">3</div><div>Press <span class="cmd">F5</span>. The program starts, then freezes on that line with a yellow arrow the first time damage is dealt.</div>
                 <div class="t-purple">4</div><div>Open the Watch panel and add three expressions: <span class="cmd">p</span>, <span class="cmd">*p</span>, and <span class="cmd">p-&gt;health</span>.</div>
-                <div class="t-purple">5</div><div>Look at them before you step. <span class="cmd">p</span> is a 16-digit hex number like <span class="cmd">000000A3F9D6FBA0</span>, that's the address, the piece of paper with the house number on it. <span class="cmd">*p</span> expands into the whole Player. <span class="cmd">p-&gt;health</span> is one field inside it.</div>
+                <div class="t-purple">5</div><div>Look at them before you step. <span class="cmd">p</span> is a 16-digit hex number like <span class="cmd">0x000000a3f9d6fba0</span>, that's the address, the piece of paper with the house number on it. <span class="cmd">*p</span> expands into the whole Player. <span class="cmd">p-&gt;health</span> is one field inside it.</div>
                 <div class="t-purple">6</div><div>Press <span class="cmd">F10</span> once. Watch <span class="cmd">p-&gt;health</span> drop. <strong class="t-accent">Nothing in this function is named "hero", and hero's health just changed anyway.</strong> That is what a pointer does, and you are watching it happen.</div>
                 <div class="t-purple">7</div><div>Now go up to <span class="cmd">main</span>, add <span class="cmd">&amp;hero</span> to the Watch panel, and compare it to <span class="cmd">p</span>. Same number. Same house.</div>
               </div>
               <div class="prose t-text mt-12">
-                Do the same thing with the photocopy version from the Break it experiments on the Build page, <span class="cmd">player_move(Player p, ...)</span>, no asterisk. Watch <span class="cmd">p.x</span> change inside the function, then step out and watch <span class="cmd">hero.x</span> sit there untouched. <strong class="t-accent">The copy dying at the closing brace, on screen.</strong>
+                Do the same thing with the photocopy version from Phase 3.5's Break it (The photocopy), <span class="cmd">player_move(Player p, ...)</span>, no asterisk. Watch <span class="cmd">p.x</span> change inside the function, then step out and watch <span class="cmd">hero.x</span> sit there untouched. <strong class="t-accent">The copy dying at the closing brace, on screen.</strong>
               </div>
             </div>
           </div>
@@ -300,7 +315,6 @@
           <div class="acc-body section-block-body">
             <div class="prose prose--sm t-muted2 mb-14">Three questions from earlier phases. Remembering something after a gap is what makes it stay, answer out loud first.</div>
             <div class="quiz-items">
-<div class="quiz-items">
               <div class="quiz-item">
                 <div class="quiz-q">1. <span class="t-muted">[Phase 3.5]</span> <span class="cmd">Enemy e = enemies[i]; e.health -= 10;</span> runs, but the enemy in the array keeps its health. Why, and what&#39;s the fix?</div>
                 <details>
@@ -323,18 +337,10 @@
                 </details>
               </div>
             </div>
-</div>
           </div>
         </div>
 
         <div class="checkpoint" data-page="review">
-          <div class="checkpoint-header">
-            <span class="badge badge-green">Checkpoint</span>
-            <span class="checkpoint-title">Ready to move on when:</span>
-            <span class="cp-counter">0/4</span>
-          </div>
-          <div class="checkpoint-items">
-<div class="checkpoint" data-page="review">
           <div class="checkpoint-header">
             <span class="badge badge-green">Checkpoint</span>
             <span class="checkpoint-title">Ready to move on when:</span>
@@ -346,8 +352,6 @@
             <div class="cp-item" data-id="cp-p375-1"><span class="cp-cb">✓</span><span class="cp-text">A GameState enum picks each frame&#39;s update function from a table of function pointers</span></div>
             <div class="cp-item" data-id="cp-p3-4"><span class="cp-cb">✓</span><span class="cp-text">Code committed to GitHub</span></div>
           </div>
-        </div>
-</div>
         </div>
 
         <div class="section-block acc-section" data-page="help">
@@ -381,7 +385,6 @@
             </div>
 
             <div class="prompt-items">
-<div class="prompt-items">
               <div class="prompt-item">
                 <div class="prompt-label">Review a header/source split: flag problems, don&#39;t rewrite</div>
                 <div class="prompt-text">I&#39;m learning C with MSVC and just split my guessing game into guess.h, guess.c and main.c. Here are all three files: [paste them]. Don&#39;t rewrite them. Tell me: (1) anything in guess.h that belongs in guess.c, like a function body or a variable with a value, (2) any function in guess.c that only that file uses and should be static, (3) whether guess.h is guarded and includes what it uses, (4) whether main.c includes anything it doesn&#39;t need. A short list, no new features.</div>
@@ -391,7 +394,6 @@
                 <div class="prompt-text">I&#39;m learning C with MSVC. My build fails with this message: [paste the whole LNK line, plus my SOURCES line]. Don&#39;t give me fixed code. Explain: was it the compiler or the linker that failed, what name the linker was looking for, and two likely causes I should check myself. Then ask me one question that would narrow it down.</div>
               </div>
             </div>
-</div>
 
           </div>
         </div>
