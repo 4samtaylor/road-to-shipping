@@ -3,6 +3,7 @@
   "files": [
     "00-start.html",
     "01-cheatsheet.html",
+    "01b-phase0.html",
     "02-phase1.html",
     "03-session1.html",
     "04-session2.html",
@@ -37,6 +38,12 @@
       [
         "session1",
         "session2"
+      ]
+    ],
+    [
+      "Foundations",
+      [
+        "phase0"
       ]
     ],
     [

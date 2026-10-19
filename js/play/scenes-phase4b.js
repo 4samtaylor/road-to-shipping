@@ -1,6 +1,6 @@
 /* =====================================================================
    RTSPlay scenes for Phase 4b (ASCII Runner): rungs kbhit-getch, sleep, redraw-r,
-   frame-buffer, game-loop, sentinel, state-machine, const-ptr, lnk2005.
+   frame-buffer, game-loop, sentinel, state-machine, const-ptr, lnk2005, ifdef.
    Canvas is 400x250 logical px. Colours come from the palette (theme aware).
 
    p4b-keys     letterbox + eye (_kbhit peeks, _getch takes), key/count cards, a lane that keeps moving
@@ -25,6 +25,10 @@
      card {}  field {name,v}  call {fn}  write {name,v}  read {names}  pass {}  ret {}
    p4b-link     main.c, runner.c, objects and the linker
      paste {}  mark {row,kind}  obj {}  link {}  fix {}
+   p4b-pre      cl line, a switch board of defined names, pass 1 (preprocessor rows kept or cut),
+                pass 2 (what the compiler gets) and the program output
+     cl {}  def {name,src}  test {row,r,why}  send {t,row?}  build {}  print {t}
+     rebuild {}  (adds /DHARD_MODE to the cl line, switches HARD_MODE on, clears both passes)
    ===================================================================== */
 (function () {
   'use strict';
@@ -766,6 +770,112 @@
         var t = EZ.io(seg(V.linkK, 0, .5));
         [[101, 176], [299, 176]].forEach(function (p, i) { c.fillStyle = C.orange; c.beginPath(); c.arc(lerp(p[0], 200, t), lerp(p[1], 214, t), 5, 0, 7); c.fill(); });
       }
+    }
+  });
+
+  /* ====================================================================
+     p4b-pre  (the preprocessor: a pass that keeps or cuts lines before the compiler)
+     ==================================================================== */
+  var PRE_ROWS = [
+    { d: '#ifdef SHOW_HITBOXES', b: 'printf("[debug] hitboxes on\\n");' },
+    { d: '#ifndef HARD_MODE', b: 'lives = lives + 2;' },
+    { d: '#else', b: 'lives = 1;' },
+    { d: '#if 0', b: 'printf("old title screen\\n");' }
+  ];
+  var PRE_SW = ['SHOW_HITBOXES', 'HARD_MODE'], PRE_F = 7.4;
+  var preRowTop = function (i) { return 56 + i * 24; };
+  var preGotY = function (i) { return 188 + i * 11.2; };
+  function preW(c, s, size, w) { c.save(); c.font = (w || 500) + ' ' + size + 'px ' + U.FONT; var v = c.measureText(s).width; c.restore(); return v; }
+  RTSPlay.scene('p4b-pre', {
+    W: W, H: H,
+    init: function () { return { cl: false, d: false, sw: {}, src: {}, verd: {}, why: {}, got: [], out: [], built: false }; },
+    apply: function (S, a) {
+      switch (a.a) {
+        case 'cl': S.cl = true; break;
+        case 'def': S.sw[a.name] = true; S.src[a.name] = a.src; break;
+        case 'test': S.verd[a.row] = a.r; S.why[a.row] = a.why; break;
+        case 'send': S.got.push(a.t); break;
+        case 'build': S.built = true; break;
+        case 'print': S.out.push(a.t); break;
+        case 'rebuild': S.d = true; S.sw.HARD_MODE = true; S.src.HARD_MODE = '/D on the cl line'; S.verd = {}; S.why = {}; S.got = []; S.out = []; S.built = false; break;
+      }
+    },
+    tween: function (V, a, lp, S) {
+      switch (a.a) {
+        case 'cl': V.clK = lp; V.cl = lp > 0; break;
+        case 'def': if (lp > 0) { V.swK[a.name] = EZ.io(seg(lp, .1, .6)); V.sw = Object.assign({}, V.sw); V.sw[a.name] = true; V.src = Object.assign({}, V.src); V.src[a.name] = a.src; V.srcK[a.name] = seg(lp, .5, .9); } break;
+        case 'test': if (lp > 0) { V.testRow = a.row; V.testK = lp; if (lp >= .45) { V.verd = Object.assign({}, V.verd); V.verd[a.row] = a.r; V.why = Object.assign({}, V.why); V.why[a.row] = a.why; V.verK[a.row] = lp; } } break;
+        case 'send': if (lp > 0) { V.got.push(a.t); V.fly.push({ i: V.got.length - 1, row: a.row, k: lp }); } break;
+        case 'build': V.buildK = lp; V.built = lp >= .5 || S.built; break;
+        case 'print': if (lp > 0) { V.out.push(a.t); V.outK[V.out.length - 1] = lp; } break;
+        case 'rebuild':
+          V.dK = EZ.io(seg(lp, 0, .4)); V.d = lp > 0;
+          if (lp >= .4) { V.sw = Object.assign({}, V.sw, { HARD_MODE: true }); V.swK.HARD_MODE = EZ.io(seg(lp, .4, .7)); V.src = Object.assign({}, V.src, { HARD_MODE: '/D on the cl line' }); V.srcK.HARD_MODE = seg(lp, .6, .9);
+            V.verd = {}; V.why = {}; V.got = []; V.out = []; V.built = false; }
+          else V.wipe = seg(lp, .1, .4);
+          break;
+      }
+    },
+    prep: function (V) { V.swK = {}; V.srcK = {}; V.verK = {}; V.outK = {}; V.fly = []; V.clK = null; V.dK = null; V.buildK = null; V.testRow = -1; V.testK = null; V.wipe = 0; },
+    draw: function (c, V, T, C, rm) {
+      bg(c, C, W, H);
+      var F = PRE_F, wipeA = 1 - (V.wipe || 0);
+      /* the cl line in build.bat */
+      rrect(c, 8, 6, 384, 24, 4); c.fillStyle = C.surface2; c.fill(); c.lineWidth = 1.2; c.strokeStyle = V.cl ? rgba(C.accent, .55) : C.border2; c.stroke();
+      txt(c, 'build.bat', 16, 18.5, { size: 7.5, col: C.muted2, align: 'left' });
+      if (V.cl) {
+        var ck = V.clK == null ? 1 : clamp(V.clK * 2), x = 70, pre = 'cl /std:c17 /W4 ', dw = preW(c, '/DHARD_MODE', 9, 700) + 10;
+        c.save(); c.globalAlpha = ck;
+        txt(c, pre, x, 18.5, { size: 9, w: 700, col: C.text, align: 'left' }); x += preW(c, pre, 9, 700);
+        var dk = V.dK == null ? (V.d ? 1 : 0) : V.dK;
+        if (dk > 0) { c.save(); c.translate(x + dw * dk / 2, 18); c.scale(dk, dk); rrect(c, -dw / 2, -8, dw, 16, 3); c.fillStyle = rgba(C.purple, .22); c.fill(); c.lineWidth = 1; c.strokeStyle = rgba(C.purple, .8); c.stroke();
+          txt(c, '/DHARD_MODE', 0, .5, { size: 9, w: 700, col: C.text }); c.restore(); x += (dw + 6) * dk; }
+        txt(c, 'game.c', x, 18.5, { size: 9, w: 700, col: C.text, align: 'left' });
+        c.restore();
+      } else txt(c, 'cl has not run yet', 200, 18.5, { size: 8.5, col: C.muted });
+      /* switch board */
+      win(c, C, 8, 38, 112, 84, 'defined names');
+      PRE_SW.forEach(function (nm, i) {
+        var y = 66 + i * 30, on = !!V.sw[nm], k = V.swK[nm] != null ? V.swK[nm] : (on ? 1 : 0);
+        rrect(c, 15, y - 6, 22, 12, 6); c.fillStyle = k > .5 ? rgba(C.accent, .3) : C.surface; c.fill(); c.lineWidth = 1.2; c.strokeStyle = k > .5 ? C.accent : C.border2; c.stroke();
+        c.fillStyle = k > .5 ? C.accent : C.muted; c.beginPath(); c.arc(lerp(21, 31, k), y, 4, 0, 7); c.fill();
+        txt(c, nm, 42, y - 4, { size: 7.4, w: 700, col: on ? C.text : C.muted2, align: 'left' });
+        var sk = V.srcK[nm] != null ? V.srcK[nm] : 1;
+        txt(c, on ? V.src[nm] : 'not defined', 42, y + 6, { size: 6.6, col: on ? (nm === 'HARD_MODE' ? C.purple : C.accent) : C.muted, align: 'left', al: on ? sk : 1 });
+      });
+      /* output */
+      win(c, C, 8, 130, 112, 114, 'output');
+      if (!V.out.length) txt(c, 'nothing yet', 64, 186, { size: 8, col: C.muted });
+      V.out.forEach(function (t, i) { var ok = V.outK[i], al = ok == null ? 1 : seg(ok, .3, .6);
+        txt(c, t, 16, 156 + i * 14, { size: F, w: 600, col: C.text, align: 'left', al: al * wipeA }); });
+      /* pass 1: the preprocessor */
+      win(c, C, 128, 38, 264, 118, '1  preprocessor: keep or cut');
+      c.save(); c.strokeStyle = rgba(C.purple, .45); c.lineWidth = 1.2; c.beginPath(); c.moveTo(134, preRowTop(1) + 5); c.lineTo(131, preRowTop(1) + 5); c.lineTo(131, preRowTop(2) + 19); c.lineTo(134, preRowTop(2) + 19); c.stroke(); c.restore();
+      PRE_ROWS.forEach(function (o, i) {
+        var top = preRowTop(i), v = V.verd[i], has = v === true || v === false, vk = V.verK[i] != null ? EZ.back(seg(V.verK[i], .45, .8)) : 1;
+        var testing = V.testRow === i;
+        if (testing) { c.fillStyle = rgba(C.yellow, .14 * Math.sin(Math.PI * clamp(V.testK))); c.fillRect(135, top, 254, 22); }
+        if (has) { var col = v ? C.accent : C.orange; c.save(); c.globalAlpha = clamp(vk) * wipeA; c.fillStyle = rgba(col, .1); c.fillRect(135, top, 254, 22); c.fillStyle = col; c.fillRect(135, top, 2.5, 22); c.restore(); }
+        txt(c, o.d, 141, top + 7, { size: F, w: 700, col: C.purple, align: 'left' });
+        if (has) txt(c, (v ? 'keep: ' : 'cut: ') + V.why[i], 141, top + 17, { size: 6.6, w: 600, col: v ? C.accent : C.orange, align: 'left', al: clamp(vk) * wipeA });
+        var cutP = has && !v ? (V.verK[i] != null ? seg(V.verK[i], .5, .85) : 1) * wipeA : 0;
+        txt(c, o.b, 236, top + 11.5, { size: F, col: has && !v && wipeA > .5 ? C.muted : C.text, align: 'left', al: 1 - .5 * cutP });
+        if (cutP > 0) { var bw = preW(c, o.b, F); c.strokeStyle = rgba(C.orange, .8); c.lineWidth = 1.2; c.beginPath(); c.moveTo(234, top + 12); c.lineTo(234 + (bw + 4) * cutP, top + 12); c.stroke(); }
+      });
+      /* pass 2: what the compiler receives */
+      var bk = V.buildK, built = V.built;
+      win(c, C, 128, 164, 264, 80, '2  the compiler gets');
+      if (built) { var bka = bk == null ? 1 : seg(bk, .4, .8); rrect(c, 128, 164, 264, 80, 4); c.lineWidth = 1.5; c.strokeStyle = rgba(C.accent, .7 * bka); c.stroke();
+        txt(c, 'built: game.exe', 386, 172, { size: 7.5, w: 700, col: C.accent, align: 'right', al: bka }); }
+      if (!V.got.length) txt(c, 'nothing yet', 260, 206, { size: 8, col: C.muted, al: V.wipe ? 0 : 1 });
+      V.got.forEach(function (t, i) {
+        var f = null; V.fly.forEach(function (q) { if (q.i === i) f = q; });
+        var tx = 140, ty = preGotY(i), al = wipeA;
+        if (f) { var e = EZ.io(seg(f.k, 0, .8));
+          if (f.row != null) { tx = lerp(236, 140, e); ty = lerp(preRowTop(f.row) + 11.5, preGotY(i), e); if (f.k < 1 && f.k > 0) { c.fillStyle = rgba(C.accent, .14); var fw = preW(c, t, F); c.fillRect(tx - 3, ty - 6, fw + 6, 12); } }
+          else { tx = lerp(160, 140, e); al = seg(f.k, 0, .6); } }
+        txt(c, t, tx, ty, { size: F, col: C.text, align: 'left', al: al });
+      });
     }
   });
 })();

@@ -1064,5 +1064,220 @@
         "do": []
       }
     ]
+  },
+  "comments": {
+    "scene": "p1-comments",
+    "steps": [
+      {
+        "line": 1,
+        "ms": 1600,
+        "note": "Before your code is translated, every comment is removed. The right panel is what the compiler actually works with. Line 1 has no comment, so it goes straight across.",
+        "do": [
+          {
+            "a": "keep",
+            "rows": [
+              1
+            ]
+          }
+        ]
+      },
+      {
+        "line": 3,
+        "ms": 1900,
+        "note": "/* starts a block comment and the next */ ends it, a line later. The whole comment, both lines, becomes one single space.",
+        "do": [
+          {
+            "a": "cut",
+            "rows": [
+              3,
+              4
+            ]
+          }
+        ]
+      },
+      {
+        "line": 6,
+        "ms": 1000,
+        "note": "No comment here, so int main(void) { goes across.",
+        "do": [
+          {
+            "a": "keep",
+            "rows": [
+              6
+            ]
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1600,
+        "note": "// starts a line comment. Everything from the slashes to the end of the line becomes one space.",
+        "do": [
+          {
+            "a": "cut",
+            "rows": [
+              7
+            ]
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1700,
+        "note": "The four spaces in front are for you. Spaces between tokens mean nothing to the compiler, so the line slides left and means exactly the same.",
+        "do": [
+          {
+            "a": "keep",
+            "rows": [
+              8
+            ]
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 2000,
+        "note": "Code first, note after. The printf goes across; the note after // turns into a space.",
+        "do": [
+          {
+            "a": "keep",
+            "rows": [
+              10
+            ],
+            "len": 0.45
+          },
+          {
+            "a": "cut",
+            "rows": [
+              10
+            ],
+            "at": 0.45
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 1800,
+        "note": "Commenting out: this printf sits inside /* */, so it is only comment text now. The compiler never sees it, so it can never run.",
+        "do": [
+          {
+            "a": "cut",
+            "rows": [
+              11
+            ]
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 3600,
+        "note": "Careful: block comments don't nest. Wrap lines 10 and 11 in another /* */ and the comment stops at the first */ it meets. The last */ is left over as code, and that won't compile.",
+        "do": [
+          {
+            "a": "nest"
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 1300,
+        "note": "A string must close on the line it opened, so this one closes its quotes after key.",
+        "do": [
+          {
+            "a": "keep",
+            "rows": [
+              13
+            ]
+          }
+        ]
+      },
+      {
+        "line": 14,
+        "ms": 1300,
+        "note": "The next line opens a fresh string. Its indentation goes, like all the others.",
+        "do": [
+          {
+            "a": "keep",
+            "rows": [
+              14
+            ]
+          }
+        ]
+      },
+      {
+        "line": 14,
+        "ms": 2100,
+        "note": "Two strings side by side are glued into one: \"Press any key to start\\n\". One printf, one string.",
+        "do": [
+          {
+            "a": "join"
+          }
+        ]
+      },
+      {
+        "line": 15,
+        "ms": 1300,
+        "note": "return 0; and the closing brace go across. That is everything the compiler gets: four statements and not one comment.",
+        "do": [
+          {
+            "a": "keep",
+            "rows": [
+              15,
+              16
+            ]
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1200,
+        "note": "Now build and run. Only the code on the right is in the program. The first printf prints RUNNER.",
+        "do": [
+          {
+            "a": "run",
+            "row": 8
+          }
+        ],
+        "out": "RUNNER\n",
+        "outAt": 0.4
+      },
+      {
+        "line": 10,
+        "ms": 1200,
+        "note": "Lives: 3. The note after // was never part of the program, so nothing extra prints.",
+        "do": [
+          {
+            "a": "run",
+            "row": 10
+          }
+        ],
+        "out": "Lives: 3\n",
+        "outAt": 0.4
+      },
+      {
+        "line": 13,
+        "ms": 1400,
+        "note": "Line 11 was a comment, so there is no cheat line. The glued string prints as one line.",
+        "do": [
+          {
+            "a": "run",
+            "row": 13
+          }
+        ],
+        "out": "Press any key to start\n",
+        "outAt": 0.4
+      },
+      {
+        "line": 15,
+        "ms": 1000,
+        "note": "return 0 ends the program.",
+        "do": [
+          {
+            "a": "run",
+            "row": 15
+          }
+        ]
+      }
+    ]
   }
 }

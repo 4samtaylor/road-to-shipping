@@ -1,0 +1,1240 @@
+{
+ "bits": {
+  "scene": "p0-switches",
+  "steps": [
+   {
+    "line": 4,
+    "ms": 1400,
+    "note": "lives gets one byte: 8 switches. 3 is 00000011.",
+    "do": [
+     {
+      "a": "row",
+      "id": "lives",
+      "name": "lives",
+      "type": "unsigned char",
+      "bytes": 1,
+      "v": 3
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 1400,
+    "note": "A short gets two bytes: 16 switches. 12 is 1100 at the right end.",
+    "do": [
+     {
+      "a": "row",
+      "id": "level",
+      "name": "level",
+      "type": "short",
+      "bytes": 2,
+      "v": 12
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 1600,
+    "note": "An int gets four bytes: 32 switches. 1500 only needs the lowest two bytes.",
+    "do": [
+     {
+      "a": "row",
+      "id": "score",
+      "name": "score",
+      "type": "int",
+      "bytes": 4,
+      "v": 1500
+     }
+    ]
+   },
+   {
+    "line": 8,
+    "ms": 1100,
+    "note": "sizeof asks how many bytes a variable takes. lives: 1.",
+    "do": [
+     {
+      "a": "size",
+      "id": "lives",
+      "t": "1 byte"
+     }
+    ],
+    "out": "lives 3: 1 byte\n",
+    "outAt": 0.6
+   },
+   {
+    "line": 9,
+    "ms": 1000,
+    "note": "level: 2 bytes.",
+    "do": [
+     {
+      "a": "size",
+      "id": "level",
+      "t": "2 bytes"
+     }
+    ],
+    "out": "level 12: 2 bytes\n",
+    "outAt": 0.6
+   },
+   {
+    "line": 10,
+    "ms": 1000,
+    "note": "score: 4 bytes.",
+    "do": [
+     {
+      "a": "size",
+      "id": "score",
+      "t": "4 bytes"
+     }
+    ],
+    "out": "score 1500: 4 bytes\n",
+    "outAt": 0.6
+   },
+   {
+    "line": 11,
+    "ms": 2000,
+    "note": "Each extra switch doubles the patterns: 2, 4, 8 ... 256 for one byte.",
+    "do": [
+     {
+      "a": "count",
+      "bits": 8,
+      "n": 256,
+      "len": 0.85
+     }
+    ],
+    "out": "1 byte = 8 bits = 256 patterns\n",
+    "outAt": 0.9
+   },
+   {
+    "line": 12,
+    "ms": 900,
+    "note": "The program ends.",
+    "do": [
+     {
+      "a": "pulse"
+     }
+    ]
+   }
+  ]
+ },
+ "binary-hex": {
+  "scene": "p0-counter",
+  "steps": [
+   {
+    "line": 4,
+    "ms": 1400,
+    "note": "coins is 200. In binary: 1100 1000.",
+    "do": [
+     {
+      "a": "set",
+      "v": 200,
+      "bits": 8,
+      "src": "coins = 200"
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 1500,
+    "note": "Each four bits is one hex digit: 1100 is c, 1000 is 8.",
+    "do": [
+     {
+      "a": "group",
+      "len": 0.6
+     },
+     {
+      "a": "say",
+      "t": "200 / c8",
+      "at": 0.4,
+      "len": 0.4
+     }
+    ],
+    "out": "coins:  200 in decimal, c8 in hex\n",
+    "outAt": 0.7
+   },
+   {
+    "line": 5,
+    "ms": 1600,
+    "note": "A colour is three bytes: red, green, blue. 24 switches.",
+    "do": [
+     {
+      "a": "set",
+      "v": 16746496,
+      "bits": 24,
+      "src": "orange = 0xFF8800"
+     },
+     {
+      "a": "swatch",
+      "rgb": "FF8800",
+      "at": 0.4,
+      "len": 0.5
+     }
+    ]
+   },
+   {
+    "line": 8,
+    "ms": 1500,
+    "note": "Hex shows the three bytes ff, 88, 00. Decimal hides them.",
+    "do": [
+     {
+      "a": "group",
+      "len": 0.6
+     },
+     {
+      "a": "say",
+      "t": "16746496 / ff8800",
+      "at": 0.4,
+      "len": 0.4
+     }
+    ],
+    "out": "orange: 16746496 in decimal, ff8800 in hex\n",
+    "outAt": 0.7
+   },
+   {
+    "line": 9,
+    "ms": 2200,
+    "note": "0x10 is one sixteen and no ones: 16. 0xFF is all eight bits on: 255.",
+    "do": [
+     {
+      "a": "tick",
+      "from": 0,
+      "to": 16,
+      "bits": 8,
+      "len": 0.5
+     },
+     {
+      "a": "set",
+      "v": 255,
+      "bits": 8,
+      "src": "0x10u and 0xFFu",
+      "at": 0.6,
+      "len": 0.4
+     },
+     {
+      "a": "say",
+      "t": "16 / 255",
+      "at": 0.85,
+      "len": 0.15
+     }
+    ],
+    "out": "0x10 = 16, 0xFF = 255\n",
+    "outAt": 0.9
+   },
+   {
+    "line": 10,
+    "ms": 900,
+    "note": "Same values all along; only the spelling changed.",
+    "do": []
+   }
+  ]
+ },
+ "memory": {
+  "scene": "p3b-mem",
+  "steps": [
+   {
+    "line": 3,
+    "ms": 1000,
+    "note": "Every byte in memory has a number: its address.",
+    "do": [
+     {
+      "a": "cap",
+      "t": "memory: a row of numbered bytes"
+     }
+    ]
+   },
+   {
+    "line": 4,
+    "ms": 1200,
+    "note": "score takes 4 bytes; its address is the first one.",
+    "do": [
+     {
+      "a": "cell",
+      "id": "score",
+      "kind": "int",
+      "type": "int",
+      "name": "score",
+      "addr": "...FBA0",
+      "v": 1500,
+      "x": 20,
+      "y": 108
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 1200,
+    "note": "lives gets 4 more. The compiler picks where.",
+    "do": [
+     {
+      "a": "cell",
+      "id": "lives",
+      "kind": "int",
+      "type": "int",
+      "name": "lives",
+      "addr": "...FBA4",
+      "v": 3,
+      "x": 146,
+      "y": 108
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 1200,
+    "note": "A char is a single byte. Here it landed just below score.",
+    "do": [
+     {
+      "a": "cell",
+      "id": "key",
+      "kind": "int",
+      "type": "char",
+      "name": "key",
+      "addr": "...FB9F",
+      "v": "'w'",
+      "x": 272,
+      "y": 108
+     }
+    ]
+   },
+   {
+    "line": 8,
+    "ms": 1400,
+    "note": "&score is score's address. Yours will be a different number.",
+    "do": [
+     {
+      "a": "tag",
+      "id": "score",
+      "t": "&score"
+     }
+    ],
+    "out": "score holds 1500 at 000000A3F9D6FBA0\n",
+    "outAt": 0.5
+   },
+   {
+    "line": 9,
+    "ms": 1200,
+    "note": "&lives is 4 higher: score's 4 bytes sit in between.",
+    "do": [
+     {
+      "a": "tag",
+      "id": "lives",
+      "t": "&lives"
+     }
+    ],
+    "out": "lives holds 3 at 000000A3F9D6FBA4\n",
+    "outAt": 0.5
+   },
+   {
+    "line": 10,
+    "ms": 1200,
+    "note": "%c prints key as a letter; %p prints where it lives.",
+    "do": [
+     {
+      "a": "tag",
+      "id": "key",
+      "t": "&key"
+     }
+    ],
+    "out": "key holds w at 000000A3F9D6FB9F\n",
+    "outAt": 0.5
+   },
+   {
+    "line": 11,
+    "ms": 1300,
+    "note": "Addresses change each run; their size never does: 8 bytes on x64.",
+    "do": [
+     {
+      "a": "cap",
+      "t": "an address = 8 bytes on x64"
+     }
+    ],
+    "out": "an address is 8 bytes\n",
+    "outAt": 0.6
+   },
+   {
+    "line": 12,
+    "ms": 1000,
+    "note": "The program ends and Windows takes the memory back.",
+    "do": [
+     {
+      "a": "hide",
+      "ids": [
+       "score",
+       "lives",
+       "key"
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "cpu": {
+  "scene": "p0-cpu",
+  "prompt": "",
+  "steps": [
+   {
+    "line": 1,
+    "ms": 1400,
+    "note": "One C line. The CPU never sees it, only the instructions below. score starts at 40 here.",
+    "do": [
+     {
+      "a": "cap",
+      "t": "score = score + 10;"
+     },
+     {
+      "a": "mem",
+      "v": 40,
+      "at": 0.3
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 2000,
+    "note": "mov copies score into the register EAX.",
+    "do": [
+     {
+      "a": "rip",
+      "to": "0x1000",
+      "len": 0.3
+     },
+     {
+      "a": "phase",
+      "k": "fetch",
+      "at": 0.1,
+      "len": 0.35
+     },
+     {
+      "a": "phase",
+      "k": "decode",
+      "at": 0.45,
+      "len": 0.15
+     },
+     {
+      "a": "reg",
+      "v": 40,
+      "from": "mem",
+      "at": 0.6,
+      "len": 0.4
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 1600,
+    "note": "add works inside the CPU. Memory still says 40.",
+    "do": [
+     {
+      "a": "rip",
+      "to": "0x1004",
+      "len": 0.3
+     },
+     {
+      "a": "phase",
+      "k": "fetch",
+      "at": 0.1,
+      "len": 0.4
+     },
+     {
+      "a": "phase",
+      "k": "execute",
+      "at": 0.55,
+      "len": 0.2
+     },
+     {
+      "a": "reg",
+      "v": 50,
+      "at": 0.6,
+      "len": 0.4
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 1600,
+    "note": "mov stores EAX back. Now score is 50.",
+    "do": [
+     {
+      "a": "rip",
+      "to": "0x1007",
+      "len": 0.3
+     },
+     {
+      "a": "phase",
+      "k": "execute",
+      "at": 0.3,
+      "len": 0.2
+     },
+     {
+      "a": "mem",
+      "v": 50,
+      "at": 0.4,
+      "len": 0.6
+     }
+    ]
+   },
+   {
+    "line": 8,
+    "ms": 1300,
+    "note": "RIP moves past each whole instruction: 4, 3, then 4 bytes.",
+    "do": [
+     {
+      "a": "rip",
+      "to": "0x100B",
+      "len": 0.5
+     },
+     {
+      "a": "phase",
+      "k": "next",
+      "at": 0.4,
+      "len": 0.4
+     }
+    ]
+   },
+   {
+    "line": 11,
+    "ms": 1000,
+    "note": "Fetch: read the bytes at RIP.",
+    "do": [
+     {
+      "a": "phase",
+      "k": "fetch"
+     }
+    ]
+   },
+   {
+    "line": 12,
+    "ms": 1000,
+    "note": "Decode: work out which instruction they are.",
+    "do": [
+     {
+      "a": "phase",
+      "k": "decode",
+      "len": 0.5
+     }
+    ]
+   },
+   {
+    "line": 13,
+    "ms": 1000,
+    "note": "Execute: do it. A jump would change RIP here.",
+    "do": [
+     {
+      "a": "phase",
+      "k": "execute",
+      "len": 0.5
+     }
+    ]
+   },
+   {
+    "line": 14,
+    "ms": 1100,
+    "note": "Next, and round again, billions of times a second.",
+    "do": [
+     {
+      "a": "phase",
+      "k": "next",
+      "len": 0.5
+     }
+    ]
+   }
+  ]
+ },
+ "stack": {
+  "scene": "p0-stack",
+  "steps": [
+   {
+    "line": 13,
+    "ms": 1200,
+    "note": "main starts with one frame on the stack.",
+    "do": [
+     {
+      "a": "push",
+      "id": "m",
+      "fn": "main",
+      "vars": [
+       [
+        "score",
+        "?"
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "line": 14,
+    "ms": 1000,
+    "note": "score = 0, inside main's frame.",
+    "do": [
+     {
+      "a": "set",
+      "id": "m",
+      "name": "score",
+      "v": 0
+     }
+    ]
+   },
+   {
+    "line": 15,
+    "ms": 1800,
+    "note": "Calling score_hit: 100 travels in RCX, a new frame goes on below.",
+    "do": [
+     {
+      "a": "reg",
+      "r": "RCX",
+      "v": 100,
+      "len": 0.35
+     },
+     {
+      "a": "push",
+      "id": "s",
+      "fn": "score_hit",
+      "vars": [
+       [
+        "base",
+        100
+       ],
+       [
+        "doubled",
+        "?"
+       ]
+      ],
+      "ret": "main",
+      "at": 0.3,
+      "len": 0.7
+     }
+    ]
+   },
+   {
+    "line": 9,
+    "ms": 1100,
+    "note": "doubled lives in score_hit's frame.",
+    "do": [
+     {
+      "a": "set",
+      "id": "s",
+      "name": "doubled",
+      "v": 200
+     }
+    ]
+   },
+   {
+    "line": 10,
+    "ms": 1800,
+    "note": "A third frame, lower again: the stack grows down.",
+    "do": [
+     {
+      "a": "reg",
+      "r": "RCX",
+      "v": 200,
+      "len": 0.35
+     },
+     {
+      "a": "push",
+      "id": "a",
+      "fn": "add_bonus",
+      "vars": [
+       [
+        "points",
+        200
+       ],
+       [
+        "bonus",
+        "?"
+       ]
+      ],
+      "ret": "score_hit",
+      "at": 0.3,
+      "len": 0.7
+     }
+    ]
+   },
+   {
+    "line": 4,
+    "ms": 1100,
+    "note": "Three frames are live now.",
+    "do": [
+     {
+      "a": "set",
+      "id": "a",
+      "name": "bonus",
+      "v": 50
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 1800,
+    "note": "250 goes back in EAX and add_bonus's frame is gone.",
+    "do": [
+     {
+      "a": "reg",
+      "r": "EAX",
+      "v": 250,
+      "len": 0.45
+     },
+     {
+      "a": "pop",
+      "id": "a",
+      "at": 0.5,
+      "len": 0.5
+     }
+    ]
+   },
+   {
+    "line": 10,
+    "ms": 1300,
+    "note": "score_hit returns the same 250. Its frame goes too.",
+    "do": [
+     {
+      "a": "pop",
+      "id": "s"
+     }
+    ]
+   },
+   {
+    "line": 15,
+    "ms": 1500,
+    "note": "Only now does score become 250.",
+    "do": [
+     {
+      "a": "set",
+      "id": "m",
+      "name": "score",
+      "v": 250,
+      "from": "EAX",
+      "len": 0.6
+     },
+     {
+      "a": "reg",
+      "r": "EAX",
+      "v": null,
+      "at": 0.65,
+      "len": 0.35
+     }
+    ]
+   },
+   {
+    "line": 16,
+    "ms": 1000,
+    "note": "printf shows it.",
+    "do": [],
+    "out": "score = 250\n",
+    "outAt": 0.5
+   },
+   {
+    "line": 17,
+    "ms": 1100,
+    "note": "main returns: the stack is empty again.",
+    "do": [
+     {
+      "a": "pop",
+      "id": "m"
+     }
+    ]
+   }
+  ]
+ },
+ "toolchain": {
+  "scene": "p0-build",
+  "prompt": "",
+  "steps": [
+   {
+    "line": 1,
+    "ms": 1200,
+    "note": "Two source files, nothing else yet.",
+    "do": [
+     {
+      "a": "cmd",
+      "t": "dir /b",
+      "len": 0.5
+     },
+     {
+      "a": "files",
+      "list": [
+       "game.c",
+       "player.c"
+      ],
+      "hot": [
+       "game.c",
+       "player.c"
+      ],
+      "at": 0.5,
+      "len": 0.5
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 1400,
+    "note": "One command. Inside it, three steps.",
+    "do": [
+     {
+      "a": "cmd",
+      "t": "cl /nologo /W4 /WX game.c player.c",
+      "len": 0.8
+     },
+     {
+      "a": "files",
+      "list": [
+       "game.c",
+       "player.c"
+      ],
+      "at": 0.9,
+      "len": 0.1
+     }
+    ]
+   },
+   {
+    "line": 9,
+    "ms": 2000,
+    "note": "game.c: preprocess (headers pasted in), then compile to game.obj.",
+    "do": [
+     {
+      "a": "compile",
+      "f": "game"
+     }
+    ]
+   },
+   {
+    "line": 10,
+    "ms": 2000,
+    "note": "player.c compiles on its own. Neither file sees the other.",
+    "do": [
+     {
+      "a": "compile",
+      "f": "player"
+     }
+    ]
+   },
+   {
+    "line": 11,
+    "ms": 2200,
+    "note": "link.exe joins both .obj files with the C library, matching calls by name.",
+    "do": [
+     {
+      "a": "link"
+     }
+    ]
+   },
+   {
+    "line": 13,
+    "ms": 1200,
+    "note": "Look in the folder again.",
+    "do": [
+     {
+      "a": "cmd",
+      "t": "dir /b",
+      "len": 0.4
+     },
+     {
+      "a": "files",
+      "list": [
+       "game.c",
+       "game.exe",
+       "game.obj",
+       "player.c",
+       "player.obj"
+      ],
+      "at": 0.4,
+      "len": 0.6
+     }
+    ]
+   },
+   {
+    "line": 15,
+    "ms": 1100,
+    "note": "game.exe is named after the first file.",
+    "do": [
+     {
+      "a": "files",
+      "list": [
+       "game.c",
+       "game.exe",
+       "game.obj",
+       "player.c",
+       "player.obj"
+      ],
+      "hot": [
+       "game.exe"
+      ]
+     }
+    ]
+   },
+   {
+    "line": 16,
+    "ms": 1300,
+    "note": "The .obj files stay as build leftovers. Don't commit them.",
+    "do": [
+     {
+      "a": "files",
+      "list": [
+       "game.c",
+       "game.exe",
+       "game.obj",
+       "player.c",
+       "player.obj"
+      ],
+      "hot": [
+       "game.obj",
+       "player.obj"
+      ],
+      "tag": "leftover"
+     }
+    ]
+   }
+  ]
+ },
+ "os": {
+  "scene": "p0-os",
+  "steps": [
+   {
+    "line": 4,
+    "ms": 1700,
+    "note": "Windows makes a process for game.exe, with its own memory and one thread.",
+    "do": [
+     {
+      "a": "proc",
+      "id": "g",
+      "name": "game.exe",
+      "pid": 4120,
+      "len": 0.4
+     },
+     {
+      "a": "proc",
+      "id": "e",
+      "name": "explorer.exe",
+      "pid": 2232,
+      "dim": true,
+      "at": 0.3,
+      "len": 0.4
+     },
+     {
+      "a": "core",
+      "id": "g",
+      "at": 0.6,
+      "len": 0.4
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 1500,
+    "note": "fopen asks Windows. It looks in the current folder.",
+    "do": [
+     {
+      "a": "folder",
+      "files": [
+       "game.exe"
+      ],
+      "len": 0.4
+     },
+     {
+      "a": "ask",
+      "id": "g",
+      "t": "open save.txt for reading",
+      "at": 0.3,
+      "len": 0.7
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 2200,
+    "note": "No such file, so the answer is NULL. Other programs get the core in between.",
+    "do": [
+     {
+      "a": "core",
+      "id": "e",
+      "len": 0.25
+     },
+     {
+      "a": "core",
+      "id": "g",
+      "at": 0.3,
+      "len": 0.25
+     },
+     {
+      "a": "reply",
+      "id": "g",
+      "ok": false,
+      "t": "NULL",
+      "at": 0.1,
+      "len": 0.9
+     }
+    ]
+   },
+   {
+    "line": 7,
+    "ms": 1300,
+    "note": "The program checks before using it.",
+    "do": [
+     {
+      "a": "check",
+      "id": "g",
+      "t": "save == NULL"
+     }
+    ]
+   },
+   {
+    "line": 8,
+    "ms": 1300,
+    "note": "printf asks Windows to show text in the console.",
+    "do": [
+     {
+      "a": "say",
+      "id": "g",
+      "t": "No save file: starting a new game"
+     }
+    ],
+    "out": "No save file: starting a new game\n",
+    "outAt": 0.8
+   },
+   {
+    "line": 9,
+    "ms": 1500,
+    "note": "return 0 ends the process; Windows takes everything back.",
+    "do": [
+     {
+      "a": "end",
+      "id": "g"
+     }
+    ]
+   }
+  ]
+ },
+ "io": {
+  "scene": "p0-keys",
+  "steps": [
+   {
+    "line": 4,
+    "ms": 1100,
+    "note": "key is an int, so it can also hold EOF.",
+    "do": [
+     {
+      "a": "decl"
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 1600,
+    "note": "No \\n, so the cursor waits at the end of the line.",
+    "do": [
+     {
+      "a": "print",
+      "t": "Pick a lane (1-3) and press Enter: "
+     }
+    ],
+    "out": "Pick a lane (1-3) and press Enter: ",
+    "outAt": 0.75
+   },
+   {
+    "line": 7,
+    "ms": 1600,
+    "note": "getchar waits. The console echoes the 2, but the program has nothing yet.",
+    "do": [
+     {
+      "a": "wait",
+      "len": 0.3
+     },
+     {
+      "a": "press",
+      "k": "2",
+      "at": 0.3,
+      "len": 0.7
+     }
+    ],
+    "out": "2",
+    "outAt": 0.85
+   },
+   {
+    "line": 7,
+    "ms": 1800,
+    "note": "Enter sends the whole line into stdin: '2' (50) and newline (10).",
+    "do": [
+     {
+      "a": "enter"
+     }
+    ],
+    "out": "\n",
+    "outAt": 0.3
+   },
+   {
+    "line": 7,
+    "ms": 1400,
+    "note": "getchar takes the first character: code 50.",
+    "do": [
+     {
+      "a": "take"
+     }
+    ]
+   },
+   {
+    "line": 8,
+    "ms": 1500,
+    "note": "%c prints key as a character.",
+    "do": [
+     {
+      "a": "print",
+      "t": "You picked lane 2\n"
+     }
+    ],
+    "out": "You picked lane 2\n",
+    "outAt": 0.8
+   },
+   {
+    "line": 9,
+    "ms": 1500,
+    "note": "Same value, printed as a number with %d.",
+    "do": [
+     {
+      "a": "print",
+      "t": "Its character code is 50\n"
+     }
+    ],
+    "out": "Its character code is 50\n",
+    "outAt": 0.8
+   },
+   {
+    "line": 10,
+    "ms": 1500,
+    "note": "The Enter is still in stdin, unread. Phase 02 deals with it.",
+    "do": [
+     {
+      "a": "left"
+     }
+    ]
+   }
+  ]
+ },
+ "why-c": {
+  "scene": "p0-map",
+  "steps": [
+   {
+    "line": 4,
+    "ms": 1500,
+    "note": "ammo is one byte: 0 to 255.",
+    "do": [
+     {
+      "a": "byte",
+      "id": "ammo",
+      "name": "ammo",
+      "v": 250,
+      "len": 0.6
+     },
+     {
+      "a": "map",
+      "row": 0,
+      "c": "unsigned char",
+      "hw": "1 byte = 8 switches",
+      "at": 0.4,
+      "len": 0.6
+     }
+    ]
+   },
+   {
+    "line": 5,
+    "ms": 1000,
+    "note": "frames is an int somewhere in memory.",
+    "do": [
+     {
+      "a": "box",
+      "id": "frames",
+      "name": "frames",
+      "v": 0
+     }
+    ]
+   },
+   {
+    "line": 6,
+    "ms": 1400,
+    "note": "A pointer holds frames' address.",
+    "do": [
+     {
+      "a": "ptr",
+      "id": "where",
+      "name": "where",
+      "to": "frames",
+      "len": 0.6
+     },
+     {
+      "a": "map",
+      "row": 1,
+      "c": "int *",
+      "hw": "an address",
+      "at": 0.4,
+      "len": 0.6
+     }
+    ]
+   },
+   {
+    "line": 8,
+    "ms": 2400,
+    "note": "260 needs 9 bits. The ninth falls off: 4 is left. No error.",
+    "do": [
+     {
+      "a": "wrap",
+      "id": "ammo",
+      "from": 250,
+      "add": 10,
+      "to": 4
+     }
+    ]
+   },
+   {
+    "line": 9,
+    "ms": 1500,
+    "note": "Store 60 at the address in where: frames changes.",
+    "do": [
+     {
+      "a": "via",
+      "p": "where",
+      "v": 60
+     }
+    ]
+   },
+   {
+    "line": 10,
+    "ms": 900,
+    "note": "printf shows the wrapped value.",
+    "do": [],
+    "out": "ammo after +10: 4\n"
+   },
+   {
+    "line": 11,
+    "ms": 900,
+    "note": "And frames, changed through the pointer.",
+    "do": [],
+    "out": "frames: 60\n"
+   },
+   {
+    "line": 12,
+    "ms": 1600,
+    "note": "An address on x64 is 8 bytes, whatever it points at.",
+    "do": [
+     {
+      "a": "size",
+      "t": "8 bytes",
+      "len": 0.7
+     },
+     {
+      "a": "map",
+      "row": 2,
+      "c": "sizeof where",
+      "hw": "x64 address",
+      "at": 0.4,
+      "len": 0.6
+     }
+    ],
+    "out": "a pointer is 8 bytes\n",
+    "outAt": 0.8
+   },
+   {
+    "line": 13,
+    "ms": 1000,
+    "note": "Every C feature here is a piece of the machine.",
+    "do": []
+   }
+  ]
+ }
+}

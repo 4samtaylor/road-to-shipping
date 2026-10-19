@@ -1,0 +1,387 @@
+<!-- PHASE 00 -->
+  <div class="phase" id="phase0" data-ladder="phase0">
+    <div class="phase-header">
+      <div class="phase-n">00</div>
+      <div class="phase-meta">
+        <div class="phase-tag">Foundations</div>
+        <div class="phase-title">How Computers Work</div>
+      </div>
+      <div class="phase-right">
+        <div class="phase-week">Week 0</div>
+        <div class="phase-chevron">▼</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-inner">
+
+        <!-- OVERVIEW -->
+        <div class="section-block acc-section open" data-page="overview">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Start here</span>&nbsp;&nbsp;Why this phase comes before any code
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="prose t-muted2 mb-14">C is a thin layer over the machine. Most of what makes it confusing at first (why an int has a limit, what an address is, why a local variable vanishes, why a key press waits for Enter) is really about the computer underneath. This phase shows you that computer first, in nine short pages, so the C in Phase 01 has something to hang on.</div>
+            <div class="prose t-muted2 mb-14">You won't type any code here. Each concept has a tiny program or a diagram to <strong class="t-text">read</strong>, a check to answer, and a pen-and-paper task. The programs all build with your setup, so come back and run them once Phase 01 has shown you how.</div>
+            <div class="callout callout--yellow">
+              <div class="eyebrow eyebrow--md t-yellow mb-8">// What you'll be able to do by the end</div>
+              <div class="stack gap-8 fs-11">
+                <div><span class="cmd">0xC8</span> <span class="t-muted2">read it as 200, and as the bits 1100 1000</span></div>
+                <div><span class="cmd">score</span> <span class="t-muted2">picture it as 4 numbered bytes in memory, inside a stack frame that comes and goes</span></div>
+                <div><span class="cmd">cl game.c</span> <span class="t-muted2">say what happens between your .c file and a running game.exe, and what Windows and the keyboard do on the way</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAIR WITH KING -->
+        <div class="section-block acc-section" data-page="overview">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Pair with King</span>&nbsp;&nbsp;C Programming: A Modern Approach, mostly outside the book
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="prose prose--sm t-muted2 mb-14">King teaches C, not hardware, so most of this phase comes from general sources. Where he does touch it, these are the places.</div>
+            <dl class="king">
+              <dt>Bits and bytes</dt><dd>§7.1, integer types and their ranges. Read it after this page; it assumes you know what a bit is.</dd>
+              <dt>Binary and hex</dt><dd>§7.1 for octal and hexadecimal constants. §20.1 (bitwise operators) is for Phase 05.</dd>
+              <dt>Memory as numbered boxes</dt><dd>The first page of §11.1. The rest of that chapter is pointers, for Phase 3.5.</dd>
+              <dt>The CPU's loop</dt><dd>Not in King. Microsoft Learn's “x64 Architecture” page (in the Windows debugger docs) lists the registers.</dd>
+              <dt>Registers and the stack</dt><dd>§10.1 for local variables in C's terms. The hardware stack is not in King; see Microsoft Learn's “Thread Stack Size”.</dd>
+              <dt>Source to machine code</dt><dd>§2.1, “Compiling and Linking”, then §14.1 (the preprocessor) and §15.4 (building from several files). King uses a Unix compiler; yours is <span class="cmd">cl</span>.</dd>
+              <dt>The OS, processes and files</dt><dd>Not in King. Microsoft Learn's “About Processes and Threads” and “Virtual Address Space” cover it.</dd>
+              <dt>Input and output</dt><dd>§22.1 for the three streams. Character codes are in §7.3.</dd>
+              <dt>Why C looks the way it does</dt><dd>Chapter 1: §1.1 (history) and §1.2 (strengths and weaknesses). Worth reading in full now.</dd>
+            </dl>
+            <div class="fs-11 t-muted mt-12">Chapter numbers are from the 2nd edition. If your copy is different, match by chapter title.</div>
+          </div>
+        </div>
+
+        <div class="section-block" data-page="concept:bits">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
+              <div class="task" data-id="p0-bits">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Size up a game on paper: how many bytes for lives, score, a 20 by 10 tile map and one 1280 by 720 frame</div>
+                  <div class="task-note">Use 1 byte for lives and each tile, 4 for score, 4 per pixel. Write each answer in bytes, then in KB or MB (1 KB = 1,024 bytes). Check: the frame is 3,686,400 bytes, about 3.5 MB. <span class="task-time">~10 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block" data-page="concept:binary-hex">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
+              <div class="task" data-id="p0-binary-hex">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Count from 0 to 15 in binary and hex, then convert five game numbers by hand <span class="task-tag t-crucial">Crucial</span></div>
+                  <div class="task-note">Make a three-column table (decimal, binary, hex) for 0 to 15. Then convert 3 lives, 100 health, 255, 0x40 and the colour 0x00FF00 (which colour is it?). Check every answer in Windows Calculator's Programmer mode. <span class="task-time">~20 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block" data-page="concept:memory">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
+              <div class="task" data-id="p0-memory">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Draw a memory map: score = 1500, lives = 3 and key = 'w', one byte per row, from address 0x2000</div>
+                  <div class="task-note">Write each value in hex first (1500 is 0x05DC, 'w' is 0x77), then lay out the bytes little-endian: lowest byte at the lowest address. Label where each variable starts. <span class="task-time">~15 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block" data-page="concept:cpu">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
+              <div class="task" data-id="p0-cpu">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Be the CPU: run the three instructions on paper with score = 40, writing down RIP, eax and score after each one</div>
+                  <div class="task-note">Start with RIP = 0x1000 and eax = ?. Then look up your own CPU in Task Manager's Performance tab: its GHz and core count. How many ticks does it get in one 60 fps frame? <span class="task-time">~15 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block" data-page="concept:stack">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
+              <div class="task" data-id="p0-stack">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Draw the stack in five snapshots as the program runs: before each call, inside add_bonus, and after each return <span class="task-tag t-crucial">Crucial</span></div>
+                  <div class="task-note">One box per frame, newest on top, with every local and its value at that moment. Cross out a frame when it's popped. Which variables still exist when printf runs? <span class="task-time">~15 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block" data-page="concept:toolchain">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
+              <div class="task" data-id="p0-toolchain">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Draw the pipeline for a three-file game (main.c, player.c, enemy.c) and predict the folder afterwards</div>
+                  <div class="task-note">Label preprocess, compile and link, and every file each step makes. Then answer: you edit enemy.c only, which files are rebuilt? After Phase 01, come back, build any program and find the .obj file with <span class="cmd">dir</span>. <span class="task-time">~15 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block" data-page="concept:os">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
+              <div class="task" data-id="p0-os">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Explore Task Manager: find your terminal's PID and thread count, and note how many processes are running in total</div>
+                  <div class="task-note">Ctrl+Shift+Esc, Details tab, add the Threads column. Then write two sentences: why can't a crashing game damage another program, and where would <span class="cmd">fopen("save.txt", "w")</span> put the file? <span class="task-time">~15 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block" data-page="concept:io">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
+              <div class="task" data-id="p0-io">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Trace a typed line: the player types 13 and presses Enter, and the program calls getchar three times</div>
+                  <div class="task-note">Draw stdin as a queue of character codes. What does each getchar return, as a character and as a number? (Hint: there are three characters in the line.) <span class="task-time">~10 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block" data-page="concept:why-c">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
+              <div class="task" data-id="p0-why-c">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Make a one-page map: each C feature (int, pointers, local variables, cl, fopen, printf) beside the hardware idea it comes from</div>
+                  <div class="task-note">Use the concept names from this phase. Keep the page: Phase 02 and Phase 3.5 will send you back to it. Then read King §1.1–1.2. <span class="task-time">~20 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TRY IT ON YOUR PC -->
+        <div class="section-block acc-section open" data-page="build">
+          <div class="section-block-header">
+            <span class="badge badge-yellow">Tooling</span>&nbsp;&nbsp;Two Windows tools for this phase
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="stack gap-8 fs-11">
+              <div class="kv kv--120">
+                <div class="t-accent fw-500">Calculator</div>
+                <div class="t-muted2">Open it, then menu, Programmer. Type a number and it shows HEX, DEC, OCT and BIN together. Click the bit grid to flip single bits. Use it to check every conversion you do by hand.</div>
+              </div>
+              <div class="kv kv--120">
+                <div class="t-accent fw-500">Task Manager</div>
+                <div class="t-muted2">Ctrl+Shift+Esc. Performance shows your CPU's speed, cores and RAM. Details lists every process with its PID; add the Threads column from Select columns. Phase 4.5 brings you back here to watch your game's CPU use.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PRACTICE -->
+        <div class="section-block" data-page="practice">
+          <div class="section-block-header"><span class="badge badge-green">Tasks</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
+              <div class="task" data-id="p0-explain">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Explain it out loud: what happens from double-clicking game.exe to the first frame on screen <span class="task-tag t-crucial">Crucial</span></div>
+                  <div class="task-note">Two minutes, no notes, to a friend or a voice memo. Mention the process, the thread and its stack, main, the CPU's loop, and printf going through stdout. Note every place you hesitated and reread that concept. <span class="task-time">~15 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PREDICT THE OUTPUT -->
+        <div class="section-block acc-section" data-page="trace">
+          <div class="section-block-header">
+            <span class="badge badge-yellow">Predict the Output</span>&nbsp;&nbsp;2 drills, guess first, then check
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="callout callout--yellow callout--sm mb-14">
+              <div class="eyebrow eyebrow--md t-yellow mb-6">// Read, don't run (yet)</div>
+              <div class="prose prose--sm t-muted2">Both programs build cleanly with your setup. Predict on paper now; after Phase 01, compile and run them to check yourself.</div>
+            </div>
+            <div class="quiz-items">
+              <div class="quiz-item drill-item">
+                <div class="quiz-q">1. One number, two spellings</div>
+<pre><span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
+
+<span class="c-type">int</span> <span class="c-fn">main</span>(<span class="c-type">void</span>) {
+    <span class="c-type">unsigned int</span> <span class="c-var">health</span> = <span class="c-num">0x64</span>;
+    <span class="c-type">unsigned int</span> <span class="c-var">max</span> = <span class="c-num">255</span>;
+
+    <span class="c-fn">printf</span>(<span class="c-str">"health %u = %x\n"</span>, <span class="c-var">health</span>, <span class="c-var">health</span>);
+    <span class="c-fn">printf</span>(<span class="c-str">"max %u = %x\n"</span>, <span class="c-var">max</span>, <span class="c-var">max</span>);
+    <span class="c-kw">return</span> <span class="c-num">0</span>;
+}</pre>
+                <div class="drill-run">Write your prediction down, then reveal.</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a"><pre class="p-12 fs-12 mb-10">health 100 = 64
+max 255 = ff</pre>
+                  0x64 is 6 sixteens and 4 ones: 96 + 4 = 100. %u spells it in decimal, %x in hex with no 0x and lowercase letters. 255 is the biggest byte, all eight bits on, which is ff.</div>
+                </details>
+              </div>
+              <div class="quiz-item drill-item">
+                <div class="quiz-q">2. Which frames are alive?</div>
+<pre><span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
+
+<span class="c-type">int</span> <span class="c-fn">heal</span>(<span class="c-type">int</span> <span class="c-var">hp</span>) {
+    <span class="c-type">int</span> <span class="c-var">potion</span> = <span class="c-num">25</span>;
+    <span class="c-kw">return</span> <span class="c-var">hp</span> + <span class="c-var">potion</span>;
+}
+
+<span class="c-type">int</span> <span class="c-fn">main</span>(<span class="c-type">void</span>) {
+    <span class="c-type">int</span> <span class="c-var">health</span> = <span class="c-num">60</span>;
+    <span class="c-var">health</span> = <span class="c-fn">heal</span>(<span class="c-var">health</span>);
+    <span class="c-var">health</span> = <span class="c-fn">heal</span>(<span class="c-var">health</span>);
+    <span class="c-fn">printf</span>(<span class="c-str">"health %d\n"</span>, <span class="c-var">health</span>);
+    <span class="c-kw">return</span> <span class="c-num">0</span>;
+}</pre>
+                <div class="drill-run">Predict the output, and how many frames are on the stack at most.</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a"><pre class="p-12 fs-12 mb-10">health 110</pre>
+                  60 + 25 is 85, then 85 + 25 is 110. At most two frames are live: main and one heal. The first heal's frame is popped before the second call starts, so the second potion is a fresh variable in a fresh frame, not the old one.</div>
+                </details>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUIZ -->
+        <div class="section-block acc-section" data-page="review">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Quiz Yourself</span>&nbsp;&nbsp;3 questions, answer out loud before revealing
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="quiz-items">
+              <div class="quiz-item">
+                <div class="quiz-q">1. A colour is stored as 0x3366FF. How many bytes is that, and what is the green byte in decimal?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">Three bytes: two hex digits each. Green is the middle pair, 0x66: 6 sixteens and 6 ones, 96 + 6 = 102.</div>
+                </details>
+              </div>
+              <div class="quiz-item">
+                <div class="quiz-q">2. A function makes a local variable, returns, and is called again. Is the old value still there?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">No. The local lived in the function's stack frame, and that frame was popped at return. The next call gets a new frame, and its variable starts fresh (or holds leftover junk, if you didn't give it a value). Phase 03 shows the one exception, <span class="cmd">static</span>.</div>
+                </details>
+              </div>
+              <div class="quiz-item">
+                <div class="quiz-q">3. cl prints an error starting with LNK. Which step failed, and what was it looking for?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">The link step (link.exe). Every file compiled, but some name used in one .obj, a function usually, wasn't defined in any .obj or library in the build. Often a .c file was left off the command.</div>
+                </details>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CHECKPOINT -->
+        <div class="checkpoint" data-page="review">
+          <div class="checkpoint-header">
+            <span class="badge badge-green">Checkpoint</span>
+            <span class="checkpoint-title">Ready to move on when:</span>
+            <span class="cp-counter">0/3</span>
+          </div>
+          <div class="checkpoint-items">
+            <div class="cp-item" data-id="cp-p0-1"><span class="cp-cb">✓</span><span class="cp-text">You can count to 15 in binary and convert a byte like 0xC8 to decimal and back</span></div>
+            <div class="cp-item" data-id="cp-p0-2"><span class="cp-cb">✓</span><span class="cp-text">You can draw variables as numbered bytes, and the stack as frames that appear on each call and vanish on return</span></div>
+            <div class="cp-item" data-id="cp-p0-3"><span class="cp-cb">✓</span><span class="cp-text">You can explain how game.c becomes game.exe, and what Windows, the CPU and the keyboard buffer do when it runs</span></div>
+          </div>
+        </div>
+
+        <!-- STUCK -->
+        <div class="section-block acc-section" data-page="help">
+          <div class="section-block-header">
+            <span class="badge badge-orange">Stuck &amp; Curious</span>&nbsp;&nbsp;Common questions at this stage
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="stuck-items">
+              <div class="stuck-item">
+                <div class="stuck-q">Binary conversions keep coming out wrong</div>
+                <div class="stuck-a">Write the place values above the digits every time (128 64 32 16 8 4 2 1 for a byte) and add only the ones under a 1. For hex, split the bits into groups of four from the right. Check in Calculator's Programmer mode until it's automatic.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">I can't read the C in these programs yet</div>
+                <div class="stuck-a">That's expected. Read the walkthrough notes instead of the code, and focus on the idea each program shows. Phase 01 starts the C from zero; come back here afterwards and the programs will read easily.</div>
+              </div>
+              <div class="stuck-item">
+                <div class="stuck-q">Do I need to memorise the register names?</div>
+                <div class="stuck-a">No. Remember three: RIP (where the CPU is in the code), RSP (the top of the stack) and RAX (where a function's answer comes back). You'll only meet the others in the debugger's Registers window, if at all.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block acc-section" data-page="help">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Claude Code Prompts</span>&nbsp;&nbsp;Phase 00
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="prose t-muted2 mb-16">At this stage AI is a patient tutor. Ask it to quiz you and to explain with pictures, not to give you answers to the practice tasks.</div>
+            <div class="prompt-items">
+              <div class="prompt-item">
+                <div class="prompt-label">Drill conversions</div>
+                <div class="prompt-text">I'm learning binary and hex. Give me 10 conversion questions one at a time (decimal to binary, binary to hex, hex to decimal), using numbers up to 255. Wait for my answer each time, tell me if I'm right, and if I'm wrong show the place values so I can see where I slipped.</div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">See it as a picture</div>
+                <div class="prompt-text">Draw an ASCII diagram of the stack on x64 Windows while main calls a function that calls another function. Show each frame's local variables and the return address, and which way the stack grows. Keep it simple: I haven't learned C yet.</div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Check your explanation</div>
+                <div class="prompt-text">Here is my explanation of what happens when I run a program on Windows: [paste]. Tell me what's correct, what's wrong, and what I left out. Don't rewrite it for me.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>

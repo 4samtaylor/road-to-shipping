@@ -1,5 +1,32 @@
 # Phase 1 page map
 
+## Current shape (v23)
+
+Phase 01 Hello World: Compile & Run. File `content/02-phase1.html`, ladder `content/ladders/phase1.json`, phase id `phase1`. Comes after `phase0`, before `phase2`.
+
+Pages: Overview, 8 concepts, Trace, Build, Practice, Review.
+
+Concepts (every one has a Learn it section with a King line; new in v23: `comments`, `variables`):
+
+1. `program` Your first C program. King: §2.1–2.2, §2.7
+2. `compile` Compiling and running with cl. King: §2.1
+3. `comments` Comments and layout. King: §2.3, §2.8
+4. `escapes` Escape sequences and %d. King: §3.1
+5. `variables` Variables: storing a number. King: §2.4, §2.7
+6. `errors` Reading compiler errors. King: Chapter 1 Q&A, §2.3, §2.8
+7. `buildbat` build.bat and compiler flags. King: Chapter 1 and 2 Q&A
+8. `git` Saving your work with Git. Not in King
+
+Notes:
+- Each new concept has a "Practice this" task (`p1-comments`, `p1-variables`).
+- build.bat FLAGS are now `/std:c17 /W4 /WX /Zi /Od` (x64 via vcvars64).
+- A short "Start here" overview block (appended last, `data-order="-1"`) points beginners to Phase 00.
+- Pair with King rewritten with verified section numbers (R0).
+
+## v22 page map (record)
+
+Written for v22. Concept numbers and phase names in this part are from before v23; use the list above for the current order.
+
 Words (HTML text): 3559 before, 1536 after (-57%).
 
 | Original block | Decision |

@@ -29,36 +29,6 @@
           </div>
         </div>
 
-        <div class="section-block" data-page="concept:pull-requests">
-          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
-          <div class="section-block-body">
-            <div class="tasks">
-              <div class="task" data-id="p4-branching-strategy">
-                <div class="task-cb">✓</div>
-                <div class="task-content">
-                  <div class="task-text">Agree on a branching strategy before writing a line of shared code <span class="task-tag t-crucial">Crucial</span></div>
-                  <div class="task-note">Rule: main is always buildable. Features go on branches. Merge via pull request. <span class="task-time">~20 min</span></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="section-block" data-page="concept:merge-conflicts">
-          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
-          <div class="section-block-body">
-            <div class="tasks">
-              <div class="task" data-id="p4-merge-conflict">
-                <div class="task-cb">✓</div>
-                <div class="task-content">
-                  <div class="task-text">Deliberately create and resolve a merge conflict. Do this before it happens in real work.</div>
-                  <div class="task-note"><span class="task-time">~20 min</span></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div class="section-block" data-page="concept:gitignore">
           <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
           <div class="section-block-body">
@@ -66,23 +36,8 @@
               <div class="task" data-id="p4-gitignore">
                 <div class="task-cb">✓</div>
                 <div class="task-content">
-                  <div class="task-text">Add a .gitignore for C/C++ so you never commit .exe, .obj, or .pdb files</div>
-                  <div class="task-note"><span class="task-time">~10 min</span></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="section-block" data-page="practice">
-          <div class="section-block-header"><span class="badge badge-green">Tasks</span></div>
-          <div class="section-block-body">
-            <div class="tasks">
-              <div class="task" data-id="p4-git-core-ops">
-                <div class="task-cb">✓</div>
-                <div class="task-content">
-                  <div class="task-text">Learn the 5 core Git operations: commit, push, pull, branch, merge <span class="task-tag t-git">Git</span></div>
-                  <div class="task-note">Use learngitbranching.js.org, it's interactive and free <span class="task-time">~30 min</span></div>
+                  <div class="task-text">Add a .gitignore for C/C++ so you never commit .exe, .obj, .pdb or .ilk files <span class="task-tag t-crucial">Crucial</span></div>
+                  <div class="task-note">Do it before you share any code. Then build and run <span class="cmd">git check-ignore -v runner.obj</span> to prove the rule works. <span class="task-time">~10 min</span></div>
                 </div>
               </div>
             </div>
@@ -125,6 +80,51 @@ Release/
 *.suo
 *.user
 .vs/</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block" data-page="concept:pull-requests">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
+              <div class="task" data-id="p4-branching-strategy">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Agree on a branching strategy before writing a line of shared code <span class="task-tag t-crucial">Crucial</span></div>
+                  <div class="task-note">Rule: main is always buildable. Features go on branches. Merge via pull request. <span class="task-time">~20 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block" data-page="concept:merge-conflicts">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
+              <div class="task" data-id="p4-merge-conflict">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Deliberately create and resolve a merge conflict. Do this before it happens in real work.</div>
+                  <div class="task-note"><span class="task-time">~20 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block" data-page="practice">
+          <div class="section-block-header"><span class="badge badge-green">Tasks</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
+              <div class="task" data-id="p4-git-core-ops">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Learn the 5 core Git operations: commit, push, pull, branch, merge <span class="task-tag t-git">Git</span></div>
+                  <div class="task-note">Use learngitbranching.js.org, it's interactive and free <span class="task-time">~30 min</span></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

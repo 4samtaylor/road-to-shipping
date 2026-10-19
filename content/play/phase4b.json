@@ -1756,5 +1756,295 @@
         "outAt": 0.8
       }
     ]
+  },
+  "ifdef": {
+    "scene": "p4b-pre",
+    "steps": [
+      {
+        "line": 1,
+        "ms": 2000,
+        "note": "build.bat runs cl. Before anything is compiled, the preprocessor makes one pass over the file, top to bottom. It keeps or cuts lines, and the compiler only gets what it keeps.",
+        "do": [
+          {
+            "a": "cl"
+          }
+        ]
+      },
+      {
+        "line": 3,
+        "ms": 1500,
+        "note": "A #define with no value. It replaces nothing; it just switches the name SHOW_HITBOXES on.",
+        "do": [
+          {
+            "a": "def",
+            "name": "SHOW_HITBOXES",
+            "src": "#define, line 3"
+          }
+        ]
+      },
+      {
+        "line": 6,
+        "ms": 1100,
+        "note": "Ordinary code is not a switch, so it goes straight through to the compiler.",
+        "do": [
+          {
+            "a": "send",
+            "t": "int lives = 3;"
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1800,
+        "note": "#ifdef asks one question: is SHOW_HITBOXES defined? It is, so the debug printf is kept.",
+        "do": [
+          {
+            "a": "test",
+            "row": 0,
+            "r": true,
+            "why": "SHOW_HITBOXES on",
+            "len": 0.6
+          },
+          {
+            "a": "send",
+            "row": 0,
+            "t": "printf(\"[debug] hitboxes on\\n\");",
+            "at": 0.55
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 1800,
+        "note": "#ifndef is the opposite: keep the lines if the name is not defined. Nothing defines HARD_MODE, so the bonus line is kept.",
+        "do": [
+          {
+            "a": "test",
+            "row": 1,
+            "r": true,
+            "why": "HARD_MODE is off",
+            "len": 0.6
+          },
+          {
+            "a": "send",
+            "row": 1,
+            "t": "lives = lives + 2;",
+            "at": 0.55
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 1600,
+        "note": "#else starts the other half. Only one half survives, so lives = 1; is cut before compiling.",
+        "do": [
+          {
+            "a": "test",
+            "row": 2,
+            "r": false,
+            "why": "other half kept"
+          }
+        ]
+      },
+      {
+        "line": 16,
+        "ms": 1500,
+        "note": "#if 0 is always false. The old title screen is cut, every build.",
+        "do": [
+          {
+            "a": "test",
+            "row": 3,
+            "r": false,
+            "why": "0 means false"
+          }
+        ]
+      },
+      {
+        "line": 20,
+        "ms": 1500,
+        "note": "The rest goes through. This is everything the compiler gets. The cut lines are not hidden; they are simply not there.",
+        "do": [
+          {
+            "a": "send",
+            "t": "printf(\"lives %d\\n\", lives);",
+            "len": 0.5
+          },
+          {
+            "a": "send",
+            "t": "return 0;",
+            "at": 0.4,
+            "len": 0.5
+          }
+        ]
+      },
+      {
+        "line": 9,
+        "ms": 1500,
+        "note": "Now it compiles and runs. The debug printf survived the cut, so it prints.",
+        "do": [
+          {
+            "a": "build",
+            "len": 0.5
+          },
+          {
+            "a": "print",
+            "t": "[debug] hitboxes on",
+            "at": 0.4
+          }
+        ],
+        "out": "> game.exe\n[debug] hitboxes on\n",
+        "outAt": 0.55
+      },
+      {
+        "line": 20,
+        "ms": 1200,
+        "note": "lives started at 3 and the kept line added 2: lives 5.",
+        "do": [
+          {
+            "a": "print",
+            "t": "lives 5"
+          }
+        ],
+        "out": "lives 5\n",
+        "outAt": 0.4
+      },
+      {
+        "line": 11,
+        "ms": 2600,
+        "note": "Now change only build.bat: add /DHARD_MODE to the cl line. That defines HARD_MODE for the whole build, as if a #define sat at the top. The file is untouched, and the preprocessor starts again.",
+        "do": [
+          {
+            "a": "rebuild"
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1700,
+        "note": "Line 3 still defines SHOW_HITBOXES, so the debug printf is kept again.",
+        "do": [
+          {
+            "a": "send",
+            "t": "int lives = 3;",
+            "len": 0.4
+          },
+          {
+            "a": "test",
+            "row": 0,
+            "r": true,
+            "why": "SHOW_HITBOXES on",
+            "at": 0.15,
+            "len": 0.5
+          },
+          {
+            "a": "send",
+            "row": 0,
+            "t": "printf(\"[debug] hitboxes on\\n\");",
+            "at": 0.6
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 1700,
+        "note": "This time HARD_MODE is defined, so #ifndef HARD_MODE is false. The bonus line is cut.",
+        "do": [
+          {
+            "a": "test",
+            "row": 1,
+            "r": false,
+            "why": "HARD_MODE is on"
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 1700,
+        "note": "So the #else half is the one that survives: lives = 1; is kept.",
+        "do": [
+          {
+            "a": "test",
+            "row": 2,
+            "r": true,
+            "why": "#ifndef half cut",
+            "len": 0.6
+          },
+          {
+            "a": "send",
+            "row": 2,
+            "t": "lives = 1;",
+            "at": 0.55
+          }
+        ]
+      },
+      {
+        "line": 16,
+        "ms": 1100,
+        "note": "#if 0 is still cut. Nothing about it changed.",
+        "do": [
+          {
+            "a": "test",
+            "row": 3,
+            "r": false,
+            "why": "0 means false"
+          }
+        ]
+      },
+      {
+        "line": 20,
+        "ms": 1400,
+        "note": "Same file, different program: the compiler gets lives = 1; this time.",
+        "do": [
+          {
+            "a": "send",
+            "t": "printf(\"lives %d\\n\", lives);",
+            "len": 0.5
+          },
+          {
+            "a": "send",
+            "t": "return 0;",
+            "at": 0.4,
+            "len": 0.5
+          }
+        ]
+      },
+      {
+        "line": 9,
+        "ms": 1500,
+        "note": "Run the new game.exe. SHOW_HITBOXES is still on, so the debug line prints.",
+        "do": [
+          {
+            "a": "build",
+            "len": 0.5
+          },
+          {
+            "a": "print",
+            "t": "[debug] hitboxes on",
+            "at": 0.4
+          }
+        ],
+        "out": "> game.exe\n[debug] hitboxes on\n",
+        "outAt": 0.55
+      },
+      {
+        "line": 20,
+        "ms": 1300,
+        "note": "lives is 1: the #else half was the one compiled.",
+        "do": [
+          {
+            "a": "print",
+            "t": "lives 1"
+          }
+        ],
+        "out": "lives 1\n",
+        "outAt": 0.4
+      },
+      {
+        "line": 21,
+        "ms": 1300,
+        "note": "return 0. One file, two builds: lives 5 without /DHARD_MODE, lives 1 with it.",
+        "do": []
+      }
+    ]
   }
 }

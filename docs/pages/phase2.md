@@ -1,5 +1,29 @@
 # Phase 2 page map
 
+## Current shape (v23)
+
+Phase 02 Values & Expressions. File `content/05-phase2.html`, ladder `content/ladders/phase2.json`, phase id `phase2`. Comes after `phase1`, before `phase2b`.
+
+Pages: Overview, 6 concepts, Trace, Build, Practice, Review.
+
+Concepts (every one has a Learn it section with a King line; new in v23: `operators`, `sizes`):
+
+1. `types` Variables and types. King: §2.4–2.7, §7.1–7.3
+2. `printf` Printing values with printf. King: §3.1
+3. `scanf` Reading input with scanf. King: §2.5, §3.2, §7.2, §22.3
+4. `math` Division, remainder and casts. King: §4.1, §7.4
+5. `operators` Assignment, ++ and side effects. King: §4.2–4.5
+6. `sizes` How big a number can be. King: §7.1–7.2, §7.4–7.6, §23.2
+
+Notes:
+- Split in R2 at King's chapter 4/5 boundary. `if`, `switch`, `loops` and `rand` moved to Phase 2.5 (`phase2b`); ticks move with `LAD_MIGRATIONS` entry `v23-phase2-split`.
+- `math` renamed "Division, remainder and casts". New build: damage.c. The frame loop and guessing-game builds moved to 2.5.
+- Starters that use scanf keep `#define _CRT_SECURE_NO_WARNINGS` as line 1 (D4 was not applied; see HANDOFF).
+
+## v22 page map (record)
+
+Written for v22. Concept numbers and phase names in this part are from before v23; use the list above for the current order.
+
 Words: 4925 before, 2582 after (about -48%).
 
 | Original block | Decision |
