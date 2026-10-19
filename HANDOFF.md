@@ -1,6 +1,6 @@
 # Road to Shipping: session handoff
 
-Last updated: 18 Oct 2026, after v23 (King depth + Phase 00, releases R0–R7; PRs #23–#27 merged, R6/R7 on branch `v23-r6`). Owner: Sam (GitHub `4samtaylor`). Read this first in a new session.
+Last updated: 18 Oct 2026, after v23 shipped (King depth + Phase 00, releases R0–R7; PRs #23–#28). Owner: Sam (GitHub `4samtaylor`). Read this first in a new session.
 
 ## What this is
 
@@ -22,7 +22,7 @@ A C game-dev learning roadmap (12 phases, 00 to 07 with half-steps: how computer
 
 **Next up, in order:**
 
-1. **v23 is complete.** R6/R7 (branch `v23-r6`) added Phase 00 with See It Run for all 9 concepts, Learn it for Phases 4 and 7, the Phase 7 "Things Claude may show you" box, See It Run for Phase 1 "Comments and layout" and Phase 4.5 "Preprocessor switches", the docs/pages refresh, KING_MAP and V23_PLAN on main, and the em-dash sweep. Every concept in every phase now has Learn it, and every concept in Phases 00 to 6 has a See It Run (Phase 7 is about working with Claude and has none).
+1. **v23 is complete.** R6/R7 (PR #28) added Phase 00 with See It Run for all 9 concepts, Learn it for Phases 4 and 7, the Phase 7 "Things Claude may show you" box, See It Run for Phase 1 "Comments and layout" and Phase 4.5 "Preprocessor switches", the docs/pages refresh, KING_MAP and V23_PLAN on main, and the em-dash sweep. Every concept in every phase now has Learn it, and every concept in Phases 00 to 6 has a See It Run (Phase 7 is about working with Claude and has none).
 2. **Watch Sam's first week on v23.** Learn-it sections run 200–680 words; ask whether they feel too long on the phone and whether Phase 00 should be optional for him.
 3. **Settled, not deferred:** `_CRT_SECURE_NO_WARNINGS` stays a `#define` at the top of each source file (Phase 4.5 "Preprocessor switches" teaches why it must come before the includes), and build.bat FLAGS leave out `/nologo` on purpose (Phase 1 "Compiling" uses cl's banner lines as signposts for each build step). `/RTC1` is not used; the debugger page says so. Splitting `scanf` into two rungs was optional and not done.
 4. **Small leftovers:** none known. (The check-kit README and Start page step 9 were fixed in R6.)
