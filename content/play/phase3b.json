@@ -1,1935 +1,1857 @@
 {
- "structs": {
-  "scene": "p3b-struct",
-  "steps": [
-   {
-    "line": 3,
-    "ms": 1300,
-    "note": "This is a blueprint: a blank form with three labelled boxes. It describes a Player, but no player exists yet.",
-    "do": [
-     {
-      "a": "card",
-      "id": "bp",
-      "title": "Player",
-      "sub": "blueprint",
-      "kind": "bp",
-      "fields": [
-       [
-        "float",
-        "x",
-        null
-       ],
-       [
-        "float",
-        "y",
-        null
-       ],
-       [
-        "int",
-        "health",
-        null
-       ]
-      ],
-      "x": 8,
-      "y": 20
-     }
-    ]
-   },
-   {
-    "line": 4,
-    "ms": 800,
-    "note": "First box: x holds a decimal number.",
-    "do": [
-     {
-      "a": "pulse",
-      "id": "bp",
-      "f": 0
-     }
-    ]
-   },
-   {
-    "line": 5,
-    "ms": 900,
-    "note": "Second box: y, another decimal. Different types can sit side by side in one struct.",
-    "do": [
-     {
-      "a": "pulse",
-      "id": "bp",
-      "f": 1
-     }
-    ]
-   },
-   {
-    "line": 6,
-    "ms": 800,
-    "note": "Third box: health, a whole number.",
-    "do": [
-     {
-      "a": "pulse",
-      "id": "bp",
-      "f": 2
-     }
-    ]
-   },
-   {
-    "line": 7,
-    "ms": 1000,
-    "note": "The name after the closing brace, Player, becomes a type, just like int.",
-    "do": [
-     {
-      "a": "pulse",
-      "id": "bp"
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 1200,
-    "note": "Now a real player is built from the blueprint. Every box starts as garbage, shown as ?.",
-    "do": [
-     {
-      "a": "card",
-      "id": "hero",
-      "title": "hero",
-      "sub": "Player",
-      "fields": [
-       [
-        "float",
-        "x",
-        null
-       ],
-       [
-        "float",
-        "y",
-        null
-       ],
-       [
-        "int",
-        "health",
-        null
-       ]
-      ],
-      "x": 142,
-      "y": 20,
-      "col": "accent"
-     }
-    ]
-   },
-   {
-    "line": 11,
-    "ms": 1100,
-    "note": "A second Player. It is a completely separate form with its own boxes.",
-    "do": [
-     {
-      "a": "card",
-      "id": "boss",
-      "title": "boss",
-      "sub": "Player",
-      "fields": [
-       [
-        "float",
-        "x",
-        null
-       ],
-       [
-        "float",
-        "y",
-        null
-       ],
-       [
-        "int",
-        "health",
-        null
-       ]
-      ],
-      "x": 276,
-      "y": 20,
-      "col": "orange"
-     }
-    ]
-   },
-   {
-    "line": 12,
-    "ms": 1100,
-    "note": "The dot reaches into one box by name: hero's health becomes 100.",
-    "do": [
-     {
-      "a": "set",
-      "id": "hero",
-      "f": 2,
-      "v": 100,
-      "exp": "hero.health = 100"
-     }
-    ]
-   },
-   {
-    "line": 13,
-    "ms": 1100,
-    "note": "Same field name, different form: only boss's health changes.",
-    "do": [
-     {
-      "a": "set",
-      "id": "boss",
-      "f": 2,
-      "v": 500,
-      "exp": "boss.health = 500"
-     }
-    ]
-   },
-   {
-    "line": 14,
-    "ms": 1100,
-    "note": "hero.x gets 2.5. Its y box is still garbage.",
-    "do": [
-     {
-      "a": "set",
-      "id": "hero",
-      "f": 0,
-      "v": "2.5",
-      "exp": "hero.x = 2.5"
-     }
-    ]
-   },
-   {
-    "line": 15,
-    "ms": 1300,
-    "note": "Read boss's health, subtract 30, store it back: 500 becomes 470. hero is untouched.",
-    "do": [
-     {
-      "a": "set",
-      "id": "boss",
-      "f": 2,
-      "v": 470,
-      "exp": "boss.health = boss.health - 30"
-     }
-    ]
-   },
-   {
-    "line": 16,
-    "ms": 1600,
-    "note": "printf reads hero.health, boss.health and hero.x. hero.y still holds garbage, so it is good we never read it.",
-    "do": [
-     {
-      "a": "pulse",
-      "id": "hero",
-      "f": 2,
-      "at": 0,
-      "len": 0.35
-     },
-     {
-      "a": "pulse",
-      "id": "boss",
-      "f": 2,
-      "at": 0.3,
-      "len": 0.35
-     },
-     {
-      "a": "pulse",
-      "id": "hero",
-      "f": 0,
-      "at": 0.6,
-      "len": 0.35
-     }
-    ],
-    "out": "hero 100, boss 470, x 2.5\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 17,
-    "ms": 700,
-    "note": "The program ends.",
-    "do": []
-   }
-  ]
- },
- "struct-copy": {
-  "scene": "p3b-struct",
-  "steps": [
-   {
-    "line": 13,
-    "ms": 1200,
-    "note": "main builds one Player called hero. Its health box starts as garbage.",
-    "do": [
-     {
-      "a": "frame",
-      "id": "fm",
-      "t": "main()",
-      "x": 4,
-      "y": 26,
-      "w": 268,
-      "h": 112
-     },
-     {
-      "a": "card",
-      "id": "hero",
-      "title": "hero",
-      "sub": "Player",
-      "fields": [
-       [
-        "int",
-        "health",
-        null
-       ]
-      ],
-      "x": 12,
-      "y": 48,
-      "w": 116,
-      "col": "accent",
-      "at": 0.25
-     }
-    ]
-   },
-   {
-    "line": 14,
-    "ms": 1000,
-    "note": "hero's health becomes 100.",
-    "do": [
-     {
-      "a": "set",
-      "id": "hero",
-      "f": 0,
-      "v": 100,
-      "exp": "hero.health = 100"
-     }
-    ]
-   },
-   {
-    "line": 15,
-    "ms": 1800,
-    "note": "Player backup = hero; is a photocopier. Every field of hero is copied into a brand new form.",
-    "do": [
-     {
-      "a": "card",
-      "id": "backup",
-      "title": "backup",
-      "sub": "Player",
-      "copy": "hero",
-      "fields": [
-       [
-        "int",
-        "health",
-        null
-       ]
-      ],
-      "x": 146,
-      "y": 48,
-      "w": 116,
-      "col": "purple"
-     }
-    ]
-   },
-   {
-    "line": 16,
-    "ms": 1000,
-    "note": "main calls hurt(hero). C will hand hurt a photocopy, not hero itself.",
-    "do": [
-     {
-      "a": "pulse",
-      "id": "hero"
-     }
-    ]
-   },
-   {
-    "line": 7,
-    "ms": 1800,
-    "note": "hurt receives its own copy, called p. It lives in hurt's space, separate from main's.",
-    "do": [
-     {
-      "a": "frame",
-      "id": "fh",
-      "t": "hurt()",
-      "x": 280,
-      "y": 26,
-      "w": 116,
-      "h": 112
-     },
-     {
-      "a": "card",
-      "id": "p",
-      "title": "p",
-      "sub": "copy",
-      "copy": "hero",
-      "fields": [
-       [
-        "int",
-        "health",
-        null
-       ]
-      ],
-      "x": 284,
-      "y": 48,
-      "w": 108,
-      "col": "orange",
-      "at": 0.1
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 1200,
-    "note": "The copy's health drops by 10. Only the copy changes.",
-    "do": [
-     {
-      "a": "set",
-      "id": "p",
-      "f": 0,
-      "v": 90,
-      "exp": "p.health = p.health - 10"
-     }
-    ]
-   },
-   {
-    "line": 9,
-    "ms": 1000,
-    "note": "hurt prints 90. It did its job, on a photocopy.",
-    "do": [
-     {
-      "a": "pulse",
-      "id": "p"
-     }
-    ],
-    "out": "Inside hurt: 90\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 10,
-    "ms": 1100,
-    "note": "hurt ends and its copy is thrown away.",
-    "do": [
-     {
-      "a": "drop",
-      "id": "p"
-     },
-     {
-      "a": "frame",
-      "id": "fh",
-      "off": true
-     }
-    ]
-   },
-   {
-    "line": 17,
-    "ms": 1100,
-    "note": "Back in main, only backup changes: its health becomes 1.",
-    "do": [
-     {
-      "a": "set",
-      "id": "backup",
-      "f": 0,
-      "v": 1,
-      "exp": "backup.health = 1"
-     }
-    ]
-   },
-   {
-    "line": 18,
-    "ms": 1500,
-    "note": "hero is still 100 and backup is 1. Two separate forms that started out identical.",
-    "do": [
-     {
-      "a": "pulse",
-      "id": "hero",
-      "f": 0,
-      "at": 0,
-      "len": 0.45
-     },
-     {
-      "a": "pulse",
-      "id": "backup",
-      "f": 0,
-      "at": 0.45,
-      "len": 0.45
-     }
-    ],
-    "out": "hero 100, backup 1\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 19,
-    "ms": 700,
-    "note": "The program ends.",
-    "do": []
-   }
-  ]
- },
- "pointers": {
-  "scene": "p3b-mem",
-  "steps": [
-   {
-    "line": 3,
-    "ms": 1200,
-    "note": "Memory is a row of boxes, and every box has an address, like a house number.",
-    "do": [
-     {
-      "a": "cap",
-      "t": "main starts: boxes get built as the lines run"
-     }
-    ]
-   },
-   {
-    "line": 4,
-    "ms": 1200,
-    "note": "An ordinary int box named score holds 10. Its address is 0x1000.",
-    "do": [
-     {
-      "a": "cell",
-      "id": "score",
-      "kind": "int",
-      "type": "int",
-      "name": "score",
-      "addr": "0x1000",
-      "v": 10,
-      "x": 20,
-      "y": 108
-     }
-    ]
-   },
-   {
-    "line": 5,
-    "ms": 1900,
-    "note": "&score is score's address. p is a box that holds that address, so an arrow points from p to score.",
-    "do": [
-     {
-      "a": "cell",
-      "id": "p",
-      "kind": "ptr",
-      "type": "int*",
-      "name": "p",
-      "addr": "0x1008",
-      "x": 146,
-      "y": 108,
-      "to": "score",
-      "pv": "0x1000"
-     },
-     {
-      "a": "tag",
-      "id": "score",
-      "t": "&score = 0x1000",
-      "below": true,
-      "at": 0.35,
-      "len": 0.6
-     },
-     {
-      "a": "cap",
-      "t": "int* p = &score;"
-     }
-    ]
-   },
-   {
-    "line": 6,
-    "ms": 1600,
-    "note": "copy gets the value 10. It is a separate box with its own address, so it is unrelated to score from now on.",
-    "do": [
-     {
-      "a": "cell",
-      "id": "copy",
-      "kind": "int",
-      "type": "int",
-      "name": "copy",
-      "addr": "0x1010",
-      "v": "",
-      "x": 272,
-      "y": 108
-     },
-     {
-      "a": "set",
-      "id": "copy",
-      "v": 10,
-      "from": "score",
-      "at": 0.3,
-      "len": 0.7
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 2400,
-    "note": "*p means: follow the arrow and use the box at the end. Writing 50 there changes score, though score is never named.",
-    "do": [
-     {
-      "a": "deref",
-      "p": "p",
-      "v": 50,
-      "lbl": "*p"
-     },
-     {
-      "a": "cap",
-      "t": "*p = 50;  follow the arrow, write 50"
-     }
-    ]
-   },
-   {
-    "line": 9,
-    "ms": 1500,
-    "note": "score is 50 and copy is still 10.",
-    "do": [
-     {
-      "a": "pulse",
-      "id": "score",
-      "at": 0,
-      "len": 0.45
-     },
-     {
-      "a": "pulse",
-      "id": "copy",
-      "at": 0.45,
-      "len": 0.45
-     },
-     {
-      "a": "cap",
-      "t": ""
-     }
-    ],
-    "out": "score 50, copy 10\n",
-    "outAt": 0.25
-   },
-   {
-    "line": 10,
-    "ms": 1800,
-    "note": "*p reads the same box, so it prints 50. Two names for one box: score and *p.",
-    "do": [
-     {
-      "a": "deref",
-      "p": "p",
-      "lbl": "*p"
-     },
-     {
-      "a": "cap",
-      "t": "*p reads the box p points at"
-     }
-    ],
-    "out": "*p is 50\n",
-    "outAt": 0.55
-   },
-   {
-    "line": 11,
-    "ms": 700,
-    "note": "The program ends.",
-    "do": [
-     {
-      "a": "cap",
-      "t": ""
-     }
-    ]
-   }
-  ]
- },
- "by-pointer": {
-  "scene": "p3b-mem",
-  "steps": [
-   {
-    "line": 16,
-    "ms": 900,
-    "note": "main starts. Its boxes will live in this frame.",
-    "do": [
-     {
-      "a": "frame",
-      "id": "fm",
-      "t": "main()",
-      "x": 6,
-      "y": 20,
-      "w": 388,
-      "h": 118
-     }
-    ]
-   },
-   {
-    "line": 17,
-    "ms": 1500,
-    "note": "Player hero is one group of two boxes, health and score. The group sits at 0x3000.",
-    "do": [
-     {
-      "a": "cell",
-      "id": "hero",
-      "kind": "group",
-      "type": "Player",
-      "name": "hero",
-      "addr": "0x3000",
-      "x": 100,
-      "y": 40,
-      "w": 200,
-      "h": 84
-     },
-     {
-      "a": "cell",
-      "id": "health",
-      "kind": "int",
-      "type": "int",
-      "name": "health",
-      "addr": "0x3000",
-      "v": "?",
-      "x": 108,
-      "y": 62,
-      "w": 86,
-      "h": 54,
-      "at": 0.25,
-      "len": 0.5
-     },
-     {
-      "a": "cell",
-      "id": "score",
-      "kind": "int",
-      "type": "int",
-      "name": "score",
-      "addr": "0x3004",
-      "v": "?",
-      "x": 204,
-      "y": 62,
-      "w": 88,
-      "h": 54,
-      "at": 0.4,
-      "len": 0.5
-     }
-    ]
-   },
-   {
-    "line": 18,
-    "ms": 900,
-    "note": "hero.health is set to 60.",
-    "do": [
-     {
-      "a": "set",
-      "id": "health",
-      "v": 60
-     }
-    ]
-   },
-   {
-    "line": 19,
-    "ms": 900,
-    "note": "hero.score is set to 99.",
-    "do": [
-     {
-      "a": "set",
-      "id": "score",
-      "v": 99
-     }
-    ]
-   },
-   {
-    "line": 20,
-    "ms": 1500,
-    "note": "main calls reset(&hero.score). &hero.score is the address of just that one box: 0x3004.",
-    "do": [
-     {
-      "a": "tag",
-      "id": "score",
-      "t": "&hero.score = 0x3004",
-      "below": true
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 1700,
-    "note": "reset gets a copy of the address, not a copy of score. Its box holds 0x3004 and an arrow reaches back into main's score.",
-    "do": [
-     {
-      "a": "frame",
-      "id": "fr",
-      "t": "reset()",
-      "x": 6,
-      "y": 146,
-      "w": 388,
-      "h": 98
-     },
-     {
-      "a": "cell",
-      "id": "rs",
-      "kind": "ptr",
-      "type": "int*",
-      "name": "score",
-      "addr": "0x2ff0",
-      "x": 210,
-      "y": 172,
-      "w": 108,
-      "h": 62,
-      "to": "score",
-      "pv": "0x3004",
-      "at": 0.25
-     }
-    ]
-   },
-   {
-    "line": 9,
-    "ms": 2300,
-    "note": "*score = 0 follows the arrow and writes 0 into main's box. This is the reset() that copies could never do.",
-    "do": [
-     {
-      "a": "deref",
-      "p": "rs",
-      "v": 0,
-      "lbl": "*score"
-     },
-     {
-      "a": "cap",
-      "t": "*score = 0;  follow the arrow, write 0"
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 1100,
-    "note": "reset ends and its pointer vanishes. But the change in main's score box stays.",
-    "do": [
-     {
-      "a": "hide",
-      "ids": [
-       "rs"
-      ],
-      "fr": [
-       "fr"
-      ]
-     },
-     {
-      "a": "cap",
-      "t": ""
-     }
-    ]
-   },
-   {
-    "line": 21,
-    "ms": 1400,
-    "note": "Next call: &hero is the address of the whole Player, 0x3000.",
-    "do": [
-     {
-      "a": "tag",
-      "id": "hero",
-      "t": "&hero = 0x3000",
-      "below": true
-     }
-    ]
-   },
-   {
-    "line": 12,
-    "ms": 1800,
-    "note": "heal gets a Player* named p. Its arrow points at the whole hero group. amount is a plain copy of 25.",
-    "do": [
-     {
-      "a": "frame",
-      "id": "fr2",
-      "t": "heal()",
-      "x": 6,
-      "y": 146,
-      "w": 388,
-      "h": 98
-     },
-     {
-      "a": "cell",
-      "id": "hp",
-      "kind": "ptr",
-      "type": "Player*",
-      "name": "p",
-      "addr": "0x2ff0",
-      "x": 60,
-      "y": 172,
-      "w": 108,
-      "h": 62,
-      "to": "hero",
-      "pv": "0x3000",
-      "at": 0.2
-     },
-     {
-      "a": "cell",
-      "id": "amt",
-      "kind": "int",
-      "type": "int",
-      "name": "amount",
-      "addr": "0x2ff8",
-      "v": 25,
-      "x": 210,
-      "y": 172,
-      "w": 108,
-      "h": 62,
-      "at": 0.2
-     }
-    ]
-   },
-   {
-    "line": 13,
-    "ms": 2500,
-    "note": "p->health means: follow the arrow, then take the health box. 60 + 25 = 85, written into the real hero.",
-    "do": [
-     {
-      "a": "deref",
-      "p": "hp",
-      "to": "health",
-      "v": 85,
-      "lbl": "p->health"
-     },
-     {
-      "a": "cap",
-      "t": "p->health = 60 + 25;"
-     }
-    ]
-   },
-   {
-    "line": 14,
-    "ms": 1100,
-    "note": "heal ends. hero keeps the new health.",
-    "do": [
-     {
-      "a": "hide",
-      "ids": [
-       "hp",
-       "amt"
-      ],
-      "fr": [
-       "fr2"
-      ]
-     },
-     {
-      "a": "cap",
-      "t": ""
-     }
-    ]
-   },
-   {
-    "line": 22,
-    "ms": 1500,
-    "note": "Both changes stuck: health 85 and score 0.",
-    "do": [
-     {
-      "a": "pulse",
-      "id": "health",
-      "at": 0,
-      "len": 0.45
-     },
-     {
-      "a": "pulse",
-      "id": "score",
-      "at": 0.45,
-      "len": 0.45
-     }
-    ],
-    "out": "health 85, score 0\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 23,
-    "ms": 700,
-    "note": "The program ends.",
-    "do": []
-   }
-  ]
- },
- "null": {
-  "scene": "p3b-mem",
-  "steps": [
-   {
-    "line": 15,
-    "ms": 1400,
-    "note": "main builds a Player called hero.",
-    "do": [
-     {
-      "a": "frame",
-      "id": "fm",
-      "t": "main()",
-      "x": 6,
-      "y": 24,
-      "w": 388,
-      "h": 128
-     },
-     {
-      "a": "cell",
-      "id": "hero",
-      "kind": "group",
-      "type": "Player",
-      "name": "hero",
-      "addr": "0x3000",
-      "x": 18,
-      "y": 62,
-      "w": 112,
-      "h": 84,
-      "at": 0.15
-     },
-     {
-      "a": "cell",
-      "id": "health",
-      "kind": "int",
-      "type": "int",
-      "name": "health",
-      "addr": "0x3000",
-      "v": "?",
-      "x": 26,
-      "y": 84,
-      "w": 96,
-      "h": 54,
-      "at": 0.4,
-      "len": 0.5
-     }
-    ]
-   },
-   {
-    "line": 16,
-    "ms": 900,
-    "note": "hero.health is 50.",
-    "do": [
-     {
-      "a": "set",
-      "id": "health",
-      "v": 50
-     }
-    ]
-   },
-   {
-    "line": 17,
-    "ms": 1500,
-    "note": "target is a pointer with no address written in it. NULL means points at nothing, so the arrow is a dead end.",
-    "do": [
-     {
-      "a": "cell",
-      "id": "target",
-      "kind": "ptr",
-      "type": "Player*",
-      "name": "target",
-      "addr": "0x3008",
-      "x": 150,
-      "y": 76,
-      "w": 108,
-      "h": 62,
-      "nul": true
-     }
-    ]
-   },
-   {
-    "line": 18,
-    "ms": 1700,
-    "note": "heal(target, 10): heal's p is a copy of target's value, which is NULL. Still nothing to follow.",
-    "do": [
-     {
-      "a": "frame",
-      "id": "fh",
-      "t": "heal()",
-      "x": 6,
-      "y": 158,
-      "w": 388,
-      "h": 88
-     },
-     {
-      "a": "cell",
-      "id": "hp",
-      "kind": "ptr",
-      "type": "Player*",
-      "name": "p",
-      "addr": "0x2ff0",
-      "x": 40,
-      "y": 178,
-      "w": 108,
-      "h": 58,
-      "nul": true,
-      "at": 0.2
-     },
-     {
-      "a": "cell",
-      "id": "amt",
-      "kind": "int",
-      "type": "int",
-      "name": "amount",
-      "addr": "0x2ff8",
-      "v": 10,
-      "x": 190,
-      "y": 178,
-      "w": 108,
-      "h": 58,
-      "at": 0.2
-     }
-    ]
-   },
-   {
-    "line": 7,
-    "ms": 1300,
-    "note": "The guard looks at the note first: p == NULL is true.",
-    "do": [
-     {
-      "a": "cap",
-      "t": "if (p == NULL)  ->  true"
-     },
-     {
-      "a": "pulse",
-      "id": "hp"
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 1000,
-    "note": "So it prints the message instead of following a missing arrow.",
-    "do": [
-     {
-      "a": "pulse",
-      "id": "hp"
-     }
-    ],
-    "out": "No player to heal\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 9,
-    "ms": 1200,
-    "note": "return leaves heal early. The line that would have crashed never runs.",
-    "do": [
-     {
-      "a": "hide",
-      "ids": [
-       "hp",
-       "amt"
-      ],
-      "fr": [
-       "fh"
-      ]
-     },
-     {
-      "a": "cap",
-      "t": ""
-     }
-    ]
-   },
-   {
-    "line": 19,
-    "ms": 1500,
-    "note": "target = &hero writes hero's address into target. Now there is an arrow to follow.",
-    "do": [
-     {
-      "a": "point",
-      "id": "target",
-      "to": "hero",
-      "pv": "0x3000"
-     }
-    ]
-   },
-   {
-    "line": 20,
-    "ms": 1700,
-    "note": "heal(target, 10) again. This time p holds a real address.",
-    "do": [
-     {
-      "a": "frame",
-      "id": "fh2",
-      "t": "heal()",
-      "x": 6,
-      "y": 158,
-      "w": 388,
-      "h": 88
-     },
-     {
-      "a": "cell",
-      "id": "hp",
-      "kind": "ptr",
-      "type": "Player*",
-      "name": "p",
-      "addr": "0x2ff0",
-      "x": 40,
-      "y": 178,
-      "w": 108,
-      "h": 58,
-      "to": "hero",
-      "pv": "0x3000",
-      "at": 0.2
-     },
-     {
-      "a": "cell",
-      "id": "amt",
-      "kind": "int",
-      "type": "int",
-      "name": "amount",
-      "addr": "0x2ff8",
-      "v": 10,
-      "x": 190,
-      "y": 178,
-      "w": 108,
-      "h": 58,
-      "at": 0.2
-     }
-    ]
-   },
-   {
-    "line": 7,
-    "ms": 1100,
-    "note": "p == NULL is false, so the function carries on.",
-    "do": [
-     {
-      "a": "cap",
-      "t": "if (p == NULL)  ->  false"
-     }
-    ]
-   },
-   {
-    "line": 11,
-    "ms": 2300,
-    "note": "Follow the arrow to health: 50 + 10 = 60.",
-    "do": [
-     {
-      "a": "deref",
-      "p": "hp",
-      "to": "health",
-      "v": 60,
-      "lbl": "p->health"
-     },
-     {
-      "a": "cap",
-      "t": "p->health = 50 + 10;"
-     }
-    ]
-   },
-   {
-    "line": 12,
-    "ms": 1100,
-    "note": "heal ends. hero keeps its new health.",
-    "do": [
-     {
-      "a": "hide",
-      "ids": [
-       "hp",
-       "amt"
-      ],
-      "fr": [
-       "fh2"
-      ]
-     },
-     {
-      "a": "cap",
-      "t": ""
-     }
-    ]
-   },
-   {
-    "line": 21,
-    "ms": 1000,
-    "note": "hero is 60.",
-    "do": [
-     {
-      "a": "pulse",
-      "id": "health"
-     }
-    ],
-    "out": "hero 60\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 23,
-    "ms": 1600,
-    "note": "fopen could not open the file, so it returned NULL. f is a pointer with nothing to point at.",
-    "do": [
-     {
-      "a": "cell",
-      "id": "f",
-      "kind": "ptr",
-      "type": "FILE*",
-      "name": "f",
-      "addr": "0x3010",
-      "x": 278,
-      "y": 76,
-      "w": 108,
-      "h": 62,
-      "nul": true
-     },
-     {
-      "a": "cap",
-      "t": "fopen(\"no_such_file.txt\") found nothing"
-     }
-    ]
-   },
-   {
-    "line": 24,
-    "ms": 1200,
-    "note": "The same check as before: f == NULL is true.",
-    "do": [
-     {
-      "a": "cap",
-      "t": "if (f == NULL)  ->  true"
-     },
-     {
-      "a": "pulse",
-      "id": "f"
-     }
-    ]
-   },
-   {
-    "line": 25,
-    "ms": 1000,
-    "note": "So the program reports the missing file instead of using a pointer to nowhere.",
-    "do": [
-     {
-      "a": "pulse",
-      "id": "f"
-     }
-    ],
-    "out": "No file\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 27,
-    "ms": 700,
-    "note": "The program ends.",
-    "do": [
-     {
-      "a": "cap",
-      "t": ""
-     }
-    ]
-   }
-  ]
- },
- "enum": {
-  "scene": "p3b-dial",
-  "steps": [
-   {
-    "line": 3,
-    "ms": 1800,
-    "note": "enum makes a list of names, and the compiler numbers them for you: 0, 1, 2.",
-    "do": [
-     {
-      "a": "names",
-      "n": 3
-     }
-    ]
-   },
-   {
-    "line": 6,
-    "ms": 1300,
-    "note": "state is set to STATE_PLAYING. The dial clicks to position 1.",
-    "do": [
-     {
-      "a": "needle",
-      "to": 1
-     }
-    ]
-   },
-   {
-    "line": 7,
-    "ms": 900,
-    "note": "lives is 0.",
-    "do": [
-     {
-      "a": "lives",
-      "v": 0
-     }
-    ]
-   },
-   {
-    "line": 9,
-    "ms": 1400,
-    "note": "Each name is really just an int. printf shows the numbers behind the names.",
-    "do": [
-     {
-      "a": "ints"
-     }
-    ],
-    "out": "MENU=0 PLAYING=1 GAMEOVER=2\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 10,
-    "ms": 1100,
-    "note": "Is lives == 0? Yes, so the block runs.",
-    "do": [
-     {
-      "a": "chk",
-      "t": "lives == 0",
-      "r": true
-     }
-    ]
-   },
-   {
-    "line": 11,
-    "ms": 1300,
-    "note": "Assign by name. The dial clicks to position 2, GAMEOVER.",
-    "do": [
-     {
-      "a": "needle",
-      "to": 2
-     }
-    ]
-   },
-   {
-    "line": 13,
-    "ms": 1600,
-    "note": "switch looks at state and jumps straight to the matching case.",
-    "do": [
-     {
-      "a": "hl",
-      "row": 2,
-      "sweep": true
-     }
-    ]
-   },
-   {
-    "line": 16,
-    "ms": 1200,
-    "note": "The GAMEOVER case runs and prints.",
-    "do": [
-     {
-      "a": "pulse",
-      "row": 2
-     }
-    ],
-    "out": "show game over\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 18,
-    "ms": 700,
-    "note": "The program ends.",
-    "do": []
-   }
-  ]
- },
- "headers": {
-  "scene": "p3b-files",
-  "steps": [
-   {
-    "line": 1,
-    "ms": 1200,
-    "note": "player.h is a header. It tells other files what exists, without doing any work.",
-    "do": [
-     {
-      "a": "show",
-      "sheet": "h"
-     }
-    ]
-   },
-   {
-    "line": 2,
-    "ms": 1300,
-    "note": "#pragma once: read this file only once per .c file, so Player is never defined twice.",
-    "do": [
-     {
-      "a": "hl",
-      "sheet": "h",
-      "rows": [
-       0
-      ]
-     }
-    ]
-   },
-   {
-    "line": 4,
-    "ms": 1300,
-    "note": "The struct lives in the header, so every file that includes it knows what a Player is.",
-    "do": [
-     {
-      "a": "hl",
-      "sheet": "h",
-      "rows": [
-       1,
-       2,
-       3
-      ]
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 1300,
-    "note": "A prototype: the name and types of player_heal, with no body.",
-    "do": [
-     {
-      "a": "hl",
-      "sheet": "h",
-      "rows": [
-       4,
-       5
-      ]
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 1100,
-    "note": "player.c is the kitchen, where the work happens.",
-    "do": [
-     {
-      "a": "hl",
-      "sheet": null
-     },
-     {
-      "a": "show",
-      "sheet": "c"
-     }
-    ]
-   },
-   {
-    "line": 11,
-    "ms": 2200,
-    "note": "#include \"player.h\" is a copy and paste. The compiler pastes the header's text right here.",
-    "do": [
-     {
-      "a": "hl",
-      "sheet": "c",
-      "kind": "inc"
-     },
-     {
-      "a": "paste",
-      "sheet": "c",
-      "at": 0.25,
-      "len": 0.75
-     }
-    ]
-   },
-   {
-    "line": 13,
-    "ms": 1300,
-    "note": "The body of player_heal lives here. Only this file needs it.",
-    "do": [
-     {
-      "a": "hl",
-      "sheet": "c",
-      "kind": "post",
-      "rows": [
-       0,
-       1,
-       2
-      ]
-     }
-    ]
-   },
-   {
-    "line": 17,
-    "ms": 1200,
-    "note": "main.c is a customer. It reads the menu (the header) and never sees the kitchen.",
-    "do": [
-     {
-      "a": "hl",
-      "sheet": null
-     },
-     {
-      "a": "show",
-      "sheet": "m"
-     }
-    ]
-   },
-   {
-    "line": 18,
-    "ms": 1200,
-    "note": "Angle brackets mean the compiler's own library: stdio.h.",
-    "do": [
-     {
-      "a": "hl",
-      "sheet": "m",
-      "kind": "pre"
-     }
-    ]
-   },
-   {
-    "line": 19,
-    "ms": 2200,
-    "note": "Quotes mean a header of mine, in this folder. Same paste, into main.c.",
-    "do": [
-     {
-      "a": "hl",
-      "sheet": "m",
-      "kind": "inc"
-     },
-     {
-      "a": "paste",
-      "sheet": "m",
-      "at": 0.25,
-      "len": 0.75
-     }
-    ]
-   },
-   {
-    "line": 24,
-    "ms": 1800,
-    "note": "main calls player_heal. It knows the name from the header, but the body gets connected later.",
-    "do": [
-     {
-      "a": "hl",
-      "sheet": "m",
-      "kind": "post",
-      "rows": [
-       1
-      ]
-     },
-     {
-      "a": "call"
-     }
-    ]
-   },
-   {
-    "line": 27,
-    "ms": 1500,
-    "note": "That is all three files. Build every .c file together so nothing is left out.",
-    "do": [
-     {
-      "a": "hl",
-      "sheet": null
-     },
-     {
-      "a": "build"
-     }
-    ]
-   }
-  ],
-  "prompt": ""
- },
- "linker": {
-  "scene": "p3b-link",
-  "steps": [
-   {
-    "line": 1,
-    "ms": 1400,
-    "note": "Only main.c is on the command line. player.c is not part of this build.",
-    "do": [
-     {
-      "a": "cmd",
-      "t": "cl main.c /Fe:game.exe",
-      "main": true,
-      "player": false
-     }
-    ]
-   },
-   {
-    "line": 2,
-    "ms": 1700,
-    "note": "main.c compiles fine into main.obj. The prototype was enough for the compiler. main.obj has a socket: it needs _player_heal.",
-    "do": [
-     {
-      "a": "compile",
-      "f": "main"
-     }
-    ]
-   },
-   {
-    "line": 3,
-    "ms": 2200,
-    "note": "The linker hunts for a piece named _player_heal to plug in. There is none. LNK2019.",
-    "do": [
-     {
-      "a": "scan",
-      "len": 0.6
-     },
-     {
-      "a": "err",
-      "n": 1,
-      "at": 0.6,
-      "len": 0.4
-     }
-    ]
-   },
-   {
-    "line": 4,
-    "ms": 1300,
-    "note": "LNK1120 sums it up: one unresolved name, so no game.exe.",
-    "do": [
-     {
-      "a": "err",
-      "n": 2
-     }
-    ]
-   },
-   {
-    "line": 6,
-    "ms": 1600,
-    "note": "The fix: list every .c file. Now player.c is in the build too.",
-    "do": [
-     {
-      "a": "clear",
-      "len": 0.45
-     },
-     {
-      "a": "cmd",
-      "t": "cl main.c player.c /Fe:game.exe",
-      "main": true,
-      "player": true,
-      "at": 0.4
-     }
-    ]
-   },
-   {
-    "line": 7,
-    "ms": 1300,
-    "note": "main.c compiles again to main.obj, with its socket.",
-    "do": [
-     {
-      "a": "compile",
-      "f": "main"
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 1500,
-    "note": "player.c compiles to player.obj, which offers _player_heal.",
-    "do": [
-     {
-      "a": "compile",
-      "f": "player"
-     }
-    ]
-   },
-   {
-    "line": 9,
-    "ms": 2000,
-    "note": "The linker matches the name, plugs player.obj into the socket, and builds game.exe.",
-    "do": [
-     {
-      "a": "link"
-     }
-    ]
-   }
-  ],
-  "prompt": ""
- },
- "debugger": {
-  "scene": "p3b-debug",
-  "steps": [
-   {
-    "line": 14,
-    "ms": 1500,
-    "note": "F9 puts a breakpoint on this line: a red dot. The program will stop before this line runs.",
-    "do": [
-     {
-      "a": "key",
-      "k": "F9"
-     },
-     {
-      "a": "bp",
-      "on": true
-     }
-    ]
-   },
-   {
-    "line": 14,
-    "ms": 2200,
-    "note": "F5 starts the program. It runs until the breakpoint, then freezes with a yellow arrow. Locals shows hero.health = 100.",
-    "do": [
-     {
-      "a": "key",
-      "k": "F5"
-     },
-     {
-      "a": "go",
-      "to": "paused",
-      "line": 14,
-      "title": "Locals: main",
-      "rows": [
-       [
-        "hero.health",
-        "100"
-       ]
-      ],
-      "stack": [
-       "main"
-      ]
-     }
-    ]
-   },
-   {
-    "line": 14,
-    "ms": 2300,
-    "note": "F10 steps over: the whole line runs, damage included, and the arrow lands on line 15. hero.health is now 70.",
-    "do": [
-     {
-      "a": "key",
-      "k": "F10"
-     },
-     {
-      "a": "arrow",
-      "to": 15
-     },
-     {
-      "a": "locals",
-      "title": "Locals: main",
-      "rows": [
-       [
-        "hero.health",
-        "70"
-       ]
-      ],
-      "hot": [
-       0
-      ],
-      "at": 0.5,
-      "len": 0.5
-     }
-    ]
-   },
-   {
-    "line": 15,
-    "ms": 2400,
-    "note": "F11 steps into: the arrow jumps inside damage. Locals now shows damage's own boxes, and Call Stack shows who called whom.",
-    "do": [
-     {
-      "a": "key",
-      "k": "F11"
-     },
-     {
-      "a": "arrow",
-      "to": 7
-     },
-     {
-      "a": "locals",
-      "title": "Locals: damage",
-      "rows": [
-       [
-        "p",
-        "0x000000e5a7affc10"
-       ],
-       [
-        "amount",
-        "30"
-       ],
-       [
-        "p->health",
-        "70",
-        "w"
-       ]
-      ],
-      "hot": []
-     },
-     {
-      "a": "stack",
-      "rows": [
-       "damage",
-       "main"
-      ],
-      "sel": 0
-     }
-    ]
-   },
-   {
-    "line": 7,
-    "ms": 1900,
-    "note": "F10 once to reach line 8. Watch p (an address), *p and p->health. Nothing has changed yet.",
-    "do": [
-     {
-      "a": "key",
-      "k": "F10"
-     },
-     {
-      "a": "arrow",
-      "to": 8
-     },
-     {
-      "a": "locals",
-      "title": "Locals: damage",
-      "rows": [
-       [
-        "p",
-        "0x000000e5a7affc10"
-       ],
-       [
-        "amount",
-        "30"
-       ],
-       [
-        "p->health",
-        "70",
-        "w"
-       ],
-       [
-        "*p",
-        "{health=70}",
-        "w"
-       ]
-      ],
-      "hot": [
-       3
-      ]
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 2000,
-    "note": "F10 runs this line. p->health drops to 40, and so does *p.",
-    "do": [
-     {
-      "a": "key",
-      "k": "F10"
-     },
-     {
-      "a": "arrow",
-      "to": 9
-     },
-     {
-      "a": "locals",
-      "title": "Locals: damage",
-      "rows": [
-       [
-        "p",
-        "0x000000e5a7affc10"
-       ],
-       [
-        "amount",
-        "30"
-       ],
-       [
-        "p->health",
-        "40",
-        "w"
-       ],
-       [
-        "*p",
-        "{health=40}",
-        "w"
-       ]
-      ],
-      "hot": [
-       2,
-       3
-      ]
-     }
-    ]
-   },
-   {
-    "line": 9,
-    "ms": 2000,
-    "note": "Click main in Call Stack to look at its boxes. hero.health is 40 too: same box, two names.",
-    "do": [
-     {
-      "a": "stack",
-      "rows": [
-       "damage",
-       "main"
-      ],
-      "sel": 1
-     },
-     {
-      "a": "locals",
-      "title": "Locals: main",
-      "rows": [
-       [
-        "hero.health",
-        "40"
-       ]
-      ],
-      "hot": [
-       0
-      ]
-     }
-    ]
-   },
-   {
-    "line": 16,
-    "ms": 1500,
-    "note": "F5 lets the program run on. The yellow arrow is gone, and printf prints.",
-    "do": [
-     {
-      "a": "key",
-      "k": "F5"
-     },
-     {
-      "a": "go",
-      "to": "running"
-     }
-    ],
-    "out": "health 40\n",
-    "outAt": 0.6
-   },
-   {
-    "line": 17,
-    "ms": 1300,
-    "note": "The program has finished.",
-    "do": [
-     {
-      "a": "go",
-      "to": "exited"
-     }
-    ]
-   }
-  ]
- }
+  "structs": {
+    "scene": "p3b-struct",
+    "steps": [
+      {
+        "line": 3,
+        "ms": 1300,
+        "note": "This is a blueprint: a blank form with three labelled boxes. It describes a Player, but no player exists yet.",
+        "do": [
+          {
+            "a": "card",
+            "id": "bp",
+            "title": "Player",
+            "sub": "blueprint",
+            "kind": "bp",
+            "fields": [
+              [
+                "float",
+                "x",
+                null
+              ],
+              [
+                "float",
+                "y",
+                null
+              ],
+              [
+                "int",
+                "health",
+                null
+              ]
+            ],
+            "x": 8,
+            "y": 20
+          }
+        ]
+      },
+      {
+        "line": 4,
+        "ms": 800,
+        "note": "First box: x holds a decimal number.",
+        "do": [
+          {
+            "a": "pulse",
+            "id": "bp",
+            "f": 0
+          }
+        ]
+      },
+      {
+        "line": 5,
+        "ms": 900,
+        "note": "Second box: y, another decimal. Different types can sit side by side in one struct.",
+        "do": [
+          {
+            "a": "pulse",
+            "id": "bp",
+            "f": 1
+          }
+        ]
+      },
+      {
+        "line": 6,
+        "ms": 800,
+        "note": "Third box: health, a whole number.",
+        "do": [
+          {
+            "a": "pulse",
+            "id": "bp",
+            "f": 2
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1000,
+        "note": "The name after the closing brace, Player, becomes a type, just like int.",
+        "do": [
+          {
+            "a": "pulse",
+            "id": "bp"
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 1200,
+        "note": "Now a real player is built from the blueprint. Every box starts as garbage, shown as ?.",
+        "do": [
+          {
+            "a": "card",
+            "id": "hero",
+            "title": "hero",
+            "sub": "Player",
+            "fields": [
+              [
+                "float",
+                "x",
+                null
+              ],
+              [
+                "float",
+                "y",
+                null
+              ],
+              [
+                "int",
+                "health",
+                null
+              ]
+            ],
+            "x": 142,
+            "y": 20,
+            "col": "accent"
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 1100,
+        "note": "A second Player. It is a completely separate form with its own boxes.",
+        "do": [
+          {
+            "a": "card",
+            "id": "boss",
+            "title": "boss",
+            "sub": "Player",
+            "fields": [
+              [
+                "float",
+                "x",
+                null
+              ],
+              [
+                "float",
+                "y",
+                null
+              ],
+              [
+                "int",
+                "health",
+                null
+              ]
+            ],
+            "x": 276,
+            "y": 20,
+            "col": "orange"
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 1100,
+        "note": "The dot reaches into one box by name: hero's health becomes 100.",
+        "do": [
+          {
+            "a": "set",
+            "id": "hero",
+            "f": 2,
+            "v": 100,
+            "exp": "hero.health = 100"
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 1100,
+        "note": "Same field name, different form: only boss's health changes.",
+        "do": [
+          {
+            "a": "set",
+            "id": "boss",
+            "f": 2,
+            "v": 500,
+            "exp": "boss.health = 500"
+          }
+        ]
+      },
+      {
+        "line": 14,
+        "ms": 1100,
+        "note": "hero.x gets 2.5. Its y box is still garbage.",
+        "do": [
+          {
+            "a": "set",
+            "id": "hero",
+            "f": 0,
+            "v": "2.5",
+            "exp": "hero.x = 2.5"
+          }
+        ]
+      },
+      {
+        "line": 15,
+        "ms": 1300,
+        "note": "Read boss's health, subtract 30, store it back: 500 becomes 470. hero is untouched.",
+        "do": [
+          {
+            "a": "set",
+            "id": "boss",
+            "f": 2,
+            "v": 470,
+            "exp": "boss.health = boss.health - 30"
+          }
+        ]
+      },
+      {
+        "line": 16,
+        "ms": 1600,
+        "note": "printf reads hero.health, boss.health and hero.x. hero.y still holds garbage, so it is good we never read it.",
+        "do": [
+          {
+            "a": "pulse",
+            "id": "hero",
+            "f": 2,
+            "at": 0,
+            "len": 0.35
+          },
+          {
+            "a": "pulse",
+            "id": "boss",
+            "f": 2,
+            "at": 0.3,
+            "len": 0.35
+          },
+          {
+            "a": "pulse",
+            "id": "hero",
+            "f": 0,
+            "at": 0.6,
+            "len": 0.35
+          }
+        ],
+        "out": "hero 100, boss 470, x 2.5\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 17,
+        "ms": 700,
+        "note": "The program ends.",
+        "do": []
+      }
+    ]
+  },
+  "struct-copy": {
+    "scene": "p3b-struct",
+    "steps": [
+      {
+        "line": 13,
+        "ms": 1200,
+        "note": "main builds one Player called hero. Its health box starts as garbage.",
+        "do": [
+          {
+            "a": "frame",
+            "id": "fm",
+            "t": "main()",
+            "x": 4,
+            "y": 26,
+            "w": 268,
+            "h": 112
+          },
+          {
+            "a": "card",
+            "id": "hero",
+            "title": "hero",
+            "sub": "Player",
+            "fields": [
+              [
+                "int",
+                "health",
+                null
+              ]
+            ],
+            "x": 12,
+            "y": 48,
+            "w": 116,
+            "col": "accent",
+            "at": 0.25
+          }
+        ]
+      },
+      {
+        "line": 14,
+        "ms": 1000,
+        "note": "hero's health becomes 100.",
+        "do": [
+          {
+            "a": "set",
+            "id": "hero",
+            "f": 0,
+            "v": 100,
+            "exp": "hero.health = 100"
+          }
+        ]
+      },
+      {
+        "line": 15,
+        "ms": 1800,
+        "note": "Player backup = hero; is a photocopier. Every field of hero is copied into a brand new form.",
+        "do": [
+          {
+            "a": "card",
+            "id": "backup",
+            "title": "backup",
+            "sub": "Player",
+            "copy": "hero",
+            "fields": [
+              [
+                "int",
+                "health",
+                null
+              ]
+            ],
+            "x": 146,
+            "y": 48,
+            "w": 116,
+            "col": "purple"
+          }
+        ]
+      },
+      {
+        "line": 16,
+        "ms": 1000,
+        "note": "main calls hurt(hero). C will hand hurt a photocopy, not hero itself.",
+        "do": [
+          {
+            "a": "pulse",
+            "id": "hero"
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1800,
+        "note": "hurt receives its own copy, called p. It lives in hurt's space, separate from main's.",
+        "do": [
+          {
+            "a": "frame",
+            "id": "fh",
+            "t": "hurt()",
+            "x": 280,
+            "y": 26,
+            "w": 116,
+            "h": 112
+          },
+          {
+            "a": "card",
+            "id": "p",
+            "title": "p",
+            "sub": "copy",
+            "copy": "hero",
+            "fields": [
+              [
+                "int",
+                "health",
+                null
+              ]
+            ],
+            "x": 284,
+            "y": 48,
+            "w": 108,
+            "col": "orange",
+            "at": 0.1
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1200,
+        "note": "The copy's health drops by 10. Only the copy changes.",
+        "do": [
+          {
+            "a": "set",
+            "id": "p",
+            "f": 0,
+            "v": 90,
+            "exp": "p.health = p.health - 10"
+          }
+        ]
+      },
+      {
+        "line": 9,
+        "ms": 1000,
+        "note": "hurt prints 90. It did its job, on a photocopy.",
+        "do": [
+          {
+            "a": "pulse",
+            "id": "p"
+          }
+        ],
+        "out": "Inside hurt: 90\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 10,
+        "ms": 1100,
+        "note": "hurt ends and its copy is thrown away.",
+        "do": [
+          {
+            "a": "drop",
+            "id": "p"
+          },
+          {
+            "a": "frame",
+            "id": "fh",
+            "off": true
+          }
+        ]
+      },
+      {
+        "line": 17,
+        "ms": 1100,
+        "note": "Back in main, only backup changes: its health becomes 1.",
+        "do": [
+          {
+            "a": "set",
+            "id": "backup",
+            "f": 0,
+            "v": 1,
+            "exp": "backup.health = 1"
+          }
+        ]
+      },
+      {
+        "line": 18,
+        "ms": 1500,
+        "note": "hero is still 100 and backup is 1. Two separate forms that started out identical.",
+        "do": [
+          {
+            "a": "pulse",
+            "id": "hero",
+            "f": 0,
+            "at": 0,
+            "len": 0.45
+          },
+          {
+            "a": "pulse",
+            "id": "backup",
+            "f": 0,
+            "at": 0.45,
+            "len": 0.45
+          }
+        ],
+        "out": "hero 100, backup 1\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 19,
+        "ms": 700,
+        "note": "The program ends.",
+        "do": []
+      }
+    ]
+  },
+  "pointers": {
+    "scene": "p3b-mem",
+    "steps": [
+      {
+        "line": 3,
+        "ms": 1200,
+        "note": "Memory is a row of boxes, and every box has an address, like a house number.",
+        "do": [
+          {
+            "a": "cap",
+            "t": "main starts: boxes get built as the lines run"
+          }
+        ]
+      },
+      {
+        "line": 4,
+        "ms": 1200,
+        "note": "An ordinary int box named score holds 10. Its address is 0x1000.",
+        "do": [
+          {
+            "a": "cell",
+            "id": "score",
+            "kind": "int",
+            "type": "int",
+            "name": "score",
+            "addr": "0x1000",
+            "v": 10,
+            "x": 20,
+            "y": 108
+          }
+        ]
+      },
+      {
+        "line": 5,
+        "ms": 1900,
+        "note": "&score is score's address. p is a box that holds that address, so an arrow points from p to score.",
+        "do": [
+          {
+            "a": "cell",
+            "id": "p",
+            "kind": "ptr",
+            "type": "int*",
+            "name": "p",
+            "addr": "0x1008",
+            "x": 146,
+            "y": 108,
+            "to": "score",
+            "pv": "0x1000"
+          },
+          {
+            "a": "tag",
+            "id": "score",
+            "t": "&score = 0x1000",
+            "below": true,
+            "at": 0.35,
+            "len": 0.6
+          },
+          {
+            "a": "cap",
+            "t": "int* p = &score;"
+          }
+        ]
+      },
+      {
+        "line": 6,
+        "ms": 1600,
+        "note": "copy gets the value 10. It is a separate box with its own address, so it is unrelated to score from now on.",
+        "do": [
+          {
+            "a": "cell",
+            "id": "copy",
+            "kind": "int",
+            "type": "int",
+            "name": "copy",
+            "addr": "0x1010",
+            "v": "",
+            "x": 272,
+            "y": 108
+          },
+          {
+            "a": "set",
+            "id": "copy",
+            "v": 10,
+            "from": "score",
+            "at": 0.3,
+            "len": 0.7
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 2400,
+        "note": "*p means: follow the arrow and use the box at the end. Writing 50 there changes score, though score is never named.",
+        "do": [
+          {
+            "a": "deref",
+            "p": "p",
+            "v": 50,
+            "lbl": "*p"
+          },
+          {
+            "a": "cap",
+            "t": "*p = 50;  follow the arrow, write 50"
+          }
+        ]
+      },
+      {
+        "line": 9,
+        "ms": 1500,
+        "note": "score is 50 and copy is still 10.",
+        "do": [
+          {
+            "a": "pulse",
+            "id": "score",
+            "at": 0,
+            "len": 0.45
+          },
+          {
+            "a": "pulse",
+            "id": "copy",
+            "at": 0.45,
+            "len": 0.45
+          },
+          {
+            "a": "cap",
+            "t": ""
+          }
+        ],
+        "out": "score 50, copy 10\n",
+        "outAt": 0.25
+      },
+      {
+        "line": 10,
+        "ms": 1800,
+        "note": "*p reads the same box, so it prints 50. Two names for one box: score and *p.",
+        "do": [
+          {
+            "a": "deref",
+            "p": "p",
+            "lbl": "*p"
+          },
+          {
+            "a": "cap",
+            "t": "*p reads the box p points at"
+          }
+        ],
+        "out": "*p is 50\n",
+        "outAt": 0.55
+      },
+      {
+        "line": 11,
+        "ms": 700,
+        "note": "The program ends.",
+        "do": [
+          {
+            "a": "cap",
+            "t": ""
+          }
+        ]
+      }
+    ]
+  },
+  "by-pointer": {
+    "scene": "p3b-mem",
+    "steps": [
+      {
+        "line": 16,
+        "ms": 900,
+        "note": "main starts. Its boxes will live in this frame.",
+        "do": [
+          {
+            "a": "frame",
+            "id": "fm",
+            "t": "main()",
+            "x": 6,
+            "y": 20,
+            "w": 388,
+            "h": 118
+          }
+        ]
+      },
+      {
+        "line": 17,
+        "ms": 1500,
+        "note": "Player hero is one group of two boxes, health and score. The group sits at 0x3000.",
+        "do": [
+          {
+            "a": "cell",
+            "id": "hero",
+            "kind": "group",
+            "type": "Player",
+            "name": "hero",
+            "addr": "0x3000",
+            "x": 100,
+            "y": 40,
+            "w": 200,
+            "h": 84
+          },
+          {
+            "a": "cell",
+            "id": "health",
+            "kind": "int",
+            "type": "int",
+            "name": "health",
+            "addr": "0x3000",
+            "v": "?",
+            "x": 108,
+            "y": 62,
+            "w": 86,
+            "h": 54,
+            "at": 0.25,
+            "len": 0.5
+          },
+          {
+            "a": "cell",
+            "id": "score",
+            "kind": "int",
+            "type": "int",
+            "name": "score",
+            "addr": "0x3004",
+            "v": "?",
+            "x": 204,
+            "y": 62,
+            "w": 88,
+            "h": 54,
+            "at": 0.4,
+            "len": 0.5
+          }
+        ]
+      },
+      {
+        "line": 18,
+        "ms": 900,
+        "note": "hero.health is set to 60.",
+        "do": [
+          {
+            "a": "set",
+            "id": "health",
+            "v": 60
+          }
+        ]
+      },
+      {
+        "line": 19,
+        "ms": 900,
+        "note": "hero.score is set to 99.",
+        "do": [
+          {
+            "a": "set",
+            "id": "score",
+            "v": 99
+          }
+        ]
+      },
+      {
+        "line": 20,
+        "ms": 1500,
+        "note": "main calls reset(&hero.score). &hero.score is the address of just that one box: 0x3004.",
+        "do": [
+          {
+            "a": "tag",
+            "id": "score",
+            "t": "&hero.score = 0x3004",
+            "below": true
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1700,
+        "note": "reset gets a copy of the address, not a copy of score. Its box holds 0x3004 and an arrow reaches back into main's score.",
+        "do": [
+          {
+            "a": "frame",
+            "id": "fr",
+            "t": "reset()",
+            "x": 6,
+            "y": 146,
+            "w": 388,
+            "h": 98
+          },
+          {
+            "a": "cell",
+            "id": "rs",
+            "kind": "ptr",
+            "type": "int*",
+            "name": "score",
+            "addr": "0x2ff0",
+            "x": 210,
+            "y": 172,
+            "w": 108,
+            "h": 62,
+            "to": "score",
+            "pv": "0x3004",
+            "at": 0.25
+          }
+        ]
+      },
+      {
+        "line": 9,
+        "ms": 2300,
+        "note": "*score = 0 follows the arrow and writes 0 into main's box. This is the reset() that copies could never do.",
+        "do": [
+          {
+            "a": "deref",
+            "p": "rs",
+            "v": 0,
+            "lbl": "*score"
+          },
+          {
+            "a": "cap",
+            "t": "*score = 0;  follow the arrow, write 0"
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 1100,
+        "note": "reset ends and its pointer vanishes. But the change in main's score box stays.",
+        "do": [
+          {
+            "a": "hide",
+            "ids": [
+              "rs"
+            ],
+            "fr": [
+              "fr"
+            ]
+          },
+          {
+            "a": "cap",
+            "t": ""
+          }
+        ]
+      },
+      {
+        "line": 21,
+        "ms": 1400,
+        "note": "Next call: &hero is the address of the whole Player, 0x3000.",
+        "do": [
+          {
+            "a": "tag",
+            "id": "hero",
+            "t": "&hero = 0x3000",
+            "below": true
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 1800,
+        "note": "heal gets a Player* named p. Its arrow points at the whole hero group. amount is a plain copy of 25.",
+        "do": [
+          {
+            "a": "frame",
+            "id": "fr2",
+            "t": "heal()",
+            "x": 6,
+            "y": 146,
+            "w": 388,
+            "h": 98
+          },
+          {
+            "a": "cell",
+            "id": "hp",
+            "kind": "ptr",
+            "type": "Player*",
+            "name": "p",
+            "addr": "0x2ff0",
+            "x": 60,
+            "y": 172,
+            "w": 108,
+            "h": 62,
+            "to": "hero",
+            "pv": "0x3000",
+            "at": 0.2
+          },
+          {
+            "a": "cell",
+            "id": "amt",
+            "kind": "int",
+            "type": "int",
+            "name": "amount",
+            "addr": "0x2ff8",
+            "v": 25,
+            "x": 210,
+            "y": 172,
+            "w": 108,
+            "h": 62,
+            "at": 0.2
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 2500,
+        "note": "p->health means: follow the arrow, then take the health box. 60 + 25 = 85, written into the real hero.",
+        "do": [
+          {
+            "a": "deref",
+            "p": "hp",
+            "to": "health",
+            "v": 85,
+            "lbl": "p->health"
+          },
+          {
+            "a": "cap",
+            "t": "p->health = 60 + 25;"
+          }
+        ]
+      },
+      {
+        "line": 14,
+        "ms": 1100,
+        "note": "heal ends. hero keeps the new health.",
+        "do": [
+          {
+            "a": "hide",
+            "ids": [
+              "hp",
+              "amt"
+            ],
+            "fr": [
+              "fr2"
+            ]
+          },
+          {
+            "a": "cap",
+            "t": ""
+          }
+        ]
+      },
+      {
+        "line": 22,
+        "ms": 1500,
+        "note": "Both changes stuck: health 85 and score 0.",
+        "do": [
+          {
+            "a": "pulse",
+            "id": "health",
+            "at": 0,
+            "len": 0.45
+          },
+          {
+            "a": "pulse",
+            "id": "score",
+            "at": 0.45,
+            "len": 0.45
+          }
+        ],
+        "out": "health 85, score 0\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 23,
+        "ms": 700,
+        "note": "The program ends.",
+        "do": []
+      }
+    ]
+  },
+  "null": {
+    "scene": "p3b-mem",
+    "steps": [
+      {
+        "line": 15,
+        "ms": 1400,
+        "note": "main builds a Player called hero.",
+        "do": [
+          {
+            "a": "frame",
+            "id": "fm",
+            "t": "main()",
+            "x": 6,
+            "y": 24,
+            "w": 388,
+            "h": 128
+          },
+          {
+            "a": "cell",
+            "id": "hero",
+            "kind": "group",
+            "type": "Player",
+            "name": "hero",
+            "addr": "0x3000",
+            "x": 18,
+            "y": 62,
+            "w": 112,
+            "h": 84,
+            "at": 0.15
+          },
+          {
+            "a": "cell",
+            "id": "health",
+            "kind": "int",
+            "type": "int",
+            "name": "health",
+            "addr": "0x3000",
+            "v": "?",
+            "x": 26,
+            "y": 84,
+            "w": 96,
+            "h": 54,
+            "at": 0.4,
+            "len": 0.5
+          }
+        ]
+      },
+      {
+        "line": 16,
+        "ms": 900,
+        "note": "hero.health is 50.",
+        "do": [
+          {
+            "a": "set",
+            "id": "health",
+            "v": 50
+          }
+        ]
+      },
+      {
+        "line": 17,
+        "ms": 1500,
+        "note": "target is a pointer with no address written in it. NULL means points at nothing, so the arrow is a dead end.",
+        "do": [
+          {
+            "a": "cell",
+            "id": "target",
+            "kind": "ptr",
+            "type": "Player*",
+            "name": "target",
+            "addr": "0x3008",
+            "x": 150,
+            "y": 76,
+            "w": 108,
+            "h": 62,
+            "nul": true
+          }
+        ]
+      },
+      {
+        "line": 18,
+        "ms": 1700,
+        "note": "heal(target, 10): heal's p is a copy of target's value, which is NULL. Still nothing to follow.",
+        "do": [
+          {
+            "a": "frame",
+            "id": "fh",
+            "t": "heal()",
+            "x": 6,
+            "y": 158,
+            "w": 388,
+            "h": 88
+          },
+          {
+            "a": "cell",
+            "id": "hp",
+            "kind": "ptr",
+            "type": "Player*",
+            "name": "p",
+            "addr": "0x2ff0",
+            "x": 40,
+            "y": 178,
+            "w": 108,
+            "h": 58,
+            "nul": true,
+            "at": 0.2
+          },
+          {
+            "a": "cell",
+            "id": "amt",
+            "kind": "int",
+            "type": "int",
+            "name": "amount",
+            "addr": "0x2ff8",
+            "v": 10,
+            "x": 190,
+            "y": 178,
+            "w": 108,
+            "h": 58,
+            "at": 0.2
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1300,
+        "note": "The guard looks at the note first: p == NULL is true.",
+        "do": [
+          {
+            "a": "cap",
+            "t": "if (p == NULL)  ->  true"
+          },
+          {
+            "a": "pulse",
+            "id": "hp"
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1000,
+        "note": "So it prints the message instead of following a missing arrow.",
+        "do": [
+          {
+            "a": "pulse",
+            "id": "hp"
+          }
+        ],
+        "out": "No player to heal\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 9,
+        "ms": 1200,
+        "note": "return leaves heal early. The line that would have crashed never runs.",
+        "do": [
+          {
+            "a": "hide",
+            "ids": [
+              "hp",
+              "amt"
+            ],
+            "fr": [
+              "fh"
+            ]
+          },
+          {
+            "a": "cap",
+            "t": ""
+          }
+        ]
+      },
+      {
+        "line": 19,
+        "ms": 1500,
+        "note": "target = &hero writes hero's address into target. Now there is an arrow to follow.",
+        "do": [
+          {
+            "a": "point",
+            "id": "target",
+            "to": "hero",
+            "pv": "0x3000"
+          }
+        ]
+      },
+      {
+        "line": 20,
+        "ms": 1700,
+        "note": "heal(target, 10) again. This time p holds a real address.",
+        "do": [
+          {
+            "a": "frame",
+            "id": "fh2",
+            "t": "heal()",
+            "x": 6,
+            "y": 158,
+            "w": 388,
+            "h": 88
+          },
+          {
+            "a": "cell",
+            "id": "hp",
+            "kind": "ptr",
+            "type": "Player*",
+            "name": "p",
+            "addr": "0x2ff0",
+            "x": 40,
+            "y": 178,
+            "w": 108,
+            "h": 58,
+            "to": "hero",
+            "pv": "0x3000",
+            "at": 0.2
+          },
+          {
+            "a": "cell",
+            "id": "amt",
+            "kind": "int",
+            "type": "int",
+            "name": "amount",
+            "addr": "0x2ff8",
+            "v": 10,
+            "x": 190,
+            "y": 178,
+            "w": 108,
+            "h": 58,
+            "at": 0.2
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1100,
+        "note": "p == NULL is false, so the function carries on.",
+        "do": [
+          {
+            "a": "cap",
+            "t": "if (p == NULL)  ->  false"
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 2300,
+        "note": "Follow the arrow to health: 50 + 10 = 60.",
+        "do": [
+          {
+            "a": "deref",
+            "p": "hp",
+            "to": "health",
+            "v": 60,
+            "lbl": "p->health"
+          },
+          {
+            "a": "cap",
+            "t": "p->health = 50 + 10;"
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 1100,
+        "note": "heal ends. hero keeps its new health.",
+        "do": [
+          {
+            "a": "hide",
+            "ids": [
+              "hp",
+              "amt"
+            ],
+            "fr": [
+              "fh2"
+            ]
+          },
+          {
+            "a": "cap",
+            "t": ""
+          }
+        ]
+      },
+      {
+        "line": 21,
+        "ms": 1000,
+        "note": "hero is 60.",
+        "do": [
+          {
+            "a": "pulse",
+            "id": "health"
+          }
+        ],
+        "out": "hero 60\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 23,
+        "ms": 1600,
+        "note": "fopen could not open the file, so it returned NULL. f is a pointer with nothing to point at.",
+        "do": [
+          {
+            "a": "cell",
+            "id": "f",
+            "kind": "ptr",
+            "type": "FILE*",
+            "name": "f",
+            "addr": "0x3010",
+            "x": 278,
+            "y": 76,
+            "w": 108,
+            "h": 62,
+            "nul": true
+          },
+          {
+            "a": "cap",
+            "t": "fopen(\"no_such_file.txt\") found nothing"
+          }
+        ]
+      },
+      {
+        "line": 24,
+        "ms": 1200,
+        "note": "The same check as before: f == NULL is true.",
+        "do": [
+          {
+            "a": "cap",
+            "t": "if (f == NULL)  ->  true"
+          },
+          {
+            "a": "pulse",
+            "id": "f"
+          }
+        ]
+      },
+      {
+        "line": 25,
+        "ms": 1000,
+        "note": "So the program reports the missing file instead of using a pointer to nowhere.",
+        "do": [
+          {
+            "a": "pulse",
+            "id": "f"
+          }
+        ],
+        "out": "No file\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 27,
+        "ms": 700,
+        "note": "The program ends.",
+        "do": [
+          {
+            "a": "cap",
+            "t": ""
+          }
+        ]
+      }
+    ]
+  },
+  "struct-arrays": {
+    "scene": "p3b-struct",
+    "steps": [
+      {
+        "line": 15,
+        "ms": 2200,
+        "note": "One array, four boxes, and every box is a whole Enemy. The inner braces fill three of them in field order. Box 3 isn't listed, so its fields are 0.",
+        "do": [
+          {
+            "a": "card",
+            "id": "e0",
+            "title": "enemies[0]",
+            "sub": "Enemy",
+            "fields": [
+              [
+                "int",
+                "lane",
+                0
+              ],
+              [
+                "int",
+                "health",
+                30
+              ]
+            ],
+            "x": 56,
+            "y": 14,
+            "w": 124,
+            "col": "accent",
+            "at": 0,
+            "len": 0.4
+          },
+          {
+            "a": "card",
+            "id": "e1",
+            "title": "enemies[1]",
+            "sub": "Enemy",
+            "fields": [
+              [
+                "int",
+                "lane",
+                2
+              ],
+              [
+                "int",
+                "health",
+                50
+              ]
+            ],
+            "x": 220,
+            "y": 14,
+            "w": 124,
+            "col": "accent",
+            "at": 0.15,
+            "len": 0.4
+          },
+          {
+            "a": "card",
+            "id": "e2",
+            "title": "enemies[2]",
+            "sub": "Enemy",
+            "fields": [
+              [
+                "int",
+                "lane",
+                1
+              ],
+              [
+                "int",
+                "health",
+                40
+              ]
+            ],
+            "x": 56,
+            "y": 112,
+            "w": 124,
+            "col": "accent",
+            "at": 0.3,
+            "len": 0.4
+          },
+          {
+            "a": "card",
+            "id": "e3",
+            "title": "enemies[3]",
+            "sub": "Enemy",
+            "fields": [
+              [
+                "int",
+                "lane",
+                0
+              ],
+              [
+                "int",
+                "health",
+                0
+              ]
+            ],
+            "x": 220,
+            "y": 112,
+            "w": 124,
+            "col": "muted",
+            "at": 0.45,
+            "len": 0.4
+          }
+        ]
+      },
+      {
+        "line": 16,
+        "ms": 1100,
+        "note": "count says three boxes hold real enemies. Box 3 exists but isn't in use.",
+        "do": [
+          {
+            "a": "pulse",
+            "id": "e0",
+            "at": 0,
+            "len": 0.4,
+            "exp": "count = 3"
+          },
+          {
+            "a": "pulse",
+            "id": "e1",
+            "at": 0.2,
+            "len": 0.4,
+            "exp": "count = 3"
+          },
+          {
+            "a": "pulse",
+            "id": "e2",
+            "at": 0.4,
+            "len": 0.4,
+            "exp": "count = 3"
+          }
+        ]
+      },
+      {
+        "line": 17,
+        "ms": 1200,
+        "note": "find_lane gets the array, the count and the lane to look for: 2.",
+        "do": [
+          {
+            "a": "pulse",
+            "exp": "find_lane(enemies, count, 2)"
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1300,
+        "note": "i is 0. enemies[0].lane is 0, not 2, so the loop carries on.",
+        "do": [
+          {
+            "a": "pulse",
+            "id": "e0",
+            "f": 0,
+            "exp": "enemies[0].lane == 2"
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1300,
+        "note": "i is 1. enemies[1].lane is 2: a match.",
+        "do": [
+          {
+            "a": "pulse",
+            "id": "e1",
+            "f": 0,
+            "exp": "enemies[1].lane == 2"
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1100,
+        "note": "find_lane hands back the position, 1, not the enemy itself.",
+        "do": [
+          {
+            "a": "pulse",
+            "id": "e1",
+            "exp": "return 1"
+          }
+        ]
+      },
+      {
+        "line": 17,
+        "ms": 1000,
+        "note": "hit is 1.",
+        "do": [
+          {
+            "a": "pulse",
+            "id": "e1",
+            "exp": "hit = 1"
+          }
+        ]
+      },
+      {
+        "line": 18,
+        "ms": 1100,
+        "note": "hit isn't -1, so it's safe to use as an index.",
+        "do": [
+          {
+            "a": "pulse",
+            "exp": "hit != -1"
+          }
+        ]
+      },
+      {
+        "line": 19,
+        "ms": 1500,
+        "note": "enemies[hit] is box 1. Its health drops by 20, from 50 to 30. This is the real enemy in the array, not a copy.",
+        "do": [
+          {
+            "a": "set",
+            "id": "e1",
+            "f": 1,
+            "v": 30,
+            "exp": "enemies[1].health -= 20"
+          }
+        ]
+      },
+      {
+        "line": 20,
+        "ms": 1400,
+        "note": "printf reads the position and the new health.",
+        "do": [
+          {
+            "a": "pulse",
+            "id": "e1",
+            "f": 1
+          }
+        ],
+        "out": "enemy 1 has 30 health\n",
+        "outAt": 0.35
+      },
+      {
+        "line": 22,
+        "ms": 700,
+        "note": "The program ends.",
+        "do": []
+      }
+    ]
+  },
+  "pointer-arrays": {
+    "scene": "p3-lockers",
+    "steps": [
+      {
+        "line": 13,
+        "ms": 1600,
+        "note": "Four lockers in a row, one int each.",
+        "do": [
+          {
+            "a": "make",
+            "name": "int hits[HIT_COUNT]",
+            "kind": "int",
+            "cells": [
+              "3",
+              "5",
+              "2",
+              "7"
+            ]
+          }
+        ]
+      },
+      {
+        "line": 14,
+        "ms": 1500,
+        "note": "p holds the address of hits[1]. Picture it as a finger pointing at locker 1.",
+        "do": [
+          {
+            "a": "cur",
+            "i": 1,
+            "name": "p"
+          },
+          {
+            "a": "cap",
+            "t": "int* p = &hits[1];"
+          }
+        ]
+      },
+      {
+        "line": 15,
+        "ms": 2600,
+        "note": "*p reads 5. p + 2 is two lockers along, not two bytes: hits[3], which holds 7.",
+        "do": [
+          {
+            "a": "read",
+            "i": 1,
+            "at": 0,
+            "len": 0.3
+          },
+          {
+            "a": "cur",
+            "i": 3,
+            "from": 1,
+            "name": "p + 2",
+            "mark": true,
+            "at": 0.35,
+            "len": 0.35
+          },
+          {
+            "a": "read",
+            "i": 3,
+            "at": 0.7,
+            "len": 0.3
+          }
+        ],
+        "out": "5 7\n",
+        "outAt": 0.9
+      },
+      {
+        "line": 16,
+        "ms": 2200,
+        "note": "hits[3] means *(hits + 3): start at locker 0 and step three along. Same locker, same 7.",
+        "do": [
+          {
+            "a": "cur",
+            "i": 3,
+            "from": 0,
+            "name": "hits + 3",
+            "mark": true,
+            "len": 0.6
+          },
+          {
+            "a": "read",
+            "i": 3,
+            "at": 0.6,
+            "len": 0.4
+          },
+          {
+            "a": "cap",
+            "t": "a[i] is *(a + i)"
+          }
+        ],
+        "out": "7 7\n",
+        "outAt": 0.85
+      },
+      {
+        "line": 6,
+        "ms": 1900,
+        "note": "Line 17 calls sum_hits(hits, HIT_COUNT). The array isn't copied: hits arrives as the address of locker 0, and the loop's p starts there.",
+        "do": [
+          {
+            "a": "cur",
+            "i": 0,
+            "name": "p"
+          },
+          {
+            "a": "tag",
+            "k": "total",
+            "v": "0"
+          },
+          {
+            "a": "cap",
+            "t": "hits arrives as &hits[0]: no copy"
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1200,
+        "note": "*p is 3. total becomes 3.",
+        "do": [
+          {
+            "a": "read",
+            "i": 0,
+            "len": 0.5
+          },
+          {
+            "a": "tag",
+            "k": "total",
+            "v": "3",
+            "at": 0.4,
+            "len": 0.5
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1300,
+        "note": "p++ moved one int along. *p is 5, so total is 8.",
+        "do": [
+          {
+            "a": "cur",
+            "i": 1,
+            "name": "p",
+            "len": 0.35
+          },
+          {
+            "a": "read",
+            "i": 1,
+            "at": 0.35,
+            "len": 0.35
+          },
+          {
+            "a": "tag",
+            "k": "total",
+            "v": "8",
+            "at": 0.55,
+            "len": 0.4
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1300,
+        "note": "p++ again. *p is 2, so total is 10.",
+        "do": [
+          {
+            "a": "cur",
+            "i": 2,
+            "name": "p",
+            "len": 0.35
+          },
+          {
+            "a": "read",
+            "i": 2,
+            "at": 0.35,
+            "len": 0.35
+          },
+          {
+            "a": "tag",
+            "k": "total",
+            "v": "10",
+            "at": 0.55,
+            "len": 0.4
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1300,
+        "note": "p++ again. *p is 7, so total is 17.",
+        "do": [
+          {
+            "a": "cur",
+            "i": 3,
+            "name": "p",
+            "len": 0.35
+          },
+          {
+            "a": "read",
+            "i": 3,
+            "at": 0.35,
+            "len": 0.35
+          },
+          {
+            "a": "tag",
+            "k": "total",
+            "v": "17",
+            "at": 0.55,
+            "len": 0.4
+          }
+        ]
+      },
+      {
+        "line": 6,
+        "ms": 1800,
+        "note": "p is now hits + 4, one past the end. It's legal to point there and compare, so p < hits + 4 is false and the loop stops without reading it.",
+        "do": [
+          {
+            "a": "cur",
+            "i": 4,
+            "name": "hits + 4",
+            "len": 0.5
+          },
+          {
+            "a": "cap",
+            "t": "one past the end: compare, never read"
+          }
+        ]
+      },
+      {
+        "line": 17,
+        "ms": 1300,
+        "note": "sum_hits returns 17 and main prints it.",
+        "do": [
+          {
+            "a": "cur",
+            "i": null
+          },
+          {
+            "a": "tag",
+            "k": "total",
+            "v": null
+          },
+          {
+            "a": "cap",
+            "t": ""
+          }
+        ],
+        "out": "total 17\n",
+        "outAt": 0.5
+      },
+      {
+        "line": 18,
+        "ms": 2000,
+        "note": "sizeof(hits) is the whole array: 4 ints of 4 bytes, 16. sizeof(p) is one address: 8 on x64.",
+        "do": [
+          {
+            "a": "span",
+            "s0": 0,
+            "b": 3,
+            "t": "sizeof(hits) = 16",
+            "len": 0.5
+          },
+          {
+            "a": "tag",
+            "k": "sizeof(p)",
+            "v": "8",
+            "at": 0.4,
+            "len": 0.4
+          }
+        ],
+        "out": "16 8\n",
+        "outAt": 0.85
+      },
+      {
+        "line": 19,
+        "ms": 1900,
+        "note": "name points at the text \"Sam\" that the program stores for you, stop sign included. const means you can read it but not change it.",
+        "do": [
+          {
+            "a": "span",
+            "s0": null,
+            "len": 0.2
+          },
+          {
+            "a": "tag",
+            "k": "sizeof(p)",
+            "v": null,
+            "len": 0.2
+          },
+          {
+            "a": "make",
+            "name": "const char* name = \"Sam\"",
+            "kind": "char",
+            "cells": [
+              "S",
+              "a",
+              "m",
+              "\\0"
+            ],
+            "at": 0.2,
+            "len": 0.6
+          },
+          {
+            "a": "cur",
+            "i": 0,
+            "name": "name",
+            "at": 0.7,
+            "len": 0.3
+          }
+        ]
+      },
+      {
+        "line": 20,
+        "ms": 1700,
+        "note": "%s reads from where name points up to the stop sign. name[1] is *(name + 1): one char along, a.",
+        "do": [
+          {
+            "a": "cur",
+            "i": 2,
+            "from": 0,
+            "name": "%s",
+            "mark": true,
+            "len": 0.5
+          },
+          {
+            "a": "read",
+            "i": 1,
+            "at": 0.55,
+            "len": 0.4
+          },
+          {
+            "a": "cap",
+            "t": "name[1] is *(name + 1)"
+          }
+        ],
+        "out": "Sam a\n",
+        "outAt": 0.8
+      }
+    ]
+  }
 }

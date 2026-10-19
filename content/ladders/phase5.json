@@ -406,7 +406,7 @@
    "skills": [
     "link-libs"
    ],
-   "builds": "Phase 3.5: the compiler turns files into <code>.obj</code>, the <b>linker</b> joins them and finds each function’s real code.",
+   "builds": "Phase 3.75: the compiler turns files into <code>.obj</code>, the <b>linker</b> joins them and finds each function’s real code.",
    "why": "<code>windows.h</code> only <i>declares</i> CreateWindowEx and FillRect, like a menu. The real code lives in Windows’ own libraries. If you don’t tell the linker which ones, your build dies with LNK2019 even though every line compiled.",
    "code": "REM build.bat: the Win32 build line (REM starts a comment line in a .bat file)\ncl /W4 /WX /Zi /Od win32_window.c user32.lib gdi32.lib\n\nREM If gdi32.lib is left off, it compiles, then fails to link:\nREM   win32_window.obj : error LNK2019: unresolved external symbol\nREM       __imp__CreateSolidBrush@4 referenced in function _WindowProc@16\nREM   win32_window.exe : fatal error LNK1120: 2 unresolved externals\nREM (the count is how many gdi32 functions your file calls)\nREM\nREM If user32.lib is left off, the same error names a user32 function:\nREM   unresolved external symbol __imp__CreateWindowExA@48",
    "walk": [
@@ -420,7 +420,7 @@
     ],
     [
      5,
-     "“Unresolved external symbol”: the linker was told to call a function and can’t find its code. Phase 3.5 showed the same family of error for your own files."
+     "“Unresolved external symbol”: the linker was told to call a function and can’t find its code. Phase 3.75 showed the same family of error for your own files."
     ],
     [
      6,

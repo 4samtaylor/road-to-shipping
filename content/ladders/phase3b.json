@@ -7,14 +7,14 @@
       "pointers",
       "by-pointer"
     ],
-    "cp-p3-2": [
-      "headers",
-      "linker"
+    "cp-p35-1": [
+      "struct-arrays",
+      "pointer-arrays"
     ],
-    "cp-p3-3": [
-      "by-pointer",
-      "headers"
-    ]
+    "cp-p35-2": [
+      "pointer-arrays"
+    ],
+    "cp-p35-3": []
   },
   "rungs": [
     {
@@ -22,13 +22,46 @@
       "title": "Structs and the dot operator",
       "kick": "typedef struct · fields · hero.health",
       "mins": 12,
-      "lang": "c",
       "skills": [
         "struct",
-        "dot"
+        "dot",
+        "designated-init"
       ],
-      "builds": "Phase 2: int and float variables. Phase 3: arrays, many boxes of the <i>same</i> type.",
+      "builds": "Variables and types (Phase 2): int and float variables. Arrays: many values, one name (Phase 3): many boxes of the <i>same</i> type.",
       "why": "A player in your game has a position and health, and maybe more. Without a struct you’d carry loose variables around and hope you never mix up whose x is whose. A struct bundles them into one thing you can name, copy and pass around.",
+      "learn": {
+        "parts": [
+          [
+            "One name for a bundle",
+            "<p>A struct groups a few values that belong together under one name. Each value is a <b>field</b>, and the fields can have different types: a Player might have two floats for its position and an int for its health. <code>typedef</code> gives the new type a one-word name, so you can write <code>Player hero;</code> the way you'd write <code>int lives;</code>. The dot then picks one field: <code>hero.health</code> behaves exactly like an int variable.</p>"
+          ],
+          [
+            "Giving it starting values",
+            "<p>A struct made with no starting values is garbage in every field, like any local variable. There are three ways to fill it as you make it:</p><ul><li><code>Player hero = {0};</code> sets every field to zero, the same rule you used for arrays.</li><li><code>Player hero = {2.5f, 0.0f, 100};</code> fills the fields in the order they're declared. It breaks quietly if someone reorders the fields later.</li><li><code>Player hero = {.health = 100, .x = 2.5f};</code> names each field. Order doesn't matter, and any field you leave out becomes 0. These are <b>designated initialisers</b>, and they're the clearest of the three.</li></ul>"
+          ],
+          [
+            "Field names belong to the struct",
+            "<p>A field name only means something after a dot. You can have a plain variable called <code>health</code> next to <code>hero.health</code>, and a Player and an Enemy can both have an <code>x</code>. They never clash, because the compiler always knows which struct you're reaching into.</p>"
+          ],
+          [
+            "Two ways to name the type",
+            "<p>Without typedef, the name after <code>struct</code> is a <b>tag</b>, and you have to repeat the word struct every time:</p><pre>struct Player {\n    float x;\n    int health;\n};\n\nstruct Player hero;</pre><p>Plenty of code you'll read does both at once: <code>typedef struct Player { ... } Player;</code>. Now <code>struct Player</code> and <code>Player</code> mean the same type. This course leaves the tag out unless it's needed.</p>"
+          ],
+          [
+            "A struct inside a struct",
+            "<p>A field can be another struct. Position is a pair of numbers you'll use everywhere, so give it its own type and put it inside Player:</p><pre>typedef struct { float x; float y; } Vec2;\ntypedef struct { Vec2 pos; int health; } Player;</pre><p>Read <code>hero.pos.x = 3.0f;</code> left to right: hero, then its pos, then that Vec2's x. Vec2 has to be defined first, because the compiler reads from the top down.</p>"
+          ],
+          [
+            "typedef works on any type",
+            "<p>typedef doesn't only name structs. <code>typedef unsigned int Score;</code> makes Score another name for unsigned int. It isn't a new type, just a second name for an old one. Windows does this everywhere: in Phase 5 you'll meet <code>DWORD</code>, which <code>windows.h</code> defines as another name for an unsigned 32-bit number.</p>"
+          ],
+          [
+            "The missing semicolon",
+            "<p class=\"warn\">A struct definition ends with <code>};</code>. Forget the semicolon after the closing brace and the compiler carries on reading the next line as part of the same declaration, so MSVC's error lands on the line <i>after</i> the brace, often on main or the next function. When an error makes no sense, look one line up for a missing semicolon.</p>"
+          ]
+        ],
+        "king": "§16.1–16.2"
+      },
       "code": "#include <stdio.h>\n\ntypedef struct {\n    float x;\n    float y;\n    int health;\n} Player;\n\nint main(void) {\n    Player hero;\n    Player boss;\n    hero.health = 100;\n    boss.health = 500;\n    hero.x = 2.5f;\n    boss.health = boss.health - 30;\n    printf(\"hero %d, boss %d, x %.1f\\n\", hero.health, boss.health, hero.x);\n    return 0;\n}",
       "walk": [
         [
@@ -89,8 +122,8 @@
           "You can, but then you write <code>struct Player</code> every time. typedef lets you write just <code>Player</code>."
         ],
         [
-          "What’s in a field I haven’t set?",
-          "Whatever was in that memory before: garbage. Set every field before you use it, like you do with ordinary variables."
+          "What's in a field I haven't set?",
+          "Whatever was in that memory before: garbage. Set every field before you use it, or start with <code>= {0}</code> or a designated initialiser so the fields you skip are 0."
         ],
         [
           "Can a struct hold an array?",
@@ -98,22 +131,173 @@
         ],
         [
           "How do arrays and structs fit together?",
-          "Put them together and you get the shape nearly every game runs on: <code>Enemy enemies[MAX_ENEMIES];</code>, one array, one loop, one struct per thing on screen. Phase 6 is built from exactly this, and the stretch goal on the Build page is your first go at it."
+          "Put them together and you get the shape nearly every game runs on: <code>Enemy enemies[MAX_ENEMIES];</code>, one array, one loop, one struct per thing on screen. That's the next concept, Arrays of structs, and Phase 6 is built from exactly this."
         ]
       ],
-      "bridge": "You can bundle data into a struct. Next: <b>what happens when you hand a struct to a function</b>."
+      "bridge": "You can bundle data into a struct. Next: <b>arrays of structs</b>, a whole wave of enemies in one array.",
+      "lang": "c"
+    },
+    {
+      "id": "struct-arrays",
+      "title": "Arrays of structs",
+      "kick": "Enemy enemies[MAX] · count · enemies[i].health · -1",
+      "mins": 15,
+      "skills": [
+        "struct-array"
+      ],
+      "builds": "Structs and the dot operator. Arrays: many values, one name, and Passing arrays to functions (Phase 3): capacity versus count.",
+      "why": "Every game has more than one of something: enemies, bullets, coins. An array of structs keeps each one's data together in one box, and one loop updates them all. Phase 6 runs on exactly this shape.",
+      "learn": {
+        "parts": [
+          [
+            "One array, one struct per thing",
+            "<p>A game rarely has one enemy. <code>Enemy enemies[MAX_ENEMIES];</code> is an ordinary array where every box holds a whole Enemy, fields and all. To reach one field, the index comes first and the dot second: <code>enemies[2].health</code> means box 2, then its health. Read it left to right and it says what it does.</p>"
+          ],
+          [
+            "Starting values with nested braces",
+            "<p>Each enemy gets its own pair of inner braces, filled in field order:</p><pre>Enemy enemies[MAX_ENEMIES] = {{0, 30}, {2, 50}, {1, 40}};</pre><p>That fills three of the four boxes, and the leftover enemy is all zeros, the same rule as <code>= {0}</code> for an array of ints. Designated initialisers work inside the inner braces too: <code>{.lane = 2, .health = 50}</code>.</p>"
+          ],
+          [
+            "Capacity and count, again",
+            "<p>This is the high-score table from Passing arrays to functions with structs in the boxes. <code>MAX_ENEMIES</code> is how many boxes exist. <code>count</code> is how many hold a real enemy right now. Loops go up to count, never to MAX_ENEMIES. Adding an enemy goes in the first unused box, and refuses when there isn't one:</p><pre>int add_enemy(Enemy enemies[], int count, Enemy fresh) {\n    if (count &gt;= MAX_ENEMIES) {\n        return count;\n    }\n    enemies[count] = fresh;\n    return count + 1;\n}</pre><p>Call it as <code>count = add_enemy(enemies, count, fresh);</code>. When the wave is full the count comes back unchanged, and nothing is written past the end.</p>"
+          ],
+          [
+            "Search: an index, or -1",
+            "<p>find_lane in the program below hands back the <i>position</i> of the enemy it found, so the caller can change the real one with <code>enemies[hit]</code>. When nothing matches it returns -1. That's safe to use as a signal because -1 can never be a real index. It's not safe to use as an index: <code>enemies[-1]</code> reads whatever sits in memory just before the array, with no warning. Check for -1 every time before you use the result.</p>"
+          ],
+          [
+            "A const table of enemy stats",
+            "<p>Data that never changes while the game runs can live in a const array of structs, one row per kind of enemy:</p><pre>typedef struct { int health; int speed; } EnemyStats;\nconst EnemyStats STATS[3] = {{30, 2}, {50, 1}, {90, 1}};</pre><p><code>STATS[kind].health</code> looks up the starting health for a kind, and const makes any accidental write stop the build. enum (Phase 3.75) gives the kinds names instead of 0, 1 and 2.</p>"
+          ],
+          [
+            "Beginner mistakes",
+            "<ul><li><code>enemies.health[i]</code> puts the index on the wrong part. The array is enemies, so the index goes straight after it.</li><li>Looping to MAX_ENEMIES instead of count processes the unused boxes, which hold zeros or garbage.</li><li>Adding without checking for a full array writes past the end, silently, like any array.</li></ul>"
+          ]
+        ],
+        "king": "§16.3"
+      },
+      "code": "#include <stdio.h>\n#define MAX_ENEMIES 4\ntypedef struct { int lane; int health; } Enemy;\n\nint find_lane(const Enemy enemies[], int count, int lane) {\n    for (int i = 0; i < count; i++) {\n        if (enemies[i].lane == lane) {\n            return i;\n        }\n    }\n    return -1;\n}\n\nint main(void) {\n    Enemy enemies[MAX_ENEMIES] = {{0, 30}, {2, 50}, {1, 40}};\n    int count = 3;\n    int hit = find_lane(enemies, count, 2);\n    if (hit != -1) {\n        enemies[hit].health -= 20;\n        printf(\"enemy %d has %d health\\n\", hit, enemies[hit].health);\n    }\n    return 0;\n}",
+      "walk": [
+        [
+          3,
+          "A one-line typedef: every <b>Enemy</b> has a lane and a health."
+        ],
+        [
+          5,
+          "find_lane takes the array, how many boxes are in use, and the lane to look for. <b>const</b> promises it only reads."
+        ],
+        [
+          7,
+          "<b>enemies[i].lane</b>: the index picks the enemy, then the dot picks the field."
+        ],
+        [
+          8,
+          "Found it: hand back its position in the array, not the enemy itself."
+        ],
+        [
+          11,
+          "No enemy in that lane. -1 can never be a real index, so it's free to mean “not found”."
+        ],
+        [
+          15,
+          "Nested braces: one inner pair per enemy, in field order. Box 3 isn't listed, so its lane and health are both 0."
+        ],
+        [
+          18,
+          "Check for -1 before using hit as an index. <code>enemies[-1]</code> would read memory before the array."
+        ],
+        [
+          19,
+          "This changes the real enemy in box 1: its health goes from 50 to 30."
+        ]
+      ],
+      "model": "<b>Mental model:</b> a row of lockers where each locker holds a whole form instead of one number. The index says which locker, the dot says which box on the form inside.",
+      "check": {
+        "q": "What does the program print?",
+        "opts": [
+          "enemy 1 has 30 health",
+          "enemy 2 has 30 health",
+          "enemy 1 has 50 health",
+          "Nothing: find_lane returns -1"
+        ],
+        "a": 0,
+        "hint": "Which box holds the enemy whose lane is 2? And what happens to its health before the printf?",
+        "why": "The enemy in lane 2 sits in box 1, so find_lane returns 1. Line 19 takes 20 off its health, 50 to 30, and line 20 prints the position and the new health.",
+        "miss": {
+          "1": "2 is the lane you searched for. find_lane returns the enemy's position in the array, and the lane-2 enemy is in box 1.",
+          "2": "Line 19 subtracts 20 from that enemy's health before the printf runs.",
+          "3": "enemies[1] has lane 2, so the loop finds it on its second pass and returns 1."
+        }
+      },
+      "tryit": {
+        "task": "Fill the blanks: print the health of every enemy that's in use.",
+        "code": "for (int i = 0; i < ____; i++) {\n    printf(\"%d\\n\", enemies____health);\n}",
+        "answer": "count (not MAX_ENEMIES)   then   [i]."
+      },
+      "qa": [
+        [
+          "Why return -1 and not 0 when nothing matches?",
+          "0 is a real position: the first enemy. -1 can never be an index, so it can't be mistaken for a result. NULL, at the end of this phase, is the pointer version of the same idea."
+        ],
+        [
+          "What's in enemies[3]?",
+          "Zeros. When an initialiser lists fewer enemies than the array holds, every field of the rest becomes 0. With no initialiser at all, every box is garbage."
+        ],
+        [
+          "Can I put a whole enemy into the array in one go?",
+          "Yes: <code>enemies[count] = fresh;</code> copies every field of fresh into that box. Structs are copied, next, shows exactly what that copy means."
+        ],
+        [
+          "Why not two arrays, lanes[] and healths[]?",
+          "That works, but every function needs both, and the day you sort or remove one and forget the other, the data no longer lines up. An array of structs keeps each enemy in one piece."
+        ],
+        [
+          "How do I remove an enemy from the middle?",
+          "The quick way: copy the last enemy in use into its box, then <code>count--</code>. The order changes, which rarely matters for enemies. If order matters, shift the rest down one, as the high-score table did."
+        ]
+      ],
+      "bridge": "You can keep a whole wave in one array. Next: <b>what happens when you copy a struct</b>, into a variable or into a function.",
+      "lang": "c"
     },
     {
       "id": "struct-copy",
       "title": "Structs are copied",
       "kick": "b = a · passing by value · copies",
       "mins": 12,
-      "lang": "c",
       "skills": [
         "struct-copy"
       ],
-      "builds": "Concept 1: structs and the dot. Phase 3, scope: functions get <i>copies</i>, so reset() couldn’t change main’s score.",
-      "why": "In Phase 3, reset(score) couldn’t change main’s score. Structs follow the same rule, and it matters more here: a damage function that works on a copy of the player does nothing at all. Seeing the problem first is what makes the fix in concept 4 make sense.",
+      "builds": "Structs and the dot operator, and Arrays of structs. Scope: where a variable lives (Phase 3): an int argument is a copy, so reset() couldn't change main's score.",
+      "why": "In Phase 3, reset(score) couldn't change main's score. Structs follow the same rule, and it matters more here: a damage function that works on a copy of the player does nothing at all. Seeing the problem first is what makes Passing by pointer make sense.",
+      "learn": {
+        "parts": [
+          [
+            "Copying copies everything",
+            "<p>A struct is a value, like an int. <code>Player backup = hero;</code> makes a second Player and copies every field into it. After that the two are separate: changing one never changes the other. Passing a struct to a function works the same way. The parameter is a fresh copy, so the function can change it all it likes and the caller's struct stays as it was. That's the rule Scope showed for an int, applied to every field at once.</p>"
+          ],
+          [
+            "Returning a struct",
+            "<p>A function can hand a struct back, and the caller gets a copy of it:</p><pre>Player make_player(int health) {\n    Player p = {0};\n    p.health = health;\n    return p;\n}\n\nPlayer hero = make_player(100);</pre><p>That's a tidy way to build something with sensible starting values. Phase 3.75's starter code builds its Player with a player_create that works this way.</p>"
+          ],
+          [
+            "Arrays inside are copied too",
+            "<p>If a struct has an array field, like <code>char name[16]</code> or <code>int inventory[4]</code>, assigning the struct copies the whole array along with everything else. That's the one time <code>=</code> copies an array in C. On its own, <code>name = other_name;</code> still won't build, as Copying and joining strings showed.</p>"
+          ],
+          [
+            "The copy-in-a-loop bug",
+            "<p>This looks like it moves every enemy one lane over. It moves nothing:</p><pre>for (int i = 0; i &lt; count; i++) {\n    Enemy e = enemies[i];\n    e.lane += 1;\n}</pre><p>e is a copy of the enemy, and the copy is thrown away at the end of each pass. Write to the array itself, <code>enemies[i].lane += 1;</code>, or hold a pointer to the enemy, which is coming in Passing by pointer and -&gt;.</p>"
+          ],
+          [
+            "No == for structs",
+            "<p class=\"warn\"><code>if (hero == backup)</code> doesn't build: MSVC stops with C2088 (<code>==</code> is illegal for a struct). Compare the fields you care about, one by one, in a small function like <code>same_spot(a, b)</code>. C refuses partly because of <b>padding</b>: the compiler may leave unused bytes between fields so each one starts at a convenient address, and those bytes hold leftover junk. Two players with identical fields could still differ byte for byte.</p>"
+          ],
+          [
+            "Structs you only hold by pointer",
+            "<p>The <code>FILE</code> in Saving and loading with files is a struct too, but you never make one, copy one or look inside. fopen keeps the real one and hands you a <code>FILE *</code>, its address. Some things should exist in exactly one place, and you're given a way to reach them instead of a copy. Pointers, next, explains that *.</p>"
+          ]
+        ],
+        "king": "§16.1–16.2"
+      },
       "code": "#include <stdio.h>\n\ntypedef struct {\n    int health;\n} Player;\n\nvoid hurt(Player p) {\n    p.health = p.health - 10;\n    printf(\"Inside hurt: %d\\n\", p.health);\n}\n\nint main(void) {\n    Player hero;\n    hero.health = 100;\n    Player backup = hero;\n    hurt(hero);\n    backup.health = 1;\n    printf(\"hero %d, backup %d\\n\", hero.health, backup.health);\n    return 0;\n}",
       "walk": [
         [
@@ -171,36 +355,65 @@
       "qa": [
         [
           "So how does a function change the real player?",
-          "By being given the player’s <i>address</i> instead of a copy. That’s a pointer, and it’s the next two concepts."
+          "By being given the player's <i>address</i> instead of a copy. That's a pointer: Pointers: &amp; and * and then Passing by pointer and -&gt;."
         ],
         [
           "Is copying a big struct slow?",
-          "It copies every byte. For a small struct it’s nothing. For a big one, passing an address is cheaper too, which is a second reason games pass pointers."
+          "It copies every byte. For a small struct it's nothing. For a big one, passing an address is cheaper too, which is a second reason games pass pointers."
         ],
         [
           "Why did insert_score change my real array in Phase 3?",
-          "Arrays are the exception: passing an array hands over its address, not a copy. A struct has no such shortcut, so it’s copied."
+          "Arrays are the exception: passing an array hands over where it lives, not a copy. A struct has no such shortcut, so it's copied. Pointers and arrays, later in this phase, shows why."
         ],
         [
-          "Does <code>b = a</code> behave the same in GDScript?",
+          "Does b = a behave the same in GDScript?",
           "No. In GDScript objects are references, so <code>b = a</code> gives two names for one object and setting <code>b.health</code> changes <code>a.health</code> too. In C a struct is a value, so you get two separate players."
         ]
       ],
-      "bridge": "You’ve seen the problem: a copy can’t change the original. Next: <b>pointers</b>, a way to hold where something lives."
+      "bridge": "You’ve seen the problem: a copy can’t change the original. Next: <b>pointers</b>, a way to hold where something lives.",
+      "lang": "c"
     },
     {
       "id": "pointers",
       "title": "Pointers: & and *",
       "kick": "int* p · &x · *p",
       "mins": 15,
-      "lang": "c",
       "skills": [
         "pointer",
         "deref",
         "addr"
       ],
-      "builds": "Phase 2: scanf(&x) handed scanf the address of x. Phase 3: the FILE * you were told to ignore.",
+      "builds": "Reading input with scanf (Phase 2): scanf(&amp;x) handed scanf the address of x. Saving and loading with files (Phase 3): the FILE * you were told to ignore. Structs are copied: a copy can't change the original.",
       "why": "A pointer is a variable that holds where something lives instead of the thing itself. Hand a function that address and it can reach back and change the original. Every game function that updates the player works this way.",
+      "learn": {
+        "parts": [
+          [
+            "Memory is numbered bytes",
+            "<p>Your program's memory is one long row of bytes, and every byte has a number: its <b>address</b>. An int takes 4 bytes, and its address is the number of the first one. <code>&amp;score</code> gives you that number. A <b>pointer</b> is a variable whose job is to hold one. When p holds score's address, we say p points at score.</p>"
+          ],
+          [
+            "Why a pointer has a type",
+            "<p>An address only says where something starts. The type says what's there: <code>int* p</code> means “at this address there's an int”, so <code>*p</code> reads 4 bytes as a whole number. A <code>float*</code> would read 4 bytes as a decimal, and a <code>Player*</code> a whole Player. That's why you can't freely mix them. Point an int* at a float and MSVC warns, because the bytes would be read the wrong way.</p>"
+          ],
+          [
+            "Copy the pointer, or what it points at?",
+            "<p>Two lines that look alike do different jobs:</p><pre>int lives = 3, shield = 1;\nint* p = &amp;lives;\nint* q = &amp;shield;\n\nq = p;     /* q now points at lives too */\n*q = *p;   /* copies the value lives holds into wherever q points */</pre><p><code>q = p</code> copies the address: now there are two notes with the same house on them, and shield is no longer reachable through q. <code>*q = *p</code> copies the int from one box to the other, and both pointers stay where they were.</p>"
+          ],
+          [
+            "A pointer starts as garbage",
+            "<p>Like any local variable, <code>int* p;</code> holds leftover junk until you set it, and junk in a pointer is a random address. <code>*p = 5;</code> would write 5 somewhere nobody chose. Give a pointer a real address the moment you make it, or NULL if there isn't one yet (NULL is the last concept in this phase).</p><p class=\"warn\">MSVC catches the simple case with C4700, the same uninitialised-variable warning you met in Phase 2, and /WX stops the build.</p>"
+          ],
+          [
+            "The int* a, b trap",
+            "<p><code>int* a, b;</code> looks like two pointers. It's one pointer and one plain int: the * belongs to the name next to it, not to the type. That's why this course declares one pointer per line.</p>"
+          ],
+          [
+            "Printing an address",
+            "<p><code>printf(\"%p\\n\", (void*)p);</code> prints the address p holds. On x64 MSVC shows 16 hex digits with no 0x in front, like <code>000000A3F9D6FBA0</code>, because a 64-bit address is 8 bytes. The number changes from run to run, so never write code that depends on its value. The <code>(void*)</code> cast is what %p officially expects. MSVC doesn't insist, but other compilers can warn without it.</p>"
+          ]
+        ],
+        "king": "§11.1–11.3"
+      },
       "code": "#include <stdio.h>\n\nint main(void) {\n    int score = 10;\n    int* p = &score;\n    int copy = score;\n\n    *p = 50;\n    printf(\"score %d, copy %d\\n\", score, copy);\n    printf(\"*p is %d\\n\", *p);\n    return 0;\n}",
       "walk": [
         [
@@ -254,35 +467,68 @@
       "qa": [
         [
           "The * appears in two places. Is it the same thing?",
-          "Related but different jobs. In a <i>declaration</i> (<code>int* p</code>) it means “p is a pointer”. In an <i>expression</i> (<code>*p = 50</code>) it means “go to the address”. & is the reverse: “give me the address”."
+          "Related but different jobs. In a <i>declaration</i> (<code>int* p</code>) it means “p is a pointer”. In an <i>expression</i> (<code>*p = 50</code>) it means “go to the address”. &amp; is the reverse: “give me the address”."
         ],
         [
-          "Is <code>int *p</code> different from <code>int* p</code>?",
-          "No, the compiler treats them the same. This roadmap writes <code>int* p</code>, and the <code>FILE *f</code> from Phase 3 is the same idea written the other way."
+          "Is int *p different from int* p?",
+          "No, the compiler treats them the same. This roadmap writes <code>int* p</code>, and the <code>FILE *f</code> from Phase 3 is the same idea written the other way. Either way, declare one pointer per line."
         ],
         [
           "What does a pointer actually print as?",
-          "A long hex number like 000000A1B2EFF7A4 (16 digits, because a 64-bit address is 8 bytes). Use <code>%p</code> to print one. You’ll see one in the debugger’s Watch window in the last concept."
+          "A long hex number like 000000A1B2EFF7A4 (16 digits, because a 64-bit address is 8 bytes). Use <code>%p</code> to print one. You'll also see them in the debugger's Watch window in The debugger (Phase 3.75)."
         ],
         [
           "GDScript has no pointers. Why does C make me deal with them?",
           "GDScript has something similar, it just hides it: objects are passed by reference, which works much like a pointer with the asterisk filed off. C makes you choose between copying a whole struct every frame and handing over one address."
         ]
       ],
-      "bridge": "You can hold an address and follow it. Next: <b>passing a pointer to a function</b>, and the <b>-></b> shortcut for structs."
+      "bridge": "You can hold an address and follow it. Next: <b>handing a function an address</b>, and the <b>-&gt;</b> shortcut for structs.",
+      "lang": "c"
     },
     {
       "id": "by-pointer",
       "title": "Passing by pointer and ->",
       "kick": "Player* p · &hero · p->health",
       "mins": 15,
-      "lang": "c",
       "skills": [
         "by-pointer",
         "arrow"
       ],
-      "builds": "Concepts 2 and 3: a copy can’t change the original, but an address can. Phase 3: scope and reset().",
+      "builds": "Structs are copied and Pointers: &amp; and *: a copy can't change the original, but an address can. Scope: where a variable lives (Phase 3), and its reset() that didn't work.",
       "why": "Time to fix Phase 3’s reset problem. If a function takes a pointer, the caller passes an address with &, and the function reaches back through it. This is why player_move takes a Player* and not a Player.",
+      "learn": {
+        "parts": [
+          [
+            "Hand over the address",
+            "<p>A function gets copies of its arguments, as Scope and Structs are copied showed. The way round that is to pass an address. The parameter is a pointer, <code>void reset(int* score)</code>, and the caller passes an address with &amp;: <code>reset(&amp;hero.score);</code>. Inside, <code>*score = 0;</code> follows the address and writes into the caller's box. The pointer itself is still a copy, but a copy of an address leads to the same place as the original.</p>"
+          ],
+          [
+            "A field through a pointer: (*p).health, then ->",
+            "<p>With <code>Player* p</code>, <code>*p</code> is the whole Player that p points at, so <code>(*p).health</code> is its health field. The brackets matter. The dot is applied before the *, so <code>*p.health</code> means <code>*(p.health)</code>: take the health field of p, then follow it. p isn't a struct, so that doesn't build.</p><p>Writing <code>(*p).</code> every time gets old, so C has a shorthand: <code>p-&gt;health</code> means exactly <code>(*p).health</code>. The rule is short. Holding the struct itself? Use the dot: <code>hero.health</code>. Holding its address? Use the arrow: <code>p-&gt;health</code>.</p><p class=\"warn\">Write <code>p.health</code> on a pointer and MSVC stops with C2231. Its message says the left side points to a struct and tells you to use -&gt;.</p>"
+          ],
+          [
+            "Output parameters: returning more than one thing",
+            "<p>return hands back one value. When a function has two answers, the caller passes addresses for the function to fill:</p><pre>void split_frames(int frames, int* secs, int* left) {\n    *secs = frames / 60;\n    *left = frames % 60;\n}\n\nint secs = 0, left = 0;\nsplit_frames(150, &amp;secs, &amp;left);   /* 2 and 30 */</pre><p>scanf has worked this way since Phase 2. That's why it needed <code>&amp;guess</code>: it was filling your variable through its address.</p>"
+          ],
+          [
+            "Forgetting the &",
+            "<p class=\"warn\">Call <code>reset(hero.score)</code> when reset wants an <code>int*</code> and you've passed the number 99 where an address belongs. MSVC catches it with C4047 (the argument “differs in levels of indirection”: an int where an int* was expected), and /WX stops the build. Without that check the function would treat 99 as an address and write there. The rule to remember: if the parameter has a *, the argument needs an address, which usually means an &amp; in front of a variable.</p>"
+          ],
+          [
+            "Changing one enemy in an array",
+            "<p>The same move works on one element of an array of structs. <code>&amp;enemies[i]</code> is the address of box i, so a function that takes an <code>Enemy*</code> can change that enemy and no other:</p><pre>void damage_enemy(Enemy* e, int amount) {\n    e-&gt;health -= amount;\n}\n\ndamage_enemy(&amp;enemies[2], 40);</pre><p>Inside, it's the arrow as usual. Compare this with the copy-in-a-loop bug from Structs are copied: there the loop changed a copy, here the function holds the real enemy's address.</p>"
+          ],
+          [
+            "const Player*: look, don't touch",
+            "<p>Passing a pointer is cheap even for a big struct, so functions that only read a Player take one too. Mark them with const:</p><pre>void print_player(const Player* p) {\n    printf(\"health %d\\n\", p-&gt;health);\n}</pre><p>Any line inside that writes through p now stops the build. It's the same promise as a const array parameter in Passing arrays to functions: anyone reading the first line knows print_player only looks.</p>"
+          ],
+          [
+            "Never return the address of a local",
+            "<p>A local variable dies when its function returns, so a pointer to it points at a box that's gone:</p><pre>int* best_score(void) {\n    int best = 900;\n    return &amp;best;\n}</pre><p>The caller gets an address that the next function call will reuse for something else. This is a <b>dangling pointer</b>. It may even print 900 once, which makes it worse.</p><p class=\"warn\">MSVC warns C4172 (returning address of local variable) and /WX stops the build. Return the value itself, or have the caller pass in a pointer to fill.</p>"
+          ]
+        ],
+        "king": "§11.4–11.5, §17.5"
+      },
       "code": "#include <stdio.h>\n\ntypedef struct {\n    int health;\n    int score;\n} Player;\n\nvoid reset(int* score) {\n    *score = 0;\n}\n\nvoid heal(Player* p, int amount) {\n    p->health = p->health + amount;\n}\n\nint main(void) {\n    Player hero;\n    hero.health = 60;\n    hero.score = 99;\n    reset(&hero.score);\n    heal(&hero, 25);\n    printf(\"health %d, score %d\\n\", hero.health, hero.score);\n    return 0;\n}",
       "walk": [
         [
@@ -340,34 +586,187 @@
       "qa": [
         [
           "Where do I put the & when I call?",
-          "On the variable you want changed: <code>heal(&hero, 25)</code>. If the parameter is a pointer, the caller passes an address."
+          "On the variable you want changed: <code>heal(&amp;hero, 25)</code>. If the parameter is a pointer, the caller passes an address. Leave the &amp; off and MSVC stops the build with C4047."
         ],
         [
           "Can I still just use (*p).health?",
           "Yes, it means exactly the same thing. The arrow is the shorthand everyone uses."
         ],
         [
-          "Does this fix Phase 3’s array behaviour too?",
-          "It explains it. An array’s name already acts like the address of its first box, which is why insert_score changed your real array all along."
+          "Does this fix Phase 3's array behaviour too?",
+          "It explains half of it. An array's name already acts like the address of its first box, which is why insert_score changed your real array all along. Pointers and arrays, next, finishes the story."
         ],
         [
           "When do I use the arrow and when the dot?",
-          "Holding a pointer? Use the arrow: <code>p->health</code>. Holding the actual struct? Use the dot: <code>player.health</code>."
+          "Holding a pointer? Use the arrow: <code>p-&gt;health</code>. Holding the actual struct? Use the dot: <code>player.health</code>. With an array of structs, <code>enemies[i]</code> is a struct, so it's <code>enemies[i].health</code>, and <code>&amp;enemies[i]</code> is the address you'd pass to a function."
         ]
       ],
-      "bridge": "You can hand a function the real thing. Next: <b>NULL</b>, the address that points nowhere, and why you check for it."
+      "bridge": "You can hand a function the real thing. Next: <b>pointers and arrays</b>, and why Phase 3's array parameters changed the caller's array.",
+      "lang": "c"
+    },
+    {
+      "id": "pointer-arrays",
+      "title": "Pointers and arrays",
+      "kick": "p + 1 · a[i] is *(a + i) · int a[] is int* a · const char*",
+      "mins": 20,
+      "skills": [
+        "pointer-arith",
+        "array-decay",
+        "const-char-ptr"
+      ],
+      "builds": "Pointers: &amp; and *, and Passing by pointer and -&gt;. Passing arrays to functions (Phase 3), which promised this explanation. Strings and the '\\0' at the end (Phase 3).",
+      "why": "In Phase 3 a function could change your real array, and sizeof inside it gave the wrong answer. Both come from one rule: an array's name turns into a pointer to its first element. Once you see that, array parameters, string literals and pointer loops in other people's code all make sense.",
+      "learn": {
+        "parts": [
+          [
+            "Pointers can step through an array",
+            "<p>Point p at an element, <code>int* p = &amp;hits[1];</code>, and <code>p + 1</code> is the address of the <i>next element</i>, hits[2]. It isn't the next byte. C scales the step by the type: for an int it moves 4 bytes, for a double 8, for a Player the size of a whole Player. You never do that maths yourself. There are three things you can do:</p><ul><li>Add a whole number: <code>p + 2</code> is two elements further on, and <code>p++</code> moves p one along.</li><li>Subtract a whole number: <code>p - 1</code> is one element back.</li><li>Subtract two pointers into the same array: <code>&amp;hits[3] - &amp;hits[1]</code> is 2, how many elements apart they are.</li></ul><p>Comparing with <code>&lt;</code> works too, as long as both point into the same array.</p>"
+          ],
+          [
+            "One past the end",
+            "<p>For a 4-element array, <code>hits + 4</code> is a legal address to make and compare against, which is exactly what a loop's stopping test needs: <code>p &lt; hits + count</code>. It's one past the last element, and you must never read or write through it. Anything further out, or anything before hits[0], isn't even legal to make. As with array indexes, nothing warns you: going too far just reads or writes someone else's memory.</p>"
+          ],
+          [
+            "a[i] is *(a + i)",
+            "<p>When you use an array's name in an expression, C quietly turns it into a pointer to element 0. People call this <b>array decay</b>. Indexing is pointer arithmetic underneath: <code>hits[3]</code> means <code>*(hits + 3)</code>, step three ints along from the start and read what's there. That's also why indexes start at 0: element 0 is zero steps from the start.</p><p>The name itself isn't a variable you can move, though. <code>hits = other;</code> and <code>hits++</code> both stop the build, just like assigning a string with = did.</p>"
+          ],
+          [
+            "Why array parameters change the caller's array",
+            "<p>This finishes what Passing arrays to functions started in Phase 3. In a parameter list, <code>int scores[]</code> really means <code>int* scores</code>, and the call <code>add_bonus(scores, count, 5)</code> passes the address of scores[0]. So:</p><ul><li>No copy is made: the function writes into the caller's boxes through that address.</li><li><code>sizeof(scores)</code> inside gives 8, the size of a pointer on x64.</li><li>A number inside the brackets is thrown away, because a pointer has no length.</li></ul><p><code>const int scores[]</code> is the same as <code>const int* scores</code>, which is how sum_hits below is written.</p>"
+          ],
+          [
+            "A pointer is not an array",
+            "<p>You can index a pointer, <code>p[1]</code>, and do arithmetic on an array name, so they're easy to mix up. They aren't the same thing. An array owns its boxes: <code>sizeof(hits)</code> is 16, four ints of 4 bytes. A pointer owns nothing but one address: <code>sizeof(p)</code> is 8 on x64, whatever it points at. You can aim a pointer somewhere else whenever you like. An array stays where it was made.</p>"
+          ],
+          [
+            "Text in quotes: const char*",
+            "<p><code>const char* name = \"Sam\";</code> points at text the program stores for you, often in memory you're not allowed to change. The const makes the compiler refuse <code>name[0] = 'P';</code>, which would otherwise build and then crash or quietly do nothing. If you need text you can change, make your own copy with <code>char name[] = \"Sam\";</code>. Fixed text is where const char* shines, for example a field in a table of enemy kinds: <code>{\"Slime\", 30}</code>.</p>"
+          ],
+          [
+            "MSVC notes",
+            "<p class=\"warn\">MSVC doesn't warn about sizeof on an array parameter, or about a pointer stepping past the end of an array. Both build cleanly at /W4. Pass the count, and keep loop tests in the <code>p &lt; start + count</code> shape.</p>"
+          ]
+        ],
+        "king": "§12.1–12.3, §13.1–13.2"
+      },
+      "code": "#include <stdio.h>\n#define HIT_COUNT 4\n\nint sum_hits(const int* hits, int count) {\n    int total = 0;\n    for (const int* p = hits; p < hits + count; p++) {\n        total += *p;\n    }\n    return total;\n}\n\nint main(void) {\n    int hits[HIT_COUNT] = {3, 5, 2, 7};\n    int* p = &hits[1];\n    printf(\"%d %d\\n\", *p, *(p + 2));\n    printf(\"%d %d\\n\", hits[3], *(hits + 3));\n    printf(\"total %d\\n\", sum_hits(hits, HIT_COUNT));\n    printf(\"%zu %zu\\n\", sizeof(hits), sizeof(p));\n    const char* name = \"Sam\";\n    printf(\"%s %c\\n\", name, name[1]);\n    return 0;\n}",
+      "walk": [
+        [
+          4,
+          "<code>const int* hits</code> is what <code>const int hits[]</code> really means as a parameter: a pointer to the first element."
+        ],
+        [
+          6,
+          "p starts at the first element. <code>hits + count</code> is one past the end: fine to compare against, never to read. <b>p++</b> moves one int along, 4 bytes."
+        ],
+        [
+          7,
+          "<b>*p</b> reads the element p is on right now."
+        ],
+        [
+          14,
+          "p holds the address of hits[1], which holds 5."
+        ],
+        [
+          15,
+          "<b>p + 2</b> is two ints further on, hits[3]. Prints <code>5 7</code>."
+        ],
+        [
+          16,
+          "hits[3] and <code>*(hits + 3)</code> are the same thing: the name becomes a pointer to element 0, then step three along."
+        ],
+        [
+          18,
+          "sizeof(hits) is 16: the whole array, four 4-byte ints. sizeof(p) is 8: one address on x64."
+        ],
+        [
+          19,
+          "<b>const char*</b> points at the text \"Sam\", stored by the program. const stops you writing to it."
+        ]
+      ],
+      "model": "<b>Mental model:</b> the lockers again, with a finger pointing at one. <code>p + 2</code> is two lockers along, whatever size the lockers are. The array is the row of lockers; a pointer is only the finger.",
+      "check": {
+        "q": "What does line 15 print?",
+        "opts": [
+          "5 7",
+          "5 2",
+          "3 2",
+          "5 and then a garbage number, because p + 2 moves only 2 bytes"
+        ],
+        "a": 0,
+        "hint": "p points at hits[1]. Count two elements on from there.",
+        "why": "*p reads hits[1], which is 5. p + 2 is two elements further on, hits[3], so *(p + 2) is 7. C scales the step by the size of an int for you.",
+        "miss": {
+          "1": "2 is in hits[2]. p + 2 starts counting from where p points, hits[1], not from the start.",
+          "2": "p was set to &hits[1], not to the start of the array, so *p is 5.",
+          "3": "Pointer steps count elements, not bytes. p + 2 on an int* moves 8 bytes, exactly two ints."
+        }
+      },
+      "tryit": {
+        "task": "Fill the blanks: point last at the final element using the array name and arithmetic, then print what it points at.",
+        "code": "int* last = hits ____ 3;\nprintf(\"%d\\n\", ____last);",
+        "answer": "+   then   *   (so it prints 7)"
+      },
+      "qa": [
+        [
+          "So is an array's name a pointer?",
+          "No. It turns into one when you use it in most expressions. <code>sizeof(hits)</code> is the main exception: there it still means the whole array, which is why sizeof gives 16 in main and 8 inside a function."
+        ],
+        [
+          "Should I loop with pointers or with [i]?",
+          "Either. With optimisation on, they usually compile to the same thing. This course uses <code>[i]</code> most of the time because it reads more clearly. You still need to read pointer loops, because other people's code is full of them."
+        ],
+        [
+          "What does *p++ do?",
+          "It reads the value p points at, then moves p one along. The ++ belongs to p, not to the value. To add one to the value, write <code>(*p)++</code>."
+        ],
+        [
+          "Why not just write char* name = \"Sam\"?",
+          "C allows it, but it's a trap: the text may live in read-only memory, so writing to it can crash, and nothing stops you trying. const char* turns that mistake into a build error."
+        ]
+      ],
+      "bridge": "Pointers can walk arrays now. Next: <b>NULL</b>, the pointer that points nowhere, and why you check for it.",
+      "lang": "c"
     },
     {
       "id": "null",
       "title": "NULL",
       "kick": "NULL · p == NULL · checking first",
       "mins": 10,
-      "lang": "c",
       "skills": [
         "null"
       ],
-      "builds": "Concept 4: functions that take a Player*. Phase 3: fopen returns NULL when a file can’t be opened.",
+      "builds": "Passing by pointer and -&gt;: functions that take a Player*. Arrays of structs: returning -1 for “not found”. Saving and loading with files (Phase 3): fopen returns NULL when a file can't be opened.",
       "why": "A pointer can hold “no address at all”: NULL. Following it is undefined behaviour, and on Windows that almost always means a crash. Functions use NULL to say “I couldn’t give you one”, like fopen did in Phase 3, so you check before you follow a pointer.",
+      "learn": {
+        "parts": [
+          [
+            "A pointer to nothing",
+            "<p><b>NULL</b> is a pointer value that means “no address”. It's how a function says “I couldn't give you one”. fopen returns NULL when the file won't open, and your own functions can do the same.</p>"
+          ],
+          [
+            "Returning NULL from a search",
+            "<p>Arrays of structs searched for an enemy and returned its index, or -1. The pointer version returns the enemy's address, or NULL:</p><pre>Enemy* find_enemy(Enemy enemies[], int count, int lane) {\n    for (int i = 0; i &lt; count; i++) {\n        if (enemies[i].lane == lane) {\n            return &amp;enemies[i];\n        }\n    }\n    return NULL;\n}</pre><p>The caller checks, then uses the arrow: <code>Enemy* e = find_enemy(enemies, count, 2);</code> and <code>if (e != NULL) { e-&gt;health -= 20; }</code>. Returning <code>&amp;enemies[i]</code> is fine where returning the address of a local wasn't, because the array belongs to the caller and is still there after find_enemy returns.</p>"
+          ],
+          [
+            "if (p) and if (!p)",
+            "<p>In a test, NULL counts as false and every real address counts as true. So <code>if (e)</code> means “if there is an enemy” and <code>if (!f)</code> means “if there's no file”. They do the same job as comparing with NULL. Pick one style and stick to it; this course writes <code>== NULL</code> because it reads plainly.</p>"
+          ],
+          [
+            "NULL is the only bad pointer you can test for",
+            "<p>A pointer can go bad in other ways:</p><ul><li><b>Garbage</b>: never set, so it holds a random address.</li><li><b>Dangling</b>: it pointed at something that has ended, like a local from a function that returned.</li><li><b>Out of bounds</b>: stepped past the end of its array.</li></ul><p>All three look like ordinary addresses, and there's no test that tells them apart from a good one. That's why the habit matters: give every pointer a real address or NULL the moment you make it, and don't keep pointers to things that end.</p>"
+          ],
+          [
+            "Where NULL comes from",
+            "<p>NULL is defined in the standard headers, such as <code>stddef.h</code>, <code>stdio.h</code>, <code>string.h</code> and <code>stdlib.h</code>. Use it with none of them included and MSVC reports it as undeclared (C2065). And NULL is not <code>'\\0'</code>. Both are zero, but NULL is a pointer and <code>'\\0'</code> is the character that ends a string, so <code>name[i] == NULL</code> is the wrong test. Newer code may use C23's <code>nullptr</code>; under MSVC's C17 mode, write NULL.</p>"
+          ],
+          [
+            "The crash is the good outcome",
+            "<p>Following NULL is undefined behaviour, but on Windows it nearly always stops the program on the spot with an <b>access violation</b>, because address zero is never part of your program's memory. In the terminal the program just ends, and <code>echo %ERRORLEVEL%</code> shows -1073741819, Windows' code for an access violation. That sounds bad, but it's the best kind of bug: loud, at the exact line. The debugger (Phase 3.75) stops right on that line. A garbage pointer can instead change some other variable and say nothing.</p>"
+          ]
+        ],
+        "king": "§17.1, §17.4, §11.2"
+      },
       "code": "#define _CRT_SECURE_NO_WARNINGS\n#include <stdio.h>\n\ntypedef struct { int health; } Player;\n\nvoid heal(Player* p, int amount) {\n    if (p == NULL) {\n        printf(\"No player to heal\\n\");\n        return;\n    }\n    p->health = p->health + amount;\n}\n\nint main(void) {\n    Player hero;\n    hero.health = 50;\n    Player* target = NULL;\n    heal(target, 10);\n    target = &hero;\n    heal(target, 10);\n    printf(\"hero %d\\n\", hero.health);\n\n    FILE* f = fopen(\"no_such_file.txt\", \"r\");\n    if (f == NULL) {\n        printf(\"No file\\n\");\n    }\n    return 0;\n}",
       "walk": [
         [
@@ -429,339 +828,23 @@
       "qa": [
         [
           "Why does NULL crash instead of doing nothing?",
-          "Address zero is never part of your program’s memory, so the operating system stops you the moment you touch it. That’s louder than silent wrong answers."
+          "Address zero is never part of your program's memory, so the operating system stops you the moment you touch it. That's louder than silent wrong answers."
         ],
         [
           "Should every pointer be checked?",
-          "Check the ones that can legitimately be NULL: things like fopen results. A pointer you got from <code>&hero</code> can never be NULL."
+          "Check the ones that can legitimately be NULL: fopen results, a search that found nothing. A pointer you got from <code>&amp;hero</code> can never be NULL."
         ],
         [
           "Is NULL the same as 0?",
           "It compares equal to 0, and on Windows it really is address zero. Write NULL when you mean a pointer, so the code says what you mean."
+        ],
+        [
+          "Can I check for a dangling pointer?",
+          "No. It holds a real-looking address, and nothing about it says the thing it pointed at has gone. The fix is to not create one: never return the address of a local, and set a pointer to NULL when what it pointed at is finished."
         ]
       ],
-      "bridge": "You can use pointers without crashing. Next: <b>enum</b>, readable names instead of magic numbers, for game states."
-    },
-    {
-      "id": "enum",
-      "title": "enum",
-      "kick": "typedef enum · named constants · switch",
-      "mins": 10,
-      "lang": "c",
-      "skills": [
-        "enum"
-      ],
-      "builds": "Phase 3: #define named constants. Phase 2.5: switch.",
-      "why": "A game is always in one state: menu, playing, game over. You could use 0, 1 and 2, but then nobody (including you in a week) knows what 2 means. An enum gives each number a name, and the compiler counts for you.",
-      "code": "#include <stdio.h>\n\ntypedef enum { STATE_MENU, STATE_PLAYING, STATE_GAMEOVER } GameState;\n\nint main(void) {\n    GameState state = STATE_PLAYING;\n    int lives = 0;\n\n    printf(\"MENU=%d PLAYING=%d GAMEOVER=%d\\n\", STATE_MENU, STATE_PLAYING, STATE_GAMEOVER);\n    if (lives == 0) {\n        state = STATE_GAMEOVER;\n    }\n    switch (state) {\n        case STATE_MENU:     printf(\"show menu\\n\"); break;\n        case STATE_PLAYING:  printf(\"run game\\n\"); break;\n        case STATE_GAMEOVER: printf(\"show game over\\n\"); break;\n    }\n    return 0;\n}",
-      "walk": [
-        [
-          3,
-          "<b>enum</b> makes a list of names. The compiler numbers them for you: 0, 1, 2. typedef gives the type a one-word name, like with struct."
-        ],
-        [
-          6,
-          "A GameState variable. It reads as a sentence: the state is playing."
-        ],
-        [
-          9,
-          "Each name is really just an int. This prints <code>MENU=0 PLAYING=1 GAMEOVER=2</code>."
-        ],
-        [
-          11,
-          "Assigning uses the names, never the numbers."
-        ],
-        [
-          13,
-          "switch on an enum reads like a menu of cases. This is the shape of a game’s main loop."
-        ],
-        [
-          16,
-          "lives is 0, so state became GAMEOVER and this case prints."
-        ]
-      ],
-      "model": "<b>Mental model:</b> named positions on a dial. You say “playing” and the dial clicks to position 1. You never have to remember that 1 means playing.",
-      "check": {
-        "q": "You add STATE_PAUSED between STATE_MENU and STATE_PLAYING in the enum. What does the first line print?",
-        "opts": [
-          "MENU=0 PLAYING=1 GAMEOVER=2",
-          "MENU=0 PAUSED=1 PLAYING=2 GAMEOVER=3",
-          "MENU=0 PLAYING=2 GAMEOVER=3",
-          "A compile error: the values changed"
-        ],
-        "a": 2,
-        "hint": "The compiler numbers names in order, one after another. What number does PLAYING get now?",
-        "why": "Names are numbered in the order written. With PAUSED in second place, PLAYING becomes 2 and GAMEOVER becomes 3. That’s why you use the names and never the raw numbers.",
-        "miss": {
-          "0": "That’s the old numbering. PAUSED now takes slot 1, pushing the rest along.",
-          "1": "The printf line only prints three values and has no PAUSED in it.",
-          "3": "Renumbering is fine. Code using the names keeps working, which is the whole point."
-        }
-      },
-      "tryit": {
-        "task": "Add STATE_PAUSED between PLAYING and GAMEOVER.",
-        "code": "typedef enum {\n    STATE_MENU,\n    STATE_PLAYING,\n    ____,\n    STATE_GAMEOVER\n} GameState;",
-        "answer": "STATE_PAUSED"
-      },
-      "qa": [
-        [
-          "How is this different from #define?",
-          "A #define is find-and-replace. An enum is a real type, the compiler numbers it for you, and debuggers show the name instead of a bare number."
-        ],
-        [
-          "Can I choose the numbers?",
-          "Yes: <code>STATE_MENU = 5</code>. Most of the time you don’t care what they are."
-        ],
-        [
-          "Where will I use this?",
-          "Phase 4.5 and Phase 6 both run on a state enum. The switch on it decides what the game does each frame."
-        ]
-      ],
-      "bridge": "You can name your states. Next: <b>header files</b>, splitting a struct and its functions across .h and .c files."
-    },
-    {
-      "id": "headers",
-      "title": "Header files and #pragma once",
-      "kick": "player.h · player.c · #include \"…\" · #pragma once",
-      "mins": 15,
-      "lang": "text",
-      "skills": [
-        "header-split",
-        "pragma-once"
-      ],
-      "builds": "Phase 3: prototypes tell the compiler a function exists before its body. Concept 1: the Player struct.",
-      "why": "One big file stops being readable. Splitting lets the functions live in player.c, while the struct and prototypes live in a header (.h). main.c only needs the header to know what exists, and every file that uses the player includes it.",
-      "code": "// ---- player.h ----\n#pragma once\n\ntypedef struct {\n    int health;\n} Player;\n\nvoid player_heal(Player* p, int amount);\n\n// ---- player.c ----\n#include \"player.h\"\n\nvoid player_heal(Player* p, int amount) {\n    p->health = p->health + amount;\n}\n\n// ---- main.c ----\n#include <stdio.h>\n#include \"player.h\"\n\nint main(void) {\n    Player hero;\n    hero.health = 50;\n    player_heal(&hero, 25);\n    printf(\"health %d\\n\", hero.health);\n    return 0;\n}",
-      "walk": [
-        [
-          2,
-          "<b>#pragma once</b> means “only read this file once per .c file”. Without it, a header included twice would define Player twice."
-        ],
-        [
-          4,
-          "The struct lives in the header, so every file that includes it knows what a Player is."
-        ],
-        [
-          8,
-          "A prototype, exactly like Phase 3’s. The header lists <i>what exists</i>: names and types, no bodies."
-        ],
-        [
-          11,
-          "Quotes mean “a header of mine, in this folder”. Angle brackets, like <code>&lt;stdio.h&gt;</code>, mean “from the compiler’s own library”."
-        ],
-        [
-          13,
-          "The body lives in player.c. Only this file needs it."
-        ],
-        [
-          19,
-          "main.c includes the header only. It never mentions player.c. It knows player_heal exists, and the body gets connected later."
-        ],
-        [
-          27,
-          "That’s all three files. Build every .c file together: <code>cl /W4 /WX main.c player.c /Fe:game.exe</code>. The next concept is what goes wrong if you forget one."
-        ]
-      ],
-      "model": "<b>Mental model:</b> the .h is the menu on the restaurant door, the .c is the kitchen. Customers (main.c) read the menu. They don’t need to see the kitchen.",
-      "check": {
-        "q": "You delete #pragma once, and main.c ends up including player.h twice (say through two other headers). What happens?",
-        "opts": [
-          "Nothing, it builds the same",
-          "The linker complains about player_heal",
-          "It builds, but player_heal runs twice",
-          "A compile error: Player is defined twice"
-        ],
-        "a": 3,
-        "hint": "What does the second include paste into the file?",
-        "why": "#include pastes the file’s text in. Twice means the typedef struct appears twice in one file, and the compiler refuses to define Player a second time. #pragma once stops the second paste.",
-        "miss": {
-          "0": "Nothing skips the second copy unless #pragma once (or a guard like it) is there.",
-          "1": "Linker errors are about missing function bodies. This fails earlier, in the compiler.",
-          "2": "A repeated prototype is harmless, and the function isn’t called by the include. The struct is the problem."
-        }
-      },
-      "tryit": {
-        "task": "Finish player.h: add the include guard, and the prototype for player_heal.",
-        "code": "// player.h\n____\n\ntypedef struct {\n    int health;\n} Player;\n\n____",
-        "answer": "#pragma once   and   void player_heal(Player* p, int amount);"
-      },
-      "qa": [
-        [
-          "What goes in a .h and what in a .c?",
-          "The .h holds declarations: structs, prototypes, #defines others need. The .c holds the bodies. Other files include the .h, never the .c."
-        ],
-        [
-          "Does player.c include player.h too?",
-          "Yes. It needs the Player struct, and including it also makes the compiler check that the prototype matches the body."
-        ],
-        [
-          "Why is it fine to change player.c without touching main.c?",
-          "main.c only depends on the header. Change a body and only that file needs recompiling."
-        ]
-      ],
-      "bridge": "You can split code into files. Next: <b>linker errors</b>, what you see when a file is missing from the build."
-    },
-    {
-      "id": "linker",
-      "title": "Linker errors (LNK2019)",
-      "kick": "compiler vs linker · unresolved external symbol",
-      "mins": 10,
-      "lang": "shell",
-      "skills": [
-        "linker"
-      ],
-      "builds": "Concept 7: main.c calls player_heal, which is declared in player.h and written in player.c.",
-      "why": "Building is two jobs. The compiler checks each .c file and promises “this function exists somewhere”. The linker then goes and collects every promise. Forget a .c file and the compiler is happy but the linker can’t find the body.",
-      "code": "> cl /W4 /WX /Zi main.c /Fe:game.exe\nmain.c\nmain.obj : error LNK2019: unresolved external symbol _player_heal referenced in function _main\ngame.exe : fatal error LNK1120: 1 unresolved externals\n\n> cl /W4 /WX /Zi main.c player.c /Fe:game.exe\nmain.c\nplayer.c\n(builds game.exe)",
-      "walk": [
-        [
-          1,
-          "Only main.c is on the command line. player.c is not part of this build. (Compiler and linker banner lines are left out.)"
-        ],
-        [
-          2,
-          "main.c compiled fine. The prototype in player.h was enough for the compiler to accept the call."
-        ],
-        [
-          3,
-          "<b>LNK2019</b>: the <b>linker</b> looked for the body of player_heal and found none. You may see <code>_player_heal</code> on 32-bit builds and <code>player_heal</code> on x64; the leading underscore is just how 32-bit builds label names."
-        ],
-        [
-          4,
-          "LNK1120 is the summary: one unresolved name, so no game.exe."
-        ],
-        [
-          6,
-          "The fix: list <i>every</i> .c file. Now player.c is compiled too, and the linker finds the body."
-        ],
-        [
-          9,
-          "No errors this time, and game.exe exists. In build.bat the list of files is the SOURCES line: add the file there and every build includes it."
-        ]
-      ],
-      "model": "<b>Mental model:</b> the compiler checks each chapter on its own and accepts the table of contents. The linker goes to bind the book and finds chapter 7 is missing from the pile.",
-      "check": {
-        "q": "You see LNK2019: unresolved external symbol _player_heal. What is the right fix?",
-        "opts": [
-          "Add #pragma once to player.h",
-          "Add player.c to the cl command",
-          "Add another prototype for player_heal to main.c",
-          "Remove /WX so warnings stop failing the build"
-        ],
-        "a": 1,
-        "hint": "The prototype is fine (the compiler passed). What is missing is the function’s body. Where does it live?",
-        "why": "The body is in player.c, and the build never compiled it. Add player.c to the command line (or to SOURCES in build.bat) and the linker can find it.",
-        "miss": {
-          "0": "#pragma once is about double includes. The compiler already passed.",
-          "2": "The compiler already knows the function exists. A second promise doesn’t supply a body.",
-          "3": "LNK2019 is an error, not a warning. /WX has nothing to do with it."
-        }
-      },
-      "tryit": {
-        "task": "Fix the command so both files are built.",
-        "code": "cl /W4 /WX /Zi main.c ____ /Fe:game.exe",
-        "answer": "player.c"
-      },
-      "qa": [
-        [
-          "What’s the difference between a compiler error and a linker error?",
-          "Compiler: “I don’t understand this line.” Linker: “I understood everything, but I can’t find this function’s body.” LNK numbers are the linker’s."
-        ],
-        [
-          "I get “unresolved external symbol” for a function I did write.",
-          "Check two things: the .c file is in the build, and the name is spelled exactly the same, capitals included, in the call, the prototype and the body."
-        ],
-        [
-          "What was the .obj file from Phase 1?",
-          "The compiler’s output for one .c file. The linker joins the .obj files into one .exe."
-        ]
-      ],
-      "bridge": "You can read a linker error. Last concept: <b>the debugger</b>, where you watch a pointer change instead of guessing."
-    },
-    {
-      "id": "debugger",
-      "title": "The debugger",
-      "kick": "F9 · F5 · F10 · F11 · Watch",
-      "mins": 15,
-      "lang": "c",
-      "skills": [
-        "debugger"
-      ],
-      "builds": "Concept 4: damage works through a pointer. Phase 1: /Zi in build.bat writes the symbol file the debugger reads.",
-      "why": "printf debugging means edit, rebuild, run, read, repeat. A debugger freezes the program mid-run so you can look at everything at once. It’s also the best way to see a pointer: you can watch the real hero change from inside a function that never names it.",
-      "code": "#include <stdio.h>\n\ntypedef struct {\n    int health;\n} Player;\n\nvoid damage(Player* p, int amount) {\n    p->health = p->health - amount;\n}\n\nint main(void) {\n    Player hero;\n    hero.health = 100;\n    damage(&hero, 30);\n    damage(&hero, 30);\n    printf(\"health %d\\n\", hero.health);\n    return 0;\n}",
-      "walk": [
-        [
-          14,
-          "<b>F9</b> with the cursor here puts a breakpoint on the line: a red dot. The program will stop <i>before</i> this line runs."
-        ],
-        [
-          14,
-          "Run build.bat first (it keeps /Zi and /Od), then <b>F5</b>. The program starts and freezes here with a yellow arrow. In the Watch window, <code>hero.health</code> shows 100."
-        ],
-        [
-          14,
-          "<b>F10</b> steps over: it runs the whole line, damage included, and stops on line 15. Watch now shows 70."
-        ],
-        [
-          15,
-          "<b>F11</b> steps into: the arrow jumps to the top of damage (line 7, where the brace is). Press F10 once to reach line 8. Watch <code>p</code> (an address like 0x00affc10), <code>*p</code> and <code>p->health</code>."
-        ],
-        [
-          8,
-          "Press F10 here: this line runs. <code>p->health</code> drops to 40, and <code>hero.health</code> would show 40 too if you clicked main in the Call Stack. Same box, two names."
-        ],
-        [
-          16,
-          "Press <b>F5</b> to run on to the end, or <b>Shift+F5</b> to stop."
-        ]
-      ],
-      "model": "<b>Mental model:</b> a pause button with X-ray vision. You freeze the game on a line and look inside every box without changing anything.",
-      "check": {
-        "q": "You put a breakpoint on line 15 and press F5. Then you press F11 to go inside damage, and F10 until the yellow arrow is on the closing brace (line 9). What does p->health show in the Watch window?",
-        "opts": [
-          "70",
-          "100",
-          "40",
-          "It can’t be shown: p isn’t in scope yet"
-        ],
-        "a": 2,
-        "hint": "What does line 8 do to p->health?",
-        "why": "Before line 15 runs, health is 70. Inside damage, line 8 subtracts 30. By the time the arrow reaches the closing brace, line 8 has run, so p->health shows 40.",
-        "miss": {
-          "0": "70 is the value before line 8 runs. The arrow is past it by the closing brace.",
-          "1": "100 was the value before line 14. By line 15 the first damage call had already run.",
-          "3": "F11 stepped inside damage, so p exists and is in scope. Back in main, p wouldn’t be."
-        }
-      },
-      "tryit": {
-        "task": "Match the key to the job: set a breakpoint, start debugging, run one line without going inside a function.",
-        "code": "____  breakpoint on this line\n____  start debugging (or keep going)\n____  step over",
-        "answer": "F9, F5, F10"
-      },
-      "qa": [
-        [
-          "My breakpoints are hollow circles.",
-          "Usually a stale exe: you edited the code and pressed F5 without running build first. F5 does not compile. Check /Zi is in build.bat and game.pdb exists next to game.exe."
-        ],
-        [
-          "F11 dropped me into a screen of assembly.",
-          "You stepped into a library function like printf. You don’t have its source. Shift+F11 steps back out; use F10 on lines that call library functions."
-        ],
-        [
-          "How do I set the debugger up?",
-          "A one-time config file called launch.json tells VS Code which .exe to run. The Build page for this phase has the four steps."
-        ],
-        [
-          "What are the other debugger keys and the Watch panel?",
-          "<code>Shift+F5</code> stops the program and <code>Ctrl+Shift+D</code> opens the Run and Debug sidebar. The Watch panel re-evaluates any expression you type (<code>p</code>, <code>*p</code>, <code>p->health</code>) after every step, and hovering a variable works too."
-        ],
-        [
-          "Breakpoints are still hollow after I rebuilt.",
-          "Check the <code>\"program\"</code> path in launch.json points at the exe your build.bat actually makes (<code>${workspaceFolder}/game.exe</code> if it builds into the repo root). Also open the repo as a folder, not a single file, or <code>${workspaceFolder}</code> means nothing."
-        ]
-      ],
-      "bridge": "That’s every concept in Phase 3.5. Next: <b>Phase 4, Git &amp; Your Partner</b>, sharing this code without stepping on each other."
+      "bridge": "That's every concept in Phase 3.5. Next: <b>the Player build</b>, then Phase 3.75 splits it across files.",
+      "lang": "c"
     }
   ]
 }

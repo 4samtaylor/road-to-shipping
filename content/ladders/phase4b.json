@@ -518,7 +518,7 @@
    "skills": [
     "state-machine"
    ],
-   "builds": "Phase 3.5: enum. Phase 2.5: switch and if. Concept 5: the loop calls the same code every frame, so something has to remember where the game is up to.",
+   "builds": "Phase 3.75: enum. Phase 2.5: switch and if. Concept 5: the loop calls the same code every frame, so something has to remember where the game is up to.",
    "why": "The runner behaves three different ways: waiting on the menu, running, or dead. Rather than a pile of flags, you keep one variable holding the current state and one switch that does that state’s work. Phase 6 uses exactly this shape.",
    "code": "#include <stdio.h>\n\ntypedef enum { STATE_MENU, STATE_PLAYING, STATE_GAME_OVER } GameState;\n\nint main(void) {\n    char keys[] = \".x.hxr\";   /* '.' means no key */\n    GameState state = STATE_MENU;\n    int frame;\n\n    for (frame = 0; frame < 6; frame++) {\n        int key = keys[frame];\n        switch (state) {\n        case STATE_MENU:\n            if (key != '.') state = STATE_PLAYING;\n            break;\n        case STATE_PLAYING:\n            if (key == 'h') state = STATE_GAME_OVER;\n            break;\n        case STATE_GAME_OVER:\n            if (key == 'r') state = STATE_PLAYING;\n            break;\n        }\n        printf(\"frame %d: state %d\\n\", frame, state);\n    }\n    return 0;\n}",
    "walk": [
@@ -672,7 +672,7 @@
    "skills": [
     "lnk2005"
    ],
-   "builds": "Phase 3.5: header files and LNK2019 (declared but never defined). This is the opposite problem: defined twice.",
+   "builds": "Phase 3.75: header files and LNK2019 (declared but never defined). This is the opposite problem: defined twice.",
    "why": "When you split the runner into main.c and runner.c, both files <code>#include \"runner.h\"</code>. An include is a copy and paste. So anything with a <i>body</i> or a variable that lives in the header gets pasted into both, and the linker finds two of it.",
    "code": "// runner.h\n#pragma once\n\n#define LANE_LEN 50\n\ntypedef struct { int score; } Runner;\n\nint best_score = 0;\n\nvoid runner_reset(Runner* r);",
    "walk": [

@@ -178,7 +178,7 @@
    "skills": [
     "next-state"
    ],
-   "builds": "Phase 3.5: enum. Phase 2.5: switch. Phase 4.5: your first state-machine menu.",
+   "builds": "Phase 3.75: enum. Phase 2.5: switch. Phase 4.5: your first state-machine menu.",
    "why": "Menu, playing and game over each behave differently, and you switch between them all the time. If you change state in the middle of a frame, later code in the same frame runs under the new state and things happen twice. Write the change into <code>next_state</code> and apply it at the very end.",
    "code": "#include <stdio.h>\n\ntypedef enum { MENU, PLAYING, GAME_OVER } State;\nconst char *names[] = { [MENU] = \"MENU\", [PLAYING] = \"PLAYING\", [GAME_OVER] = \"GAME_OVER\" };\n\nint main(void) {\n    State state = MENU;\n    for (int frame = 1; frame <= 5; frame++) {\n        State next_state = state;\n        switch (state) {\n        case MENU:\n            if (frame == 2) next_state = PLAYING;\n            break;\n        case PLAYING:\n            if (frame == 4) next_state = GAME_OVER;\n            break;\n        case GAME_OVER:\n            break;\n        }\n        printf(\"frame %d: %s\\n\", frame, names[state]);\n        state = next_state;\n    }\n    return 0;\n}",
    "walk": [
