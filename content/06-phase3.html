@@ -176,7 +176,7 @@
                 <ul>
                   <li>keep <span class="cmd">MAX_SCORES</span> scores sorted highest first, starting from a hard-coded table</li>
                   <li>insert a new score in the right slot, shift the lower ones down one, and drop the last</li>
-                  <li>do the work in <span class="cmd">void insert_score(int scores[], int count, int new_score)</span> and <span class="cmd">void print_scores(int scores[], int count)</span>, <span class="cmd">main</span> only calls functions</li>
+                  <li>do the work in <span class="cmd">void insert_score(int scores[], int count, int new_score)</span> and <span class="cmd">void print_scores(const int scores[], int count)</span>, <span class="cmd">main</span> only calls functions</li>
                 </ul>
               </div>
             </div>
@@ -247,7 +247,7 @@
     <span class="c-type">int</span>  <span class="c-var">i</span>;
 
     <span class="c-cm">// sizeof(the whole array) / sizeof(one box) = how many boxes.</span>
-    <span class="c-cm">// sizeof hands back a size_t, so cast it, same move as (int)x in session 1.</span>
+    <span class="c-cm">// sizeof hands back a size_t, so cast it: the same move as (int)x in session 1.</span>
     <span class="c-var">count</span> = (<span class="c-type">int</span>)(<span class="c-kw">sizeof</span>(<span class="c-var">scores</span>) / <span class="c-kw">sizeof</span>(<span class="c-var">scores</span>[<span class="c-num">0</span>]));
 
     <span class="c-cm">// Boxes are numbered from 0, so the last one is count - 1.</span>
@@ -258,7 +258,7 @@
 
     <span class="c-cm">// Assume box 0 wins, then let every other box challenge it.</span>
     <span class="c-var">max</span> = <span class="c-var">scores</span>[<span class="c-num">0</span>];
-    <span class="c-kw">for</span> (<span class="c-var">i</span> = <span class="c-num">1</span>; <span class="c-var">i</span> &lt; <span class="c-var">count</span>; <span class="c-var">i</span>++) {   <span class="c-cm">// starts at 1, 0 is already the champion</span>
+    <span class="c-kw">for</span> (<span class="c-var">i</span> = <span class="c-num">1</span>; <span class="c-var">i</span> &lt; <span class="c-var">count</span>; <span class="c-var">i</span>++) {   <span class="c-cm">// starts at 1: 0 is already the champion</span>
         <span class="c-kw">if</span> (<span class="c-var">scores</span>[<span class="c-var">i</span>] &gt; <span class="c-var">max</span>) {
             <span class="c-var">max</span> = <span class="c-var">scores</span>[<span class="c-var">i</span>];
         }
@@ -273,10 +273,10 @@
     <span class="c-fn">printf</span>(<span class="c-str">"What's your name? "</span>);
     <span class="c-kw">if</span> (<span class="c-fn">fgets</span>(<span class="c-var">name</span>, NAME_LEN, <span class="c-var">stdin</span>) != <span class="c-kw">NULL</span>) {
         <span class="c-cm">// fgets keeps the Enter key as a '\n' on the end. Chop it off by</span>
-        <span class="c-cm">// writing a '\0' over it, strcspn finds where the '\n' is.</span>
+        <span class="c-cm">// writing a '\0' over it. strcspn finds where the '\n' is.</span>
         <span class="c-var">name</span>[<span class="c-fn">strcspn</span>(<span class="c-var">name</span>, <span class="c-str">"\n"</span>)] = <span class="c-str">'\0'</span>;
     } <span class="c-kw">else</span> {
-        <span class="c-var">name</span>[<span class="c-num">0</span>] = <span class="c-str">'\0'</span>;   <span class="c-cm">// read failed, make it an empty string, not garbage</span>
+        <span class="c-var">name</span>[<span class="c-num">0</span>] = <span class="c-str">'\0'</span>;   <span class="c-cm">// read failed: make it an empty string, not garbage</span>
     }
 
     <span class="c-cm">// strlen counts characters up to the '\0'. It does NOT count the '\0'.</span>
@@ -289,7 +289,7 @@
     }
 
     <span class="c-cm">// TODO 2: print the name one char at a time with a for loop and %c.</span>
-    <span class="c-cm">// TODO 3: printf("%d\n", name[0]);, why does that print a number?</span>
+    <span class="c-cm">// TODO 3: printf("%d\n", name[0]); Why does that print a number?</span>
     <span class="c-cm">// TODO 4: print strcmp(name, "Sam") directly with %d for a match and a</span>
     <span class="c-cm">//         mismatch. Three different answers. Work out what they mean.</span>
 
@@ -340,14 +340,14 @@
 <pre><span class="c-pp">#define</span> _CRT_SECURE_NO_WARNINGS   <span class="c-cm">// first line of the file, before any #include (see below)</span>
 <span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
 
-<span class="c-type">void</span> <span class="c-fn">save_scores</span>(<span class="c-type">char</span> <span class="c-var">names</span>[][NAME_LEN], <span class="c-type">int</span> <span class="c-var">scores</span>[], <span class="c-type">int</span> <span class="c-var">count</span>) {
+<span class="c-type">void</span> <span class="c-fn">save_scores</span>(<span class="c-type">char</span> <span class="c-var">names</span>[][NAME_LEN], <span class="c-kw">const</span> <span class="c-type">int</span> <span class="c-var">scores</span>[], <span class="c-type">int</span> <span class="c-var">count</span>) {
     <span class="c-type">FILE</span>* <span class="c-var">f</span> = <span class="c-fn">fopen</span>(<span class="c-str">"scores.txt"</span>, <span class="c-str">"w"</span>);   <span class="c-cm">// "w" = write: creates the file, or wipes it</span>
     <span class="c-type">int</span> <span class="c-var">i</span>;
     <span class="c-kw">if</span> (<span class="c-var">f</span> == <span class="c-kw">NULL</span>) { <span class="c-fn">fprintf</span>(<span class="c-var">stderr</span>, <span class="c-str">"Couldn't save scores\n"</span>); <span class="c-kw">return</span>; }
     <span class="c-kw">for</span> (<span class="c-var">i</span> = <span class="c-num">0</span>; <span class="c-var">i</span> &lt; <span class="c-var">count</span>; <span class="c-var">i</span>++) {
         <span class="c-fn">fprintf</span>(<span class="c-var">f</span>, <span class="c-str">"%s %d\n"</span>, <span class="c-var">names</span>[<span class="c-var">i</span>], <span class="c-var">scores</span>[<span class="c-var">i</span>]);   <span class="c-cm">// printf, but into the file</span>
     }
-    <span class="c-fn">fclose</span>(<span class="c-var">f</span>);   <span class="c-cm">// always close, the last writes may not reach the disk until you do</span>
+    <span class="c-fn">fclose</span>(<span class="c-var">f</span>);   <span class="c-cm">// always close: the last writes may not reach the disk until you do</span>
 }
 
 <span class="c-type">int</span> <span class="c-fn">load_scores</span>(<span class="c-type">char</span> <span class="c-var">names</span>[][NAME_LEN], <span class="c-type">int</span> <span class="c-var">scores</span>[], <span class="c-type">int</span> <span class="c-var">count</span>) {
@@ -364,9 +364,9 @@
             <div class="callout callout--yellow mt-14">
               <div class="eyebrow eyebrow--md t-yellow mb-8">// Three things that will bite</div>
               <div class="stack gap-8 fs-11">
-                <div><span class="cmd">C4996</span> <span class="t-muted2">,  MSVC calls <span class="cmd">fopen</span> and <span class="cmd">fscanf</span> "unsafe" and suggests its own <span class="cmd">fopen_s</span>. Under <span class="cmd">/WX</span> that's a stopped build. The <span class="cmd">#define _CRT_SECURE_NO_WARNINGS</span> line switches the warning off. It only works if it comes before the first <span class="cmd">#include</span>.</span></div>
-                <div><span class="cmd">%31s</span> <span class="t-muted2">,  reads one word, at most 31 characters, so it can't overflow <span class="cmd">char name[32]</span>. One word means a name with a space in it breaks the file. Keep names to one word for now.</span></div>
-                <div><span class="cmd">scores.txt</span> <span class="t-muted2">,  is created in whatever folder you ran the program from. If it "doesn't save", check you're running from the same folder each time. Add it to .gitignore: it's data, not code.</span></div>
+                <div><span class="cmd">C4996</span> <span class="t-muted2">: MSVC calls <span class="cmd">fopen</span> and <span class="cmd">fscanf</span> "unsafe" and suggests its own <span class="cmd">fopen_s</span>. Under <span class="cmd">/WX</span> that's a stopped build. The <span class="cmd">#define _CRT_SECURE_NO_WARNINGS</span> line switches the warning off. It only works if it comes before the first <span class="cmd">#include</span>.</span></div>
+                <div><span class="cmd">%31s</span> <span class="t-muted2">: reads one word, at most 31 characters, so it can't overflow <span class="cmd">char name[32]</span>. One word means a name with a space in it breaks the file. Keep names to one word for now.</span></div>
+                <div><span class="cmd">scores.txt</span> <span class="t-muted2">: is created in whatever folder you ran the program from. If it "doesn't save", check you're running from the same folder each time. Add it to .gitignore: it's data, not code.</span></div>
               </div>
             </div>
           </div>
@@ -406,7 +406,7 @@
 strlen 3
 4</pre>
                   <span class="cmd">sizeof</span> asks about <strong class="t-text">the box</strong>: how many bytes you reserved, known before the program runs. <span class="cmd">strlen</span> asks about <strong class="t-text">the contents</strong>: it walks forward to the first <span class="cmd">'\0'</span> at run time. <span class="cmd">sizeof("Sam")</span> is 4 because a string literal carries its terminator.<br><br>
-                  One trap for later: pass <span class="cmd">name</span> to a function and <span class="cmd">sizeof</span> in there gives the size of a pointer (8 on x64, with no warning), not 32. Passing arrays to functions covers it. That's why buffer sizes travel as a separate argument, like <span class="cmd">fgets(name, NAME_LEN, stdin)</span>.</div>
+                  One trap for later: pass <span class="cmd">name</span> to a function and <span class="cmd">sizeof</span> in there gives the size of the array's location (8 bytes on x64, with no warning), not 32. Passing arrays to functions covers it. That's why buffer sizes travel as a separate argument, like <span class="cmd">fgets(name, NAME_LEN, stdin)</span>.</div>
                 </details>
               </div>
 
@@ -481,7 +481,7 @@ el</pre>
 
         <div class="section-block acc-section" data-page="review">
           <div class="section-block-header">
-            <span class="badge badge-purple">Quiz Yourself</span>&nbsp;&nbsp;2 questions, answer out loud before revealing
+            <span class="badge badge-purple">Quiz Yourself</span>&nbsp;&nbsp;3 questions, answer out loud before revealing
             <span class="acc-toggle-icon">▼</span>
           </div>
           <div class="acc-body section-block-body">
@@ -499,6 +499,14 @@ el</pre>
                 <details>
                   <summary>Reveal answer</summary>
                   <div class="quiz-a">strlen returns a <span class="cmd">size_t</span>, not an <span class="cmd">int</span>, and <span class="cmd">%d</span> expects an int, so MSVC warns <span class="cmd">C4477</span> (the format and the argument's type disagree) and <span class="cmd">/WX</span> turns it into a stopped build. Fix it with <span class="cmd">%zu</span>, the size_t format from How big a number can be, or with an explicit cast, <span class="cmd">(int)strlen(name)</span>, which is you telling the compiler "yes, on purpose."</div>
+                </details>
+              </div>
+
+              <div class="quiz-item">
+                <div class="quiz-q">3. A function has the parameter <span class="cmd">int scores[]</span> and prints <span class="cmd">sizeof(scores) / sizeof(scores[0])</span>. main passes a 5-element array. What prints on x64, and why does MSVC say nothing?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">2. Inside the function <span class="cmd">scores</span> holds only where the array lives, which takes 8 bytes on x64, and an int is 4, so 8 / 4 is 2. The code is legal C, so <span class="cmd">/W4</span> has nothing to flag. Pass the count as its own parameter, as in Passing arrays to functions.</div>
                 </details>
               </div>
 

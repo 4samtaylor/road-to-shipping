@@ -57,7 +57,7 @@
      ],
      [
       "Ending the whole program with exit",
-      "<p><code>return</code> leaves the current function. <code>exit</code>, from <code>&lt;stdlib.h&gt;</code>, ends the whole program from anywhere, however deep you are:</p><pre>if (lives &lt; 0) {\n    printf(\"Bad save file\\n\");\n    exit(EXIT_FAILURE);\n}</pre><p><code>EXIT_FAILURE</code> is 1 on Windows and <code>EXIT_SUCCESS</code> is 0, the same codes <code>return</code> in main sends. Run the program, then type <code>echo %ERRORLEVEL%</code> in the terminal: it prints 1. That's the number build.bat checks after cl runs.</p>"
+      "<p><code>return</code> leaves the current function. <code>exit</code>, from <code>&lt;stdlib.h&gt;</code>, ends the whole program from anywhere, however deep you are:</p><pre>if (lives &lt; 0) {\n    printf(\"Bad save file\\n\");\n    exit(EXIT_FAILURE);\n}</pre><p><code>EXIT_FAILURE</code> is 1 on Windows and <code>EXIT_SUCCESS</code> is 0, the same codes <code>return</code> in main sends. Run the program, then type <code>echo %ERRORLEVEL%</code> in the terminal: it prints 1. build.bat reads the same %ERRORLEVEL% after cl runs, to see whether the build worked.</p>"
      ],
      [
       "MSVC notes",
@@ -160,7 +160,7 @@
      ],
      [
       "What a prototype buys you",
-      "<p>With the prototype in place, the compiler checks every call against it. Too many or too few arguments stops the build. Each argument is converted to the parameter's type, so passing 2.9f to an int parameter chops it to 2, and <code>/W4</code> warns C4244, the same narrowing you met in Division, remainder and casts. The prototype and the definition must agree on the return type and every parameter type. If they don't, the build fails at the definition.</p>"
+      "<p>With the prototype in place, the compiler checks every call against it. Too many or too few arguments stops the build. Each argument is converted to the parameter's type, so passing 2.9f to an int parameter chops it to 2, and <code>/W4</code> warns C4244, the same chop you met in Variables and types. The prototype and the definition must agree on the return type and every parameter type. If they don't, the build fails at the definition.</p>"
      ],
      [
       "The usual file order",
@@ -465,7 +465,7 @@
    "skills": [
     "define"
    ],
-   "builds": "Variables and types (Phase 2), where #define first named START_LIVES. Loops: while and for (Phase 2.5).",
+   "builds": "Variables and types (Phase 2), where #define first named MAX_LIVES. Loops: while and for (Phase 2.5).",
    "why": "A 5 in the middle of your code could mean five scores, five lives or five pixels. #define gives a fixed number a name, so the code says what it means, and you change it in one place.",
    "learn": {
     "parts": [
@@ -598,7 +598,7 @@
       "<p class=\"warn\"><code>sizeof</code> gives a size_t, so the count line in the program below casts it with <code>(int)</code> to keep <code>/W4</code> quiet. MSVC won't warn about scores[i] going out of range, and only sometimes about a fixed scores[5]. It also has no variable-length arrays: <code>int scores[n];</code> won't build.</p>"
      ]
     ],
-    "king": "§8.1–8.2"
+    "king": "§8.1–8.2 (variable-length arrays, §8.3, don't exist in MSVC)"
    },
    "code": "#include <stdio.h>\n\n#define MAX_SCORES 5\n\nint main(void) {\n    int scores[MAX_SCORES] = {90, 75, 60, 40, 10};\n    int count = (int)(sizeof(scores) / sizeof(scores[0]));\n\n    printf(\"Top score: %d\\n\", scores[0]);\n    scores[4] = 25;\n\n    for (int i = 0; i < count; i++) {\n        printf(\"%d: %d\\n\", i + 1, scores[i]);\n    }\n    return 0;\n}",
    "walk": [
@@ -1153,6 +1153,10 @@
      [
       "Ignoring case with toupper",
       "<p><code>toupper</code>, from <code>&lt;ctype.h&gt;</code>, turns one letter into a capital and leaves anything else alone. Uppercase the text, then compare:</p><pre>for (int i = 0; cmd[i] != '\\0'; i++) {\n    cmd[i] = (char)toupper((unsigned char)cmd[i]);\n}</pre><p>The (unsigned char) cast matters. MSVC's char is signed, so a letter like é can be negative, and giving toupper a negative value is undefined. The (char) on the outside keeps /W4 quiet about storing an int in a char.</p>"
+     ],
+     [
+      "MSVC notes",
+      "<p class=\"warn\"><code>if (name == \"Sam\")</code> is C4130 under <code>/W4</code> (logical operation on address of string constant), so <code>/WX</code> stops the build. That's MSVC telling you to use strcmp. toupper returns an int, so storing it straight into a char is C4244; the <code>(char)</code> cast above is what keeps the build clean.</p>"
      ]
     ],
     "king": "§13.5 (toupper is in §23.5, strncmp in §23.6)"
@@ -1198,7 +1202,7 @@
    "qa": [
     [
      "Why doesn’t == work on strings?",
-     "<code>name == \"Sam\"</code> compares two memory addresses, which are never the same. It compiles and quietly gives false. Phase 3.5 explains addresses."
+     "<code>name == \"Sam\"</code> compares two memory addresses, not letters, so it would never be true. Under your /W4 build MSVC catches it as C4130 (logical operation on address of string constant), and /WX stops the build. Phase 3.5 explains addresses."
     ],
     [
      "How do I ignore capitals?",
@@ -1242,7 +1246,7 @@
      ],
      [
       "Rows of text: shifting names down",
-      "<p><code>char names[5][16]</code> is five strings, one per row. The high-score build makes room for a new name by moving each row below the slot down by one, starting from the bottom so nothing is overwritten before it moves:</p><pre>for (int i = MAX_SCORES - 1; i &gt; slot; i--) {\n    strcpy(names[i], names[i - 1]);\n    scores[i] = scores[i - 1];\n}\nsnprintf(names[slot], sizeof(names[slot]), \"%s\", name);</pre><p>strcpy is safe here: every row is the same size, so one row always fits in the next. The new name came from the player, so it goes in with snprintf. strcpy needs the C4996 line at the top, as Copying and joining strings explains.</p>"
+      "<p><code>char names[5][16]</code> is five strings, one per row. Version 2 of the high-score table (the stretch goal, with names) makes room for a new name by moving each row below the slot down by one, starting from the bottom so nothing is overwritten before it moves:</p><pre>for (int i = MAX_SCORES - 1; i &gt; slot; i--) {\n    strcpy(names[i], names[i - 1]);\n    scores[i] = scores[i - 1];\n}\nsnprintf(names[slot], sizeof(names[slot]), \"%s\", name);</pre><p>strcpy is safe here: every row is the same size, so one row always fits in the next. The new name came from the player, so it goes in with snprintf. strcpy needs the C4996 line at the top, as Copying and joining strings explains.</p>"
      ],
      [
       "Check both indexes",
@@ -1340,7 +1344,7 @@
      ],
      [
       "Check every open, close every file",
-      "<p>fopen returns NULL when it fails: a missing file in \"r\" mode, a folder you can't write to, a typo in the name. Passing NULL to fprintf crashes, so test the handle straight after every fopen. Every fopen that works needs exactly one fclose. A program can only hold so many files open at once, and a file that's never closed may never get its last writes.</p><p>Error messages go to <code>stderr</code>, as on line 7 below. It shows on screen like stdout but stays separate: if someone runs <code>game.exe &gt; log.txt</code>, normal output goes into the file and the errors still appear in front of them.</p>"
+      "<p>fopen returns NULL when it fails: a missing file in \"r\" mode, a folder you can't write to, a typo in the name. Passing NULL to fprintf crashes, so test the handle straight after every fopen. Every fopen that works needs exactly one fclose. A program can only hold so many files open at once, and a file that's never closed may never get its last writes.</p><p>Error messages go to <code>stderr</code>, as on line 7 below. It shows on screen like stdout but stays separate: if someone runs <code>game.exe &gt; log.txt</code>, normal output goes into the file and the errors still appear in front of them.</p><p>A missing file isn't always a mistake. The first time the game runs there's no best.txt yet, so opening it with \"r\" gives NULL. That's the moment to fall back to a default, and a note on stderr helps while you test:</p><pre>FILE *f = fopen(\"best.txt\", \"r\");\nif (f == NULL) {\n    fprintf(stderr, \"No best.txt yet, starting from 0\\n\");\n    best = 0;\n}</pre><p>The program below makes the same check the other way round on line 15: it only reads when the handle isn't NULL.</p>"
      ],
      [
       "Buffering: why writes go missing",

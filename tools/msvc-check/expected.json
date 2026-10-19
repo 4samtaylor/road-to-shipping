@@ -43,5 +43,11 @@
  "p3_c4477_sizet_with_d": "C4477",
  "p3_c4996_strcpy": "C4996",
  "p3_snprintf_expect_none": "none",
- "p3_c4244_toupper_to_char": "C4244"
+ "p3_c4244_toupper_to_char": "C4244",
+ "p3_c4130_string_eq": "C4130",
+ "p3_sizeof_array_param_expect_none": "none",
+ "p3_c4996_sscanf": "C4996",
+ "p3_c4996_strncpy": "C4996",
+ "p3_c4996_strncat": "C4996",
+ "p3_c4244_float_arg": "C4244"
 }

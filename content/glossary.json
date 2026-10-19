@@ -807,7 +807,7 @@
           "void print_banner(void)"
         ],
         "def": "void denotes the absence of a value: as a return type, the function returns nothing; as a parameter list (void), it takes no arguments.",
-        "model": "A machine with no output tray. It does something, prints, moves, but hands nothing back.",
+        "model": "A machine with no output tray. It does something (prints, moves) but hands nothing back.",
         "game": "print_banner draws the title screen and returns nothing.",
         "gameCode": "void print_banner(void) { printf(\"ASCII RUNNER\\n\"); }"
       },
@@ -841,7 +841,7 @@
         "match": "^#define",
         "def": "#define creates a preprocessor macro: every later occurrence of the name is textually replaced before compilation.",
         "model": "Find-and-replace on your file before the compiler reads it.",
-        "game": "MAX_SCORES, LANE_LEN, MAX_OBS, change one line and every array and loop that uses it follows.",
+        "game": "MAX_SCORES, LANE_LEN, MAX_OBS: change one line and every array and loop that uses it follows.",
         "gameCode": "#define MAX_OBS 8\nint obs[MAX_OBS];"
       },
       {
@@ -877,7 +877,7 @@
         ],
         "def": "The canonical array traversal initialises the index to 0 and continues while it is less than the element count, so it visits indices 0 to count − 1.",
         "model": "Visit every locker, starting at 0, and stop before the number that doesn't exist.",
-        "game": "The same header moves obstacles, draws them and checks collisions, three loops, one shape.",
+        "game": "The same header moves obstacles, draws them and checks collisions: three loops, one shape.",
         "gameCode": "for (i = 0; i < MAX_OBS; i++)\n    if (obs[i] >= 0) obs[i]--;"
       },
       {
@@ -886,10 +886,10 @@
         "kind": "syntax",
         "what": "How many elements an array has, where it was declared.",
         "example": "count = (int)(sizeof(scores) / sizeof(scores[0]));",
-        "gotcha": "Inside a function the array is a pointer; pass the count.",
+        "gotcha": "Inside a function you only have where the array lives, not the array; pass the count.",
         "def": "Dividing the size of an array by the size of one element yields its element count, valid only where the array's declaration (not a pointer) is in scope.",
         "model": "The length of the whole locker row divided by the width of one locker.",
-        "game": "Useful in main for the starting high-score table, but pass the count into functions, because they only get a pointer.",
+        "game": "Useful in main for the starting high-score table, but pass the count into functions, because they only get the array's location.",
         "gameCode": "int count = (int)(sizeof(scores) / sizeof(scores[0]));"
       },
       {
@@ -921,7 +921,7 @@
         ],
         "def": "'\\0' is the null character, with value 0. It marks the end of a C string. It differs from the digit '0', which has value 48.",
         "model": "The stop sign at the end of the word.",
-        "game": "Forget it at the end of the lane and printf keeps going into whatever memory comes next, a screen of junk after your track.",
+        "game": "Forget it at the end of the lane and printf keeps going into whatever memory comes next: a screen of junk after your track.",
         "gameCode": "lane[LANE_LEN] = '\\0';"
       },
       {
@@ -930,7 +930,7 @@
         "kind": "function",
         "what": "Reads a whole line safely: never writes past the size you give it.",
         "example": "fgets(name, NAME_LEN, stdin);\nname[strcspn(name, \"\\n\")] = '\\0';",
-        "gotcha": "Keeps the Enter as '\\n', strip it.",
+        "gotcha": "Keeps the Enter as '\\n'. Strip it.",
         "aliases": [
           "fgets",
           "fgets(name, NAME_LEN, stdin)",
@@ -979,7 +979,7 @@
         "id": "array-2d",
         "term": "2D array",
         "kind": "concept",
-        "what": "An array of arrays, e.g. five names of up to 31 characters.",
+        "what": "An array of arrays, such as five names of up to 31 characters.",
         "example": "char names[5][32];\nnames[0];   // first name",
         "aliases": [
           "names[5][32]"
@@ -1057,7 +1057,7 @@
           "int scores[]",
           "const int scores[]"
         ],
-        "def": "A parameter declared as an array of T is adjusted to a pointer to T. The argument is the address of the array's first element, so the function accesses the caller's elements directly, and any length written in the brackets is ignored.",
+        "def": "A parameter declared as an array of T is adjusted to a pointer to T (pointers are Phase 3.5). The argument is the address of the array's first element, so the function accesses the caller's elements directly, and any length written in the brackets is ignored.",
         "model": "Lending the key to your row of lockers, not photocopying what's inside.",
         "game": "The high-score table's insert_score takes the scores array and its count, and shifts the caller's scores down in place.",
         "gameCode": "void insert_score(int scores[], int count, int new_score);"
