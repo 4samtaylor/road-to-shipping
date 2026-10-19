@@ -451,7 +451,7 @@
       "skills": [
         "enum"
       ],
-      "builds": "Phase 3: #define named constants. Phase 2: switch.",
+      "builds": "Phase 3: #define named constants. Phase 2.5: switch.",
       "why": "A game is always in one state: menu, playing, game over. You could use 0, 1 and 2, but then nobody (including you in a week) knows what 2 means. An enum gives each number a name, and the compiler counts for you.",
       "code": "#include <stdio.h>\n\ntypedef enum { STATE_MENU, STATE_PLAYING, STATE_GAMEOVER } GameState;\n\nint main(void) {\n    GameState state = STATE_PLAYING;\n    int lives = 0;\n\n    printf(\"MENU=%d PLAYING=%d GAMEOVER=%d\\n\", STATE_MENU, STATE_PLAYING, STATE_GAMEOVER);\n    if (lives == 0) {\n        state = STATE_GAMEOVER;\n    }\n    switch (state) {\n        case STATE_MENU:     printf(\"show menu\\n\"); break;\n        case STATE_PLAYING:  printf(\"run game\\n\"); break;\n        case STATE_GAMEOVER: printf(\"show game over\\n\"); break;\n    }\n    return 0;\n}",
       "walk": [

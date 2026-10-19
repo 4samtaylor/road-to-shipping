@@ -1,0 +1,1166 @@
+{
+  "if": {
+    "scene": "p2-doors",
+    "steps": [
+      {
+        "line": 5,
+        "ms": 900,
+        "note": "secret is 42. This is the number to find.",
+        "do": [
+          {
+            "n": "secret",
+            "val": 42,
+            "a": "set"
+          }
+        ]
+      },
+      {
+        "line": 6,
+        "ms": 700,
+        "note": "guess is an empty box for now.",
+        "do": [
+          {
+            "n": "guess",
+            "val": "?",
+            "a": "set"
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 800,
+        "note": "printf asks the question.",
+        "do": [],
+        "out": "Guess: ",
+        "outAt": 0.3
+      },
+      {
+        "line": 8,
+        "ms": 1100,
+        "note": "scanf reads the player's number into guess. (Sample run: the player types 30.)",
+        "do": [
+          {
+            "n": "guess",
+            "val": 30,
+            "a": "set"
+          }
+        ],
+        "out": "30\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 10,
+        "ms": 1500,
+        "note": "The runner reaches the first door. Its sign says guess == secret, which is 30 == 42.",
+        "do": [
+          {
+            "to": 72,
+            "len": 0.55,
+            "a": "walk"
+          },
+          {
+            "door": 0,
+            "v": "30 == 42",
+            "r": false,
+            "at": 0.55,
+            "len": 0.45,
+            "a": "knock"
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 1500,
+        "note": "False, so this door stays shut. Next door: guess < secret, which is 30 < 42.",
+        "do": [
+          {
+            "to": 200,
+            "len": 0.55,
+            "a": "walk"
+          },
+          {
+            "door": 1,
+            "v": "30 < 42",
+            "r": true,
+            "at": 0.55,
+            "len": 0.45,
+            "a": "knock"
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 1400,
+        "note": "True! The runner goes through this door. Every door after it gets skipped, even the always-open else.",
+        "do": [
+          {
+            "door": 1,
+            "room": "Higher",
+            "a": "enter"
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 1000,
+        "note": "Only this door's printf runs.",
+        "do": [
+          {
+            "t": "Higher",
+            "a": "say"
+          }
+        ],
+        "out": "Higher\n",
+        "outAt": 0.4
+      },
+      {
+        "line": 17,
+        "ms": 900,
+        "note": "return 0 means the program finished fine.",
+        "do": [
+          {
+            "a": "hop"
+          }
+        ]
+      }
+    ]
+  },
+  "switch": {
+    "scene": "p2-slope",
+    "steps": [
+      {
+        "line": 5,
+        "ms": 800,
+        "note": "choice is an empty box for now.",
+        "do": [
+          {
+            "val": "?",
+            "a": "choice"
+          }
+        ]
+      },
+      {
+        "line": 6,
+        "ms": 800,
+        "note": "printf shows the menu.",
+        "do": [],
+        "out": "1 Play  2 Scores  3 Quit: ",
+        "outAt": 0.3
+      },
+      {
+        "line": 7,
+        "ms": 1100,
+        "note": "scanf reads the player's pick into choice. (Sample run: the player types 2.)",
+        "do": [
+          {
+            "val": 2,
+            "a": "choice"
+          }
+        ],
+        "out": "2\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 9,
+        "ms": 1500,
+        "note": "switch jumps straight to the label that matches 2.",
+        "do": [
+          {
+            "row": 0,
+            "r": false,
+            "len": 0.45,
+            "a": "scan"
+          },
+          {
+            "row": 1,
+            "r": true,
+            "at": 0.5,
+            "len": 0.5,
+            "a": "scan"
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 1300,
+        "note": "Case 2 matches. The runner jumps straight to that label and skips case 1 entirely.",
+        "do": [
+          {
+            "to": [
+              104,
+              110
+            ],
+            "arc": 34,
+            "a": "go"
+          }
+        ]
+      },
+      {
+        "line": 14,
+        "ms": 1300,
+        "note": "From the label, the runner runs downhill and runs this printf.",
+        "do": [
+          {
+            "to": [
+              250,
+              110
+            ],
+            "a": "go"
+          },
+          {
+            "t": "High scores",
+            "at": 0.4,
+            "len": 0.6,
+            "a": "say"
+          }
+        ],
+        "out": "High scores\n",
+        "outAt": 0.5
+      },
+      {
+        "line": 15,
+        "ms": 1300,
+        "note": "break is a wall. The runner hits it and stops sliding. Without it, the runner would carry on into case 3.",
+        "do": [
+          {
+            "row": 1,
+            "a": "bump"
+          }
+        ]
+      },
+      {
+        "line": 15,
+        "ms": 1300,
+        "note": "Hitting break sends the runner out of the switch, to the line after it.",
+        "do": [
+          {
+            "to": [
+              360,
+              232
+            ],
+            "arc": 60,
+            "a": "go"
+          }
+        ]
+      },
+      {
+        "line": 23,
+        "ms": 800,
+        "note": "return 0 means the program finished fine.",
+        "do": []
+      }
+    ]
+  },
+  "loops": {
+    "scene": "loops",
+    "steps": [
+      {
+        "line": 4,
+        "ms": 1100,
+        "note": "lives starts at 3: three hearts.",
+        "do": [
+          {
+            "a": "lives",
+            "to": 3
+          }
+        ]
+      },
+      {
+        "line": 5,
+        "ms": 800,
+        "note": "Check first: is 3 > 0? Yes, so the block runs.",
+        "do": [
+          {
+            "a": "check",
+            "t": "lives > 0",
+            "v": "3 > 0",
+            "r": true
+          }
+        ]
+      },
+      {
+        "line": 6,
+        "ms": 1000,
+        "out": "Lives: 3\n",
+        "outAt": 0.3,
+        "note": "printf prints the current lives.",
+        "do": [
+          {
+            "a": "run",
+            "from": 0,
+            "to": 0.5,
+            "ease": "start"
+          },
+          {
+            "a": "say",
+            "t": "Lives: 3",
+            "at": 0.25,
+            "len": 0.7
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1000,
+        "note": "lives drops by 1: 3 becomes 2. Then back to the start line for the next check.",
+        "do": [
+          {
+            "a": "run",
+            "from": 0.5,
+            "to": 1,
+            "ease": "end"
+          },
+          {
+            "a": "lives",
+            "to": 2,
+            "at": 0.1,
+            "len": 0.6
+          }
+        ]
+      },
+      {
+        "line": 5,
+        "ms": 800,
+        "note": "Check first: is 2 > 0? Yes, so the block runs.",
+        "do": [
+          {
+            "a": "check",
+            "t": "lives > 0",
+            "v": "2 > 0",
+            "r": true
+          }
+        ]
+      },
+      {
+        "line": 6,
+        "ms": 1000,
+        "out": "Lives: 2\n",
+        "outAt": 0.3,
+        "note": "printf prints the current lives.",
+        "do": [
+          {
+            "a": "run",
+            "from": 0,
+            "to": 0.5,
+            "ease": "start"
+          },
+          {
+            "a": "say",
+            "t": "Lives: 2",
+            "at": 0.25,
+            "len": 0.7
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1000,
+        "note": "lives drops by 1: 2 becomes 1. Then back to the start line for the next check.",
+        "do": [
+          {
+            "a": "run",
+            "from": 0.5,
+            "to": 1,
+            "ease": "end"
+          },
+          {
+            "a": "lives",
+            "to": 1,
+            "at": 0.1,
+            "len": 0.6
+          }
+        ]
+      },
+      {
+        "line": 5,
+        "ms": 800,
+        "note": "Check first: is 1 > 0? Yes, so the block runs.",
+        "do": [
+          {
+            "a": "check",
+            "t": "lives > 0",
+            "v": "1 > 0",
+            "r": true
+          }
+        ]
+      },
+      {
+        "line": 6,
+        "ms": 1000,
+        "out": "Lives: 1\n",
+        "outAt": 0.3,
+        "note": "printf prints the current lives.",
+        "do": [
+          {
+            "a": "run",
+            "from": 0,
+            "to": 0.5,
+            "ease": "start"
+          },
+          {
+            "a": "say",
+            "t": "Lives: 1",
+            "at": 0.25,
+            "len": 0.7
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1000,
+        "note": "lives drops by 1: 1 becomes 0. Then back to the start line for the next check.",
+        "do": [
+          {
+            "a": "run",
+            "from": 0.5,
+            "to": 1,
+            "ease": "end"
+          },
+          {
+            "a": "lives",
+            "to": 0,
+            "at": 0.1,
+            "len": 0.6
+          }
+        ]
+      },
+      {
+        "line": 5,
+        "ms": 1000,
+        "note": "0 > 0 is false. The block is skipped and the loop is over.",
+        "do": [
+          {
+            "a": "check",
+            "t": "lives > 0",
+            "v": "0 > 0",
+            "r": false
+          }
+        ]
+      },
+      {
+        "line": 9,
+        "ms": 1300,
+        "out": "Game over\n",
+        "outAt": 0.4,
+        "note": "Runs once, after the loop is done.",
+        "do": [
+          {
+            "a": "walk",
+            "to": [
+              46,
+              214
+            ],
+            "len": 0.75
+          },
+          {
+            "a": "over",
+            "on": true,
+            "at": 0.2
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 900,
+        "note": "for sets i = 1, then checks i <= 3.",
+        "do": [
+          {
+            "a": "over",
+            "on": false
+          },
+          {
+            "a": "slots"
+          },
+          {
+            "a": "hud",
+            "name": "i",
+            "val": 1
+          },
+          {
+            "a": "check",
+            "t": "i <= 3",
+            "v": "1 <= 3",
+            "r": true
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 1100,
+        "out": "Wave 1\n",
+        "outAt": 0.3,
+        "note": "Wave 1 spawns.",
+        "do": [
+          {
+            "a": "spawn",
+            "n": 1
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 900,
+        "note": "i++ makes i 2. Check i <= 3: yes.",
+        "do": [
+          {
+            "a": "hud",
+            "name": "i",
+            "val": 2
+          },
+          {
+            "a": "check",
+            "t": "i <= 3",
+            "v": "2 <= 3",
+            "r": true
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 1100,
+        "out": "Wave 2\n",
+        "outAt": 0.3,
+        "note": "Wave 2 spawns.",
+        "do": [
+          {
+            "a": "spawn",
+            "n": 2
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 900,
+        "note": "i++ makes i 3. Check i <= 3: yes.",
+        "do": [
+          {
+            "a": "hud",
+            "name": "i",
+            "val": 3
+          },
+          {
+            "a": "check",
+            "t": "i <= 3",
+            "v": "3 <= 3",
+            "r": true
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 1100,
+        "out": "Wave 3\n",
+        "outAt": 0.3,
+        "note": "Wave 3 spawns.",
+        "do": [
+          {
+            "a": "spawn",
+            "n": 3
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 900,
+        "note": "i++ makes i 4. 4 <= 3 is false, so the loop ends.",
+        "do": [
+          {
+            "a": "hud",
+            "name": "i",
+            "val": 4
+          },
+          {
+            "a": "check",
+            "t": "i <= 3",
+            "v": "4 <= 3",
+            "r": false
+          }
+        ]
+      },
+      {
+        "line": 14,
+        "ms": 900,
+        "note": "Done. The program ends.",
+        "do": [
+          {
+            "a": "check",
+            "t": "return 0",
+            "v": "program ends",
+            "r": "exit 0"
+          },
+          {
+            "a": "hop"
+          }
+        ]
+      }
+    ]
+  },
+  "rand": {
+    "scene": "p2-tape",
+    "steps": [
+      {
+        "line": 6,
+        "ms": 1300,
+        "note": "time(NULL) reads the clock: the number of seconds since 1970. (Sample run: the clock says 1760000000.)",
+        "do": [
+          {
+            "val": "1760000000",
+            "a": "clock"
+          }
+        ]
+      },
+      {
+        "line": 6,
+        "ms": 1800,
+        "note": "srand uses that clock number to pick a start spot in the list. Same clock, same start spot. (For 1760000000, Windows gives 10576, 30474, 19244...)",
+        "do": [
+          {
+            "len": 1,
+            "a": "srand"
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1400,
+        "note": "rand() reads the next number on the list: 10576. The pointer moves on by one.",
+        "do": [
+          {
+            "i": 0,
+            "a": "pull"
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1800,
+        "note": "% 100 + 1 squeezes it into 1 to 100. 10576 % 100 is 76, plus 1 is 77. That goes in secret.",
+        "do": [
+          {
+            "raw": "10576",
+            "m": 100,
+            "v": "77",
+            "box": 0,
+            "a": "calc"
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1400,
+        "note": "The next rand() reads the next number on the list: 30474.",
+        "do": [
+          {
+            "i": 1,
+            "a": "pull"
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1800,
+        "note": "% 6 + 1 squeezes it into 1 to 6, like a dice. 30474 % 6 is 0, plus 1 is 1. That goes in roll.",
+        "do": [
+          {
+            "raw": "30474",
+            "m": 6,
+            "v": "1",
+            "box": 1,
+            "a": "calc"
+          }
+        ]
+      },
+      {
+        "line": 9,
+        "ms": 1000,
+        "note": "printf shows both numbers.",
+        "do": [],
+        "out": "Secret: 77  Dice: 1\n",
+        "outAt": 0.5
+      },
+      {
+        "line": 10,
+        "ms": 800,
+        "note": "return 0 means the program finished fine.",
+        "do": []
+      }
+    ]
+  },
+  "conditions": {
+    "scene": "p2-calc",
+    "steps": [
+      {
+        "line": 5,
+        "ms": 800,
+        "note": "health starts at 30.",
+        "do": [
+          {
+            "a": "vars",
+            "t": "health = 30"
+          }
+        ]
+      },
+      {
+        "line": 6,
+        "ms": 800,
+        "note": "lane is 9, one past the last lane.",
+        "do": [
+          {
+            "a": "vars",
+            "t": "health = 30   lane = 9"
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 800,
+        "note": "No enemies on screen.",
+        "do": [
+          {
+            "a": "vars",
+            "t": "health = 30   lane = 9   enemies = 0"
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1600,
+        "note": "health < 50 is 30 < 50. Yes, so the answer is the int 1, and it goes into low.",
+        "do": [
+          {
+            "a": "expr",
+            "x": {
+              "v": "30",
+              "t": "int"
+            },
+            "op": "<",
+            "y": {
+              "v": "50",
+              "t": "int"
+            },
+            "label": "health < 50"
+          },
+          {
+            "a": "calc",
+            "v": "1",
+            "t": "int",
+            "at": 0.5,
+            "len": 0.5
+          }
+        ]
+      },
+      {
+        "line": 9,
+        "ms": 900,
+        "note": "A comparison's answer prints like any other number.",
+        "do": [],
+        "out": "low = 1\n",
+        "outAt": 0.4
+      },
+      {
+        "line": 11,
+        "ms": 1400,
+        "note": "First half of the &&: lane >= 1 is 9 >= 1. True: 1.",
+        "do": [
+          {
+            "a": "expr",
+            "x": {
+              "v": "9",
+              "t": "int"
+            },
+            "op": ">=",
+            "y": {
+              "v": "1",
+              "t": "int"
+            },
+            "label": "lane >= 1"
+          },
+          {
+            "a": "calc",
+            "v": "1",
+            "t": "int",
+            "at": 0.5,
+            "len": 0.5
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 1400,
+        "note": "Second half: lane <= 8 is 9 <= 8. False: 0.",
+        "do": [
+          {
+            "a": "expr",
+            "x": {
+              "v": "9",
+              "t": "int"
+            },
+            "op": "<=",
+            "y": {
+              "v": "8",
+              "t": "int"
+            },
+            "label": "lane <= 8"
+          },
+          {
+            "a": "calc",
+            "v": "0",
+            "t": "int",
+            "at": 0.5,
+            "len": 0.5
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 1700,
+        "note": "1 && 0 is 0, because && needs both sides true. on_road is false.",
+        "do": [
+          {
+            "a": "expr",
+            "x": {
+              "v": "1",
+              "t": "int"
+            },
+            "op": "&&",
+            "y": {
+              "v": "0",
+              "t": "int"
+            },
+            "label": "on_road = 1 && 0"
+          },
+          {
+            "a": "calc",
+            "v": "0",
+            "t": "bool",
+            "at": 0.4,
+            "len": 0.4
+          },
+          {
+            "a": "rule",
+            "t": "&& needs both sides true",
+            "at": 0.6,
+            "len": 0.4
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 900,
+        "note": "A bool prints as 1 or 0 with %d.",
+        "do": [],
+        "out": "on_road = 0\n",
+        "outAt": 0.4
+      },
+      {
+        "line": 13,
+        "ms": 1800,
+        "note": "lane < 1 is 0, lane > 8 is 1. 0 || 1 is 1: one true side is enough.",
+        "do": [
+          {
+            "a": "expr",
+            "x": {
+              "v": "0",
+              "t": "int"
+            },
+            "op": "||",
+            "y": {
+              "v": "1",
+              "t": "int"
+            },
+            "label": "9 < 1 || 9 > 8"
+          },
+          {
+            "a": "calc",
+            "v": "1",
+            "t": "int",
+            "at": 0.4,
+            "len": 0.4
+          },
+          {
+            "a": "rule",
+            "t": "|| needs just one side true",
+            "good": true,
+            "at": 0.6,
+            "len": 0.4
+          }
+        ],
+        "out": "off_road = 1\n",
+        "outAt": 0.8
+      },
+      {
+        "line": 15,
+        "ms": 2000,
+        "note": "enemies > 0 is 0 > 0: false. The && is already lost, so C never works out 12 / enemies. No divide by zero, no crash.",
+        "do": [
+          {
+            "a": "expr",
+            "x": {
+              "v": "0",
+              "t": "int"
+            },
+            "op": "&&",
+            "y": {
+              "v": "?",
+              "t": "int"
+            },
+            "label": "enemies > 0 && ..."
+          },
+          {
+            "a": "calc",
+            "v": "0",
+            "t": "int",
+            "at": 0.35,
+            "len": 0.35
+          },
+          {
+            "a": "rule",
+            "t": "left side false: the right side never runs",
+            "good": true,
+            "at": 0.55,
+            "len": 0.45
+          }
+        ]
+      },
+      {
+        "line": 18,
+        "ms": 1700,
+        "note": "health > 0 is 1, and !on_road flips 0 to 1. 1 && 1 is 1, so the block runs.",
+        "do": [
+          {
+            "a": "expr",
+            "x": {
+              "v": "1",
+              "t": "int"
+            },
+            "op": "&&",
+            "y": {
+              "v": "1",
+              "t": "int"
+            },
+            "label": "health > 0 && !on_road"
+          },
+          {
+            "a": "calc",
+            "v": "1",
+            "t": "int",
+            "at": 0.5,
+            "len": 0.5
+          }
+        ]
+      },
+      {
+        "line": 19,
+        "ms": 900,
+        "note": "Only now does this printf run.",
+        "do": [],
+        "out": "Back on the road!\n",
+        "outAt": 0.4
+      },
+      {
+        "line": 21,
+        "ms": 800,
+        "note": "return 0 means the program finished fine.",
+        "do": []
+      }
+    ]
+  },
+  "loop-control": {
+    "scene": "loops",
+    "steps": [
+      {
+        "line": 6,
+        "ms": 1200,
+        "note": "for (;;) has no test, so nothing up here can stop the loop. The only exits are inside. (Sample run: the player types abc, then 2.)",
+        "do": [
+          {
+            "a": "check",
+            "t": "for (;;)",
+            "v": "no test to fail",
+            "r": "forever"
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 900,
+        "note": "Lap 1. printf asks for a lane.",
+        "do": [
+          {
+            "a": "run",
+            "from": 0,
+            "to": 0.15,
+            "ease": "start"
+          }
+        ],
+        "out": "Lane (1-3): ",
+        "outAt": 0.3
+      },
+      {
+        "line": 8,
+        "ms": 1400,
+        "note": "The player types abc. scanf can't make a number from that, stores nothing and returns 0. 0 == 1 is false, so the whole first block is skipped.",
+        "do": [
+          {
+            "a": "check",
+            "t": "scanf(\"%d\", &lane) == 1",
+            "v": "typed abc: 0 == 1",
+            "r": false
+          }
+        ],
+        "out": "abc\n",
+        "outAt": 0.2
+      },
+      {
+        "line": 14,
+        "ms": 1400,
+        "note": "getchar eats a, b, c and the Enter, one character per pass of this little loop. c ends up holding the Enter.",
+        "do": [
+          {
+            "a": "run",
+            "from": 0.15,
+            "to": 0.4
+          },
+          {
+            "a": "say",
+            "t": "abc thrown away",
+            "at": 0.3,
+            "len": 0.7
+          }
+        ]
+      },
+      {
+        "line": 15,
+        "ms": 900,
+        "note": "c is the Enter, not EOF: input hasn't ended, so no return.",
+        "do": [
+          {
+            "a": "check",
+            "t": "c == EOF",
+            "v": "'\\n' == EOF",
+            "r": false
+          }
+        ]
+      },
+      {
+        "line": 18,
+        "ms": 900,
+        "note": "printf tells the player what went wrong.",
+        "do": [
+          {
+            "a": "say",
+            "t": "Numbers only"
+          }
+        ],
+        "out": "Numbers only\n",
+        "outAt": 0.4
+      },
+      {
+        "line": 19,
+        "ms": 1300,
+        "note": "End of the lap. for (;;) goes straight round again.",
+        "do": [
+          {
+            "a": "run",
+            "from": 0.4,
+            "to": 1,
+            "ease": "end"
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 900,
+        "note": "Lap 2. Same prompt.",
+        "do": [
+          {
+            "a": "run",
+            "from": 0,
+            "to": 0.3,
+            "ease": "start"
+          }
+        ],
+        "out": "Lane (1-3): ",
+        "outAt": 0.3
+      },
+      {
+        "line": 8,
+        "ms": 1400,
+        "note": "This time the player types 2. scanf stores it in lane and returns 1, so C goes in.",
+        "do": [
+          {
+            "a": "check",
+            "t": "scanf(\"%d\", &lane) == 1",
+            "v": "typed 2: 1 == 1",
+            "r": true
+          },
+          {
+            "a": "hud",
+            "name": "lane",
+            "val": 2,
+            "at": 0.4
+          }
+        ],
+        "out": "2\n",
+        "outAt": 0.2
+      },
+      {
+        "line": 9,
+        "ms": 1300,
+        "note": "2 is a real lane: true.",
+        "do": [
+          {
+            "a": "check",
+            "t": "lane >= 1 && lane <= 3",
+            "v": "2 >= 1 && 2 <= 3",
+            "r": true
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 1400,
+        "note": "break leaves the loop on the spot. The runner steps off the track: no more laps.",
+        "do": [
+          {
+            "a": "walk",
+            "to": [
+              46,
+              214
+            ],
+            "len": 0.75
+          }
+        ]
+      },
+      {
+        "line": 20,
+        "ms": 1100,
+        "note": "The first line after the loop. lane is always 1, 2 or 3 here.",
+        "do": [
+          {
+            "a": "say",
+            "t": "Lane 2"
+          }
+        ],
+        "out": "Running in lane 2\n",
+        "outAt": 0.4
+      },
+      {
+        "line": 21,
+        "ms": 900,
+        "note": "Done. The program ends.",
+        "do": [
+          {
+            "a": "check",
+            "t": "return 0",
+            "v": "program ends",
+            "r": "exit 0"
+          },
+          {
+            "a": "hop"
+          }
+        ]
+      }
+    ]
+  }
+}

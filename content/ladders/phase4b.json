@@ -31,7 +31,7 @@
    "skills": [
     "kbhit"
    ],
-   "builds": "Phase 2: while loops and if. Every program so far used scanf, which stops and waits for Enter.",
+   "builds": "Phase 2.5: while loops and if. Every program so far used scanf, which stops and waits for Enter.",
    "why": "A game can’t freeze while you decide what to press. The obstacles have to keep moving either way. <code>_kbhit</code> asks “is a key waiting?” and answers straight away, yes or no. Only then do you take the key with <code>_getch</code>.",
    "code": "#include <conio.h>\n#include <stdio.h>\n\nint main(void) {\n    int key;\n    int count = 0;\n\n    for (;;) {\n        key = 0;\n        while (_kbhit()) {\n            key = _getch();\n        }\n        if (key == 'q') {\n            break;\n        }\n        count++;\n        if (key != 0) {\n            printf(\"key %c at loop %d\\n\", key, count);\n        }\n    }\n    return 0;\n}",
    "walk": [
@@ -518,7 +518,7 @@
    "skills": [
     "state-machine"
    ],
-   "builds": "Phase 3.5: enum. Phase 2: switch and if. Concept 5: the loop calls the same code every frame, so something has to remember where the game is up to.",
+   "builds": "Phase 3.5: enum. Phase 2.5: switch and if. Concept 5: the loop calls the same code every frame, so something has to remember where the game is up to.",
    "why": "The runner behaves three different ways: waiting on the menu, running, or dead. Rather than a pile of flags, you keep one variable holding the current state and one switch that does that state’s work. Phase 6 uses exactly this shape.",
    "code": "#include <stdio.h>\n\ntypedef enum { STATE_MENU, STATE_PLAYING, STATE_GAME_OVER } GameState;\n\nint main(void) {\n    char keys[] = \".x.hxr\";   /* '.' means no key */\n    GameState state = STATE_MENU;\n    int frame;\n\n    for (frame = 0; frame < 6; frame++) {\n        int key = keys[frame];\n        switch (state) {\n        case STATE_MENU:\n            if (key != '.') state = STATE_PLAYING;\n            break;\n        case STATE_PLAYING:\n            if (key == 'h') state = STATE_GAME_OVER;\n            break;\n        case STATE_GAME_OVER:\n            if (key == 'r') state = STATE_PLAYING;\n            break;\n        }\n        printf(\"frame %d: state %d\\n\", frame, state);\n    }\n    return 0;\n}",
    "walk": [

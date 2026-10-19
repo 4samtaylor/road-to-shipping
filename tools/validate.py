@@ -11,6 +11,9 @@ ROOT = Path(__file__).resolve().parent.parent
 VOID = {'br', 'img', 'input', 'hr', 'meta', 'link', 'wbr', 'source', 'col', 'area', 'base', 'embed', 'param', 'track'}
 BANNED_TAGS = {'script', 'iframe', 'object', 'embed', 'form', 'style', 'link', 'meta', 'base'}
 errors = []
+notes = []   # reported, but don't fail the check
+# Ladder fields that js/app.js passes through esc(): tags or entities in them show up as raw text.
+ESC_TAG = re.compile(r'</?(code|b|i|br|p|pre|em|strong|small|ul|ol|li|span|a)\b[^>]*>|&(lt|gt|amp|quot|nbsp);')
 
 
 class Check(HTMLParser):
@@ -144,6 +147,15 @@ def main():
             c = r.get('check', {})
             if not (0 <= c.get('a', -1) < len(c.get('opts', []))):
                 errors.append(f'{name}: rung {rid} check answer is out of range')
+            t = r.get('tryit', {})
+            plain = [('title', r.get('title', '')), ('kick', r.get('kick', '')), ('check q', c.get('q', '')),
+                     ('check hint', c.get('hint', '')), ('check why', c.get('why', '')),
+                     ('tryit task', t.get('task', '')), ('tryit answer', t.get('answer', ''))]
+            plain += [('check option', o) for o in c.get('opts', [])] + [('check miss', m) for m in c.get('miss', {}).values()]
+            plain += [('qa question', q[0]) for q in r.get('qa', []) if q]
+            for k, v in plain:
+                if isinstance(v, str) and ESC_TAG.search(v):
+                    notes.append(f'{name}: rung {rid} {k} has HTML, but it is shown as plain text: {v[:60]}')
             for s in r.get('skills', []):
                 if gloss_ids and s not in gloss_ids:
                     errors.append(f'{name}: rung {rid} skill "{s}" is not in glossary.json')
@@ -214,6 +226,8 @@ def main():
         except Exception:
             errors.append(f'progress/{p.name} is not a valid progress file')
 
+    if notes:
+        print('Notes (not failures):\n  ' + '\n  '.join(notes))
     if errors:
         print('Content check failed:\n  ' + '\n  '.join(errors))
         return 1

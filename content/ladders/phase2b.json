@@ -1,0 +1,680 @@
+{
+ "_about": "Concept ladder for the Learn stage. One concept per rung. Rung ids are progress keys: never rename. skills are glossary.json ids that move to Practiced when the check is passed. goals maps checkpoint data-ids to the rungs (1-based) that teach them.",
+ "phase": "phase2b",
+ "rungs": [
+  {
+   "id": "conditions",
+   "title": "Comparisons, &&, || and !",
+   "kick": "< > <= >= == != · && · || · ! · bool",
+   "mins": 18,
+   "skills": [
+    "logical-ops",
+    "short-circuit"
+   ],
+   "builds": "Assignment, ++ and side effects: a comparison is one more expression with a value. Division, remainder and casts: the precedence rules you met there gain a few new rows.",
+   "why": "Every decision in a game starts as a question. Is health above 0? Is the player inside the lanes? Did they press q or Q? In C each question is an expression that works out to 1 for yes and 0 for no, and <b>&amp;&amp;</b>, <b>||</b> and <b>!</b> combine questions into bigger ones.",
+   "learn": {
+    "parts": [
+     [
+      "A question with a number for an answer",
+      "<p>In C a comparison is an expression, just like <code>score + 10</code>. It works out to a value: <b>1</b> when the answer is yes and <b>0</b> when it's no. That is all true and false are to C. You can store the answer, print it with %d, or even add it up: <code>hits = hits + (dist &lt; 5);</code> counts a hit only when an enemy is close.</p><p>The six comparisons are <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>, <code>==</code> (equal) and <code>!=</code> (not equal). The two-character ones have no space in the middle, and the <code>=</code> always comes second.</p>"
+     ],
+     [
+      "Where comparisons sit in the order",
+      "<p>Comparisons bind more loosely than arithmetic, so <code>score + bonus &gt; 100</code> adds first and compares after, which is what you want. <code>&lt; &gt; &lt;= &gt;=</code> bind a little more tightly than <code>== !=</code>, and all of them group left to right.</p><p>That left-to-right grouping is the trap behind <code>0 &lt; x &lt; 10</code>. It reads like maths, but C works out <code>0 &lt; x</code> first, gets 1 or 0, then asks whether that is less than 10. It always is. To test a range you need two comparisons joined together.</p>"
+     ],
+     [
+      "Joining questions: &&, || and !",
+      "<ul><li><code>a &amp;&amp; b</code> is 1 only when both sides are true.</li><li><code>a || b</code> is 1 when at least one side is true.</li><li><code>!a</code> is 1 when a is 0, and 0 otherwise.</li></ul><p>Any value that isn't 0 counts as true, not only 1, but these three always answer with exactly 1 or 0.</p><p>Inside a range uses &amp;&amp;: <code>lane &gt;= 1 &amp;&amp; lane &lt;= 8</code>. Outside uses || with both tests turned round: <code>lane &lt; 1 || lane &gt; 8</code>. The two are exact opposites, so <code>!(lane &gt;= 1 &amp;&amp; lane &lt;= 8)</code> means the same as the second one.</p>"
+     ],
+     [
+      "Short-circuit: the right side may never run",
+      "<p>The examples from here on put a test inside <code>if ( )</code>. An if runs the block in braces after it only when its test isn't 0. Decisions with if / else, the next concept, covers it properly; for now, watch the test.</p><p>C works out the left side of &amp;&amp; first. If it's false, the whole thing is false whatever the right side says, so C skips the right side completely. || does the same when its left side is true. This is <b>short-circuit</b> evaluation, and it makes a handy guard:</p><pre>if (enemies &gt; 0 &amp;&amp; kills / enemies &gt; 2)</pre><p>When enemies is 0 the division never happens, so it can't crash. The guard always goes on the left.</p><p class=\"warn\">The flip side: a side effect on the right may quietly not happen. In <code>if (paused || frame++ &gt; 60)</code>, frame only goes up while the game isn't paused. Keep ++ and assignments out of tests.</p>"
+     ],
+     [
+      "Mixing && and ||",
+      "<p>&amp;&amp; binds more tightly than ||, the way × comes before +. So <code>key == 'q' || key == 'Q' &amp;&amp; lives &gt; 0</code> means <code>key == 'q' || (key == 'Q' &amp;&amp; lives &gt; 0)</code>, which probably isn't what you meant. Whenever a test mixes the two, add brackets. They cost nothing and save the reader a lookup.</p>"
+     ],
+     [
+      "bool",
+      "<p><code>#include &lt;stdbool.h&gt;</code> gives you the type <code>bool</code> and the names <code>true</code> (1) and <code>false</code> (0). A bool tells the reader “this is a yes/no flag” in a way an int can't: <code>bool alive = true;</code> says more than <code>int alive = 1;</code>. Put any number into a bool and it becomes 1 unless the number was 0. From C23, bool, true and false are built into the language and the header isn't needed, so you'll see code both ways.</p>"
+     ],
+     [
+      "MSVC notes",
+      "<p class=\"warn\">Writing <code>=</code> where you meant <code>==</code> inside a test makes MSVC warn (C4706), and /WX stops the build. A single <code>&amp;</code> or <code>|</code> where you meant two, and <code>0 &lt; x &lt; 10</code>, can compile without a word. Those you catch by reading your tests out loud.</p><p>Comparing a signed int with an unsigned one using &lt; &gt; &lt;= or &gt;= is C4018 (signed/unsigned mismatch), the trap from How big a number can be. Keep game values signed.</p>"
+     ]
+    ],
+    "king": "§5.1, plus Boolean values at the end of §5.2"
+   },
+   "code": "#include <stdio.h>\n#include <stdbool.h>\n\nint main(void) {\n    int health = 30;\n    int lane = 9;\n    int enemies = 0;\n    int low = health < 50;\n    printf(\"low = %d\\n\", low);\n\n    bool on_road = lane >= 1 && lane <= 8;\n    printf(\"on_road = %d\\n\", on_road);\n    printf(\"off_road = %d\\n\", lane < 1 || lane > 8);\n\n    if (enemies > 0 && 12 / enemies > 2) {\n        printf(\"Big wave\\n\");\n    }\n    if (health > 0 && !on_road) {\n        printf(\"Back on the road!\\n\");\n    }\n    return 0;\n}",
+   "walk": [
+    [
+     8,
+     "<b>health &lt; 50</b> is a question, and its answer is a plain int: 1 for yes, 0 for no. You can store it like any other number."
+    ],
+    [
+     11,
+     "<b>&amp;&amp;</b> means “and”: both sides must be true. Two comparisons joined like this test that lane is <i>inside</i> a range. lane is 9, so lane &lt;= 8 fails and on_road is false."
+    ],
+    [
+     12,
+     "A bool prints with %d as 1 or 0. C has no built-in way to print the word true."
+    ],
+    [
+     13,
+     "<b>||</b> means “or”: one true side is enough. This is the <i>outside</i> test, the exact opposite of line 11. 9 &gt; 8, so it prints 1."
+    ],
+    [
+     15,
+     "<b>if</b> runs the block in braces only when its test isn't 0 (Decisions with if / else, next, has the full story). Short-circuit: enemies &gt; 0 is false, so C never works out the right side. Good thing, because 12 / 0 would crash the program. The left test is a guard."
+    ],
+    [
+     18,
+     "<b>!</b> flips a value: !on_road is 1 because on_road is 0. Health is above 0 and the player is off the road, so the block runs."
+    ],
+    [
+     21,
+     "Four lines printed: low = 1, on_road = 0, off_road = 1, Back on the road!"
+    ]
+   ],
+   "model": "<b>Mental model:</b> each comparison is a tiny machine that takes two numbers and drops out a 1 or a 0. &amp;&amp; is a gate that needs two 1s to open. || is a gate that opens for just one. ! swaps 1 and 0.",
+   "check": {
+    "q": "You change lane to 4. What does line 13 print?",
+    "opts": [
+     "off_road = 0",
+     "off_road = 1",
+     "off_road = 4",
+     "off_road = false"
+    ],
+    "a": 0,
+    "hint": "Is 4 below 1? Is 4 above 8? || needs at least one yes.",
+    "why": "4 < 1 is 0 and 4 > 8 is 0. 0 || 0 is 0, so it prints off_road = 0. Lane 4 is on the road.",
+    "miss": {
+     "1": "That's what lane 9 prints. With 4, neither side of || is true.",
+     "2": "A comparison never hands back the numbers it compared. The answer is always 1 or 0.",
+     "3": "%d prints a number. Nothing in C turns 0 into the word false for you."
+    }
+   },
+   "tryit": {
+    "task": "This test should let only lanes 1 to 8 through, but every lane gets through. Fix it.",
+    "code": "if (1 <= lane <= 8) {\n    printf(\"On the road\\n\");\n}",
+    "answer": "if (lane >= 1 && lane <= 8)   (1 <= lane gives 0 or 1, and both are <= 8, so the old test is always true)"
+   },
+   "qa": [
+    [
+     "Why is 0 < x < 10 always true?",
+     "C reads it left to right as <code>(0 &lt; x) &lt; 10</code>. The bracket gives 0 or 1, and both are less than 10. Write <code>x &gt; 0 &amp;&amp; x &lt; 10</code> instead. Don't count on a warning to catch it."
+    ],
+    [
+     "What's the difference between & and &&?",
+     "<code>&amp;&amp;</code> is the logical “and” you want in tests. A single <code>&amp;</code> works on the separate bits of a number and never short-circuits. <code>if (a &amp; b)</code> compiles fine, so a missing &amp; is a quiet bug. The same goes for <code>|</code> and <code>||</code>."
+    ],
+    [
+     "Can I compare floats with ==?",
+     "You can, but it often lies. <code>0.1f + 0.2f</code> isn't exactly <code>0.3f</code>, because a float stores a close approximation. For floats, test a small range: <code>x &gt; 2.99f &amp;&amp; x &lt; 3.01f</code>."
+    ],
+    [
+     "What does !5 give?",
+     "0. Any number that isn't 0 counts as true, and <code>!</code> turns true into 0. <code>!0</code> gives 1. So <code>!!lives</code> squashes any count down to 1 or 0."
+    ]
+   ],
+   "bridge": "You can ask any yes-or-no question. Next: <b>Decisions with if / else</b>, which runs code only when the answer is yes.",
+   "lang": "c"
+  },
+  {
+   "id": "if",
+   "title": "Decisions with if / else",
+   "kick": "if · else if · else · ==",
+   "mins": 15,
+   "skills": [
+    "if-else",
+    "eq-assign",
+    "ternary"
+   ],
+   "builds": "Comparisons, &amp;&amp;, || and !: every if test is one of those 1-or-0 values. Reading input with scanf gives you the guess to test.",
+   "why": "Games are mostly decisions. Did they guess right? Are they out of lives? An if runs its block only when its condition is true. else catches everything else.",
+   "learn": {
+    "parts": [
+     [
+      "One test, one block",
+      "<p>An if works out its test, and if the value isn't 0 it runs the statement after it. That statement is usually a <b>compound statement</b>: a pair of braces holding any number of statements, which C treats as one. The else part is optional and runs when the test came out 0.</p><p>Write <code>if (alive)</code>, not <code>if (alive == true)</code>. The first is true for any value that isn't 0. The second only matches exactly 1, so an int flag that somehow holds 2 fails it.</p>"
+     ],
+     [
+      "An else-if chain is nested ifs",
+      "<p>C has no else-if keyword. <code>else if</code> is an else whose statement happens to be another if. Written out in full it's a staircase of nested ifs; the usual layout just flattens it.</p><p>That gives you something for free: each test only runs when every test above it failed. So later tests don't need to re-check:</p><pre>if (health &lt;= 0) {\n    printf(\"Dead\\n\");\n} else if (health &lt; 25) {\n    printf(\"Low\\n\");   /* health is already above 0 */\n} else {\n    printf(\"Fine\\n\");\n}</pre><p>The second test doesn't need <code>health &gt; 0 &amp;&amp;</code> in front. Put the most specific test first.</p>"
+     ],
+     [
+      "The dangling else",
+      "<p>An else belongs to the nearest if above it that doesn't already have one, whatever the indenting suggests:</p><pre>if (lives &gt; 0)\n    if (shield)\n        printf(\"Blocked\\n\");\nelse\n    printf(\"Game over\\n\");</pre><p>That else pairs with <code>if (shield)</code>, so Game over prints for a living player with no shield, and nothing prints for a dead one. Braces settle it: put them on every if and else, even around one line.</p>"
+     ],
+     [
+      "The stray semicolon",
+      "<p><code>if (lives == 0);</code> ends the if at the semicolon. The empty statement is the thing the if controls, and the block underneath runs every time, whatever lives is.</p><p class=\"warn\">MSVC warns (C4390, empty controlled statement found), and /WX stops the build. When you see C4390, look for a ; straight after the closing bracket of an if.</p>"
+     ],
+     [
+      "?: picks a value",
+      "<p>The conditional operator chooses between two values rather than two blocks. <code>test ? a : b</code> gives a when the test is true and b when it isn't:</p><pre>int dmg = crit ? 20 : 10;\nprintf(\"Lives: %d\\n\", lives &gt; 0 ? lives : 0);</pre><p>Use it when both sides are short values. If either side does real work, use an if. One ?: nested inside another is legal and nearly always hard to read. It also binds very loosely, so wrap it in brackets when it's part of a bigger sum.</p>"
+     ],
+     [
+      "MSVC notes",
+      "<p class=\"warn\"><code>if (lives = 0)</code> assigns instead of comparing, so the test is always 0 and lives is wiped. MSVC warns inside a test (C4706), and /WX turns that into a failed build, which is exactly the help you want.</p>"
+     ]
+    ],
+    "king": "§5.2 (the stray semicolon is in §6.5)"
+   },
+   "code": "#define _CRT_SECURE_NO_WARNINGS\n#include <stdio.h>\n\nint main(void) {\n    int secret = 42;\n    int guess;\n    printf(\"Guess: \");\n    scanf(\"%d\", &guess);\n\n    if (guess == secret) {\n        printf(\"Got it!\\n\");\n    } else if (guess < secret) {\n        printf(\"Higher\\n\");\n    } else {\n        printf(\"Lower\\n\");\n    }\n    return 0;\n}",
+   "walk": [
+    [
+     10,
+     "<b>==</b> asks “are these equal?”. Two equals signs. One = would put secret into guess instead, which is a classic bug."
+    ],
+    [
+     11,
+     "Runs only if the guess was exactly 42. The braces mark the block."
+    ],
+    [
+     12,
+     "Checked only if the first test failed. <b>&lt;</b> is one of the six comparisons from Comparisons, &amp;&amp;, || and !."
+    ],
+    [
+     14,
+     "<b>else</b> has no condition. It runs when nothing above matched."
+    ],
+    [
+     16,
+     "The end of the chain. Exactly one of the three blocks ran. Never two."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a row of doors checked top to bottom. You walk through the first one whose sign is true and skip the rest. else is the last door, always open.",
+   "check": {
+    "q": "The player types 50. What prints?",
+    "opts": [
+     "Got it!",
+     "Lower",
+     "Higher",
+     "Higher\nLower"
+    ],
+    "a": 1,
+    "hint": "Check the tests in order. Is 50 equal to 42? Is 50 less than 42?",
+    "why": "50 isn’t 42, and 50 isn’t less than 42, so both tests fail and the else runs: Lower. Only one block ever runs.",
+    "miss": {
+     "0": "50 == 42 is false, so the first block is skipped.",
+     "2": "50 < 42 is false, so Higher is skipped too.",
+     "3": "An if / else if / else chain runs exactly one block. It stops at the first true one."
+    }
+   },
+   "tryit": {
+    "task": "Fill the blanks: print “Game over” when lives hits 0, otherwise how many are left.",
+    "code": "if (lives ____ 0) {\n    printf(\"Game over\\n\");\n} ____ {\n    printf(\"Lives left: %d\\n\", lives);\n}",
+    "answer": "== (or <=), then else"
+   },
+   "qa": [
+    [
+     "Can I leave out the braces?",
+     "For a single line, C lets you. Don’t. Adding a second line later without noticing the missing braces is a bug that looks correct, and without braces an else can pair with the wrong if."
+    ],
+    [
+     "What if I write = instead of ==?",
+     "With your build.bat it won't build: MSVC warns C4706 (assignment within conditional expression) and /WX stops it. Without /WX it compiles, and the if is now always true (or always false). The weekly “= vs ==” exercise breaks this on purpose."
+    ],
+    [
+     "Which test goes first in an else if chain?",
+     "The most specific one. C stops at the first true test, so <code>health &lt;= 0</code> goes before <code>health &lt; 25</code>, or the \"Low health\" branch would catch the dead player too."
+    ],
+    [
+     "When do I use ?: instead of if?",
+     "When you're choosing a value, not running code: <code>int speed = boost ? 8 : 4;</code>. If either side prints or changes things, use an if."
+    ]
+   ],
+   "bridge": "You can pick between a few paths. Next: <b>switch</b>, a tidier way to pick one of many fixed options, like a menu.",
+   "lang": "c"
+  },
+  {
+   "id": "switch",
+   "title": "switch statements",
+   "kick": "switch · case · break · default",
+   "mins": 12,
+   "skills": [
+    "switch"
+   ],
+   "builds": "Decisions with if / else: switch does the job of an else if chain when you're matching one value against a list of fixed options.",
+   "why": "A menu with four options is four else ifs in a row. switch reads one value and jumps straight to the matching case. It’s also how the runner will react to different keys.",
+   "learn": {
+    "parts": [
+     [
+      "A jump to a label",
+      "<p>A switch works out one whole-number value, then jumps straight to the <code>case</code> label that matches it. If nothing matches, it jumps to <code>default</code>, or past the whole switch if there's no default.</p><p>A case label only marks a starting point. It isn't a wall. Once C lands on a label it keeps running line after line, straight through later labels, until it reaches a <code>break</code> or the closing brace. That's fall-through, and it's why every case ends with break.</p>"
+     ],
+     [
+      "What a case label can be",
+      "<p>Each label must be a constant whole number the compiler can see: <code>case 3:</code>, <code>case 'q':</code>, or a <code>#define</code> name like <code>case MAX_LIVES:</code>. Not a variable, not a float, not a string and not a range. Two labels with the same value is a compile error, because C wouldn't know where to jump. Several labels can share one block: <code>case 'q': case 'Q':</code>.</p>"
+     ],
+     [
+      "Habits that prevent bugs",
+      "<ul><li>Put a break on the last case too. It does nothing today, but the day you add a case below it, it stops the old one running into the new one.</li><li>When you fall through on purpose, write <code>/* fall through */</code> where the break would be, so the next reader knows it's deliberate.</li><li>Give every switch a default, even one that only prints “unknown”. It catches the values you forgot.</li></ul>"
+     ],
+     [
+      "The misspelled default",
+      "<p class=\"warn\">Type <code>defualt:</code> and C sees an ordinary label (the kind goto jumps to, covered in do, break, continue and the endless loop), not a default. The switch quietly has no default at all. MSVC warns that the label is never used (C4102), and /WX stops the build, which is how you'll spot it.</p>"
+     ],
+     [
+      "A variable inside a case",
+      "<p>A case isn't a block of its own. A variable declared under one label is still in scope under the next, with its starting value skipped, and C17 doesn't allow a declaration straight after a label anyway. Give that case its own braces:</p><pre>case 2: {\n    int bonus = level * 10;\n    score += bonus;\n    break;\n}</pre>"
+     ]
+    ],
+    "king": "§5.3"
+   },
+   "code": "#define _CRT_SECURE_NO_WARNINGS\n#include <stdio.h>\n\nint main(void) {\n    int choice;\n    printf(\"1 Play  2 Scores  3 Quit: \");\n    scanf(\"%d\", &choice);\n\n    switch (choice) {\n        case 1:\n            printf(\"Starting...\\n\");\n            break;\n        case 2:\n            printf(\"High scores\\n\");\n            break;\n        case 3:\n            printf(\"Bye\\n\");\n            break;\n        default:\n            printf(\"Not an option\\n\");\n            break;\n    }\n    return 0;\n}",
+   "walk": [
+    [
+     9,
+     "<b>switch</b> looks at one value, choice, once."
+    ],
+    [
+     10,
+     "<b>case 1:</b> means “if choice is 1, start here”. The value after case must be a fixed number or character."
+    ],
+    [
+     12,
+     "<b>break</b> jumps out of the switch. Without it, C keeps running into the next case’s lines."
+    ],
+    [
+     19,
+     "<b>default</b> catches anything no case matched, like the else at the end of an if chain."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a row of labelled starting points on a slope. C jumps to the matching label and runs downhill until it hits a break. The breaks are the walls between options.",
+   "check": {
+    "q": "You delete the break on line 12 and the player types 1. What prints?",
+    "opts": [
+     "Starting...",
+     "Nothing",
+     "Starting...\nHigh scores\nBye\nNot an option",
+     "Starting...\nHigh scores"
+    ],
+    "a": 3,
+    "hint": "Without that break, where does C go after line 11? Where is the next break?",
+    "why": "With no break after case 1, C falls through into case 2’s line and prints High scores too, then stops at case 2’s break on line 15. This fall-through is the classic switch bug.",
+    "miss": {
+     "0": "That needs the break on line 12.",
+     "1": "case 1 still matches and runs its line.",
+     "2": "It falls through only until the next break, on line 15."
+    }
+   },
+   "tryit": {
+    "task": "Add an option so typing 4 prints “Settings”.",
+    "code": "____ 4:\n    printf(\"Settings\\n\");\n    ____;",
+    "answer": "case 4:   …   break;"
+   },
+   "qa": [
+    [
+     "Can I switch on a char?",
+     "Yes. <code>case 'q':</code> works, because a char is a small number. You’ll use that for keys in the runner."
+    ],
+    [
+     "Can a case be a range, like 1 to 10?",
+     "No. Each case is one exact value. Use if / else for ranges."
+    ],
+    [
+     "Is falling through ever on purpose?",
+     "Sometimes, to let several cases share code: <code>case 'q': case 'Q':</code> above one block. If you mean it, add a comment saying so."
+    ]
+   ],
+   "bridge": "You can branch every way C offers. Next: <b>Loops: while and for</b>, doing the same thing again and again.",
+   "lang": "c"
+  },
+  {
+   "id": "loops",
+   "title": "Loops: while and for",
+   "kick": "while · for · i++",
+   "mins": 15,
+   "skills": [
+    "while",
+    "for"
+   ],
+   "builds": "Decisions with if / else: a loop is an if that keeps coming back. The i++ step is from Assignment, ++ and side effects.",
+   "why": "The guessing game has to keep asking until the player gets it. Writing scanf ten times won’t do. A loop runs the same block again and again while a condition stays true.",
+   "learn": {
+    "parts": [
+     [
+      "Trace it on paper",
+      "<p>The surest way to understand a loop is a <b>trace table</b>: one column per variable, one row each time the condition is checked. For the while loop in this program:</p><pre>lives   lives &gt; 0   prints\n  3         1       Lives: 3\n  2         1       Lives: 2\n  1         1       Lives: 1\n  0         0       (loop ends)</pre><p>Two facts fall out of it. When a loop ends, its condition is false, so after this loop you know lives is 0 or less. And a while checks before the first lap, so if lives started at 0 the body would run zero times.</p>"
+     ],
+     [
+      "for is a while in a tidy box",
+      "<p>Every for can be rewritten as a while:</p><pre>for (int i = 1; i &lt;= 3; i++) { ... }\n\nint i = 1;\nwhile (i &lt;= 3) { ...  i++; }</pre><p>The start runs once. The test runs before every lap. The step runs at the end of every lap. Whenever a for confuses you, rewrite it like this and trace it.</p>"
+     ],
+     [
+      "Four ways to count",
+      "<ul><li>0 up to count-1: <code>for (w = 0; w &lt; count; w++)</code>, the one you'll use most, because arrays start at 0</li><li>1 up to count: <code>for (w = 1; w &lt;= count; w++)</code></li><li>count-1 down to 0: <code>for (w = count - 1; w &gt;= 0; w--)</code></li><li>count down to 1: <code>for (w = count; w &gt; 0; w--)</code></li></ul><p>Each runs exactly count laps. The three classic off-by-one slips: <code>&lt;=</code> where you meant <code>&lt;</code> (one lap too many), starting at 1 when you meant 0 (one too few), and counting down with <code>&gt; 0</code> when 0 needed a lap too.</p>"
+     ],
+     [
+      "Where i lives",
+      "<p>An <code>i</code> declared inside the for brackets exists only for that loop. Use it after the closing brace and MSVC stops with C2065 (undeclared identifier). If you need the final value afterwards, declare i above the loop instead.</p>"
+     ],
+     [
+      "A loop inside a loop",
+      "<p>Put one for inside another and the inner one runs all its laps for every single lap of the outer one. That's how you draw a grid, like a lane map in the console:</p><pre>for (int row = 0; row &lt; 3; row++) {\n    for (int col = 0; col &lt; 5; col++) {\n        printf(\".\");\n    }\n    printf(\"\\n\");\n}</pre><p>The inner loop prints five dots, then the outer loop ends the line. Three rows of five: 15 dots. Give the two counters different names. Reusing i for both is a classic tangle.</p>"
+     ],
+     [
+      "When a loop hangs",
+      "<p class=\"warn\">A <code>;</code> straight after <code>while (lives &gt; 0)</code> becomes the whole loop body, so the program hangs on that line and the block below never runs. Don't rely on a warning for this one. If a program hangs, press Ctrl+C, then check the line that should change the condition.</p>"
+     ]
+    ],
+    "king": "§6.1, §6.3, and nested loops from §8.2"
+   },
+   "code": "#include <stdio.h>\n\nint main(void) {\n    int lives = 3;\n    while (lives > 0) {\n        printf(\"Lives: %d\\n\", lives);\n        lives = lives - 1;\n    }\n    printf(\"Game over\\n\");\n\n    for (int i = 1; i <= 3; i++) {\n        printf(\"Wave %d\\n\", i);\n    }\n    return 0;\n}",
+   "walk": [
+    [
+     5,
+     "<b>while</b> checks the condition first. If lives &gt; 0, the block runs, then it comes back and checks again."
+    ],
+    [
+     6,
+     "Prints the current lives."
+    ],
+    [
+     7,
+     "The line that makes the loop end. Without it lives stays 3 forever: an infinite loop. Ctrl+C in the terminal stops a stuck program."
+    ],
+    [
+     9,
+     "Runs once the condition is false and the loop is done."
+    ],
+    [
+     11,
+     "<b>for</b> puts the three parts of a counting loop on one line: start (i = 1), keep going while (i &lt;= 3), step (i++ adds 1)."
+    ],
+    [
+     12,
+     "Runs with i = 1, then 2, then 3."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a lap of a track. Check the sign at the start line, run the lap, come back to the sign. for is the same lap with a lap counter built in. Use for when you know how many times; while when you’re waiting for something to happen.",
+   "check": {
+    "q": "How many times does “Lives:” print, and what’s the last number?",
+    "opts": [
+     "3 times, last is 0",
+     "3 times, last is 1",
+     "4 times, last is 0",
+     "Forever"
+    ],
+    "a": 1,
+    "hint": "lives starts at 3 and drops by 1 each lap. When does lives > 0 become false?",
+    "why": "Lives: 3, 2, 1 print. Then lives is 0, the check fails before the next lap, and the loop ends without printing 0.",
+    "miss": {
+     "0": "When lives is 0, lives > 0 is false, so the block doesn’t run again.",
+     "2": "The check happens before each lap. At 0 it stops before printing.",
+     "3": "Line 7 lowers lives every lap, so it does reach 0 and stop."
+    }
+   },
+   "tryit": {
+    "task": "Turn the guessing game into a loop: keep asking until the guess is right.",
+    "code": "int secret = 42;\nint guess = 0;\nwhile (guess ____ secret) {\n    printf(\"Guess: \");\n    scanf(\"%d\", &guess);\n}\nprintf(\"Got it!\\n\");",
+    "answer": "!=   (keep looping while the guess is not equal to the secret)"
+   },
+   "qa": [
+    [
+     "Can a loop run zero times?",
+     "Yes. A while or a for checks before the first lap, so if <code>lives</code> starts at 0 the body never runs. When the body must run at least once, the next concept has a loop for that."
+    ],
+    [
+     "Why does C2065 say i is undeclared after my for loop?",
+     "An <code>i</code> declared inside the for brackets only exists inside the loop. Declare it above the loop if you need it afterwards."
+    ],
+    [
+     "My program is stuck printing forever",
+     "An infinite loop: the condition never becomes false. Press Ctrl+C in the terminal, then look for the line that should change the condition."
+    ],
+    [
+     "What is the game loop?",
+     "A game can't run once and exit. It repeats about 60 times a second: read input, update (move things, check collisions), draw. That's <code>while (running) { ... }</code>, and one pass is one frame. Spawning 10 enemies inside it is a <code>for</code>."
+    ],
+    [
+     "Why have both for and while, if for can do everything?",
+     "Because code is read more than it's written. <code>for (;running;)</code> is the same as <code>while (running)</code>, but a <code>for</code> tells the reader \"this counts\" and a <code>while</code> says \"this waits for something to change\", before they read a line inside."
+    ]
+   ],
+   "bridge": "You can repeat with while and for. Next: <b>do, break, continue and the endless loop</b>, the other ways in and out of a loop.",
+   "lang": "c"
+  },
+  {
+   "id": "loop-control",
+   "title": "do, break, continue and the endless loop",
+   "kick": "do … while · for (;;) · break · continue · getchar",
+   "mins": 20,
+   "skills": [
+    "do-while",
+    "break-continue",
+    "getchar"
+   ],
+   "builds": "Loops: while and for. Also scanf's return value from Reading input with scanf, and the range tests from Comparisons, &amp;&amp;, || and !.",
+   "why": "Real input is messy. The player types letters where you wanted a number, or 7 when there are only three lanes. You need a loop that keeps asking until the answer is good, and it can't know in advance when that will be. This concept gives you ways to leave a loop from the middle, skip the rest of a lap, and clear junk out of the input.",
+   "learn": {
+    "parts": [
+     [
+      "do … while: run first, check after",
+      "<p>A while checks before the first lap, so its body can run zero times. A <code>do</code> loop checks after each lap, so its body always runs at least once:</p><pre>do {\n    printf(\"Another round? (y/n) \");\n    scanf(\" %c\", &amp;again);\n} while (again != 'y' &amp;&amp; again != 'n');</pre><p>That's the natural shape for “show it, then decide whether to show it again”: a menu, a round of the game, a question that needs a sensible answer. Note the <code>;</code> after <code>while (...)</code> at the bottom. A do loop needs it. A plain while must not have one.</p>"
+     ],
+     [
+      "The endless loop and break",
+      "<p>Some loops can't tell whether they're finished until they're halfway through a lap. Write them as <code>for (;;)</code>, a for with all three parts left empty, which loops forever, and leave from the middle with <code>break</code>. break jumps to the first line after the loop.</p><p>break only leaves the innermost loop or switch it sits in. If a switch is inside your game loop, the break at the end of <code>case 'q':</code> leaves the switch, and the loop keeps going. To get all the way out you have three choices:</p><ul><li>a flag: <code>running = 0;</code> in the case, with <code>while (running)</code> as the loop</li><li><code>return</code>, which leaves the whole function, loops and all</li><li><code>goto</code> a label after the loop. It works, but you won't need it here.</li></ul>"
+     ],
+     [
+      "continue: skip to the next lap",
+      "<p><code>continue</code> abandons the rest of the current lap. In a while or a do, C jumps to the test. In a for, it runs the step (the <code>wave++</code>) first, then the test. Use it to drop the odd cases early, so the main work isn't buried under a pile of ifs:</p><pre>for (int wave = 1; wave &lt;= 10; wave++) {\n    if (wave % 5 == 0) {\n        continue;   /* every 5th wave is a rest wave */\n    }\n    printf(\"Wave %d\\n\", wave);\n}</pre>"
+     ],
+     [
+      "The null statement",
+      "<p>A lone <code>;</code> is a statement that does nothing. A loop whose test does all the work can use it as its body, but a bare semicolon is easy to miss, so this course writes an empty body as <code>{ }</code>. The dangerous version is the accidental one: <code>while (lives &gt; 0);</code> makes the semicolon the body, and if lives is above 0 the program hangs right there, never reaching the block below.</p>"
+     ],
+     [
+      "getchar and flushing a line",
+      "<p><code>getchar()</code> reads one character and returns it as an int. It's an int, not a char, because it also needs a way to say <code>EOF</code>, “input has ended”. Its big job here is clearing out junk. When scanf fails on letters they're still waiting, and the next scanf trips over them again, forever. This loop eats the rest of the line, Enter included:</p><pre>int c;\nwhile ((c = getchar()) != '\\n' &amp;&amp; c != EOF) { }</pre><p>The brackets round <code>c = getchar()</code> matter: assign first, then compare. The <code>c != EOF</code> part stops it spinning if input has ended.</p>"
+     ],
+     [
+      "The scanf retry loop",
+      "<p>Put the pieces together and you get the input loop Reading input with scanf promised. scanf's return value says whether a number arrived. A number in range breaks out. A number out of range uses continue to skip the junk handling and ask again. Anything else gets flushed; if the flush ran into EOF the program returns, because asking again could never work, and otherwise it prints a message and goes round. Trace the program below three times: typing 2; typing 7, then 2; typing abc, then 2.</p>"
+     ],
+     [
+      "MSVC notes",
+      "<p class=\"warn\">Older MSVC versions warned about <code>while (1)</code> (C4127, conditional expression is constant). Since Visual Studio 2015 Update 3 it doesn't, but you'll still see <code>for (;;)</code> in code written to avoid it. Both loop forever; this course uses <code>for (;;)</code>. In a Windows console, Ctrl+Z then Enter sends EOF, and Ctrl+C kills a stuck program.</p>"
+     ]
+    ],
+    "king": "§6.2, §6.4–6.5 (getchar is in §7.3)"
+   },
+   "code": "#define _CRT_SECURE_NO_WARNINGS\n#include <stdio.h>\nint main(void) {\n    int lane = 0;\n    int c = 0;\n    for (;;) {\n        printf(\"Lane (1-3): \");\n        if (scanf(\"%d\", &lane) == 1) {\n            if (lane >= 1 && lane <= 3) {\n                break;\n            }\n            continue;\n        }\n        while ((c = getchar()) != '\\n' && c != EOF) { }\n        if (c == EOF) {\n            return 1;\n        }\n        printf(\"Numbers only\\n\");\n    }\n    printf(\"Running in lane %d\\n\", lane);\n    return 0;\n}",
+   "walk": [
+    [
+     6,
+     "<b>for (;;)</b> has no test at all, so it never stops on its own. The only ways out are inside the body. This is the endless loop, and games are full of them."
+    ],
+    [
+     8,
+     "scanf hands back how many values it stored: 1 for a number, 0 if the player typed letters, <b>EOF</b> if the input has ended. Only a 1 gets inside."
+    ],
+    [
+     10,
+     "<b>break</b> leaves the loop at once. The program carries on at line 20."
+    ],
+    [
+     12,
+     "A number, but not a lane. <b>continue</b> skips the rest of this lap, the junk handling below, and goes straight back to the top: a fresh prompt."
+    ],
+    [
+     14,
+     "Only reached when scanf failed. <b>getchar</b> reads one character, and this little loop throws away everything up to and including the Enter, so the letters don't jam the next scanf. The empty <code>{ }</code> is the whole body: the test does the work."
+    ],
+    [
+     16,
+     "If the flush hit EOF (Ctrl+Z then Enter in a Windows console), nothing more can ever be read, and asking again would loop forever. <b>return</b> leaves main, and the loop with it."
+    ],
+    [
+     20,
+     "The only way here is through the break, so lane is always 1, 2 or 3 on this line."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a lap with two side doors. continue is a shortcut back to the start line. break is the gate off the track. for (;;) is a track with no finish line, so those doors are the only way off.",
+   "check": {
+    "q": "The player types 5 and presses Enter. What happens next?",
+    "opts": [
+     "It prints Numbers only and asks again",
+     "It asks for a lane again, with no message",
+     "It prints Running in lane 5",
+     "The program ends"
+    ],
+    "a": 1,
+    "hint": "scanf stores 5 and returns 1. Then is 5 between 1 and 3?",
+    "why": "scanf returns 1, so C goes into the first block. 5 isn't between 1 and 3, so the break is skipped and continue runs. That jumps past the flush and the message, straight back to a fresh prompt.",
+    "miss": {
+     "0": "That's the path for letters. 5 is a number, so scanf returns 1, not 0.",
+     "2": "The break only runs for 1 to 3. 5 fails the range test.",
+     "3": "Only EOF (Ctrl+Z) reaches return 1, and only after a failed read. A wrong number just goes round again."
+    }
+   },
+   "tryit": {
+    "task": "Fill the blanks: a loop that plays a round, asks \"Another round? (y/n)\" and stops on anything but y. It must always play at least one round.",
+    "code": "char again;\n____ {\n    printf(\"Round over\\n\");\n    printf(\"Another round? (y/n) \");\n    scanf(\" %c\", &again);\n} ____ (again == 'y');",
+    "answer": "do   then   while   (and keep the ; after the while: a do loop needs it)"
+   },
+   "qa": [
+    [
+     "Does break leave every loop it's inside?",
+     "No, only the innermost loop or switch. A break inside a switch inside a loop only leaves the switch, so a <code>case 'q':</code> that ends in break won't end the game. Set a flag the loop tests (<code>running = 0;</code>), or return."
+    ],
+    [
+     "Is while (1) the same as for (;;)?",
+     "Yes, both loop forever. Old versions of MSVC warned on <code>while (1)</code> (C4127); current ones (Visual Studio 2015 Update 3 and later) don't. <code>for (;;)</code> is the traditional spelling, so this course uses it."
+    ],
+    [
+     "What about goto?",
+     "<code>goto</code> jumps to a label elsewhere in the same function. Its one widely accepted use is leaving several nested loops in one go. A flag or a return nearly always reads better, so you won't need it in this course."
+    ],
+    [
+     "What if the player types 2abc?",
+     "scanf reads 2 and stops, leaving <code>abc</code> waiting. The range test passes and the loop ends, but abc is still there for the next read. Flushing the rest of the line after every scanf, not only after a failure, cleans that up."
+    ]
+   ],
+   "bridge": "You can get in and out of any loop. Next: <b>Random numbers</b>, so the game isn't the same every time you play.",
+   "lang": "c"
+  },
+  {
+   "id": "rand",
+   "title": "Random numbers",
+   "kick": "rand() · srand(time(NULL))",
+   "mins": 12,
+   "skills": [
+    "rand"
+   ],
+   "builds": "Division, remainder and casts: % squeezes rand's big number into a range, and a cast feeds srand.",
+   "why": "A guessing game where the secret is always 42 isn’t a game. rand() gives a number that looks random. srand() changes where the sequence starts, so it’s different every run.",
+   "learn": {
+    "parts": [
+     [
+      "A fixed list that looks random",
+      "<p>rand() returns the next number from a long sequence made by a formula. On MSVC each number is between 0 and <code>RAND_MAX</code>, which is 32767 there. Other compilers often use a much bigger value, so don't hard-code it. srand picks where in the sequence to start, so call it once, at the top of main.</p>"
+     ],
+     [
+      "No srand means seed 1",
+      "<p>If you never call srand, the program behaves as if it called <code>srand(1)</code>, and you get the same numbers every run. That's handy when debugging: a fixed seed like <code>srand(1234)</code> spawns the same enemies in the same places every time, so a crash happens again on demand. Switch back to <code>time(NULL)</code> once it's fixed.</p>"
+     ],
+     [
+      "Getting a range",
+      "<p>There are <code>hi - lo + 1</code> whole numbers from lo to hi, so the recipe is <code>rand() % (hi - lo + 1) + lo</code>. Lanes 3 to 7: <code>rand() % 5 + 3</code>.</p>"
+     ],
+     [
+      "A drop chance",
+      "<p>For a chance like 25%, make a float in [0, 1): 0 can come up, 1 never does.</p><pre>float r = (float)rand() / (RAND_MAX + 1.0f);\nif (r &lt; 0.25f) { /* drop a potion */ }</pre><p>The (float) cast makes it a float division; without it, rand() / (RAND_MAX + 1) is int divided by int, which gives 0 every time. Dividing by RAND_MAX + 1, not RAND_MAX, is what keeps r below 1, and writing 1.0f keeps that sum from overflowing on compilers where RAND_MAX is huge.</p>"
+     ]
+    ],
+    "king": "§26.2 (first used in §8.2, seeded with the clock in §10.2)"
+   },
+   "code": "#include <stdio.h>\n#include <stdlib.h>\n#include <time.h>\n\nint main(void) {\n    srand((unsigned)time(NULL));\n    int secret = rand() % 100 + 1;\n    int roll = rand() % 6 + 1;\n    printf(\"Secret: %d  Dice: %d\\n\", secret, roll);\n    return 0;\n}",
+   "walk": [
+    [
+     2,
+     "<b>stdlib.h</b> has rand and srand."
+    ],
+    [
+     3,
+     "<b>time.h</b> has time(), the current time in seconds."
+    ],
+    [
+     6,
+     "<b>srand</b> picks the starting point of the random sequence. <b>time(NULL)</b> asks for the current time in seconds (NULL just means “I don’t need it stored anywhere”), so each run starts somewhere different. Call it once, at the top. <b>(unsigned)</b> is a cast to an unsigned int, a whole number that can’t be negative, which is what srand wants. Without it, /W4 warns C4244 and /WX stops the build."
+    ],
+    [
+     7,
+     "rand() gives a big number. % 100 gives 0 to 99. + 1 shifts it to 1 to 100."
+    ],
+    [
+     8,
+     "Same recipe for a dice roll: % 6 gives 0 to 5, + 1 gives 1 to 6."
+    ]
+   ],
+   "model": "<b>Mental model:</b> rand() reads from a long, fixed list of numbers that looks random. srand picks where in the list to start. Same start, same numbers. The clock gives a different start every second.",
+   "check": {
+    "q": "Before the + 1, what range can rand() % 100 give?",
+    "opts": [
+     "1 to 100",
+     "0 to 100",
+     "0 to 99",
+     "1 to 99"
+    ],
+    "a": 2,
+    "hint": "% 100 is the remainder after dividing by 100. What’s the biggest remainder you can get?",
+    "why": "Remainders by 100 run from 0 to 99. The + 1 shifts that to 1 to 100, which is why the guessing game adds it.",
+    "miss": {
+     "0": "That’s after the + 1.",
+     "1": "A remainder by 100 can’t be 100 itself.",
+     "3": "0 is possible, whenever rand() is a multiple of 100."
+    }
+   },
+   "tryit": {
+    "task": "Flip a coin: print Heads or Tails at random.",
+    "code": "int flip = rand() % ____;\nif (flip == 0) {\n    printf(\"Heads\\n\");\n} else {\n    printf(\"Tails\\n\");\n}",
+    "answer": "2   (rand() % 2 gives 0 or 1)"
+   },
+   "qa": [
+    [
+     "What happens without srand?",
+     "rand() acts as if it was seeded with 1, so the secret is the same number every time you play. Annoying in a game, useful while you're hunting a bug. Try it once."
+    ],
+    [
+     "Why not call srand inside the loop?",
+     "time() only changes once a second. Re-seeding in a fast loop restarts the same sequence, so you get the same number over and over."
+    ],
+    [
+     "Is it truly random?",
+     "No, it’s pseudo-random: a formula. Fine for games, never for passwords."
+    ],
+    [
+     "What if I leave off the + 1?",
+     "<code>rand() % 100</code> gives 0 to 99, so 100 can never be the answer and 0 can. The pattern is <code>rand() % (how many) + (lowest)</code>, so a dice roll is <code>rand() % 6 + 1</code>."
+    ],
+    [
+     "Why does rand() % 100 favour small numbers slightly?",
+     "On MSVC rand() returns 0 to 32767, which is 32,768 values. That doesn't divide evenly by 100, so 0 to 67 come up a tiny bit more often than 68 to 99. It's called modulo bias. Nobody will notice in a guessing game."
+    ]
+   ],
+   "bridge": "That’s every concept in Decisions &amp; Loops. Next: <b>the Trace</b>, predicting what whole programs do, then the frame counter and guessing game builds.",
+   "lang": "c"
+  }
+ ],
+ "goals": {
+  "cp-p2-1": [
+   "conditions",
+   "loops",
+   "loop-control"
+  ],
+  "cp-p2-2": [
+   "if",
+   "loops",
+   "rand"
+  ],
+  "cp-p2b-1": [
+   "conditions"
+  ],
+  "cp-p2-4": []
+ }
+}

@@ -66,7 +66,7 @@
         ],
         "def": "main is the function where a hosted C program starts executing. It returns an int exit status to the environment that ran it.",
         "model": "The front door. However big the program gets, every run walks in through main and leaves through its return.",
-        "game": "In the runner, main is just the frame loop. Everything else — reset, update, render — is a function main calls.",
+        "game": "In the runner, main is just the frame loop. Everything else (reset, update, render) is a function main calls.",
         "gameCode": "int main(void) {\n    for (;;) { /* input, update, render, wait */ }\n    return 0;\n}"
       },
       {
@@ -226,6 +226,48 @@
         "model": "Choose what goes in the photo, take the photo with a caption, then post it to the shared album.",
         "game": "After the runner's restart works: add the files, commit \"feat: restart from game over\", push so your partner can play it.",
         "gameCode": "git add .\ngit commit -m \"feat: restart from game over\"\ngit push"
+      },
+      {
+        "id": "comments",
+        "term": "//  /* */",
+        "kind": "syntax",
+        "what": "Notes in the code that the compiler skips. // runs to the end of the line; /* */ can span lines.",
+        "example": "int lives = 3;   // three, so one mistake isn't game over",
+        "gotcha": "/* */ doesn't nest: the first */ ends the comment.",
+        "aliases": [
+          "//",
+          "/*",
+          "*/",
+          "/* */"
+        ],
+        "def": "Comments are removed before the code is translated. A // comment ends at the end of its line (C99 and later); a /* */ comment ends at the first */ and cannot be nested.",
+        "model": "Sticky notes on a recipe card. The cook reads round them.",
+        "game": "Commenting out a line is the quickest way to switch something off while you test, like skipping the enemy spawn to check that the player moves.",
+        "gameCode": "// spawn_enemy(lane);   off while testing movement"
+      },
+      {
+        "id": "variable",
+        "term": "variable",
+        "kind": "concept",
+        "what": "A named box in memory that holds one value. Declare it with a type, then store values with =.",
+        "example": "int score = 0;",
+        "gotcha": "Reading one before storing a value gives garbage (MSVC C4700).",
+        "def": "A variable is a named object with a type. A declaration introduces the name and type, assignment (=) stores a new value, and an initialiser gives the first value as part of the declaration.",
+        "model": "A labelled box on a shelf. One number fits; putting a new one in throws the old one out.",
+        "game": "Score, lives, level and the player's lane are all variables. Every frame the game changes some of them and draws them all.",
+        "gameCode": "int score = 0;\nint lives = 3;\nscore = score + 10;   // picked up a coin"
+      },
+      {
+        "id": "identifier",
+        "term": "identifier",
+        "kind": "concept",
+        "what": "A name you choose: letters, digits and _, not starting with a digit, and not a keyword.",
+        "example": "lives   enemy_count   wave2",
+        "gotcha": "Case-sensitive: Score and score are different names.",
+        "def": "An identifier names a variable, function or type. It may contain letters, digits and underscores, must not begin with a digit, and must not be a keyword. Names beginning with an underscore are reserved for the implementation in many cases.",
+        "model": "The label on the box. Write it clearly, because you'll read it hundreds of times.",
+        "game": "Good names make game code read like the design: lives, enemy_count, player_lane. Names like x, n2 or tmp make every bug harder to find.",
+        "gameCode": "int player_lane = 1;   // 0, 1 or 2"
       }
     ],
     "phase2": [
@@ -239,7 +281,7 @@
           "int"
         ],
         "def": "int is the basic signed integer type. On MSVC for x86/x64 it is 32 bits, ranging from −2,147,483,648 to 2,147,483,647.",
-        "model": "A box that only holds whole numbers — no fractions get in.",
+        "model": "A box that only holds whole numbers. No fractions get in.",
         "game": "Score, frame count, guess count, lives: things you count are ints.",
         "gameCode": "int score = 0;\nint frame = 0;"
       },
@@ -354,6 +396,196 @@
         "gameCode": "scanf(\"%d\", &guess);"
       },
       {
+        "id": "int-division",
+        "term": "Integer division and %",
+        "kind": "concept",
+        "what": "int / int drops the fraction (7 / 2 is 3). % gives the remainder (7 % 2 is 1).",
+        "example": "float half = (float)7 / 2;   // 3.5",
+        "aliases": [
+          "7 / 2",
+          "7 % 2",
+          "1 / 2",
+          "health / max_health"
+        ],
+        "def": "Dividing two integer operands performs integer division, truncating toward zero. % yields the remainder, with (a/b)*b + a%b == a.",
+        "model": "Sharing sweets: 7 between 2 people is 3 each, 1 left over. / is the 3, % is the 1.",
+        "game": "A health bar drawn as hp / max_hp is 0 until full. Multiply first: hp * 100 / max_hp gives a real percentage.",
+        "gameCode": "int pct = hp * 100 / max_hp;   // not hp / max_hp * 100"
+      },
+      {
+        "id": "cast",
+        "term": "(type) cast",
+        "kind": "syntax",
+        "what": "Converts a value on purpose. float → int truncates toward zero.",
+        "example": "int n = (int)1.8f;   // 1",
+        "aliases": [
+          "(int)",
+          "(float)"
+        ],
+        "def": "A cast expression (type)expr converts a value to the named type. Converting a floating value to an integer type truncates toward zero.",
+        "model": "Telling the compiler \"I know this loses information, and I mean it\".",
+        "game": "To draw a float x position into the char lane, cast it to an int column. Do it once, at draw time, and never store it back.",
+        "gameCode": "lane[(int)p.x] = 'A';"
+      },
+      {
+        "id": "sizeof",
+        "term": "sizeof",
+        "kind": "syntax",
+        "what": "Size in bytes, worked out by the compiler. Returns size_t: print with %zu (or cast to int for %d).",
+        "example": "printf(\"%d\\n\", (int)sizeof(int));   // 4",
+        "aliases": [
+          "sizeof",
+          "size_t"
+        ],
+        "match": "^sizeof",
+        "def": "sizeof yields the size in bytes of a type or object, as a value of type size_t, computed at compile time for non-VLA operands.",
+        "model": "Measuring the box, not looking inside it.",
+        "game": "count = sizeof(scores) / sizeof(scores[0]) tells the high-score table how many slots it has without typing 5 again.",
+        "gameCode": "int count = (int)(sizeof(scores) / sizeof(scores[0]));"
+      },
+      {
+        "id": "compound-assign",
+        "term": "+=  -=  *=  /=  %=",
+        "kind": "syntax",
+        "what": "Change a variable using its own value: score += 5 is score = score + 5.",
+        "example": "ammo -= 1;",
+        "gotcha": "=+ is not +=. score =+ 5 just sets score to 5.",
+        "aliases": [
+          "+=",
+          "-=",
+          "*=",
+          "/=",
+          "%="
+        ],
+        "def": "A compound assignment E1 op= E2 is equivalent to E1 = E1 op (E2), except that E1 is evaluated only once. The right operand is fully evaluated first.",
+        "model": "Reach into the box, change what's there, put it back, all in one move.",
+        "game": "Almost every update line in the game: moving the player, spending ammo, adding score.",
+        "gameCode": "x += speed * dt;\nscore += 10;"
+      },
+      {
+        "id": "inc-dec",
+        "term": "++  --",
+        "kind": "syntax",
+        "what": "Add or take away 1. Prefix (++x) changes then gives the new value; postfix (x++) gives the old value then changes.",
+        "example": "lives--;",
+        "gotcha": "On a line of its own, x++ and ++x do the same thing.",
+        "aliases": [
+          "++",
+          "--",
+          "i++",
+          "++i",
+          "lives--",
+          "frame++"
+        ],
+        "def": "The increment and decrement operators add or subtract 1 from an lvalue. The prefix form yields the updated value; the postfix form yields the value before the update.",
+        "model": "A tally clicker. Postfix tells you the count, then clicks. Prefix clicks, then tells you.",
+        "game": "The frame counter ticks with frame++ once per pass through the game loop.",
+        "gameCode": "frame++;\nlives--;"
+      },
+      {
+        "id": "side-effect",
+        "term": "side effect",
+        "kind": "concept",
+        "what": "A change an expression makes as well as producing a value: =, +=, ++ and -- all have one.",
+        "example": "combo = hits++;   // two side effects",
+        "gotcha": "Never change a variable and read it again in the same expression.",
+        "aliases": [
+          "side effect"
+        ],
+        "def": "A side effect is a change in the state of the program, such as modifying an object, that happens as part of evaluating an expression. Modifying an object twice, or modifying and separately reading it, without a sequence point between is undefined.",
+        "model": "Asking a question that also moves the furniture. Fine once; confusing if you ask two at the same time.",
+        "game": "printf(\"%d %d\", lives, lives--) has no right answer. Split it: print first, then lives--.",
+        "gameCode": "printf(\"%d\\n\", lives);\nlives--;"
+      },
+      {
+        "id": "lvalue",
+        "term": "lvalue",
+        "kind": "concept",
+        "what": "Something that can sit on the left of =: a box that can hold a value, like a variable.",
+        "example": "score = 10;   // score is an lvalue",
+        "gotcha": "5 = score; and score + 1 = 10; are C2106.",
+        "aliases": [
+          "lvalue",
+          "C2106"
+        ],
+        "def": "An lvalue is an expression that designates an object, so it can be assigned to. Constants and the results of most operators are not lvalues.",
+        "model": "A box with an address. A number on its own is just a value; there's nowhere to put anything.",
+        "game": "player.x, lives and score[2] are all lvalues. lives - 1 isn't: store it with lives -= 1.",
+        "gameCode": "lives -= 1;   // not lives - 1 = lives"
+      },
+      {
+        "id": "precedence",
+        "term": "precedence",
+        "kind": "concept",
+        "what": "Which operator goes first: casts and ++, then * / %, then + -, then =. Same rank runs left to right.",
+        "example": "base + level * 2   // multiply first",
+        "gotcha": "100 / 10 * 2 is 20, not 5. Brackets when in doubt.",
+        "aliases": [
+          "precedence",
+          "associativity"
+        ],
+        "def": "Precedence decides how operators group with their operands when there are no brackets; associativity decides grouping between operators of equal precedence (left to right for arithmetic, right to left for assignment).",
+        "model": "The order of operations from school maths, with a few extra rungs for C's own operators.",
+        "game": "A damage formula that forgets its brackets subtracts armour from the wrong thing.",
+        "gameCode": "int dmg = (attack - armour) * 3 / 2;"
+      },
+      {
+        "id": "undefined-behaviour",
+        "term": "undefined behaviour",
+        "kind": "concept",
+        "what": "Code the C standard makes no promise about. It may work, print rubbish or crash. Treat it as a bug.",
+        "example": "hits = hits++;   // undefined",
+        "gotcha": "Seeming to work is not proof. It can break when you change something unrelated.",
+        "aliases": [
+          "undefined behaviour",
+          "undefined behavior",
+          "UB"
+        ],
+        "def": "Behaviour for which the C standard imposes no requirements, such as signed integer overflow, integer division by zero, or modifying an object twice between sequence points. Implementation-defined behaviour, by contrast, is documented and consistent for a given compiler.",
+        "model": "Walking off the edge of the map. The game might not crash right away, but nothing out there is promised.",
+        "game": "A score that overflows an int is undefined. Give it a type with room instead of hoping it wraps.",
+        "gameCode": "long long total_xp = 0;"
+      },
+      {
+        "id": "overflow",
+        "term": "overflow",
+        "kind": "concept",
+        "what": "A number growing past what its type can hold. Unsigned wraps round; signed is undefined behaviour.",
+        "example": "unsigned int u = 0;\nu--;   // 4294967295",
+        "gotcha": "On Windows long is 4 bytes, so it overflows at the same point as int. Use long long.",
+        "aliases": [
+          "overflow",
+          "INT_MAX",
+          "UINT_MAX",
+          "limits.h",
+          "<limits.h>"
+        ],
+        "def": "Overflow occurs when an arithmetic result is outside the range of its type. Unsigned arithmetic is reduced modulo 2^N (it wraps); signed integer overflow is undefined behaviour.",
+        "model": "A mileage counter with a fixed number of wheels. Roll past the end and the number is no longer the real one.",
+        "game": "An int frame counter at 60 fps lasts about 414 days. A lifetime XP total may need a long long.",
+        "gameCode": "long long total_xp = 3000000000LL;"
+      },
+      {
+        "id": "unsigned",
+        "term": "unsigned",
+        "kind": "type",
+        "what": "A whole number with no negatives and twice the positive range. Print with %u.",
+        "example": "unsigned int seed = 42u;",
+        "gotcha": "Mixed with an int, the int turns unsigned: 3u - 5 is 4294967294.",
+        "aliases": [
+          "unsigned",
+          "unsigned int",
+          "%u",
+          "%x"
+        ],
+        "def": "unsigned integer types represent only non-negative values. unsigned int on MSVC is 32 bits, 0 to 4,294,967,295. When a signed and an unsigned int meet, the signed one is converted to unsigned.",
+        "model": "A counter that starts at 0 and can't go below it. Push it down past 0 and it reappears at the top.",
+        "game": "Keep scores and lives as int. unsigned is for sizes, colours and bit flags, and for srand's seed.",
+        "gameCode": "srand((unsigned int)time(NULL));"
+      }
+    ],
+    "phase2b": [
+      {
         "id": "if-else",
         "term": "if / else if / else",
         "kind": "syntax",
@@ -447,38 +679,6 @@
         "gameCode": "switch (state) {\ncase STATE_MENU:    /* wait for a key */ break;\ncase STATE_PLAYING: /* move, collide */ break;\n}"
       },
       {
-        "id": "int-division",
-        "term": "Integer division and %",
-        "kind": "concept",
-        "what": "int / int drops the fraction (7 / 2 is 3). % gives the remainder (7 % 2 is 1).",
-        "example": "float half = (float)7 / 2;   // 3.5",
-        "aliases": [
-          "7 / 2",
-          "7 % 2",
-          "1 / 2",
-          "health / max_health"
-        ],
-        "def": "Dividing two integer operands performs integer division, truncating toward zero. % yields the remainder, with (a/b)*b + a%b == a.",
-        "model": "Sharing sweets: 7 between 2 people is 3 each, 1 left over. / is the 3, % is the 1.",
-        "game": "A health bar drawn as hp / max_hp is 0 until full. Multiply first: hp * 100 / max_hp gives a real percentage.",
-        "gameCode": "int pct = hp * 100 / max_hp;   // not hp / max_hp * 100"
-      },
-      {
-        "id": "cast",
-        "term": "(type) cast",
-        "kind": "syntax",
-        "what": "Converts a value on purpose. float → int truncates toward zero.",
-        "example": "int n = (int)1.8f;   // 1",
-        "aliases": [
-          "(int)",
-          "(float)"
-        ],
-        "def": "A cast expression (type)expr converts a value to the named type. Converting a floating value to an integer type truncates toward zero.",
-        "model": "Telling the compiler \"I know this loses information, and I mean it\".",
-        "game": "To draw a float x position into the char lane, cast it to an int column — once, at draw time, never stored back.",
-        "gameCode": "lane[(int)p.x] = 'A';"
-      },
-      {
         "id": "rand",
         "term": "rand() / srand()",
         "kind": "function",
@@ -499,20 +699,84 @@
         "gameCode": "srand((unsigned int)time(NULL));\nint secret = rand() % 100 + 1;"
       },
       {
-        "id": "sizeof",
-        "term": "sizeof",
+        "id": "logical-ops",
+        "term": "&&  ||  !",
         "kind": "syntax",
-        "what": "Size in bytes, worked out by the compiler. Returns size_t: cast before %d.",
-        "example": "printf(\"%d\\n\", (int)sizeof(int));   // 4",
+        "what": "And, or, not. Join comparisons; the answer is always 1 or 0.",
+        "example": "if (lane >= 1 && lane <= 8) { ... }",
+        "gotcha": "0 < x < 10 is always true. Write x > 0 && x < 10.",
         "aliases": [
-          "sizeof",
-          "size_t"
+          "&&",
+          "||",
+          "!"
         ],
-        "match": "^sizeof",
-        "def": "sizeof yields the size in bytes of a type or object, as a value of type size_t, computed at compile time for non-VLA operands.",
-        "model": "Measuring the box, not looking inside it.",
-        "game": "count = sizeof(scores) / sizeof(scores[0]) tells the high-score table how many slots it has without typing 5 again.",
-        "gameCode": "int count = (int)(sizeof(scores) / sizeof(scores[0]));"
+        "def": "&& yields 1 if both operands are non-zero, || yields 1 if either is non-zero, and ! yields 1 if its operand is 0. All three yield an int, 1 or 0. && binds more tightly than ||.",
+        "model": "Gates. && opens only for two yeses, || opens for one, ! swaps yes and no.",
+        "game": "The runner's collision test is one && chain: same lane and same column means a hit.",
+        "gameCode": "if (obs_lane == lane && obs_col == PLAYER_COL) lives--;"
+      },
+      {
+        "id": "short-circuit",
+        "term": "Short-circuit evaluation",
+        "kind": "concept",
+        "what": "&& stops at the first false side, || at the first true one. The rest never runs.",
+        "example": "if (enemies > 0 && kills / enemies > 2)",
+        "gotcha": "A ++ on the right side may never happen.",
+        "def": "The left operand of && and || is evaluated first; the right operand is evaluated only if the result isn't already decided.",
+        "model": "A bouncer who checks your ID first. No ID, and nobody bothers asking your name.",
+        "game": "Guard a division or an array slot with a test on the left, so the risky part only runs when it's safe.",
+        "gameCode": "if (count > 0 && total / count > best) best = total / count;"
+      },
+      {
+        "id": "ternary",
+        "term": "?: (conditional operator)",
+        "kind": "syntax",
+        "what": "test ? a : b picks a value: a when the test is true, b when it isn't.",
+        "example": "int dmg = crit ? 20 : 10;",
+        "gotcha": "Binds very loosely: bracket it inside bigger sums.",
+        "aliases": [
+          "?:",
+          "? :"
+        ],
+        "def": "The conditional operator evaluates its first operand; if non-zero the result is the second operand, otherwise the third. Only one of the two is evaluated.",
+        "model": "An if that hands back a value instead of running a block.",
+        "game": "The runner draws the player as 'c' when ducking and 'A' otherwise, in one line.",
+        "gameCode": "lane[PLAYER_COL] = ducking ? 'c' : 'A';"
+      },
+      {
+        "id": "break-continue",
+        "term": "break / continue / for (;;)",
+        "kind": "syntax",
+        "what": "break leaves the innermost loop or switch; continue jumps to the next lap.",
+        "example": "for (;;) {\n    if (done) break;\n}",
+        "gotcha": "break inside a switch inside a loop only leaves the switch.",
+        "aliases": [
+          "continue",
+          "continue;",
+          "for (;;)"
+        ],
+        "def": "break jumps out of the nearest loop or switch it sits in, and only that one. continue ends the current iteration of the innermost loop; in a for, the step expression runs next. for (;;) has no controlling expression and loops until something inside leaves it.",
+        "model": "Side doors on a lap: continue goes back to the start line, break leaves the track.",
+        "game": "The runner's obstacle spawner walks the slots and breaks out at the first free one.",
+        "gameCode": "for (i = 0; i < MAX_OBS; i++)\n    if (obs[i] == -1) { obs[i] = LANE_LEN - 1; break; }"
+      },
+      {
+        "id": "getchar",
+        "term": "getchar()",
+        "kind": "function",
+        "what": "Reads one character, as an int so it can also return EOF.",
+        "example": "while ((c = getchar()) != '\\n' && c != EOF) { }",
+        "gotcha": "Store the result in an int, not a char, or EOF can be missed.",
+        "aliases": [
+          "getchar()",
+          "getchar",
+          "EOF"
+        ],
+        "match": "^getchar\\(",
+        "def": "getchar reads the next character from standard input and returns it as an unsigned char converted to int, or EOF at end of input or on error.",
+        "model": "Taking one letter at a time off the front of the queue of everything typed.",
+        "game": "After a bad scanf, a getchar loop throws away the rest of the line so the next read starts clean.",
+        "gameCode": "int c;\nwhile ((c = getchar()) != '\\n' && c != EOF) { }"
       }
     ],
     "phase3": [

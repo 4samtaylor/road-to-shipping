@@ -38,7 +38,7 @@ var GROUPS = window.RTS_GROUPS || [
   ['Setup', ['setup']],
   ['Reference', ['cheatsheet']],
   ['Sessions', ['session1', 'session2']],
-  ['Phases', ['phase1', 'phase2', 'phase3', 'phase3b', 'phase4', 'phase4b', 'phase5', 'phase6', 'phase7']],
+  ['Phases', ['phase1', 'phase2', 'phase2b', 'phase3', 'phase3b', 'phase4', 'phase4b', 'phase5', 'phase6', 'phase7']],
   ['The Handoff', ['godot-bridge', 'sync-agenda']]
 ];
 var TINT = { cheatsheet: 'purple', 'sync-agenda': 'purple', session1: 'yellow', session2: 'yellow', 'godot-bridge': 'blue' };
@@ -2531,7 +2531,9 @@ window.RTS_LADDERS = LADDERS;   // the See It Run engine reads rung code from he
    its tick moves with it. Each entry runs once per _ladder object; the flag
    lives inside _ladder so a cloud copy from before the move is migrated too.
    Format: { id: 'unique-name', from: 'phase2', to: 'phase2b', rungs: ['if', 'loops'] } */
-var LAD_MIGRATIONS = [];
+var LAD_MIGRATIONS = [
+  { id: 'v23-phase2-split', from: 'phase2', to: 'phase2b', rungs: ['if', 'switch', 'loops', 'rand'] }
+];
 var ladMigSeen = null;
 function ladMigrate() {
   var lad = state._ladder;
