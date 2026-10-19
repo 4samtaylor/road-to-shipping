@@ -38,7 +38,7 @@ var GROUPS = window.RTS_GROUPS || [
   ['Setup', ['setup']],
   ['Reference', ['cheatsheet']],
   ['Sessions', ['session1', 'session2']],
-  ['Phases', ['phase1', 'phase2', 'phase2b', 'phase3', 'phase3b', 'phase4', 'phase4b', 'phase5', 'phase6', 'phase7']],
+  ['Phases', ['phase1', 'phase2', 'phase2b', 'phase3', 'phase3b', 'phase3c', 'phase4', 'phase4b', 'phase5', 'phase6', 'phase7']],
   ['The Handoff', ['godot-bridge', 'sync-agenda']]
 ];
 var TINT = { cheatsheet: 'purple', 'sync-agenda': 'purple', session1: 'yellow', session2: 'yellow', 'godot-bridge': 'blue' };
@@ -2138,7 +2138,7 @@ function restoreEdits() {
   // v13 swapped Phases 3 and 3.5, so block positions in those two files moved and
   // unpublished edits saved against the old layout would land on the wrong blocks.
   if ((state._editsLayout || 0) < 13) {
-    var stale = Object.keys(state._edits).filter(function (k) { return /^phase3b?:/.test(k); });
+    var stale = Object.keys(state._edits).filter(function (k) { return /^phase3[bc]?:/.test(k); });
     stale.forEach(function (k) { delete state._edits[k]; });
     state._editsLayout = 13;
     if (stale.length) setTimeout(function () { toast(plural(stale.length, 'unpublished edit') + ' in Phase 3 / 3.5 cleared — those phases were reorganised'); }, 900);
@@ -2532,7 +2532,8 @@ window.RTS_LADDERS = LADDERS;   // the See It Run engine reads rung code from he
    lives inside _ladder so a cloud copy from before the move is migrated too.
    Format: { id: 'unique-name', from: 'phase2', to: 'phase2b', rungs: ['if', 'loops'] } */
 var LAD_MIGRATIONS = [
-  { id: 'v23-phase2-split', from: 'phase2', to: 'phase2b', rungs: ['if', 'switch', 'loops', 'rand'] }
+  { id: 'v23-phase2-split', from: 'phase2', to: 'phase2b', rungs: ['if', 'switch', 'loops', 'rand'] },
+  { id: 'v23-phase3b-split', from: 'phase3b', to: 'phase3c', rungs: ['enum', 'headers', 'linker', 'debugger'] }
 ];
 var ladMigSeen = null;
 function ladMigrate() {

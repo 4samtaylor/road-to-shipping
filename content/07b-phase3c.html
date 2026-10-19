@@ -1,0 +1,401 @@
+<!-- PHASE 3.75 -->
+  <div class="phase" id="phase3c" data-ladder="phase3c">
+<div class="phase-header">
+      <div class="phase-n">3.75</div>
+      <div class="phase-meta">
+        <div class="phase-tag">Structure</div>
+        <div class="phase-title">Organising Code</div>
+      </div>
+      <div class="phase-right">
+        <div class="phase-week">Week 5</div>
+        <div class="phase-chevron">▼</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-inner">
+
+        <!-- PAIR WITH KING -->
+        <div class="section-block acc-section" data-page="overview">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Pair with King</span>&nbsp;&nbsp;C Programming: A Modern Approach, chapters 15–18
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <dl class="king">
+              <dt>enum</dt><dd>§16.5: enumeration constants, tags and type names, and enums as integers. King points out that C mixes enums and ints freely; MSVC at /W4 won’t warn about a switch that misses a case either.</dd>
+              <dt>Function pointers</dt><dd>§17.7: pointers to functions as arguments, the <span class="cmd">qsort</span> function, and keeping function pointers in variables and arrays. Skim the <span class="cmd">qsort</span> part for the idea; you won’t need it yet.</dd>
+              <dt>Header files and #pragma once</dt><dd>§15.1–15.3: source files, what belongs in a header (macros, types, prototypes, <span class="cmd">extern</span> variable declarations), protecting a header with <span class="cmd">#ifndef</span>, and dividing a program into files. §18.2 for <span class="cmd">static</span> and <span class="cmd">extern</span> on functions and file-level variables. King doesn’t mention <span class="cmd">#pragma once</span>.</dd>
+              <dt>Linker errors (LNK2019)</dt><dd>§15.4: the parts on errors during linking, rebuilding a program, and defining macros outside a program (that’s cl’s <span class="cmd">/D</span>).</dd>
+              <dt>The debugger</dt><dd>Not in King. The VS Code setup is on the Build page.</dd>
+              <dt>Skip for now</dt><dd>Makefiles (§15.4; build.bat does that job), and the rest of ch 17: <span class="cmd">malloc</span> and <span class="cmd">free</span>, linked lists, pointers to pointers, restricted pointers and flexible array members (§17.1–17.6, §17.8–17.9). You already have the NULL part of §17.1.</dd>
+              <dt>Try</dt><dd>Split one ch 15 programming project into a .h and two .c files built from one SOURCES line, and give one §17.7 exercise a game skin: a table of enemy behaviours instead of maths functions.</dd>
+            </dl>
+            <div class="fs-11 t-muted mt-12">Chapter numbers are from the 2nd edition.</div>
+          </div>
+        </div>
+
+<div class="section-block" data-page="concept:enum">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
+              <div class="task" data-id="p375-enum">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">enum: write a GameState with <span class="cmd">STATE_COUNT</span> last, a name table sized by it, and a loop that prints every state&#39;s number and name</div>
+                  <div class="task-note">Then add <span class="cmd">STATE_PAUSED</span> in the middle and check the loop still prints them all <span class="task-time">~30 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+<div class="section-block" data-page="concept:func-pointers">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
+              <div class="task" data-id="p375-func-pointers">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Function pointers: give each GameState its own update function, put them in a table, and run six frames from one call line</div>
+                  <div class="task-note">Add a pause state with one new function and one new table entry, and touch nothing else <span class="task-time">~45 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block" data-page="concept:headers">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
+              <div class="task" data-id="p3-header-files">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Separate into .h and .c files, understand declarations vs definitions</div>
+                  <div class="task-note"><span class="task-time">~45 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BUILD SPEC -->
+        <div class="section-block acc-section open" data-order="-1" data-page="practice">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Build Spec</span>&nbsp;&nbsp;Write the requirements before you build
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="prose prose--sm t-muted2 mb-14">Three requirements per build, written <strong class="t-text">before</strong> you open the editor. Each line is something you can test: run the program and answer yes or no. This is the <span class="cmd">It should:</span> list from the Phase 07 "implement this" prompt, writing it for yourself now is practice for writing it for Claude later. Tick the build when all three pass.</div>
+            <div class="spec">
+              <div class="spec-item">
+                <h4><span>player.h + player.c</span>: it should:</h4>
+                <ul>
+                  <li>keep only the struct and the declarations in <span class="cmd">player.h</span>, the bodies in <span class="cmd">player.c</span>, and include nothing but <span class="cmd">player.h</span> from main.c</li>
+                  <li>never let <span class="cmd">player_take_damage</span> push health below 0 (and set <span class="cmd">alive</span> to false at 0), and never let <span class="cmd">player_heal</span> push it above 100</li>
+                  <li>create a Player in main, move it, damage it and heal it, printing after each step, and the printed values change</li>
+                </ul>
+              </div>
+              <div class="spec-item">
+                <h4><span>guess.c split</span>: it should:</h4>
+                <ul>
+                  <li>split Phase 3.5&#39;s guess.c into <span class="cmd">guess.h</span> (the round struct and prototypes, guarded), <span class="cmd">guess.c</span> (the bodies) and <span class="cmd">main.c</span> (the game loop), built from one <span class="cmd">set SOURCES=main.c guess.c</span> line</li>
+                  <li>play exactly like the single-file version: same prompts, same hints, same ending</li>
+                  <li>keep at least one helper in guess.c <span class="cmd">static</span> and out of guess.h, so a call to it from main.c won&#39;t build</li>
+                </ul>
+              </div>
+            
+</div>
+          </div>
+        </div>
+
+        <div class="section-block acc-section open" data-page="build">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Starter Code</span>&nbsp;&nbsp;player.h + player.c
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body">
+            <div class="code-wrap">
+              <div class="code-label">
+                <span>player.h, the declaration (what exists)</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+<pre><span class="c-pp">#pragma once</span>
+<span class="c-pp">#include</span> <span class="c-str">&lt;stdbool.h&gt;</span>
+
+<span class="c-cm">// A struct groups related data together</span>
+<span class="c-cm">// Think of it as a blueprint for a game object</span>
+<span class="c-kw">typedef struct</span> {
+    <span class="c-type">float</span> <span class="c-var">x</span>;
+    <span class="c-type">float</span> <span class="c-var">y</span>;
+    <span class="c-type">int</span>   <span class="c-var">health</span>;
+    <span class="c-type">bool</span>  <span class="c-var">alive</span>;
+} <span class="c-type">Player</span>;
+
+<span class="c-cm">// Function declarations, the "what" without the "how"</span>
+<span class="c-type">Player</span> <span class="c-fn">player_create</span>(<span class="c-type">float</span> <span class="c-var">start_x</span>, <span class="c-type">float</span> <span class="c-var">start_y</span>);
+<span class="c-type">void</span>   <span class="c-fn">player_move</span>(<span class="c-type">Player</span>* <span class="c-var">p</span>, <span class="c-type">float</span> <span class="c-var">dx</span>, <span class="c-type">float</span> <span class="c-var">dy</span>);
+<span class="c-type">void</span>   <span class="c-fn">player_take_damage</span>(<span class="c-type">Player</span>* <span class="c-var">p</span>, <span class="c-type">int</span> <span class="c-var">amount</span>);
+<span class="c-type">void</span>   <span class="c-fn">player_print</span>(<span class="c-type">Player</span>* <span class="c-var">p</span>);</pre>
+            </div>
+            <div class="code-wrap mt-2">
+              <div class="code-label">
+                <span>player.c, the definitions (the actual code)</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+<pre><span class="c-pp">#include</span> <span class="c-str">"player.h"</span>
+<span class="c-pp">#include</span> <span class="c-str">&lt;stdio.h&gt;</span>
+
+<span class="c-type">Player</span> <span class="c-fn">player_create</span>(<span class="c-type">float</span> <span class="c-var">start_x</span>, <span class="c-type">float</span> <span class="c-var">start_y</span>) {
+    <span class="c-type">Player</span> <span class="c-var">p</span>;
+    <span class="c-var">p</span>.x      = <span class="c-var">start_x</span>;
+    <span class="c-var">p</span>.y      = <span class="c-var">start_y</span>;
+    <span class="c-var">p</span>.health = <span class="c-num">100</span>;
+    <span class="c-var">p</span>.alive  = <span class="c-kw">true</span>;
+    <span class="c-kw">return</span> <span class="c-var">p</span>;
+}
+
+<span class="c-cm">// Player* means "a pointer to a Player", we pass by pointer</span>
+<span class="c-cm">// so the function can MODIFY the original, not a copy</span>
+<span class="c-type">void</span> <span class="c-fn">player_move</span>(<span class="c-type">Player</span>* <span class="c-var">p</span>, <span class="c-type">float</span> <span class="c-var">dx</span>, <span class="c-type">float</span> <span class="c-var">dy</span>) {
+    <span class="c-var">p</span>-&gt;<span class="c-var">x</span> += <span class="c-var">dx</span>;
+    <span class="c-var">p</span>-&gt;<span class="c-var">y</span> += <span class="c-var">dy</span>;
+}
+
+<span class="c-type">void</span> <span class="c-fn">player_take_damage</span>(<span class="c-type">Player</span>* <span class="c-var">p</span>, <span class="c-type">int</span> <span class="c-var">amount</span>) {
+    <span class="c-var">p</span>-&gt;<span class="c-var">health</span> -= <span class="c-var">amount</span>;
+    <span class="c-kw">if</span> (<span class="c-var">p</span>-&gt;<span class="c-var">health</span> &lt;= <span class="c-num">0</span>) {
+        <span class="c-var">p</span>-&gt;<span class="c-var">health</span> = <span class="c-num">0</span>;
+        <span class="c-var">p</span>-&gt;<span class="c-var">alive</span> = <span class="c-kw">false</span>;
+    }
+}
+
+<span class="c-type">void</span> <span class="c-fn">player_print</span>(<span class="c-type">Player</span>* <span class="c-var">p</span>) {
+    <span class="c-fn">printf</span>(<span class="c-str">"Player pos: (%.1f, %.1f) health: %d alive: %s\n"</span>,
+           <span class="c-var">p</span>-&gt;<span class="c-var">x</span>, <span class="c-var">p</span>-&gt;<span class="c-var">y</span>, <span class="c-var">p</span>-&gt;<span class="c-var">health</span>,
+           <span class="c-var">p</span>-&gt;<span class="c-var">alive</span> ? <span class="c-str">"yes"</span> : <span class="c-str">"no"</span>);
+}
+
+<span class="c-cm">// TODO: Add player_heal(Player* p, int amount)</span>
+<span class="c-cm">// TODO: Add player_is_dead(Player* p) that returns bool</span>
+<span class="c-cm">// TODO: Add bounds checking to player_move so x/y can't go negative</span></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block" data-page="build">
+          <div class="section-block-body">
+            <div class="prose prose--sm t-muted2">Build both files with the multi-file build.bat from Phase 1: <span class="cmd">set SOURCES=main.c player.c</span>, so one word builds everything.</div>
+          </div>
+        </div>
+
+        <div class="section-block acc-section" data-page="build">
+          <div class="section-block-header">
+            <span class="badge badge-yellow">Break it</span>&nbsp;&nbsp;Two experiments, on purpose
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="prose prose--sm t-muted2 mb-10">After each build works, break it once and read what the tools say. Errors you have met on purpose are less scary later.</div>
+            <div class="stack gap-8 prose prose--sm t-muted2">
+              <div><strong class="t-text">The double include.</strong> Delete <span class="cmd">#pragma once</span> from player.h and <span class="cmd">#include "player.h"</span> twice in main.c. Predict the failure, then read the real error (<span class="cmd">C2371</span>, redefinition: the same typedef seen twice).</div>
+              <div><strong class="t-text">The missing file.</strong> Take <span class="cmd">player.c</span> out of the <span class="cmd">SOURCES</span> line and build. Read the <span class="cmd">LNK2019</span> error and say why the compiler was happy but the linker wasn't.</div>
+</div>
+          </div>
+        </div>
+
+        <div class="section-block acc-section" data-page="build">
+          <div class="section-block-header">
+            <span class="badge badge-green">Ship it</span>&nbsp;&nbsp;Commit what you built
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="prose prose--sm t-muted2 stack gap-8">
+              <div><span class="cmd">git add player.h player.c main.c build.bat .vscode/launch.json</span></div>
+              <div><span class="cmd">git commit -m "feat: Player struct with pointer-based move and damage"</span></div>
+              <div><span class="cmd">git push</span></div>
+              <div>After the guessing game split, <span class="cmd">git add guess.h guess.c main.c build.bat</span> and commit again.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DEBUGGER -->
+        <div class="section-block acc-section open" data-page="build">
+          <div class="section-block-header">
+            <span class="badge badge-yellow">Setup</span>&nbsp;&nbsp;Debugger setup in VS Code
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="stack gap-14">
+
+              <div class="callout callout--blue callout--bar">
+                <div class="eyebrow eyebrow--lg t-blue mb-10">// Four steps, once, forever</div>
+                <div class="prose t-muted2" style="display:grid;grid-template-columns:22px 1fr;gap:8px 12px">
+                  <div class="t-blue">1</div><div>In VS Code, install the <strong class="t-text">C/C++</strong> extension from Microsoft (<span class="cmd">ms-vscode.cpptools</span>). That's what provides the <span class="cmd">cppvsdbg</span> debug type, the one that speaks MSVC and PDB.</div>
+                  <div class="t-blue">2</div><div>Open your repo <strong class="t-text">as a folder</strong> (File → Open Folder), not as a single file. <span class="cmd">${workspaceFolder}</span> only means something if VS Code has a folder open.</div>
+                  <div class="t-blue">3</div><div>Create <span class="cmd">.vscode/launch.json</span> in the repo root and paste the config below. Commit it, your partner gets debugging for free.</div>
+                  <div class="t-blue">4</div><div><strong class="t-accent">Run <span class="cmd upright">build</span> first, every single time.</strong> F5 launches the exe that's on disk. It does not compile for you. This is the number one reason breakpoints "don't work."</div>
+                </div>
+              </div>
+
+              <div class="code-wrap">
+                <div class="code-label">
+                  <span>.vscode/launch.json, minimal MSVC config</span>
+                  <button class="copy-btn">Copy</button>
+                </div>
+<pre>{
+  <span class="c-str">"version"</span>: <span class="c-str">"0.2.0"</span>,
+  <span class="c-str">"configurations"</span>: [
+    {
+      <span class="c-str">"name"</span>: <span class="c-str">"Debug game.exe"</span>,
+      <span class="c-str">"type"</span>: <span class="c-str">"cppvsdbg"</span>,
+      <span class="c-str">"request"</span>: <span class="c-str">"launch"</span>,
+      <span class="c-str">"program"</span>: <span class="c-str">"${workspaceFolder}/game.exe"</span>,
+      <span class="c-str">"args"</span>: [],
+      <span class="c-str">"stopAtEntry"</span>: <span class="c-kw">false</span>,
+      <span class="c-str">"cwd"</span>: <span class="c-str">"${workspaceFolder}"</span>,
+      <span class="c-str">"environment"</span>: [],
+      <span class="c-str">"console"</span>: <span class="c-str">"integratedTerminal"</span>
+    }
+  ]
+}</pre>
+              </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block acc-section open" data-page="concept:debugger">
+          <div class="section-block-header">
+            <span class="badge badge-green">Practice this</span>&nbsp;&nbsp;Watch hero change from a function that never names it
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+              <div class="callout callout--purple callout--bar">
+              <div class="eyebrow eyebrow--lg t-purple mb-10">// Watch a pointer change, live</div>
+              <div class="prose prose--loose t-text mb-12">
+                The mental models were metaphors. This is the thing itself. Ten minutes, once your main.c (Build Spec) creates hero and damages it with <span class="cmd">player_take_damage(&amp;hero, ...)</span>.
+              </div>
+              <div class="prose t-muted2" style="display:grid;grid-template-columns:22px 1fr;gap:8px 12px">
+                <div class="t-purple">1</div><div>Run <span class="cmd">build</span>. Make sure it succeeded before you touch F5.</div>
+                <div class="t-purple">2</div><div>Open player.c. Put the cursor on the first line inside <span class="cmd">player_take_damage</span> and press <span class="cmd">F9</span>.</div>
+                <div class="t-purple">3</div><div>Press <span class="cmd">F5</span>. The program starts, then freezes on that line with a yellow arrow the first time damage is dealt.</div>
+                <div class="t-purple">4</div><div>Open the Watch panel and add three expressions: <span class="cmd">p</span>, <span class="cmd">*p</span>, and <span class="cmd">p-&gt;health</span>.</div>
+                <div class="t-purple">5</div><div>Look at them before you step. <span class="cmd">p</span> is a 16-digit hex number like <span class="cmd">000000A3F9D6FBA0</span>, that's the address, the piece of paper with the house number on it. <span class="cmd">*p</span> expands into the whole Player. <span class="cmd">p-&gt;health</span> is one field inside it.</div>
+                <div class="t-purple">6</div><div>Press <span class="cmd">F10</span> once. Watch <span class="cmd">p-&gt;health</span> drop. <strong class="t-accent">Nothing in this function is named "hero", and hero's health just changed anyway.</strong> That is what a pointer does, and you are watching it happen.</div>
+                <div class="t-purple">7</div><div>Now go up to <span class="cmd">main</span>, add <span class="cmd">&amp;hero</span> to the Watch panel, and compare it to <span class="cmd">p</span>. Same number. Same house.</div>
+              </div>
+              <div class="prose t-text mt-12">
+                Do the same thing with the photocopy version from the Break it experiments on the Build page, <span class="cmd">player_move(Player p, ...)</span>, no asterisk. Watch <span class="cmd">p.x</span> change inside the function, then step out and watch <span class="cmd">hero.x</span> sit there untouched. <strong class="t-accent">The copy dying at the closing brace, on screen.</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+                <div class="section-block acc-section" data-page="review">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Mixed Review</span>&nbsp;&nbsp;two from Phase 3.5, one from Phase 03
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <div class="prose prose--sm t-muted2 mb-14">Three questions from earlier phases. Remembering something after a gap is what makes it stay, answer out loud first.</div>
+            <div class="quiz-items">
+<div class="quiz-items">
+              <div class="quiz-item">
+                <div class="quiz-q">1. <span class="t-muted">[Phase 3.5]</span> <span class="cmd">Enemy e = enemies[i]; e.health -= 10;</span> runs, but the enemy in the array keeps its health. Why, and what&#39;s the fix?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a"><span class="cmd">e</span> is a copy. Struct assignment copies every field into a new box, so the subtraction lands on the copy, which is thrown away. Take a pointer to the real one instead: <span class="cmd">Enemy* e = &amp;enemies[i]; e-&gt;health -= 10;</span></div>
+                </details>
+              </div>
+              <div class="quiz-item">
+                <div class="quiz-q">2. <span class="t-muted">[Phase 3.5]</span> Inside <span class="cmd">void show(int scores[])</span>, what does <span class="cmd">sizeof(scores)</span> give on your x64 build, and why?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a"><span class="cmd">8</span>. An array parameter is really a pointer, so <span class="cmd">sizeof</span> measures the pointer, not the array. That&#39;s why functions that take an array also take its count.</div>
+                </details>
+              </div>
+              <div class="quiz-item">
+                <div class="quiz-q">3. <span class="t-muted">[Phase 03]</span> What does <span class="cmd">static int spawned = 0;</span> inside a function do that <span class="cmd">int spawned = 0;</span> doesn&#39;t?</div>
+                <details>
+                  <summary>Reveal answer</summary>
+                  <div class="quiz-a">It&#39;s made once and keeps its value between calls, so it can count every spawn. The plain local is made fresh, set to 0, on every call. This phase adds static&#39;s other meaning: on a function or a variable outside every function, it means private to that file.</div>
+                </details>
+              </div>
+            </div>
+</div>
+          </div>
+        </div>
+
+        <div class="checkpoint" data-page="review">
+          <div class="checkpoint-header">
+            <span class="badge badge-green">Checkpoint</span>
+            <span class="checkpoint-title">Ready to move on when:</span>
+            <span class="cp-counter">0/4</span>
+          </div>
+          <div class="checkpoint-items">
+<div class="checkpoint" data-page="review">
+          <div class="checkpoint-header">
+            <span class="badge badge-green">Checkpoint</span>
+            <span class="checkpoint-title">Ready to move on when:</span>
+            <span class="cp-counter">0/4</span>
+          </div>
+          <div class="checkpoint-items">
+            <div class="cp-item" data-id="cp-p3-2"><span class="cp-cb">✓</span><span class="cp-text">Your Player struct compiles across two files (.h + .c)</span></div>
+            <div class="cp-item" data-id="cp-p3-3"><span class="cp-cb">✓</span><span class="cp-text">You added at least one function yourself (heal, bounds check, etc.)</span></div>
+            <div class="cp-item" data-id="cp-p375-1"><span class="cp-cb">✓</span><span class="cp-text">A GameState enum picks each frame&#39;s update function from a table of function pointers</span></div>
+            <div class="cp-item" data-id="cp-p3-4"><span class="cp-cb">✓</span><span class="cp-text">Code committed to GitHub</span></div>
+          </div>
+        </div>
+</div>
+        </div>
+
+        <div class="section-block acc-section" data-page="help">
+          <div class="section-block-header">
+            <span class="badge badge-blue">Claude Code Prompts</span>&nbsp;&nbsp;Phase 3.75
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+
+            <div class="callout callout--purple callout--bar mb-16">
+              <div class="eyebrow eyebrow--md t-purple mb-8">// Design the interface first, then ask for the body</div>
+              <div class="prose t-muted2 italic">
+                When you ask AI for a function, you are choosing its name, what it takes in, what it returns and what it changes. <strong class="t-text">If you don't say, AI invents them</strong>, and the invention may not match your game. So write the declaration yourself first, like <span class="cmd upright">void player_heal(Player* p, int amount);</span>, and ask AI to fill in only the body. If you can write that line, you understand the function well enough to check what comes back.
+              </div>
+            </div>
+
+            <div class="callout callout--orange mb-16">
+              <div class="eyebrow eyebrow--md t-orange mb-8">// Bad prompt vs good prompt</div>
+              <div class="stack gap-10 fs-11">
+                <div style="border-left:2px solid var(--orange);padding:8px 12px;background:var(--orange-wash)">
+                  <div class="eyebrow eyebrow--tight eyebrow--md t-orange mb-4">✗ Bad: you've given up control</div>
+                  <div class="t-muted2">"Write a player system for my game"</div>
+                  <div class="t-muted fs-10 mt-4">AI will invent the fields, function names and file structure, and none of it will match what you build later.</div>
+                </div>
+                <div style="border-left:2px solid var(--accent);padding:8px 12px;background:var(--accent-wash)">
+                  <div class="eyebrow eyebrow--tight eyebrow--md t-accent mb-4">✓ Good: you own the architecture</div>
+                  <div class="t-text">"I have a Player struct with fields: float x, float y, int health, bool alive. Write ONLY the body of player_heal(Player* p, int amount): it should add amount to p-&gt;health, cap it at 100, and not change alive. Declaration already exists in player.h."</div>
+                  <div class="t-muted fs-10 mt-4">The struct and the signature are yours. AI wrote the 3 lines inside.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="prompt-items">
+<div class="prompt-items">
+              <div class="prompt-item">
+                <div class="prompt-label">Review a header/source split: flag problems, don&#39;t rewrite</div>
+                <div class="prompt-text">I&#39;m learning C with MSVC and just split my guessing game into guess.h, guess.c and main.c. Here are all three files: [paste them]. Don&#39;t rewrite them. Tell me: (1) anything in guess.h that belongs in guess.c, like a function body or a variable with a value, (2) any function in guess.c that only that file uses and should be static, (3) whether guess.h is guarded and includes what it uses, (4) whether main.c includes anything it doesn&#39;t need. A short list, no new features.</div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Explain a linker error: understand it, don&#39;t fix it</div>
+                <div class="prompt-text">I&#39;m learning C with MSVC. My build fails with this message: [paste the whole LNK line, plus my SOURCES line]. Don&#39;t give me fixed code. Explain: was it the compiler or the linker that failed, what name the linker was looking for, and two likely causes I should check myself. Then ask me one question that would narrow it down.</div>
+              </div>
+            </div>
+</div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>

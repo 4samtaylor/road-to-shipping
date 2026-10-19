@@ -584,8 +584,8 @@ function popScale(k) { return 1 + .22 * Math.sin(Math.PI * clamp(k)); }
         if (needs) txt(c, 'needs: ' + needs, x + 8, y + 44, { size: 8.5, w: 700, col: V.linked > .5 ? C.accent : C.orange, align: 'left' });
         c.restore();
       };
-      if (mo > 0) drawObj(null, m.x, m.y, 'main.obj', '_main', '_player_heal', C.accent, mo);
-      if (po > 0) drawObj(null, py, p.y, 'player.obj', '_player_heal', '', C.blue, po);
+      if (mo > 0) drawObj(null, m.x, m.y, 'main.obj', 'main', 'player_heal', C.accent, mo);
+      if (po > 0) drawObj(null, py, p.y, 'player.obj', 'player_heal', '', C.blue, po);
       // socket on main.obj (right edge) and plug on player.obj (left edge)
       if (mo > 0) { c.save(); c.globalAlpha *= clamp(mo); const open = V.linked < .1;
         c.beginPath(); c.arc(m.x + m.w, socketY, 7, -Math.PI / 2, Math.PI / 2); c.lineTo(m.x + m.w, socketY - 7); c.fillStyle = open ? '#04040a' : rgba(C.accent, .5); c.fill(); c.strokeStyle = open ? C.orange : C.accent; c.lineWidth = 2; c.stroke();
@@ -597,7 +597,7 @@ function popScale(k) { return 1 + .22 * Math.sin(Math.PI * clamp(k)); }
       // probe (the linker looking for the name)
       if (V.scanK > 0 && V.scanK < 1) { const k = EZ.io(V.scanK), x = lerp(m.x + m.w + 6, p.x + 40, Math.min(1, k * 1.2)), y = socketY + 4 * Math.sin(k * 14);
         c.save(); c.strokeStyle = C.yellow; c.lineWidth = 2.5; c.beginPath(); c.arc(x, y - 4, 8, 0, 7); c.stroke(); c.beginPath(); c.moveTo(x + 6, y + 2); c.lineTo(x + 13, y + 9); c.stroke();
-        txt(c, '_player_heal ?', x, y - 20, { size: 8.5, w: 700, col: C.yellow }); c.restore(); }
+        txt(c, 'player_heal ?', x, y - 20, { size: 8.5, w: 700, col: C.yellow }); c.restore(); }
       // output: game.exe
       const ex = 140, ey = 184, ew = 120, eh = 48, ok = V.linked;
       if (mo > 0 || po > 0) { c.save(); c.strokeStyle = ok > .5 ? C.accent : C.muted; c.lineWidth = 1.5; c.setLineDash(ok > .5 ? [] : [3, 3]);

@@ -124,7 +124,7 @@
       "what": "Make an <span class=\"cmd\">Enemy</span> struct with health and an <span class=\"cmd\">enum</span> type (SLIME, BAT, SKELETON). Store five in an array.",
       "steps": ["Write <span class=\"cmd\">print_alive(const Enemy *list, int count)</span>.", "Damage two by index until one dies.", "Print a type name with a switch on the enum."],
       "done": "Only living enemies print, with their type names." },
-    { "id": "p3b-break-linker", "phase": "phase3b", "kind": "break", "mins": 15,
+    { "id": "p3b-break-linker", "phase": "phase3c", "kind": "break", "mins": 15,
       "title": "Make the linker complain",
       "what": "Split a function into a .h and a .c. Then break it.",
       "steps": ["Declare it in the .h but leave the .c out of build.bat. Read <span class=\"cmd\">LNK2019</span>.", "Put it back. Remove <span class=\"cmd\">#pragma once</span> and include the header twice. Read that error.", "Write one line on compiler errors vs linker errors."],

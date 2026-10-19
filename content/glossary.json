@@ -1177,7 +1177,7 @@
           "Player"
         ],
         "def": "A struct type groups named members, possibly of different types, into one object. typedef gives the type a single-word name.",
-        "model": "A form with labelled boxes: name, position, health — everything about one thing, kept together.",
+        "model": "A form with labelled boxes: name, position, health, everything about one thing, kept together.",
         "game": "The Runner struct holds the whole game's state, so functions take one pointer instead of six variables.",
         "gameCode": "typedef struct {\n    int obs[MAX_OBS];\n    int score, frame, ducking;\n} Runner;"
       },
@@ -1217,13 +1217,13 @@
         "def": "Structs have value semantics: assignment and pass-by-value copy every member into a separate object.",
         "model": "Photocopying the whole form. Scribbling on the copy doesn't change the original.",
         "game": "runner_update(Runner r, …) without the * updates a photocopy every frame. Nothing ever moves on screen.",
-        "gameCode": "void runner_update(Runner r, int key);   // copy — changes are lost"
+        "gameCode": "void runner_update(Runner r, int key);   // copy, changes are lost"
       },
       {
         "id": "pointer",
         "term": "Pointer (int* p)",
         "kind": "concept",
-        "what": "A variable that holds an address — where a value lives, not the value.",
+        "what": "A variable that holds an address, where a value lives, not the value.",
         "example": "int x = 5;\nint* p = &x;",
         "aliases": [
           "int* p = &x",
@@ -1249,7 +1249,7 @@
         ],
         "def": "The unary * operator applied to a pointer yields the object it points to.",
         "model": "Going to the address on the note and opening the front door.",
-        "game": "(*r).score is the real score in main's Runner — same as r->score.",
+        "game": "(*r).score is the real score in main's Runner, same as r->score.",
         "gameCode": "(*r).score += 1;"
       },
       {
@@ -1281,7 +1281,7 @@
         ],
         "match": "->",
         "def": "p->m is shorthand for (*p).m: the member m of the struct that pointer p points to.",
-        "model": "Follow the address, then grab the labelled item — in one move.",
+        "model": "Follow the address, then grab the labelled item, in one move.",
         "game": "Every line of runner.c that touches the game reads r->something.",
         "gameCode": "r->score++;\nr->state = STATE_GAME_OVER;"
       },
@@ -1314,10 +1314,98 @@
           "if (p != NULL)"
         ],
         "def": "NULL is a null pointer constant: a pointer value guaranteed not to point to any object.",
-        "model": "A blank note — no address written on it. Going there gets you nowhere, fast.",
+        "model": "A blank note, no address written on it. Going there gets you nowhere, fast.",
         "game": "fopen returns NULL when best.txt doesn't exist yet. Check before reading, or the first run crashes.",
         "gameCode": "FILE* f = fopen(\"best.txt\", \"r\");\nif (f == NULL) best = 0;"
       },
+      {
+        "id": "designated-init",
+        "term": "Designated initialisers",
+        "kind": "syntax",
+        "what": "Set struct fields by name as you create it. Fields you leave out become 0.",
+        "example": "Player hero = {.health = 100, .x = 2.5f};",
+        "gotcha": "Any field you don't name is 0, not garbage.",
+        "aliases": [
+          "Player hero = {.health = 100, .x = 2.5f};",
+          "{.lane = 2, .health = 50}"
+        ],
+        "def": "A designated initialiser names the member it initialises (.member = value), so members can be given in any order. Members not named are initialised to zero. Standard since C99.",
+        "model": "Filling in a form by label instead of by position: you write health next to “health”, wherever it sits on the page.",
+        "game": "A new enemy only needs the fields that matter; everything else starts at 0.",
+        "gameCode": "Enemy e = {.lane = 2, .health = 50};"
+      },
+      {
+        "id": "struct-array",
+        "term": "Array of structs",
+        "kind": "concept",
+        "what": "An array where every box is a whole struct. Index first, then the dot: enemies[i].health.",
+        "example": "Enemy enemies[MAX_ENEMIES] = {{0, 30}, {2, 50}};\nenemies[1].health -= 20;",
+        "gotcha": "Loop to count, not MAX_ENEMIES. A search returns -1 for not found: check it before using it as an index.",
+        "aliases": [
+          "enemies[i].health",
+          "enemies[hit].health",
+          "Enemy enemies[MAX_ENEMIES];",
+          "enemies[i].lane"
+        ],
+        "def": "An array whose element type is a structure. Each element is a complete struct object, accessed by index, and its members are accessed with the . operator.",
+        "model": "A row of lockers, each holding a whole form. The index picks the locker, the dot picks the box on the form.",
+        "game": "Phase 6's enemies, bullets and pickups are each one array of structs plus a count, updated by one loop every frame.",
+        "gameCode": "for (int i = 0; i < count; i++) {\n    enemies[i].x -= enemies[i].speed;\n}"
+      },
+      {
+        "id": "pointer-arith",
+        "term": "Pointer arithmetic",
+        "kind": "syntax",
+        "what": "p + 1 is the next element, not the next byte. Subtracting two pointers gives how many elements apart they are.",
+        "example": "int* p = &hits[1];\n*(p + 2);   // hits[3]",
+        "gotcha": "Pointing one past the end is legal; reading there is not.",
+        "aliases": [
+          "p + 2",
+          "*(p + 2)",
+          "p + 1",
+          "hits + 4"
+        ],
+        "def": "When a pointer points into an array, adding n to it gives a pointer n elements further along, with the step scaled by the size of the element type. The difference of two pointers into the same array is the number of elements between them.",
+        "model": "A finger pointing at a locker. p + 2 is two lockers along, whatever size the lockers are.",
+        "game": "A pointer loop over the obstacle array stops at obs + count, one past the last obstacle.",
+        "gameCode": "for (const int* o = obs; o < obs + count; o++) {\n    draw_obstacle(*o);\n}"
+      },
+      {
+        "id": "array-decay",
+        "term": "Arrays become pointers",
+        "kind": "concept",
+        "what": "In an expression, an array's name turns into a pointer to its first element. So a[i] is *(a + i), and int a[] as a parameter is int* a.",
+        "example": "hits[3] == *(hits + 3)   // same element",
+        "gotcha": "sizeof(array) is the whole array; sizeof(pointer) is 8 on x64. You can't assign to an array name.",
+        "aliases": [
+          "*(hits + 3)",
+          "*(a + i)",
+          "int* scores"
+        ],
+        "def": "Apart from sizeof and unary &, using an array in an expression converts it to a pointer to element 0. A parameter declared as an array of T is adjusted to pointer to T.",
+        "model": "Handing someone the key to the first locker instead of the whole row. They can reach every locker from there, but they can't tell how many there are.",
+        "game": "runner_draw(lane, LANE_LEN) passes the lane's address, which is why the function needs the length as well.",
+        "gameCode": "void runner_draw(const char* lane, int len);"
+      },
+      {
+        "id": "const-char-ptr",
+        "term": "const char*",
+        "kind": "syntax",
+        "what": "A pointer to text you read but don't change, like a string in quotes.",
+        "example": "const char* name = \"Sam\";",
+        "gotcha": "Text in quotes may be read-only. Need to change it? Copy it into char name[].",
+        "aliases": [
+          "const char* name = \"Sam\";",
+          "const char*",
+          "const char *"
+        ],
+        "def": "A pointer to const char. String literals have static storage and must not be modified; pointing at them through const char* makes the compiler reject writes.",
+        "model": "A pointer to a sign on the wall: you can read it as often as you like, but you can't repaint it.",
+        "game": "A table of enemy kinds keeps each fixed name as a const char*.",
+        "gameCode": "typedef struct { const char* name; int health; } EnemyKind;\nconst EnemyKind KINDS[2] = {{\"Slime\", 30}, {\"Bat\", 20}};"
+      }
+    ],
+    "phase3c": [
       {
         "id": "header-split",
         "term": ".h vs .c",
@@ -1342,11 +1430,9 @@
         "kind": "syntax",
         "what": "Top of a header: include this file only once per .c file.",
         "example": "#pragma once",
-        "gotcha": "Without it, a double include gives C2011.",
+        "gotcha": "Without it, a double include defines the typedef twice: C2371.",
         "aliases": [
-          "#pragma once",
-          "#ifndef",
-          "#endif"
+          "#pragma once"
         ],
         "def": "#pragma once is a widely supported directive asking the compiler to include the current file at most once per translation unit.",
         "model": "A \"you've already read this page\" bookmark.",
@@ -1357,7 +1443,7 @@
         "id": "linker",
         "term": "Linker error (LNK2019)",
         "kind": "concept",
-        "what": "The compiler was happy but the body was never built — a .c file is missing from the build.",
+        "what": "The compiler was happy but the body was never built, a .c file is missing from the build.",
         "example": "cl main.c player.c   // list every .c file",
         "aliases": [
           "LNK2019: unresolved external symbol",
@@ -1375,7 +1461,7 @@
         "kind": "tool",
         "what": "Breakpoint · run/continue · step over · step into. Watch panel shows live values.",
         "example": "F9 on a line, F5, then F10 to step",
-        "gotcha": "Run build first — F5 launches the exe on disk.",
+        "gotcha": "Run build first, F5 launches the exe on disk.",
         "aliases": [
           "F9",
           "F5",
@@ -1394,7 +1480,7 @@
         "id": "enum",
         "term": "enum",
         "kind": "syntax",
-        "what": "Named integer constants — perfect for game states.",
+        "what": "Named integer constants, perfect for game states.",
         "example": "typedef enum { STATE_MENU, STATE_PLAYING } GameState;",
         "aliases": [
           "enum"
@@ -1403,6 +1489,75 @@
         "model": "Named positions on a dial instead of numbers you have to remember.",
         "game": "GameState gives the runner three readable states, and the switch reads like a sentence.",
         "gameCode": "typedef enum { STATE_MENU, STATE_PLAYING, STATE_GAME_OVER } GameState;"
+      },
+      {
+        "id": "func-pointer",
+        "term": "Function pointer",
+        "kind": "concept",
+        "what": "A variable that holds a function's address. Call through it like the function itself.",
+        "example": "typedef GameState (*UpdateFn)(int frame);\nUpdateFn fn = update_menu;   // no ()\nstate = fn(frame);",
+        "gotcha": "update_menu is the address; update_menu() is a call. Calling a NULL one crashes.",
+        "aliases": [
+          "UpdateFn",
+          "updates[state](frame)",
+          "typedef GameState (*UpdateFn)(int frame);"
+        ],
+        "def": "A pointer to a function stores the address of a function of a particular type; calling through it invokes that function. A function designator used without a call is converted to a pointer to the function.",
+        "model": "A speed-dial slot: it holds a number to ring, not the person.",
+        "game": "A table of update functions indexed by GameState, so one line runs the right code for the menu, play or game over.",
+        "gameCode": "UpdateFn updates[STATE_COUNT] = { update_menu, update_playing, NULL };\nstate = updates[state](frame);",
+        "phase": "phase3c"
+      },
+      {
+        "id": "include-guard",
+        "term": "#ifndef include guard",
+        "kind": "syntax",
+        "what": "The standard way to stop a header being pasted twice into one .c file.",
+        "example": "#ifndef PLAYER_H\n#define PLAYER_H\n/* header */\n#endif",
+        "gotcha": "Every header needs its own guard name. Two headers using the same name hide each other.",
+        "aliases": [
+          "#ifndef",
+          "#endif",
+          "#ifndef PLAYER_H"
+        ],
+        "def": "An include guard wraps a header in #ifndef NAME / #define NAME / #endif, so its contents are processed only the first time it is included in a translation unit.",
+        "model": "A sign on the door: if this name is already on the list, skip the room.",
+        "game": "enemy.h includes player.h, and so does main.c. The guard keeps Player defined once.",
+        "gameCode": "#ifndef ENEMY_H\n#define ENEMY_H\n#include \"player.h\"\n#endif",
+        "phase": "phase3c"
+      },
+      {
+        "id": "extern",
+        "term": "extern",
+        "kind": "syntax",
+        "what": "Declares a global that is defined in another .c file. Goes in the header.",
+        "example": "// game.h\nextern int high_score;\n// game.c\nint high_score = 0;",
+        "gotcha": "The definition (with or without = value) goes in exactly one .c file, never in the header.",
+        "aliases": [
+          "extern",
+          "extern int high_score;"
+        ],
+        "def": "extern declares an identifier with external linkage without defining it, so code in one file can refer to an object defined in another.",
+        "model": "A forwarding note: \"the real high score is kept in game.c\".",
+        "game": "main.c and hud.c both read high_score; only game.c owns it.",
+        "gameCode": "extern int high_score;   // in game.h",
+        "phase": "phase3c"
+      },
+      {
+        "id": "static-file",
+        "term": "static (private to a file)",
+        "kind": "syntax",
+        "what": "On a function, or a variable outside every function: visible only inside this .c file.",
+        "example": "static int clamp_health(int h) {\n    return h > 100 ? 100 : h;\n}",
+        "gotcha": "Leave it out of the header. Another file that calls it gets a build error.",
+        "aliases": [
+          "static int clamp_health(int h)"
+        ],
+        "def": "At file scope, static gives a function or object internal linkage: its name is not visible to the linker from other translation units.",
+        "model": "A note pinned inside the kitchen: the cooks use it, the customers never see it.",
+        "game": "player.c keeps clamp_health to itself, so enemy.c can have its own clamp_health with no clash.",
+        "gameCode": "static int clamp_health(int h);   // in player.c, not player.h",
+        "phase": "phase3c"
       }
     ],
     "phase4": [

@@ -1,0 +1,570 @@
+{
+ "_about": "Concept ladder for the Learn stage. One concept per rung. Rung ids are progress keys: never rename. skills are glossary.json ids that move to Practiced when the check is passed. goals maps checkpoint data-ids to the rungs (1-based) that teach them. lang: c programs are compiled and run to verify each check.",
+ "phase": "phase3c",
+ "rungs": [
+  {
+   "id": "enum",
+   "title": "enum",
+   "kick": "typedef enum · named constants · switch",
+   "mins": 10,
+   "skills": [
+    "enum"
+   ],
+   "builds": "Named constants with #define (Phase 3), switch statements (Phase 2.5), and typedef from Structs and the dot operator (Phase 3.5).",
+   "why": "A game is always in one state: menu, playing, game over. You could use 0, 1 and 2, but then nobody (including you in a week) knows what 2 means. An enum gives each number a name, and the compiler counts for you.",
+   "learn": {
+    "parts": [
+     [
+      "Names for a set of choices",
+      "<p>An <b>enum</b> is a list of names that stand for whole numbers. Write <code>typedef enum { STATE_MENU, STATE_PLAYING, STATE_GAMEOVER } GameState;</code> and you get a new type, GameState, plus three constants that the compiler numbers for you. The <code>typedef</code> does the same job it did in Structs and the dot operator: you write <code>GameState</code> instead of <code>enum</code> plus a tag every time.</p>"
+     ],
+     [
+      "Why not three #defines?",
+      "<p>Named constants with #define could do this, and older code often does. An enum wins in three ways:</p><ul><li><b>Grouping.</b> The type says the names belong together. A function that takes a GameState tells the reader what to pass; one that takes an int doesn't.</li><li><b>Counting.</b> The compiler numbers them 0, 1, 2. Add a name in the middle and the ones after it move along, with nothing to retype.</li><li><b>Visibility.</b> The preprocessor swaps a #define for its number before the compiler runs, so the debugger only ever sees 1. An enum name survives all the way to the Watch window.</li></ul>"
+     ],
+     [
+      "Numbering, STATE_COUNT and arrays",
+      "<p>The first name is 0 and each one after is one more. You can pick a value (<code>STATE_MENU = 10</code>) and the next name carries on from there, but you rarely need to. A comma after the last name is legal, so adding a state is a one-line change.</p><p>A handy habit: put <code>STATE_COUNT</code> last. It ends up equal to the number of real states, so it can size an array with one slot per state. The <code>[index] = value</code> form, a designated initialiser for arrays, keeps each entry beside its name:</p><pre>typedef enum { STATE_MENU, STATE_PLAYING, STATE_GAMEOVER, STATE_COUNT } GameState;\n\nconst char *state_names[STATE_COUNT] = {\n    [STATE_MENU] = \"menu\",\n    [STATE_PLAYING] = \"playing\",\n    [STATE_GAMEOVER] = \"game over\",\n};</pre><p>Now <code>state_names[state]</code> gives you the text for any state.</p>"
+     ],
+     [
+      "It's still an int underneath",
+      "<p>C doesn't police an enum. <code>GameState s = 7;</code> compiles without a word, and so does <code>s + 1</code>. So before a state is used as an array index, check it's below STATE_COUNT and not negative. Give every switch on a state a <code>default:</code> that prints the unexpected number, so a stray value shows up on screen instead of quietly doing nothing.</p>"
+     ],
+     [
+      "MSVC notes",
+      "<p class=\"warn\">Don't count on a warning for a forgotten case. If a switch on GameState leaves out STATE_PAUSED, MSVC says nothing at /W4: the warning for it is off by default, and the test build on your PC confirmed it stays quiet. The <code>default:</code> is your safety net.</p><p class=\"warn\">Enum constants are true constants, so they can size an array. A <code>const int</code> can't: <code>const int MAX_ENEMIES = 8;</code> followed by <code>Enemy enemies[MAX_ENEMIES];</code> stops the build with C2057 (expected constant expression). In C, a const variable is a variable you promise not to change, not a constant. That's why array sizes use #define or an enum.</p>"
+     ]
+    ],
+    "king": "§16.5"
+   },
+   "code": "#include <stdio.h>\n\ntypedef enum { STATE_MENU, STATE_PLAYING, STATE_GAMEOVER } GameState;\n\nint main(void) {\n    GameState state = STATE_PLAYING;\n    int lives = 0;\n\n    printf(\"MENU=%d PLAYING=%d GAMEOVER=%d\\n\", STATE_MENU, STATE_PLAYING, STATE_GAMEOVER);\n    if (lives == 0) {\n        state = STATE_GAMEOVER;\n    }\n    switch (state) {\n        case STATE_MENU:     printf(\"show menu\\n\"); break;\n        case STATE_PLAYING:  printf(\"run game\\n\"); break;\n        case STATE_GAMEOVER: printf(\"show game over\\n\"); break;\n    }\n    return 0;\n}",
+   "walk": [
+    [
+     3,
+     "<b>enum</b> makes a list of names. The compiler numbers them for you: 0, 1, 2. typedef gives the type a one-word name, like with struct."
+    ],
+    [
+     6,
+     "A GameState variable. It reads as a sentence: the state is playing."
+    ],
+    [
+     9,
+     "Each name is really just an int. This prints <code>MENU=0 PLAYING=1 GAMEOVER=2</code>."
+    ],
+    [
+     11,
+     "Assigning uses the names, never the numbers."
+    ],
+    [
+     13,
+     "switch on an enum reads like a menu of cases. This is the shape of a game’s main loop."
+    ],
+    [
+     16,
+     "lives is 0, so state became GAMEOVER and this case prints."
+    ]
+   ],
+   "model": "<b>Mental model:</b> named positions on a dial. You say “playing” and the dial clicks to position 1. You never have to remember that 1 means playing.",
+   "check": {
+    "q": "You add STATE_PAUSED between STATE_MENU and STATE_PLAYING in the enum. What does the first line print?",
+    "opts": [
+     "MENU=0 PLAYING=1 GAMEOVER=2",
+     "MENU=0 PAUSED=1 PLAYING=2 GAMEOVER=3",
+     "MENU=0 PLAYING=2 GAMEOVER=3",
+     "A compile error: the values changed"
+    ],
+    "a": 2,
+    "hint": "The compiler numbers names in order, one after another. What number does PLAYING get now?",
+    "why": "Names are numbered in the order written. With PAUSED in second place, PLAYING becomes 2 and GAMEOVER becomes 3. That’s why you use the names and never the raw numbers.",
+    "miss": {
+     "0": "That’s the old numbering. PAUSED now takes slot 1, pushing the rest along.",
+     "1": "The printf line only prints three values and has no PAUSED in it.",
+     "3": "Renumbering is fine. Code using the names keeps working, which is the whole point."
+    }
+   },
+   "tryit": {
+    "task": "Add STATE_PAUSED between PLAYING and GAMEOVER.",
+    "code": "typedef enum {\n    STATE_MENU,\n    STATE_PLAYING,\n    ____,\n    STATE_GAMEOVER\n} GameState;",
+    "answer": "STATE_PAUSED"
+   },
+   "qa": [
+    [
+     "How is this different from #define?",
+     "A #define is find-and-replace. An enum is a real type, the compiler numbers it for you, and the debugger shows the name instead of a bare number."
+    ],
+    [
+     "Can I choose the numbers?",
+     "Yes: <code>STATE_MENU = 5</code>, and the next name becomes 6. Most of the time you don’t care what they are."
+    ],
+    [
+     "Will the compiler tell me if my switch misses a state?",
+     "Not with build.bat’s flags. MSVC stays quiet at /W4, and your test build confirmed it. Add a <code>default:</code> that prints the unexpected value."
+    ],
+    [
+     "Why can’t a const int size an array?",
+     "In C a const int is a read-only variable, not a constant, so <code>int lanes[N];</code> with <code>const int N = 8;</code> is C2057 in MSVC. Use #define or an enum constant."
+    ],
+    [
+     "Where will I use this?",
+     "Straight away, in Function pointers, as the index into a table of update functions. Then Phase 4.5’s State machines: enum and switch and the Phase 6 prototype both run on a state enum."
+    ]
+   ],
+   "bridge": "You can name your states. Next: <b>Function pointers</b>, a table that picks the right update function for each state.",
+   "lang": "c"
+  },
+  {
+   "id": "func-pointers",
+   "title": "Function pointers",
+   "kick": "a name without () · call through a pointer · a table of update functions",
+   "mins": 15,
+   "skills": [
+    "func-pointer"
+   ],
+   "builds": "Pointers: & and * and NULL (Phase 3.5), enum, and Arrays: many values, one name (Phase 3).",
+   "why": "A game runs different code in each state: the menu waits for a key, play moves the enemies, game over shows the score. A switch can do it, but it grows with every state. Keep a pointer to each state’s update function in a table, and one line, <code>updates[state](frame)</code>, runs the right one. Win32 uses the same trick in Phase 5: you hand Windows a pointer to your function, and it calls you.",
+   "learn": {
+    "parts": [
+     [
+      "Functions live at addresses",
+      "<p>Your compiled functions sit in memory just like your variables, so each one has an address. A <b>function pointer</b> is a variable that holds one of those addresses. Write a function's name without the brackets and you get its address: <code>update_menu</code> is a pointer, <code>update_menu(0)</code> is a call. That's why the bracket-less <code>print_menu;</code> from Functions: parameters and return values compiled at all (with warning C4550): it named the address and then did nothing with it.</p>"
+     ],
+     [
+      "Declaring and calling one",
+      "<p>The pointer's type has to describe the function's shape: what it returns and what it takes. The raw form puts the star and the name in brackets:</p><pre>GameState (*fn)(int frame);   // fn can point at any function with this shape\nfn = update_menu;             // no (): store the address\nGameState next = fn(0);       // call through the pointer</pre><p>Those brackets around <code>*fn</code> matter. Leave them out and <code>GameState *fn(int frame);</code> declares something else entirely: a function whose answer is a GameState address. The call looks like any other call. <code>(*fn)(0)</code> works too and means the same; you'll meet both.</p>"
+     ],
+     [
+      "A typedef for the shape",
+      "<p>That syntax gets hard to read fast, so name the shape once, as you did for structs: <code>typedef GameState (*UpdateFn)(int frame);</code>. Now <code>UpdateFn</code> is a type like any other, and you can have variables, arrays and struct fields of it:</p><pre>UpdateFn current = update_playing;\nUpdateFn updates[STATE_COUNT];\ntypedef struct { const char *name; UpdateFn update; } Scene;</pre><p>Win32 works the same way. <code>WNDPROC</code> is its typedef for the shape of a window procedure, and in Phase 5 you put your own function into a struct field of that type so Windows can call it.</p>"
+     ],
+     [
+      "A table of update functions",
+      "<p>Put the update functions in an array, in the same order as the enum, and the state becomes the index. <code>state = updates[state](frame);</code> runs whichever function belongs to the current state and keeps the state it hands back. A new state means one new function and one new entry, with no switch to grow. A <code>NULL</code> entry can mean \"nothing to run here\", as long as you test for it before calling, the way the loop does.</p>"
+     ],
+     [
+      "Mistakes to watch for",
+      "<ul><li>Calling through a NULL or garbage function pointer crashes, just like following a bad data pointer in NULL.</li><li>The shapes must match. Put a function that takes two ints into an UpdateFn and MSVC warns, so /WX stops the build. Fix the function; don't hide it with a cast.</li><li>Writing <code>updates[state];</code> when you meant <code>updates[state](frame);</code> runs nothing.</li></ul><p>You'll also meet function pointers in the standard library: <code>qsort</code> in stdlib.h sorts any array, calling a compare function you hand it for each pair.</p>"
+     ]
+    ],
+    "king": "§17.7"
+   },
+   "code": "#include <stdio.h>\n\ntypedef enum { STATE_MENU, STATE_PLAYING, STATE_GAMEOVER, STATE_COUNT } GameState;\ntypedef GameState (*UpdateFn)(int frame);\n\nGameState update_menu(int frame) {\n    printf(\"%d: menu\\n\", frame);\n    return STATE_PLAYING;\n}\nGameState update_playing(int frame) {\n    printf(\"%d: playing\\n\", frame);\n    return frame < 2 ? STATE_PLAYING : STATE_GAMEOVER;\n}\nint main(void) {\n    UpdateFn updates[STATE_COUNT] = { update_menu, update_playing, NULL };\n    GameState state = STATE_MENU;\n    for (int frame = 0; updates[state] != NULL; frame++) {\n        state = updates[state](frame);\n    }\n    printf(\"game over\\n\");\n    return 0;\n}",
+   "walk": [
+    [
+     3,
+     "The enum from enum, with STATE_COUNT last. It’s 3, one more than the last real state, so it can size the table."
+    ],
+    [
+     4,
+     "<b>typedef</b> names a shape: an UpdateFn can point at any function that takes an int and returns a GameState. Both update functions below have exactly that shape."
+    ],
+    [
+     6,
+     "An ordinary function. Its compiled code sits at an address in memory, just as a variable does."
+    ],
+    [
+     15,
+     "The table. Each name <i>without</i> () is that function’s address, so nothing runs yet. Slot 2 is NULL: game over has nothing to update."
+    ],
+    [
+     17,
+     "The loop carries on while the current state has a function to call."
+    ],
+    [
+     18,
+     "The key line. <code>updates[state]</code> picks a pointer, <code>(frame)</code> calls through it, and the state it returns is kept for the next frame."
+    ],
+    [
+     20,
+     "The loop ended because <code>updates[STATE_GAMEOVER]</code> is NULL, so this prints once."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a speed-dial list. Each slot holds a number to ring, not the person. The state picks the slot, and pressing call rings whoever is stored there.",
+   "check": {
+    "q": "What does this program print?",
+    "opts": [
+     "0: menu / 1: playing / game over",
+     "0: menu / 1: playing / 2: playing / game over",
+     "0: menu / 1: playing / 2: playing / 3: game over",
+     "Nothing: line 15 calls all three, and the NULL one crashes"
+    ],
+    "a": 1,
+    "hint": "Line 15 calls nothing. Follow state frame by frame: which function runs, and what does it return?",
+    "why": "Frame 0 runs update_menu, which returns STATE_PLAYING. Frames 1 and 2 run update_playing. At frame 2, 2 < 2 is false, so it returns STATE_GAMEOVER. updates[STATE_GAMEOVER] is NULL, so the loop stops and line 20 prints game over.",
+    "miss": {
+     "0": "At frame 1, 1 < 2 is true, so update_playing returns STATE_PLAYING and runs again at frame 2.",
+     "2": "The last line comes from the printf after the loop, which has no frame number. Slot 2 is NULL, so nothing runs for game over.",
+     "3": "Names without () are addresses, so building the table calls nothing. The loop checks for NULL before every call."
+    }
+   },
+   "tryit": {
+    "task": "Store update_menu in a pointer variable, then call it for frame 0.",
+    "code": "UpdateFn fn = ____;\nGameState next = ____;",
+    "answer": "update_menu   and   fn(0)"
+   },
+   "qa": [
+    [
+     "Is update_menu the same as &update_menu?",
+     "Yes. For a function, the name alone already gives its address, and <code>&amp;update_menu</code> gives the same one. Most code leaves the &amp; off."
+    ],
+    [
+     "Why not just use a switch?",
+     "For three states a switch is fine, and Phase 4.5’s State machines: enum and switch uses one. A table pays off when every state does the same kind of job and you keep adding states. Both are normal C."
+    ],
+    [
+     "Can a struct hold a function pointer?",
+     "Yes. A field of type UpdateFn works like any other field, and <code>scene.update(frame)</code> calls it. Phase 5’s window class is a struct with a field that holds a pointer to your window procedure."
+    ],
+    [
+     "What’s qsort?",
+     "A stdlib.h function that sorts any array. You give it the array, the count, the size of one item and a compare function that says which of two items comes first. You won’t need it yet; it’s the classic case of a library calling your code."
+    ]
+   ],
+   "bridge": "You can pick code with a table. Next: <b>Header files and #pragma once</b>, splitting a struct and its functions across .h and .c files.",
+   "lang": "c"
+  },
+  {
+   "id": "headers",
+   "title": "Header files and #pragma once",
+   "kick": "player.h · player.c · #include \"…\" · #pragma once",
+   "mins": 15,
+   "skills": [
+    "header-split",
+    "pragma-once",
+    "include-guard",
+    "extern",
+    "static-file"
+   ],
+   "builds": "void and function prototypes (Phase 3), and the Player struct and -> from Structs and the dot operator and Passing by pointer and -> (Phase 3.5).",
+   "why": "One big file stops being readable. Splitting lets the functions live in player.c, while the struct and prototypes live in a header (.h). main.c only needs the header to know what exists, and every file that uses the player includes it.",
+   "learn": {
+    "parts": [
+     [
+      "#include pastes text",
+      "<p>One idea explains every header rule: <code>#include \"player.h\"</code> tells the preprocessor to paste the whole text of player.h right there, before the compiler starts. Nothing cleverer happens. Each .c file is then compiled on its own, with whatever was pasted into it. A header is how several .c files share the same declarations without you retyping them. Quotes mean \"look in my folder first\"; angle brackets mean the compiler's own headers.</p>"
+     ],
+     [
+      "Declarations in, definitions out",
+      "<p>A header holds what the compiler needs to <i>know about</i>: struct and enum typedefs, #defines other files use, and prototypes. A prototype is a <b>declaration</b>: it says a function exists. The body is the <b>definition</b>, and it lives in exactly one .c file. Global variables follow the same rule. <code>extern int high_score;</code> in the header declares it; <code>int high_score = 0;</code> in one .c file defines it. Put a definition in a header and every .c file that includes it gets its own copy, which the linker rejects (Linker errors (LNK2019) shows what it says).</p>"
+     ],
+     [
+      "Guards: #pragma once and #ifndef",
+      "<p>Because #include pastes, a header can arrive twice in one .c file: main.c includes player.h and enemy.h, and enemy.h includes player.h too. Now the Player typedef is pasted twice, and MSVC stops with C2371 (redefinition). A guard stops the second paste. <code>#pragma once</code> on the first line is one way; MSVC, gcc and clang all support it. The older, standard way wraps the whole file:</p><pre>#ifndef PLAYER_H\n#define PLAYER_H\n/* the whole header */\n#endif</pre><p>The first time through, PLAYER_H isn't defined, so the text is kept and PLAYER_H gets defined. The second time, the test fails and everything up to #endif is skipped. You'll see both; pick one per project.</p>"
+     ],
+     [
+      "Keep helpers private with static",
+      "<p>A helper only player.c uses, such as <code>clamp_health</code>, shouldn't be visible to the rest of the game. Put <code>static</code> in front of it and leave it out of the header: <code>static int clamp_health(int h)</code>. The name now belongs to player.c alone, and enemy.c can have its own clamp_health without a clash. This is the second meaning of static that Static locals and globals promised: on a function, or on a variable outside every function, it means private to this file.</p>"
+     ],
+     [
+      "Mistakes to avoid",
+      "<ul><li>Never <code>#include \"player.c\"</code>. It pastes the bodies into main.c, and with player.c also in SOURCES, every function is defined twice.</li><li>Use relative paths in quotes: <code>\"player.h\"</code>, or <code>\"src/player.h\"</code> for a subfolder. A full path like C:\\Users\\Sam\\... breaks on your partner's PC.</li><li>A header includes what it uses. If player.h uses <code>bool</code>, it includes stdbool.h itself.</li><li>player.c includes player.h too, so the compiler checks every body against its prototype.</li></ul>"
+     ]
+    ],
+    "king": "§15.1–15.3, §18.2"
+   },
+   "code": "// ---- player.h ----\n#pragma once\n\ntypedef struct {\n    int health;\n} Player;\n\nvoid player_heal(Player* p, int amount);\n\n// ---- player.c ----\n#include \"player.h\"\n\nvoid player_heal(Player* p, int amount) {\n    p->health = p->health + amount;\n}\n\n// ---- main.c ----\n#include <stdio.h>\n#include \"player.h\"\n\nint main(void) {\n    Player hero;\n    hero.health = 50;\n    player_heal(&hero, 25);\n    printf(\"health %d\\n\", hero.health);\n    return 0;\n}",
+   "walk": [
+    [
+     2,
+     "<b>#pragma once</b> means “paste this file only once per .c file”. Without it (or an #ifndef guard), a header included twice would define Player twice."
+    ],
+    [
+     4,
+     "The struct lives in the header, so every file that includes it knows what a Player is."
+    ],
+    [
+     8,
+     "A prototype, exactly like Phase 3’s. The header lists <i>what exists</i>: names and types, no bodies."
+    ],
+    [
+     11,
+     "Quotes mean “a header of mine, in this folder”. Angle brackets, like <code>&lt;stdio.h&gt;</code>, mean “from the compiler’s own library”."
+    ],
+    [
+     13,
+     "The body lives in player.c. Only this file needs it."
+    ],
+    [
+     19,
+     "main.c includes the header only. It never mentions player.c. It knows player_heal exists, and the body gets connected later."
+    ],
+    [
+     27,
+     "That’s all three files. Build every .c file together: in build.bat that’s <code>set SOURCES=main.c player.c</code> and <code>cl %FLAGS% %SOURCES% /Fe:game.exe</code>. The next concept is what goes wrong if you forget one."
+    ]
+   ],
+   "model": "<b>Mental model:</b> the .h is the menu on the restaurant door, the .c is the kitchen. Customers (main.c) read the menu. They don’t need to see the kitchen.",
+   "check": {
+    "q": "You delete #pragma once, and main.c ends up including player.h twice (say through two other headers). What happens?",
+    "opts": [
+     "Nothing, it builds the same",
+     "The linker complains about player_heal",
+     "It builds, but player_heal runs twice",
+     "A compile error: Player is defined twice"
+    ],
+    "a": 3,
+    "hint": "What does the second include paste into the file?",
+    "why": "#include pastes the file’s text in. Twice means the typedef struct appears twice in one file, and the compiler refuses to define Player a second time (MSVC says C2371, redefinition). #pragma once stops the second paste.",
+    "miss": {
+     "0": "Nothing skips the second copy unless #pragma once (or a guard like it) is there.",
+     "1": "Linker errors are about missing function bodies. This fails earlier, in the compiler.",
+     "2": "A repeated prototype is harmless, and the function isn’t called by the include. The struct is the problem."
+    }
+   },
+   "tryit": {
+    "task": "Finish player.h: add the include guard, and the prototype for player_heal.",
+    "code": "// player.h\n____\n\ntypedef struct {\n    int health;\n} Player;\n\n____",
+    "answer": "#pragma once   and   void player_heal(Player* p, int amount);"
+   },
+   "qa": [
+    [
+     "What goes in a .h and what in a .c?",
+     "The .h holds declarations: struct and enum typedefs, prototypes, extern lines and #defines other files need. The .c holds the bodies and the variables themselves. Other files include the .h, never the .c."
+    ],
+    [
+     "Does player.c include player.h too?",
+     "Yes. It needs the Player struct, and including it also makes the compiler check that the prototype matches the body."
+    ],
+    [
+     "#pragma once or #ifndef?",
+     "Either. #pragma once is shorter and can’t be mistyped; #ifndef guards are in the C standard. This course uses #pragma once. When you see <code>#ifndef PLAYER_H</code> in someone else’s code, it’s doing the same job."
+    ],
+    [
+     "Should I share globals with extern?",
+     "Sparingly. A global every file can change is hard to track, the trouble Static locals and globals warned about. Prefer passing a pointer to a struct. When you do need one: extern in the header, the definition in one .c file."
+    ],
+    [
+     "Why is it fine to change player.c without touching main.c?",
+     "main.c only depends on the header. Change a body and only player.c needs compiling again. Change the header, and every file that includes it does."
+    ]
+   ],
+   "bridge": "You can split code into files. Next: <b>linker errors</b>, what you see when a file is missing from the build.",
+   "lang": "text"
+  },
+  {
+   "id": "linker",
+   "title": "Linker errors (LNK2019)",
+   "kick": "compiler vs linker · unresolved external symbol",
+   "mins": 10,
+   "skills": [
+    "linker"
+   ],
+   "builds": "Header files and #pragma once: main.c calls player_heal, declared in player.h and written in player.c. Compiling and running with cl (Phase 1): the .obj step.",
+   "why": "Building is two jobs. The compiler checks each .c file and promises “this function exists somewhere”. The linker then goes and collects every promise. Forget a .c file and the compiler is happy but the linker can’t find the body.",
+   "learn": {
+    "parts": [
+     [
+      "Two jobs",
+      "<p>cl does two jobs. The compiler turns each .c file into an .obj file on its own, trusting every prototype it sees. Then the <b>linker</b> joins the .obj files into one .exe, and it has to find exactly one body for every function that gets called. Headers only help the compiler. Including player.h tells main.c that player_heal exists; it doesn't put player.c in the build. Only the SOURCES line does that.</p>"
+     ],
+     [
+      "The errors you'll meet",
+      "<ul><li><b>LNK2019, unresolved external symbol:</b> a body is missing. A .c file isn't in SOURCES, a name is spelt differently, or the function is <code>static</code> in another file, so the linker can't see it.</li><li><b>A missing library:</b> in Phase 5, Windows functions live in .lib files such as user32.lib. Leave one off and you get LNK2019 for a function you never wrote.</li><li><b>LNK2005, already defined:</b> the opposite, two bodies. Usually a function body or a global's definition sits in a header that two .c files include.</li></ul>"
+     ],
+     [
+      "Rebuilding and /D",
+      "<p>Change a header and every .c file that includes it must be compiled again, because each one pasted the old text. build.bat compiles everything every time, so you're covered; bigger build tools track it for you. cl's <code>/D</code> flag defines a macro for the whole build, as if a #define sat at the top of every file: <code>/DSHOW_HITBOXES</code>.</p>"
+     ],
+     [
+      "MSVC notes",
+      "<p class=\"warn\">If build.bat passes <code>/D_CRT_SECURE_NO_WARNINGS</code> and a file still has its own #define for it, MSVC warns C4005 (macro redefinition), and /WX adds C2220. Delete the one in the file. On x64 the name in a linker error is plain <code>player_heal</code>; 32-bit builds add a leading underscore, so older posts show <code>_player_heal</code>.</p>"
+     ]
+    ],
+    "king": "§15.4"
+   },
+   "code": "> cl /W4 /WX /Zi main.c /Fe:game.exe\nmain.c\nmain.obj : error LNK2019: unresolved external symbol player_heal referenced in function main\ngame.exe : fatal error LNK1120: 1 unresolved externals\n\n> cl /W4 /WX /Zi main.c player.c /Fe:game.exe\nmain.c\nplayer.c\n(builds game.exe)",
+   "walk": [
+    [
+     1,
+     "Only main.c is on the command line, as if SOURCES said just main.c. player.c is not part of this build. (build.bat’s other flags and the banner lines are left out.)"
+    ],
+    [
+     2,
+     "main.c compiled fine. The prototype in player.h was enough for the compiler to accept the call."
+    ],
+    [
+     3,
+     "<b>LNK2019</b>: the <b>linker</b> looked for the body of player_heal and found none. Your x64 build prints the name plain; a 32-bit build would show <code>_player_heal</code>."
+    ],
+    [
+     4,
+     "LNK1120 is the summary: one unresolved name, so no game.exe."
+    ],
+    [
+     6,
+     "The fix: list <i>every</i> .c file. Now player.c is compiled too, and the linker finds the body."
+    ],
+    [
+     9,
+     "No errors this time, and game.exe exists. In build.bat the list of files is the SOURCES line: add the file there and every build includes it."
+    ]
+   ],
+   "model": "<b>Mental model:</b> the compiler checks each chapter on its own and accepts the table of contents. The linker goes to bind the book and finds chapter 7 is missing from the pile.",
+   "check": {
+    "q": "You see LNK2019: unresolved external symbol player_heal. What is the right fix?",
+    "opts": [
+     "Add #pragma once to player.h",
+     "Add player.c to the cl command",
+     "Add another prototype for player_heal to main.c",
+     "Remove /WX so warnings stop failing the build"
+    ],
+    "a": 1,
+    "hint": "The prototype is fine (the compiler passed). What is missing is the function’s body. Where does it live?",
+    "why": "The body is in player.c, and the build never compiled it. Add player.c to the command line (or to SOURCES in build.bat) and the linker can find it.",
+    "miss": {
+     "0": "#pragma once is about double includes. The compiler already passed.",
+     "2": "The compiler already knows the function exists. A second promise doesn’t supply a body.",
+     "3": "LNK2019 is an error, not a warning. /WX has nothing to do with it."
+    }
+   },
+   "tryit": {
+    "task": "Fix the command so both files are built.",
+    "code": "cl /W4 /WX /Zi main.c ____ /Fe:game.exe",
+    "answer": "player.c"
+   },
+   "qa": [
+    [
+     "What’s the difference between a compiler error and a linker error?",
+     "Compiler: “I don’t understand this line.” Linker: “I understood everything, but I can’t find this function’s body.” LNK numbers are the linker’s."
+    ],
+    [
+     "I included player.h. Why doesn’t that fix it?",
+     "Headers are for the compiler. The include promised player_heal exists; only putting player.c in the build supplies the body."
+    ],
+    [
+     "I get “unresolved external symbol” for a function I did write.",
+     "Check three things: the .c file is in SOURCES, the name is spelt exactly the same (capitals too) in the call, the prototype and the body, and the body isn’t marked static."
+    ],
+    [
+     "What was the .obj file from Phase 1?",
+     "The compiler’s output for one .c file. The linker joins the .obj files into one .exe."
+    ]
+   ],
+   "bridge": "You can read a linker error. Last concept: <b>the debugger</b>, where you watch a pointer change instead of guessing.",
+   "lang": "shell"
+  },
+  {
+   "id": "debugger",
+   "title": "The debugger",
+   "kick": "F9 · F5 · F10 · F11 · Watch",
+   "mins": 15,
+   "skills": [
+    "debugger"
+   ],
+   "builds": "Passing by pointer and -> and NULL (Phase 3.5), enum, and the /Zi and /Od flags from build.bat and compiler flags (Phase 1).",
+   "why": "printf debugging means edit, rebuild, run, read, repeat. A debugger freezes the program mid-run so you can look at everything at once. It’s also the best way to see a pointer: you can watch the real hero change from inside a function that never names it.",
+   "learn": {
+    "parts": [
+     [
+      "Freeze and look",
+      "<p>A debugger runs your program and stops it on a line you choose, so you can look at every variable at that moment. It reads the .pdb file that /Zi writes, and /Od keeps the compiled code in the order you wrote it. That's why build.bat has both.</p>"
+     ],
+     [
+      "Locals and Call Stack",
+      "<p><b>Locals</b> lists the variables of the function you're stopped in. <b>Call Stack</b> lists the chain of calls that got you there, newest on top: <code>damage</code> above <code>main</code>. Click a lower line to see that function's variables as they are right now.</p>"
+     ],
+     [
+      "Reading a NULL crash",
+      "<p>Start with F5 and a crash stops on the guilty line instead of just closing the window. If the message says access violation at address 0, or a small number like 0x8 (a field near the start of a struct), a NULL pointer was followed. Find the pointer showing 0x0000000000000000 in Locals, then go down the Call Stack to see who passed it in.</p>"
+     ],
+     [
+      "Enums show their names",
+      "<p>Watch a GameState and you see STATE_PLAYING, not 1. A value made with #define shows only the number, because the name was gone before the compiler ran.</p>"
+     ],
+     [
+      "MSVC notes",
+      "<p class=\"warn\">You may read that uninitialised locals show up as 0xCCCCCCCC in the debugger. MSVC only fills them like that with the /RTC1 flag, and build.bat doesn't use it. Without it, an uninitialised local holds whatever was in that memory before, which is why C4700 matters.</p>"
+     ]
+    ],
+    "king": "Not in King"
+   },
+   "code": "#include <stdio.h>\n\ntypedef struct {\n    int health;\n} Player;\n\nvoid damage(Player* p, int amount) {\n    p->health = p->health - amount;\n}\n\nint main(void) {\n    Player hero;\n    hero.health = 100;\n    damage(&hero, 30);\n    damage(&hero, 30);\n    printf(\"health %d\\n\", hero.health);\n    return 0;\n}",
+   "walk": [
+    [
+     14,
+     "<b>F9</b> with the cursor here puts a breakpoint on the line: a red dot. The program will stop <i>before</i> this line runs."
+    ],
+    [
+     14,
+     "Run build.bat first (it keeps /Zi and /Od), then <b>F5</b>. The program starts and freezes here with a yellow arrow. In the Watch window, <code>hero.health</code> shows 100."
+    ],
+    [
+     14,
+     "<b>F10</b> steps over: it runs the whole line, damage included, and stops on line 15. Watch now shows 70."
+    ],
+    [
+     15,
+     "<b>F11</b> steps into: the arrow jumps to the top of damage (line 7, where the brace is). Press F10 once to reach line 8. Watch <code>p</code> (an address like 0x000000e5a7affc10: 16 hex digits on x64), <code>*p</code> and <code>p->health</code>."
+    ],
+    [
+     8,
+     "Press F10 here: this line runs. <code>p->health</code> drops to 40, and <code>hero.health</code> would show 40 too if you clicked main in the Call Stack. Same box, two names."
+    ],
+    [
+     16,
+     "Press <b>F5</b> to run on to the end, or <b>Shift+F5</b> to stop."
+    ]
+   ],
+   "model": "<b>Mental model:</b> a pause button with X-ray vision. You freeze the game on a line and look inside every box without changing anything.",
+   "check": {
+    "q": "You put a breakpoint on line 15 and press F5. Then you press F11 to go inside damage, and F10 until the yellow arrow is on the closing brace (line 9). What does p->health show in the Watch window?",
+    "opts": [
+     "70",
+     "100",
+     "40",
+     "It can’t be shown: p isn’t in scope yet"
+    ],
+    "a": 2,
+    "hint": "What does line 8 do to p->health?",
+    "why": "Before line 15 runs, health is 70. Inside damage, line 8 subtracts 30. By the time the arrow reaches the closing brace, line 8 has run, so p->health shows 40.",
+    "miss": {
+     "0": "70 is the value before line 8 runs. The arrow is past it by the closing brace.",
+     "1": "100 was the value before line 14. By line 15 the first damage call had already run.",
+     "3": "F11 stepped inside damage, so p exists and is in scope. Back in main, p wouldn’t be."
+    }
+   },
+   "tryit": {
+    "task": "Match the key to the job: set a breakpoint, start debugging, run one line without going inside a function.",
+    "code": "____  breakpoint on this line\n____  start debugging (or keep going)\n____  step over",
+    "answer": "F9, F5, F10"
+   },
+   "qa": [
+    [
+     "My breakpoints are hollow circles.",
+     "Usually a stale exe: you edited the code and pressed F5 without running build first. F5 does not compile. Check /Zi is in build.bat and game.pdb exists next to game.exe."
+    ],
+    [
+     "F11 dropped me into a screen of assembly.",
+     "You stepped into a library function like printf. You don’t have its source. Shift+F11 steps back out; use F10 on lines that call library functions."
+    ],
+    [
+     "How do I set the debugger up?",
+     "A one-time config file called launch.json tells VS Code which .exe to run. The Build page for this phase has the four steps."
+    ],
+    [
+     "Breakpoints are still hollow after I rebuilt.",
+     "Check the <code>\"program\"</code> path in launch.json points at the exe your build.bat actually makes (<code>${workspaceFolder}/game.exe</code> if it builds into the repo root). Also open the repo as a folder, not a single file, or <code>${workspaceFolder}</code> means nothing."
+    ],
+    [
+     "Where do I see the call chain?",
+     "The Call Stack panel in the Run and Debug sidebar (<code>Ctrl+Shift+D</code>). The top line is where you are; each line below is the function that called the one above it."
+    ]
+   ],
+   "bridge": "That’s every concept in Phase 3.75. Next: <b>Phase 4, Git &amp; Your Partner</b>, sharing this code without stepping on each other.",
+   "lang": "c"
+  }
+ ],
+ "goals": {
+  "cp-p3-2": [
+   "headers",
+   "linker"
+  ],
+  "cp-p3-3": [
+   "headers"
+  ],
+  "cp-p375-1": [
+   "enum",
+   "func-pointers"
+  ],
+  "cp-p3-4": []
+ }
+}

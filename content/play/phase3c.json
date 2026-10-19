@@ -1,0 +1,941 @@
+{
+  "enum": {
+    "scene": "p3b-dial",
+    "steps": [
+      {
+        "line": 3,
+        "ms": 1800,
+        "note": "enum makes a list of names, and the compiler numbers them for you: 0, 1, 2.",
+        "do": [
+          {
+            "a": "names",
+            "n": 3
+          }
+        ]
+      },
+      {
+        "line": 6,
+        "ms": 1300,
+        "note": "state is set to STATE_PLAYING. The dial clicks to position 1.",
+        "do": [
+          {
+            "a": "needle",
+            "to": 1
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 900,
+        "note": "lives is 0.",
+        "do": [
+          {
+            "a": "lives",
+            "v": 0
+          }
+        ]
+      },
+      {
+        "line": 9,
+        "ms": 1400,
+        "note": "Each name is really just an int. printf shows the numbers behind the names.",
+        "do": [
+          {
+            "a": "ints"
+          }
+        ],
+        "out": "MENU=0 PLAYING=1 GAMEOVER=2\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 10,
+        "ms": 1100,
+        "note": "Is lives == 0? Yes, so the block runs.",
+        "do": [
+          {
+            "a": "chk",
+            "t": "lives == 0",
+            "r": true
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 1300,
+        "note": "Assign by name. The dial clicks to position 2, GAMEOVER.",
+        "do": [
+          {
+            "a": "needle",
+            "to": 2
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 1600,
+        "note": "switch looks at state and jumps straight to the matching case.",
+        "do": [
+          {
+            "a": "hl",
+            "row": 2,
+            "sweep": true
+          }
+        ]
+      },
+      {
+        "line": 16,
+        "ms": 1200,
+        "note": "The GAMEOVER case runs and prints.",
+        "do": [
+          {
+            "a": "pulse",
+            "row": 2
+          }
+        ],
+        "out": "show game over\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 18,
+        "ms": 700,
+        "note": "The program ends.",
+        "do": []
+      }
+    ]
+  },
+  "headers": {
+    "scene": "p3b-files",
+    "steps": [
+      {
+        "line": 1,
+        "ms": 1200,
+        "note": "player.h is a header. It tells other files what exists, without doing any work.",
+        "do": [
+          {
+            "a": "show",
+            "sheet": "h"
+          }
+        ]
+      },
+      {
+        "line": 2,
+        "ms": 1300,
+        "note": "#pragma once: paste this file only once per .c file, so Player is never defined twice.",
+        "do": [
+          {
+            "a": "hl",
+            "sheet": "h",
+            "rows": [
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "line": 4,
+        "ms": 1300,
+        "note": "The struct lives in the header, so every file that includes it knows what a Player is.",
+        "do": [
+          {
+            "a": "hl",
+            "sheet": "h",
+            "rows": [
+              1,
+              2,
+              3
+            ]
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1300,
+        "note": "A prototype: the name and types of player_heal, with no body.",
+        "do": [
+          {
+            "a": "hl",
+            "sheet": "h",
+            "rows": [
+              4,
+              5
+            ]
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 1100,
+        "note": "player.c is the kitchen, where the work happens.",
+        "do": [
+          {
+            "a": "hl",
+            "sheet": null
+          },
+          {
+            "a": "show",
+            "sheet": "c"
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 2200,
+        "note": "#include \"player.h\" is a copy and paste. The compiler pastes the header's text right here.",
+        "do": [
+          {
+            "a": "hl",
+            "sheet": "c",
+            "kind": "inc"
+          },
+          {
+            "a": "paste",
+            "sheet": "c",
+            "at": 0.25,
+            "len": 0.75
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 1300,
+        "note": "The body of player_heal lives here. Only this file needs it.",
+        "do": [
+          {
+            "a": "hl",
+            "sheet": "c",
+            "kind": "post",
+            "rows": [
+              0,
+              1,
+              2
+            ]
+          }
+        ]
+      },
+      {
+        "line": 17,
+        "ms": 1200,
+        "note": "main.c is a customer. It reads the menu (the header) and never sees the kitchen.",
+        "do": [
+          {
+            "a": "hl",
+            "sheet": null
+          },
+          {
+            "a": "show",
+            "sheet": "m"
+          }
+        ]
+      },
+      {
+        "line": 18,
+        "ms": 1200,
+        "note": "Angle brackets mean the compiler's own library: stdio.h.",
+        "do": [
+          {
+            "a": "hl",
+            "sheet": "m",
+            "kind": "pre"
+          }
+        ]
+      },
+      {
+        "line": 19,
+        "ms": 2200,
+        "note": "Quotes mean a header of mine, in this folder. Same paste, into main.c.",
+        "do": [
+          {
+            "a": "hl",
+            "sheet": "m",
+            "kind": "inc"
+          },
+          {
+            "a": "paste",
+            "sheet": "m",
+            "at": 0.25,
+            "len": 0.75
+          }
+        ]
+      },
+      {
+        "line": 24,
+        "ms": 1800,
+        "note": "main calls player_heal. It knows the name from the header, but the body gets connected later.",
+        "do": [
+          {
+            "a": "hl",
+            "sheet": "m",
+            "kind": "post",
+            "rows": [
+              1
+            ]
+          },
+          {
+            "a": "call"
+          }
+        ]
+      },
+      {
+        "line": 27,
+        "ms": 1500,
+        "note": "That is all three files. Build every .c file together so nothing is left out.",
+        "do": [
+          {
+            "a": "hl",
+            "sheet": null
+          },
+          {
+            "a": "build"
+          }
+        ]
+      }
+    ],
+    "prompt": ""
+  },
+  "linker": {
+    "scene": "p3b-link",
+    "steps": [
+      {
+        "line": 1,
+        "ms": 1400,
+        "note": "Only main.c is on the command line. player.c is not part of this build.",
+        "do": [
+          {
+            "a": "cmd",
+            "t": "cl main.c /Fe:game.exe",
+            "main": true,
+            "player": false
+          }
+        ]
+      },
+      {
+        "line": 2,
+        "ms": 1700,
+        "note": "main.c compiles fine into main.obj. The prototype was enough for the compiler. main.obj has a socket: it needs player_heal.",
+        "do": [
+          {
+            "a": "compile",
+            "f": "main"
+          }
+        ]
+      },
+      {
+        "line": 3,
+        "ms": 2200,
+        "note": "The linker hunts for a piece named player_heal to plug in. There is none. LNK2019.",
+        "do": [
+          {
+            "a": "scan",
+            "len": 0.6
+          },
+          {
+            "a": "err",
+            "n": 1,
+            "at": 0.6,
+            "len": 0.4
+          }
+        ]
+      },
+      {
+        "line": 4,
+        "ms": 1300,
+        "note": "LNK1120 sums it up: one unresolved name, so no game.exe.",
+        "do": [
+          {
+            "a": "err",
+            "n": 2
+          }
+        ]
+      },
+      {
+        "line": 6,
+        "ms": 1600,
+        "note": "The fix: list every .c file. Now player.c is in the build too.",
+        "do": [
+          {
+            "a": "clear",
+            "len": 0.45
+          },
+          {
+            "a": "cmd",
+            "t": "cl main.c player.c /Fe:game.exe",
+            "main": true,
+            "player": true,
+            "at": 0.4
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1300,
+        "note": "main.c compiles again to main.obj, with its socket.",
+        "do": [
+          {
+            "a": "compile",
+            "f": "main"
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1500,
+        "note": "player.c compiles to player.obj, which offers player_heal.",
+        "do": [
+          {
+            "a": "compile",
+            "f": "player"
+          }
+        ]
+      },
+      {
+        "line": 9,
+        "ms": 2000,
+        "note": "The linker matches the name, plugs player.obj into the socket, and builds game.exe.",
+        "do": [
+          {
+            "a": "link"
+          }
+        ]
+      }
+    ],
+    "prompt": ""
+  },
+  "debugger": {
+    "scene": "p3b-debug",
+    "steps": [
+      {
+        "line": 14,
+        "ms": 1500,
+        "note": "F9 puts a breakpoint on this line: a red dot. The program will stop before this line runs.",
+        "do": [
+          {
+            "a": "key",
+            "k": "F9"
+          },
+          {
+            "a": "bp",
+            "on": true
+          }
+        ]
+      },
+      {
+        "line": 14,
+        "ms": 2200,
+        "note": "F5 starts the program. It runs until the breakpoint, then freezes with a yellow arrow. Locals shows hero.health = 100.",
+        "do": [
+          {
+            "a": "key",
+            "k": "F5"
+          },
+          {
+            "a": "go",
+            "to": "paused",
+            "line": 14,
+            "title": "Locals: main",
+            "rows": [
+              [
+                "hero.health",
+                "100"
+              ]
+            ],
+            "stack": [
+              "main"
+            ]
+          }
+        ]
+      },
+      {
+        "line": 14,
+        "ms": 2300,
+        "note": "F10 steps over: the whole line runs, damage included, and the arrow lands on line 15. hero.health is now 70.",
+        "do": [
+          {
+            "a": "key",
+            "k": "F10"
+          },
+          {
+            "a": "arrow",
+            "to": 15
+          },
+          {
+            "a": "locals",
+            "title": "Locals: main",
+            "rows": [
+              [
+                "hero.health",
+                "70"
+              ]
+            ],
+            "hot": [
+              0
+            ],
+            "at": 0.5,
+            "len": 0.5
+          }
+        ]
+      },
+      {
+        "line": 15,
+        "ms": 2400,
+        "note": "F11 steps into: the arrow jumps inside damage. Locals now shows damage's own boxes, and Call Stack shows who called whom.",
+        "do": [
+          {
+            "a": "key",
+            "k": "F11"
+          },
+          {
+            "a": "arrow",
+            "to": 7
+          },
+          {
+            "a": "locals",
+            "title": "Locals: damage",
+            "rows": [
+              [
+                "p",
+                "0x000000e5a7affc10"
+              ],
+              [
+                "amount",
+                "30"
+              ],
+              [
+                "p->health",
+                "70",
+                "w"
+              ]
+            ],
+            "hot": []
+          },
+          {
+            "a": "stack",
+            "rows": [
+              "damage",
+              "main"
+            ],
+            "sel": 0
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1900,
+        "note": "F10 once to reach line 8. Watch p (an address), *p and p->health. Nothing has changed yet.",
+        "do": [
+          {
+            "a": "key",
+            "k": "F10"
+          },
+          {
+            "a": "arrow",
+            "to": 8
+          },
+          {
+            "a": "locals",
+            "title": "Locals: damage",
+            "rows": [
+              [
+                "p",
+                "0x000000e5a7affc10"
+              ],
+              [
+                "amount",
+                "30"
+              ],
+              [
+                "p->health",
+                "70",
+                "w"
+              ],
+              [
+                "*p",
+                "{health=70}",
+                "w"
+              ]
+            ],
+            "hot": [
+              3
+            ]
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 2000,
+        "note": "F10 runs this line. p->health drops to 40, and so does *p.",
+        "do": [
+          {
+            "a": "key",
+            "k": "F10"
+          },
+          {
+            "a": "arrow",
+            "to": 9
+          },
+          {
+            "a": "locals",
+            "title": "Locals: damage",
+            "rows": [
+              [
+                "p",
+                "0x000000e5a7affc10"
+              ],
+              [
+                "amount",
+                "30"
+              ],
+              [
+                "p->health",
+                "40",
+                "w"
+              ],
+              [
+                "*p",
+                "{health=40}",
+                "w"
+              ]
+            ],
+            "hot": [
+              2,
+              3
+            ]
+          }
+        ]
+      },
+      {
+        "line": 9,
+        "ms": 2000,
+        "note": "Click main in Call Stack to look at its boxes. hero.health is 40 too: same box, two names.",
+        "do": [
+          {
+            "a": "stack",
+            "rows": [
+              "damage",
+              "main"
+            ],
+            "sel": 1
+          },
+          {
+            "a": "locals",
+            "title": "Locals: main",
+            "rows": [
+              [
+                "hero.health",
+                "40"
+              ]
+            ],
+            "hot": [
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "line": 16,
+        "ms": 1500,
+        "note": "F5 lets the program run on. The yellow arrow is gone, and printf prints.",
+        "do": [
+          {
+            "a": "key",
+            "k": "F5"
+          },
+          {
+            "a": "go",
+            "to": "running"
+          }
+        ],
+        "out": "health 40\n",
+        "outAt": 0.6
+      },
+      {
+        "line": 17,
+        "ms": 1300,
+        "note": "The program has finished.",
+        "do": [
+          {
+            "a": "go",
+            "to": "exited"
+          }
+        ]
+      }
+    ]
+  },
+  "func-pointers": {
+    "scene": "p3b-mem",
+    "steps": [
+      {
+        "line": 4,
+        "ms": 1700,
+        "note": "UpdateFn names a shape: it can point at any function that takes an int and returns a GameState.",
+        "do": [
+          {
+            "a": "cap",
+            "t": "UpdateFn = pointer to  GameState f(int)"
+          }
+        ]
+      },
+      {
+        "line": 6,
+        "ms": 1500,
+        "note": "update_menu is compiled into memory like everything else, so it has an address.",
+        "do": [
+          {
+            "a": "cell",
+            "id": "fm",
+            "kind": "group",
+            "type": "GameState",
+            "name": "update_menu(int)",
+            "addr": "0x7ff6a010",
+            "x": 12,
+            "y": 26,
+            "w": 178,
+            "h": 46
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 1300,
+        "note": "update_playing has its own address. Same shape, different code.",
+        "do": [
+          {
+            "a": "cell",
+            "id": "fp",
+            "kind": "group",
+            "type": "GameState",
+            "name": "update_playing(int)",
+            "addr": "0x7ff6a050",
+            "x": 210,
+            "y": 26,
+            "w": 178,
+            "h": 46
+          }
+        ]
+      },
+      {
+        "line": 15,
+        "ms": 2600,
+        "note": "The table. Each name without () is an address, so the slots point at the functions and nothing runs. Slot 2 is NULL.",
+        "do": [
+          {
+            "a": "cap",
+            "t": "UpdateFn updates[STATE_COUNT]"
+          },
+          {
+            "a": "cell",
+            "id": "u0",
+            "kind": "ptr",
+            "type": "UpdateFn",
+            "name": "updates[0]",
+            "x": 14,
+            "y": 104,
+            "w": 112,
+            "h": 58,
+            "to": "fm",
+            "pv": "0x7ff6a010"
+          },
+          {
+            "a": "cell",
+            "id": "u1",
+            "kind": "ptr",
+            "type": "UpdateFn",
+            "name": "updates[1]",
+            "x": 146,
+            "y": 104,
+            "w": 112,
+            "h": 58,
+            "to": "fp",
+            "pv": "0x7ff6a050",
+            "at": 0.25
+          },
+          {
+            "a": "cell",
+            "id": "u2",
+            "kind": "ptr",
+            "type": "UpdateFn",
+            "name": "updates[2]",
+            "x": 278,
+            "y": 104,
+            "w": 112,
+            "h": 58,
+            "nul": true,
+            "at": 0.5
+          }
+        ]
+      },
+      {
+        "line": 16,
+        "ms": 1100,
+        "note": "state starts as STATE_MENU, which is 0.",
+        "do": [
+          {
+            "a": "cell",
+            "id": "st",
+            "kind": "int",
+            "type": "GameState",
+            "name": "state",
+            "v": "MENU",
+            "x": 60,
+            "y": 184,
+            "w": 150,
+            "h": 58
+          }
+        ]
+      },
+      {
+        "line": 17,
+        "ms": 1400,
+        "note": "frame is 0. updates[0] isn't NULL, so the loop body runs.",
+        "do": [
+          {
+            "a": "cell",
+            "id": "fr",
+            "kind": "int",
+            "type": "int",
+            "name": "frame",
+            "v": 0,
+            "x": 240,
+            "y": 184,
+            "w": 100,
+            "h": 58
+          },
+          {
+            "a": "pulse",
+            "id": "u0"
+          }
+        ]
+      },
+      {
+        "line": 18,
+        "ms": 2200,
+        "note": "updates[0](0) follows slot 0's arrow and calls update_menu, which returns STATE_PLAYING.",
+        "do": [
+          {
+            "a": "deref",
+            "p": "u0",
+            "lbl": "updates[0](0)"
+          },
+          {
+            "a": "set",
+            "id": "st",
+            "v": "PLAYING",
+            "at": 0.7,
+            "len": 0.3
+          }
+        ],
+        "out": "0: menu\n",
+        "outAt": 0.4
+      },
+      {
+        "line": 17,
+        "ms": 1100,
+        "note": "frame becomes 1. updates[1] isn't NULL.",
+        "do": [
+          {
+            "a": "set",
+            "id": "fr",
+            "v": 1
+          },
+          {
+            "a": "pulse",
+            "id": "u1"
+          }
+        ]
+      },
+      {
+        "line": 18,
+        "ms": 2000,
+        "note": "Now state is 1, so the same line calls update_playing. 1 < 2, so it stays PLAYING.",
+        "do": [
+          {
+            "a": "deref",
+            "p": "u1",
+            "lbl": "updates[1](1)"
+          },
+          {
+            "a": "pulse",
+            "id": "st"
+          }
+        ],
+        "out": "1: playing\n",
+        "outAt": 0.4
+      },
+      {
+        "line": 17,
+        "ms": 1000,
+        "note": "frame becomes 2.",
+        "do": [
+          {
+            "a": "set",
+            "id": "fr",
+            "v": 2
+          },
+          {
+            "a": "pulse",
+            "id": "u1"
+          }
+        ]
+      },
+      {
+        "line": 18,
+        "ms": 2200,
+        "note": "update_playing again. 2 < 2 is false, so it returns STATE_GAMEOVER.",
+        "do": [
+          {
+            "a": "deref",
+            "p": "u1",
+            "lbl": "updates[1](2)"
+          },
+          {
+            "a": "set",
+            "id": "st",
+            "v": "GAMEOVER",
+            "at": 0.7,
+            "len": 0.3
+          }
+        ],
+        "out": "2: playing\n",
+        "outAt": 0.4
+      },
+      {
+        "line": 17,
+        "ms": 1600,
+        "note": "frame becomes 3. updates[2] is NULL, so the loop stops without calling anything.",
+        "do": [
+          {
+            "a": "set",
+            "id": "fr",
+            "v": 3
+          },
+          {
+            "a": "pulse",
+            "id": "u2"
+          },
+          {
+            "a": "cap",
+            "t": "updates[2] != NULL  ->  false"
+          }
+        ]
+      },
+      {
+        "line": 20,
+        "ms": 1100,
+        "note": "After the loop, one printf.",
+        "do": [
+          {
+            "a": "cap",
+            "t": ""
+          }
+        ],
+        "out": "game over\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 21,
+        "ms": 700,
+        "note": "The program ends.",
+        "do": []
+      }
+    ]
+  }
+}
