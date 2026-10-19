@@ -607,6 +607,10 @@
      [
       "What the codes mean",
       "<p class=\"warn\">C2xxx is an error and C4xxx a warning. C1xxx is fatal: the compiler gives up on the spot. LNKxxxx comes from the linker, after compiling worked.</p>"
+     ],
+     [
+      "The extra C2220 line",
+      "<p>With build.bat's <code>/WX</code>, every warning comes with a second line: <code>error C2220: the following warning is treated as an error</code>. That line isn't a new problem. Read the warning next to it and fix that.</p>"
      ]
     ],
     "king": "Chapter 1 Q&A, §2.3, §2.8"
@@ -695,7 +699,7 @@
      ],
      [
       "Sticking to the standard",
-      "<p>C has an official rulebook, and its versions are named by year: C99, C11, C17. The flag <code>/std:c17</code> tells cl to follow C17 rather than its own default. It isn't in FLAGS yet: your build.bat gets it once the test build on your PC confirms it works.</p>"
+      "<p>C has an official rulebook, and its versions are named by year: C99, C11, C17. The flag <code>/std:c17</code> tells cl to follow C17 rather than its own default. It's the first flag in FLAGS. The test build on your PC confirmed that cl, and even windows.h, compile cleanly with it.</p>"
      ],
      [
       "ERRORLEVEL is main's return value",
@@ -704,7 +708,7 @@
     ],
     "king": "Chapter 1 and 2 Q&A on warning levels"
    },
-   "code": "@echo off\nset FLAGS=/W4 /WX /Zi /Od\ncl %FLAGS% hello_world.c /Fe:hello_world.exe\nif %ERRORLEVEL% neq 0 (\n    echo BUILD FAILED\n    exit /b 1\n)\necho BUILD OK",
+   "code": "@echo off\nset FLAGS=/std:c17 /W4 /WX /Zi /Od\ncl %FLAGS% hello_world.c /Fe:hello_world.exe\nif %ERRORLEVEL% neq 0 (\n    echo BUILD FAILED\n    exit /b 1\n)\necho BUILD OK",
    "walk": [
     [
      1,
@@ -712,7 +716,7 @@
     ],
     [
      2,
-     "<b>set FLAGS=</b> saves the compiler flags in one place. /W4 turns on most warnings, /WX makes any warning stop the build, /Zi writes debug information into a .pdb file and /Od turns off optimisation, so the debugger (Phase 3.5) can follow your code line by line."
+     "<b>set FLAGS=</b> saves the compiler flags in one place. /std:c17 follows the C17 rulebook, /W4 turns on most warnings, /WX makes any warning stop the build, /Zi writes debug information into a .pdb file and /Od turns off optimisation, so the debugger (Phase 3.5) can follow your code line by line."
     ],
     [
      3,

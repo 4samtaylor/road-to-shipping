@@ -335,7 +335,7 @@
 
   /* ================= p1-bat ================= */
   (function () {
-    var FL = '/W4 /WX /Zi /Od', RAW = 'cl %FLAGS% hello_world.c /Fe:hello_world.exe', FULL = 'cl ' + FL + ' hello_world.c /Fe:hello_world.exe', CW = 6;
+    var FL = '/std:c17 /W4 /WX /Zi /Od', RAW = 'cl %FLAGS% hello_world.c /Fe:hello_world.exe', FULL = 'cl ' + FL + ' hello_world.c /Fe:hello_world.exe', CW = 6;
     reg('p1-bat', {
       acts: ['quiet', 'set', 'cmd', 'expand', 'build', 'level', 'gate', 'ok'],
       init: function () { return { quiet: false, jar: false, cmd: 0, built: false, level: null, gate: null, ok: false }; },

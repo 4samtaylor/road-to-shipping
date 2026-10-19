@@ -121,13 +121,13 @@
 <pre>"terminal.integrated.profiles.windows": {
     "Developer Command Prompt": {
         "path": "cmd.exe",
-        "args": ["/k", "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvars32.bat"]
+        "args": ["/k", "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"]
     }
 },
 "terminal.integrated.defaultProfile.windows": "Developer Command Prompt"</pre>
           </div>
           <div class="step-detail mt-10">
-            Save, then open a new terminal with <span class="cmd">Ctrl+Shift+`</span>. You should see a <strong class="t-text">Visual Studio Developer Command Prompt</strong> banner. Type <span class="cmd">cl</span>: version info means it worked.<br>
+            If you installed Visual Studio 2026, change <span class="cmd">2022</span> to <span class="cmd">18</span> in that path. <span class="cmd">vcvars64.bat</span> sets up the 64-bit compiler, which is what every page in this roadmap assumes (8-byte pointers, 4-byte <span class="cmd">long</span>).<br><br>Save, then open a new terminal with <span class="cmd">Ctrl+Shift+`</span>. You should see a <strong class="t-text">Visual Studio Developer Command Prompt</strong> banner. Type <span class="cmd">cl</span>: version info means it worked.<br>
             Still not found? Open <strong class="t-text">C:\Program Files\Microsoft Visual Studio</strong> in File Explorer and check the folder names. If yours says <strong class="t-text">18</strong> or <strong class="t-text">2026</strong> instead of <strong class="t-text">2022</strong>, change that part of the path. Backslashes in JSON have to be doubled, like above.
           </div>
         </div>

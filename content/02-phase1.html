@@ -147,7 +147,7 @@
                 <button class="copy-btn">Copy</button>
               </div>
 <pre class="code-panel fs-11" style="overflow-x:auto"><span class="c-cm">@echo off</span>
-<span class="c-pp">set</span> FLAGS=<span class="c-num">/W4 /WX /Zi /Od</span>
+<span class="c-pp">set</span> FLAGS=<span class="c-num">/std:c17 /W4 /WX /Zi /Od</span>
 <span class="c-str">cl</span> <span class="c-num">%FLAGS%</span> hello_world.c <span class="c-num">/Fe:hello_world.exe</span>
 <span class="c-kw">if</span> <span class="c-num">%ERRORLEVEL%</span> <span class="c-kw">neq</span> 0 (
     <span class="c-str">echo BUILD FAILED</span>
@@ -285,7 +285,7 @@ DE</pre>
             <div class="stuck-items">
               <div class="stuck-item">
                 <div class="stuck-q">"'cl' is not recognized as a command"</div>
-                <div class="stuck-a">You're in the wrong terminal. Open a new terminal with Ctrl+`, the VS banner should appear automatically after the settings.json fix. If it doesn't, check that your settings.json was saved correctly and the vcvars32.bat path is correct.</div>
+                <div class="stuck-a">You're in the wrong terminal. Open a new terminal with Ctrl+`, the VS banner should appear automatically after the settings.json fix. If it doesn't, check that your settings.json was saved correctly and the vcvars64.bat path is correct.</div>
               </div>
               <div class="stuck-item">
                 <div class="stuck-q">error C2017: unknown escape sequence (the \n error from session 1)</div>

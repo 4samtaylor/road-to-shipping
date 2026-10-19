@@ -577,7 +577,7 @@ el</pre>
               </div>
               <div class="stuck-item">
                 <div class="stuck-q">%s printed my name and then a screenful of junk characters</div>
-                <div class="stuck-a">Missing null terminator. <span class="cmd">%s</span> starts at the address you gave it and prints bytes until it finds a <span class="cmd">'\0'</span>, no terminator means no stop signal, so it keeps reading memory that isn't yours. Usually you filled the buffer character by character and forgot the last byte, or you used exactly as many boxes as characters with none left for the terminator. <span class="cmd">char name[3] = "Sam"</span> has nowhere to put it. C accepts that line without a warning, which is what makes it a trap. You need <span class="cmd">char name[4]</span>.</div>
+                <div class="stuck-a">Missing null terminator. <span class="cmd">%s</span> starts at the address you gave it and prints bytes until it finds a <span class="cmd">'\0'</span>, no terminator means no stop signal, so it keeps reading memory that isn't yours. Usually you filled the buffer character by character and forgot the last byte, or you used exactly as many boxes as characters with none left for the terminator. <span class="cmd">char name[3] = "Sam"</span> has nowhere to put it. C allows that line. MSVC at /W4 warns C4295 and your build stops, but other compilers often stay quiet, which is what makes it a trap. You need <span class="cmd">char name[4]</span>.</div>
               </div>
               <div class="stuck-item">
                 <div class="stuck-q">My strcmp check is backwards, it runs when the names DON'T match</div>

@@ -61,7 +61,7 @@
      ],
      [
       "MSVC notes",
-      "<p class=\"warn\">The bracket-less <code>print_menu;</code> is C4551 (function call missing argument list). A path with no return is C4715 (not all control paths return a value). Both are warnings, so <code>/WX</code> stops the build, which is what you want: each one is a real bug.</p>"
+      "<p class=\"warn\">The bracket-less <code>print_menu;</code> is C4550 (the expression is a function with its argument list missing). A path with no return is C4715 (not all control paths return a value). Both are warnings, so <code>/WX</code> stops the build, which is what you want: each one is a real bug.</p>"
      ]
     ],
     "king": "§9.1, §9.4–9.5"
@@ -817,7 +817,7 @@
      ],
      [
       "How quoted text fills an array",
-      "<p>Text in double quotes is a <b>string literal</b>, and it always brings a hidden '\\0' with it, so <code>\"Sam\"</code> takes 4 bytes. Three ways to start an array from one:</p><ul><li><code>char a[8] = \"Sam\";</code> stores S, a, m, '\\0', and C zeros the other four boxes.</li><li><code>char b[] = \"Sam\";</code> lets C count: 4 boxes. sizeof(b) is 4, strlen(b) is 3.</li><li><code>char c[3] = \"Sam\";</code> has room for the letters and nothing else, so C quietly drops the '\\0'.</li></ul><p>That last one is legal C, and MSVC accepts it without a warning, but c is not a string. Print it with %s and you get Sam plus whatever bytes follow. When the number in the brackets equals the letter count, the terminator is gone.</p>"
+      "<p>Text in double quotes is a <b>string literal</b>, and it always brings a hidden '\\0' with it, so <code>\"Sam\"</code> takes 4 bytes. Three ways to start an array from one:</p><ul><li><code>char a[8] = \"Sam\";</code> stores S, a, m, '\\0', and C zeros the other four boxes.</li><li><code>char b[] = \"Sam\";</code> lets C count: 4 boxes. sizeof(b) is 4, strlen(b) is 3.</li><li><code>char c[3] = \"Sam\";</code> has room for the letters and nothing else, so C quietly drops the '\\0'.</li></ul><p>That last one is legal C, but c is not a string. MSVC spots it at /W4 (C4295, array too small for the terminating null), and /WX stops the build; many other compilers say nothing. Print it with %s and you get Sam plus whatever bytes follow. When the number in the brackets equals the letter count, the terminator is gone.</p>"
      ],
      [
       "Lining up columns",

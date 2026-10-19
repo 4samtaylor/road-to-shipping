@@ -1,2 +1,2 @@
 /* expect: C4305 */
-int main(void) { float f = 2.5; return (int)f; }
+int main(void) { float f = 1.8; return (int)f; }

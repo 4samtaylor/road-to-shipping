@@ -55,7 +55,7 @@
      ],
      [
       "Mistakes MSVC catches",
-      "<p>Same rules as before: declare a variable before you use it, or you get C2065 (undeclared identifier), and give it a value before you read it, or you get C4700. <code>float x, y = 0.0f;</code> still sets only <code>y</code>.</p><p class=\"warn\">Two warnings are new with decimals. <code>float speed = 2.5;</code> squeezes a double into a float: C4305. <code>int lives = 2.9f;</code> chops a float into an int: C4244. Under <code>/WX</code> both stop the build. Add the <code>f</code>, or a cast (Division, remainder and casts) if you really mean it.</p>"
+      "<p>Same rules as before: declare a variable before you use it, or you get C2065 (undeclared identifier), and give it a value before you read it, or you get C4700. <code>float x, y = 0.0f;</code> still sets only <code>y</code>.</p><p class=\"warn\">Two warnings are new with decimals. <code>float speed = 1.8;</code> squeezes a double into a float and loses a tiny bit: C4305. (A value a float can hold exactly, like 2.5, gets no warning, so don't rely on the compiler to catch every missing f.) <code>int lives = 2.9f;</code> chops a float into an int: C4244. Under <code>/WX</code> both stop the build. Add the <code>f</code>, or a cast (Division, remainder and casts) if you really mean it.</p>"
      ]
     ],
     "king": "§2.4–2.7, §7.1–7.3 (short)"
@@ -125,7 +125,7 @@
    "qa": [
     [
      "Why 2.5f and not just 2.5?",
-     "A plain 2.5 is a <code>double</code>, a bigger kind of decimal. Putting it in a float squeezes it, and MSVC warns with C4305. The f makes it a float from the start."
+     "A plain 2.5 is a <code>double</code>, a bigger kind of decimal. Putting it in a float squeezes it. If the value can't be stored exactly, like 1.8, MSVC warns with C4305; 2.5 happens to fit, so it gets no warning. The f makes it a float from the start either way."
     ],
     [
      "How big can an int get?",
@@ -514,7 +514,7 @@
      ],
      [
       "Statements that do nothing",
-      "<p class=\"warn\">Any expression followed by <code>;</code> is a legal statement, even one with no side effect. <code>score + 5;</code> works out 15 and throws it away; MSVC warns C4552. A bare <code>score;</code> gets C4555. Under <code>/WX</code> both stop the build, which is good: you almost always meant <code>score += 5;</code>.</p>"
+      "<p class=\"warn\">Any expression followed by <code>;</code> is a legal statement, even one with no side effect. <code>score + 5;</code> works out 15 and throws it away; MSVC warns C4552, and under <code>/WX</code> that stops the build, which is good: you almost always meant <code>score += 5;</code>. A bare <code>score;</code> gets no warning at all, so that one is on you.</p>"
      ]
     ],
     "king": "§4.2–4.5"
