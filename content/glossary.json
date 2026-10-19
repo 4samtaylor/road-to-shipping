@@ -1659,9 +1659,9 @@
         "id": "sleep",
         "term": "Sleep(ms)",
         "kind": "function",
-        "what": "Gives the CPU back for at least ms milliseconds. From <windows.h>.",
+        "what": "Gives the CPU back for about ms milliseconds. From <windows.h>.",
         "example": "Sleep(33);   // ~30 fps",
-        "gotcha": "At least, never exactly — about 15.6 ms granularity.",
+        "gotcha": "Approximate, never exact: it wakes on a timer tick of about 15.6 ms, so it can be a little early or quite late.",
         "aliases": [
           "Sleep",
           "Sleep(33)",
@@ -1670,8 +1670,8 @@
           "windows.h",
           "<windows.h>"
         ],
-        "def": "Sleep (windows.h) suspends the calling thread for at least the given number of milliseconds; actual duration depends on the scheduler's timer resolution.",
-        "model": "Telling the CPU \"wake me in about 33 ms\" — about, not exactly.",
+        "def": "Sleep (windows.h) suspends the calling thread for roughly the given number of milliseconds; actual duration depends on the scheduler's timer resolution.",
+        "model": "Telling the CPU \"wake me in about 33 ms\", about, not exactly.",
         "game": "Sleep(FRAME_MS) holds the runner near 30 frames a second so obstacles don't fly past in a blur.",
         "gameCode": "Sleep(FRAME_MS);   // ~33 ms"
       },
@@ -1715,7 +1715,7 @@
           "lane"
         ],
         "def": "A frame buffer is memory holding a complete frame that's built first and then presented in one operation.",
-        "model": "Painting the whole picture backstage, then rolling it out — instead of painting live in front of the audience.",
+        "model": "Painting the whole picture backstage, then rolling it out, instead of painting live in front of the audience.",
         "game": "lane[] is the runner's frame buffer: fill it with road, stamp obstacles and the player, then print it once.",
         "gameCode": "memset(lane, '.', LANE_LEN);\nlane[PLAYER_COL] = 'A';\nprintf(\"\\r%s\", lane);"
       },
@@ -1777,10 +1777,85 @@
         "kind": "concept",
         "what": "A body or variable in a header got included into two .c files.",
         "example": "// runner.h: declarations only\nvoid runner_reset(Runner* r);",
-        "def": "LNK2005 means a symbol was defined in more than one object file — often because a header contains a definition and is included by several .c files.",
+        "def": "LNK2005 means a symbol was defined in more than one object file, often because a header contains a definition and is included by several .c files.",
         "model": "Two kitchens both claim to cook the same dish. The waiter doesn't know which to serve.",
         "game": "int score = 0; in runner.h gives main.obj and runner.obj a score each.",
-        "gameCode": "// runner.h — declarations only, no bodies, no variables"
+        "gameCode": "// runner.h, declarations only, no bodies, no variables"
+      },
+      {
+        "id": "ifdef",
+        "term": "#ifdef / #ifndef / #else",
+        "kind": "syntax",
+        "what": "Keep or drop lines before compiling, depending on whether a name is defined.",
+        "example": "#ifdef SHOW_HITBOXES\n    printf(\"[debug] hitboxes on\\n\");\n#endif",
+        "gotcha": "A misspelt name just counts as not defined: no error, and the code silently vanishes.",
+        "aliases": [
+          "#ifdef",
+          "#else",
+          "#if 0",
+          "#undef",
+          "#ifdef SHOW_HITBOXES",
+          "#ifndef HARD_MODE"
+        ],
+        "def": "Conditional inclusion: #ifdef and #ifndef test whether a macro name is currently defined, and the preprocessor keeps or discards the lines up to the matching #else or #endif. #if 0 always discards.",
+        "model": "Scissors before the printer: switched-off sections are cut out before the compiler sees the page.",
+        "game": "A debug overlay that only exists in test builds: #ifdef SHOW_HITBOXES around the drawing code.",
+        "gameCode": "#ifdef SHOW_HITBOXES\n    printf(\"[debug] frame %d\\n\", frame);\n#endif",
+        "phase": "phase4b"
+      },
+      {
+        "id": "cl-d",
+        "term": "/D (define on the cl line)",
+        "kind": "tool",
+        "what": "A cl flag that defines a macro for every file in the build, as if a #define sat at the top.",
+        "example": "set FLAGS=/std:c17 /W4 /WX /Zi /Od /DSHOW_HITBOXES",
+        "gotcha": "/DNAME gives NAME the value 1. #define it in a file as well and MSVC warns C4005.",
+        "aliases": [
+          "/D",
+          "/DSHOW_HITBOXES",
+          "/DHARD_MODE",
+          "/DWIN32_LEAN_AND_MEAN"
+        ],
+        "def": "cl's /D option defines a preprocessor macro for the compilation: /DNAME defines NAME as 1, and /DNAME=value gives it that value.",
+        "model": "A sticky note added to the top of every file before the compiler opens it.",
+        "game": "Switch a debug overlay or a hard mode on from build.bat without editing the source.",
+        "gameCode": "cl %FLAGS% /DHARD_MODE %SOURCES% /Fe:runner.exe",
+        "phase": "phase4b"
+      },
+      {
+        "id": "memset",
+        "term": "memset",
+        "kind": "function",
+        "what": "Fills a block of memory with one byte value. From <string.h>.",
+        "example": "memset(lane, '.', LANE_LEN);",
+        "gotcha": "Counts bytes, not elements, and never adds a '\\0'. memset(ints, 1, ...) does not give 1s.",
+        "aliases": [
+          "memset",
+          "string.h",
+          "<string.h>"
+        ],
+        "def": "memset(s, c, n) copies the value c, converted to unsigned char, into each of the first n bytes of the object that s points to, and returns s.",
+        "model": "A paint roller: it covers n bytes in one colour and doesn't care what type they belong to.",
+        "game": "Clearing the lane to dots at the start of every frame, before stamping the obstacles and the player.",
+        "gameCode": "memset(lane, '.', LANE_LEN);\nlane[LANE_LEN] = '\\0';",
+        "phase": "phase4b"
+      },
+      {
+        "id": "dword",
+        "term": "DWORD",
+        "kind": "type",
+        "what": "Windows' name for a 32-bit unsigned whole number. Sleep and much of Win32 take one.",
+        "example": "DWORD wait = 33;\nSleep(wait);",
+        "gotcha": "Unsigned: a negative value wraps round to a huge one. Sleep(-1) waits forever.",
+        "aliases": [
+          "DWORD",
+          "INFINITE"
+        ],
+        "def": "DWORD is a Windows typedef for unsigned long, a 32-bit unsigned integer on both 32-bit and 64-bit Windows.",
+        "model": "A counter with no minus sign: wind it below zero and it rolls round to the top.",
+        "game": "Phase 5's frame limiter sleeps for the time left in the frame, so it checks the value is positive first.",
+        "gameCode": "if (wait > 0) Sleep((DWORD)wait);",
+        "phase": "phase4b"
       }
     ],
     "phase5": [
@@ -1804,14 +1879,14 @@
         "id": "hwnd",
         "term": "HWND",
         "kind": "type",
-        "what": "A handle — an ID number — for one window.",
+        "what": "A handle, an ID number, for one window.",
         "example": "HWND hwnd = CreateWindowEx(...);",
         "aliases": [
           "HWND",
           "LRESULT",
           "WPARAM"
         ],
-        "def": "HWND is a handle — an opaque identifier — for a window managed by the operating system.",
+        "def": "HWND is a handle, an opaque identifier, for a window managed by the operating system.",
         "model": "A cloakroom ticket. You don't hold the coat; you hold the number that gets it back.",
         "game": "Every drawing or redraw call for the prototype's window takes its HWND.",
         "gameCode": "InvalidateRect(hwnd, NULL, TRUE);"
@@ -1836,13 +1911,13 @@
         "id": "peekmessage",
         "term": "PeekMessage",
         "kind": "function",
-        "what": "Like GetMessage but never waits — lets a game loop keep running.",
+        "what": "Like GetMessage but never waits, lets a game loop keep running.",
         "example": "while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) { ... }",
         "aliases": [
           "PeekMessage"
         ],
         "def": "PeekMessage checks the message queue and returns immediately whether or not a message is available, optionally removing it.",
-        "model": "_kbhit for windows: anything for me? No? Fine — run a frame.",
+        "model": "_kbhit for windows: anything for me? No? Fine, run a frame.",
         "game": "The prototype switches to PeekMessage so the game updates every frame even when you're not touching the keys.",
         "gameCode": "while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) DispatchMessage(&msg);\nupdate(dt); render();"
       },
@@ -1909,6 +1984,81 @@
         "model": "The runner's char frame buffer, made of pixels.",
         "game": "The prototype draws player and obstacles into a back bitmap, then BitBlts it to the window.",
         "gameCode": "BitBlt(hdc, 0, 0, w, h, back, 0, 0, SRCCOPY);"
+      },
+      {
+        "id": "bit-flags",
+        "term": "Bit flags: | & ~",
+        "kind": "concept",
+        "what": "Many yes/no switches packed into one unsigned number, one bit each.",
+        "example": "#define FLAG_SHIELD (1u << 2)\nflags |= FLAG_SHIELD;    // set\nflags &= ~FLAG_SHIELD;   // clear\nif ((flags & FLAG_SHIELD) != 0) { }   // test",
+        "gotcha": "flags & X != 0 means flags & (X != 0). Bracket the &. And join flags with |, never +.",
+        "aliases": [
+          "|=",
+          "&= ~",
+          "1u << 3",
+          "(flags & FLAG_SHIELD) != 0",
+          "WS_OVERLAPPEDWINDOW"
+        ],
+        "def": "A bit flag is a power of two used to name one bit. Bitwise OR sets bits, AND with the complement clears them, AND tests them, and XOR toggles them.",
+        "model": "A panel of light switches on one number: | turns chosen ones on, & ~ turns them off, & alone is a stencil that shows just one.",
+        "game": "A player's status (alive, jumping, shielded, poisoned) in one unsigned int; Win32 window styles work the same way.",
+        "gameCode": "unsigned int flags = FLAG_ALIVE | FLAG_SHIELD;\nflags &= ~FLAG_SHIELD;   // the shield breaks",
+        "phase": "phase5"
+      },
+      {
+        "id": "handle",
+        "term": "Handle (HWND, HBRUSH, HDC)",
+        "kind": "concept",
+        "what": "A pointer to something Windows owns. You keep it and pass it back, but never look inside.",
+        "example": "HBRUSH brush = CreateSolidBrush(RGB(0, 200, 100));\nFillRect(hdc, &r, brush);\nDeleteObject(brush);",
+        "gotcha": "What you create (brushes, bitmaps, DCs) you must delete, or GDI objects leak. Never delete one you didn't create.",
+        "aliases": [
+          "HBRUSH",
+          "HDC",
+          "HBITMAP",
+          "HGDIOBJ"
+        ],
+        "def": "A handle is an opaque reference to an object managed by the operating system. In windows.h most handle types are pointers to dummy structs, so different handle types can't be mixed without a warning.",
+        "model": "A cloakroom ticket: Windows keeps the coat, you keep the number.",
+        "game": "The window, the device context you draw on, and every brush and bitmap in the prototype are handles.",
+        "gameCode": "HDC hdc = BeginPaint(hwnd, &ps);\n/* draw with hdc */\nEndPaint(hwnd, &ps);",
+        "phase": "phase5"
+      },
+      {
+        "id": "typedef-win32",
+        "term": "Win32 type names (DWORD, UINT, LPSTR)",
+        "kind": "type",
+        "what": "Windows' own names for ordinary C types, made with typedef.",
+        "example": "UINT   -> unsigned int\nDWORD  -> unsigned long (32 bits)\nLPSTR  -> char *\nBOOL   -> int\nWPARAM -> pointer-sized unsigned integer",
+        "gotcha": "BOOL is an int, not C's bool, and TRUE is 1. Prefixes give the type away: h handle, lp pointer, lpsz string, lpfn function pointer.",
+        "aliases": [
+          "UINT",
+          "BOOL",
+          "LPCSTR"
+        ],
+        "def": "windows.h defines a family of type names with typedef so that code states sizes and roles explicitly; hovering a name in the editor shows the underlying C type.",
+        "model": "Nicknames. DWORD and unsigned long are the same person.",
+        "game": "WindowProc's parameters are UINT and pointer-sized WPARAM/LPARAM; Sleep takes a DWORD of milliseconds.",
+        "gameCode": "LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);",
+        "phase": "phase5"
+      },
+      {
+        "id": "union",
+        "term": "union (LARGE_INTEGER)",
+        "kind": "syntax",
+        "what": "Like a struct, but every member shares the same bytes: several views of one value.",
+        "example": "LARGE_INTEGER now;\nQueryPerformanceCounter(&now);\nlong long ticks = now.QuadPart;   // the whole 64-bit view",
+        "gotcha": "Writing one member changes all the others. Its size is the size of the biggest member.",
+        "aliases": [
+          "LARGE_INTEGER",
+          "QuadPart",
+          "union"
+        ],
+        "def": "A union's members are stored at the same address, so the union holds one of them at a time; reading a different member reinterprets the same bytes as that member's type.",
+        "model": "One box with several labels on it. Whichever label you read, it's the same contents.",
+        "game": "The frame timer reads QueryPerformanceCounter into a LARGE_INTEGER and uses its QuadPart.",
+        "gameCode": "double ms = (double)(now.QuadPart - last.QuadPart) * 1000.0 / (double)freq.QuadPart;",
+        "phase": "phase5"
       }
     ],
     "phase6": [
@@ -1938,7 +2088,7 @@
         "example": "a.x < b.x + b.w && a.x + a.w > b.x &&\na.y < b.y + b.h && a.y + a.h > b.y",
         "def": "An axis-aligned bounding box test detects overlap between two rectangles by comparing their extents on each axis.",
         "model": "Two boxes touch only if their shadows overlap on the floor and on the wall.",
-        "game": "Player box versus obstacle box — overlap ends the run.",
+        "game": "Player box versus obstacle box, overlap ends the run.",
         "gameCode": "bool hit = a.x < b.x + b.w && a.x + a.w > b.x &&\n           a.y < b.y + b.h && a.y + a.h > b.y;"
       },
       {
@@ -1946,15 +2096,16 @@
         "term": "next_state",
         "kind": "concept",
         "what": "Change state once, at the end of the frame, so no code runs twice.",
-        "example": "next_state = STATE_GAME_OVER;   // apply after update",
+        "example": "next_state = GAME_OVER;   // apply after update",
         "aliases": [
           "next_state",
-          "state = STATE_GAME_OVER"
+          "state = GAME_OVER",
+          "state = next_state;"
         ],
         "def": "Deferring a state change to the end of the frame ensures all of this frame's logic runs under one consistent state.",
         "model": "Finish the current turn before switching to the next player.",
-        "game": "A hit sets next_state = GAME_OVER; the switch finishes the frame, then the change applies.",
-        "gameCode": "next_state = STATE_GAME_OVER;\n/* ...end of frame... */\nstate = next_state;"
+        "game": "A hit sets next_state = GAME_OVER; the frame finishes, then the change applies.",
+        "gameCode": "next_state = GAME_OVER;\n/* ...end of frame... */\nstate = next_state;"
       },
       {
         "id": "update-render",
@@ -1975,16 +2126,54 @@
         "id": "textout",
         "term": "TextOut / DrawText",
         "kind": "function",
-        "what": "GDI functions that draw text in the window — for the score.",
+        "what": "GDI functions that draw text in the window, for the score.",
         "example": "TextOut(hdc, 10, 10, buf, (int)strlen(buf));",
         "aliases": [
           "TextOut",
+          "TextOutA",
           "DrawText"
         ],
         "def": "TextOut and DrawText are GDI functions that draw a string into a device context at a position or within a rectangle.",
         "model": "A label printer for your window.",
         "game": "Drawing \"Score: 12\" in the corner of the prototype's window instead of the console.",
-        "gameCode": "char buf[32];\nsprintf_s(buf, sizeof buf, \"Score: %d\", score);\nTextOut(hdc, 10, 10, buf, (int)strlen(buf));"
+        "gameCode": "char buf[32];\nsnprintf(buf, sizeof buf, \"Score: %d\", score);\nTextOut(hdc, 10, 10, buf, (int)strlen(buf));",
+        "gotcha": "Without UNICODE defined, TextOut is a macro for TextOutA, the char version."
+      },
+      {
+        "id": "static-inline",
+        "term": "static inline",
+        "kind": "syntax",
+        "what": "A tiny helper that can live in a header: each .c file gets its own private copy.",
+        "example": "static inline int player_alive(const Player* p) {\n    return p->health > 0;\n}",
+        "gotcha": "Plain inline in a header can fail to link in a debug build (gcc refuses; MSVC may not). Keep the static.",
+        "aliases": [
+          "static inline",
+          "inline"
+        ],
+        "def": "A function declared static inline has internal linkage and an inline definition, so every translation unit that includes it gets its own copy and no external definition is needed.",
+        "model": "A recipe card photocopied into every kitchen: nobody has to phone the head office for it.",
+        "game": "aabb_overlap sits in game.h, and game.c and player.c both call it without a linker error.",
+        "gameCode": "static inline int aabb_overlap(Box a, Box b) {\n    return a.x < b.x + b.w && a.x + a.w > b.x &&\n           a.y < b.y + b.h && a.y + a.h > b.y;\n}",
+        "phase": "phase6"
+      },
+      {
+        "id": "module",
+        "term": "module (.c + .h)",
+        "kind": "concept",
+        "what": "One job of the game in its own .c file and .h file, with every public name prefixed.",
+        "example": "// player.h: Player, player_heal, player_alive\n// player.c: the bodies, plus static helpers",
+        "gotcha": "Add every new .c to the SOURCES line in build.bat, or its functions give LNK2019.",
+        "aliases": [
+          "player_",
+          "game_",
+          "SOURCES",
+          "set SOURCES=main.c game.c player.c"
+        ],
+        "def": "A module is a source file and its header that together provide one part of a program; the header is its public interface and the source file its private implementation.",
+        "model": "A studio department: a front desk (the .h) that others talk to, and a back office (the .c) they never see.",
+        "game": "player.c moves the player, game.c runs the states, and main.c only holds the loop.",
+        "gameCode": "set SOURCES=main.c game.c player.c\ncl %FLAGS% %SOURCES% /Fe:game.exe",
+        "phase": "phase6"
       }
     ]
   }

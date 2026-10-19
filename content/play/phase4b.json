@@ -1,1760 +1,1760 @@
 {
- "kbhit-getch": {
-  "scene": "p4b-keys",
-  "steps": [
-   {
-    "line": 5,
-    "ms": 1300,
-    "note": "Scripted run for this picture: on loop 1 you type nothing, on loop 2 you press j, on loop 3 you press q. The box called key is empty for now.",
-    "do": []
-   },
-   {
-    "line": 6,
-    "ms": 900,
-    "note": "count starts at 0. It will count how many times the loop goes round.",
-    "do": [
-     {
-      "a": "count",
-      "to": 0
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 1100,
-    "note": "for (;;) has no condition, so it loops forever. Only break gets us out. Watch the lane: it keeps moving the whole time.",
-    "do": []
-   },
-   {
-    "line": 9,
-    "ms": 800,
-    "note": "Loop 1 begins. Start by assuming no key: key = 0.",
-    "do": [
-     {
-      "a": "key",
-      "v": "0",
-      "clear": true
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 1200,
-    "note": "_kbhit() glances at the letterbox. Nothing there, so it answers 0 straight away and the while loop is skipped.",
-    "do": [
-     {
-      "a": "peek",
-      "r": false
-     }
-    ]
-   },
-   {
-    "line": 13,
-    "ms": 800,
-    "note": "key is 0, not 'q', so we stay in the loop.",
-    "do": []
-   },
-   {
-    "line": 16,
-    "ms": 1000,
-    "note": "count goes up on every loop, whether or not you touched the keyboard. The lane moves one step.",
-    "do": [
-     {
-      "a": "count",
-      "to": 1
-     }
-    ]
-   },
-   {
-    "line": 17,
-    "ms": 800,
-    "note": "key is 0, so there is nothing to print this time.",
-    "do": []
-   },
-   {
-    "line": 9,
-    "ms": 1500,
-    "note": "Loop 2. key goes back to 0. While we weren't looking, you pressed j and it landed in the letterbox.",
-    "do": [
-     {
-      "a": "key",
-      "v": "0",
-      "clear": true,
-      "len": 0.3
-     },
-     {
-      "a": "press",
-      "k": "j",
-      "at": 0.3,
-      "len": 0.7
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 1100,
-    "note": "_kbhit() peeks and sees a key waiting, so it answers 1 and the loop body runs.",
-    "do": [
-     {
-      "a": "peek",
-      "r": true
-     }
-    ]
-   },
-   {
-    "line": 11,
-    "ms": 1300,
-    "note": "_getch() takes the waiting key out of the letterbox and puts it in key. No Enter needed.",
-    "do": [
-     {
-      "a": "take",
-      "k": "j"
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 1100,
-    "note": "Peek again. The letterbox is empty now, so _kbhit() says 0 and the while loop ends.",
-    "do": [
-     {
-      "a": "peek",
-      "r": false
-     }
-    ]
-   },
-   {
-    "line": 13,
-    "ms": 800,
-    "note": "key is 'j', not 'q', so no break.",
-    "do": []
-   },
-   {
-    "line": 16,
-    "ms": 1000,
-    "note": "count becomes 2. The lane moves another step.",
-    "do": [
-     {
-      "a": "count",
-      "to": 2
-     }
-    ]
-   },
-   {
-    "line": 17,
-    "ms": 800,
-    "note": "key is not 0, so this time there is something to print.",
-    "do": []
-   },
-   {
-    "line": 18,
-    "ms": 1200,
-    "note": "printf shows which key arrived and on which loop.",
-    "do": [
-     {
-      "a": "say",
-      "t": "key j at loop 2"
-     }
-    ],
-    "out": "key j at loop 2\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 9,
-    "ms": 1500,
-    "note": "Loop 3. key resets to 0, and you press q.",
-    "do": [
-     {
-      "a": "key",
-      "v": "0",
-      "clear": true,
-      "len": 0.3
-     },
-     {
-      "a": "press",
-      "k": "q",
-      "at": 0.3,
-      "len": 0.7
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 1000,
-    "note": "A key is waiting, so _kbhit() says 1.",
-    "do": [
-     {
-      "a": "peek",
-      "r": true
-     }
-    ]
-   },
-   {
-    "line": 11,
-    "ms": 1200,
-    "note": "_getch() takes the q.",
-    "do": [
-     {
-      "a": "take",
-      "k": "q"
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 1000,
-    "note": "Letterbox empty again, so the while loop ends.",
-    "do": [
-     {
-      "a": "peek",
-      "r": false
-     }
-    ]
-   },
-   {
-    "line": 13,
-    "ms": 900,
-    "note": "key is 'q'. This is true.",
-    "do": []
-   },
-   {
-    "line": 14,
-    "ms": 1000,
-    "note": "break jumps out of the forever loop.",
-    "do": [
-     {
-      "a": "quit"
-     }
-    ]
-   },
-   {
-    "line": 21,
-    "ms": 1000,
-    "note": "The program ends. count stopped at 2 because loop 3 left before count++.",
-    "do": []
-   }
-  ]
- },
- "sleep": {
-  "scene": "p4b-clock",
-  "steps": [
-   {
-    "line": 1,
-    "ms": 1300,
-    "note": "Scripted for this picture: we watch frames 1 and 2, skip ahead through 3 to 29, then see frame 30. This line asks windows.h to leave out the rarely used parts.",
-    "do": [
-     {
-      "a": "chip",
-      "t": "WIN32_LEAN_AND_MEAN: lighter windows.h"
-     }
-    ]
-   },
-   {
-    "line": 2,
-    "ms": 1000,
-    "note": "windows.h is where Sleep lives. Capital S.",
-    "do": [
-     {
-      "a": "chip",
-      "t": "windows.h gives us Sleep()"
-     }
-    ]
-   },
-   {
-    "line": 5,
-    "ms": 1500,
-    "note": "One named number for the frame length: 33 milliseconds. 1000 divided by 33 is about 30 frames a second.",
-    "do": [
-     {
-      "a": "ms"
-     },
-     {
-      "a": "fps",
-      "at": 0.5,
-      "len": 0.5
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 1000,
-    "note": "frame is an int that will count the frames. The film strip on top has 30 slots, all empty.",
-    "do": [
-     {
-      "a": "chip",
-      "t": ""
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 900,
-    "note": "The loop starts at frame 1 and will run while frame is 30 or less.",
-    "do": []
-   },
-   {
-    "line": 11,
-    "ms": 1100,
-    "note": "Do the frame's work. Here that is one printf. A bright block appears in the CPU bar: it only takes a moment.",
-    "do": [
-     {
-      "a": "frame",
-      "n": 1
-     },
-     {
-      "a": "work",
-      "at": 0.3,
-      "len": 0.5
-     }
-    ],
-    "out": "frame 1\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 12,
-    "ms": 1700,
-    "note": "Sleep(33) hands the CPU back to Windows. The clock fills for about 33 ms while other programs get a turn.",
-    "do": [
-     {
-      "a": "sleep"
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 800,
-    "note": "frame goes to 2, still 30 or less, so round again.",
-    "do": []
-   },
-   {
-    "line": 11,
-    "ms": 1000,
-    "note": "Frame 2: a little work, then a print.",
-    "do": [
-     {
-      "a": "frame",
-      "n": 2
-     },
-     {
-      "a": "work",
-      "at": 0.3,
-      "len": 0.5
-     }
-    ],
-    "out": "frame 2\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 12,
-    "ms": 1500,
-    "note": "Sleep again. About 33 ms each time, never exact: Windows wakes you on its next timer tick.",
-    "do": [
-     {
-      "a": "sleep"
-     }
-    ]
-   },
-   {
-    "line": 11,
-    "ms": 2600,
-    "note": "Frames 3 to 29 repeat the same three beats: print, sleep, next. We fast-forward through them.",
-    "do": [
-     {
-      "a": "ff",
-      "from": 2,
-      "to": 29
-     }
-    ],
-    "out": "frame 3\nframe 4\nframe 5\nframe 6\nframe 7\nframe 8\nframe 9\nframe 10\nframe 11\nframe 12\nframe 13\nframe 14\nframe 15\nframe 16\nframe 17\nframe 18\nframe 19\nframe 20\nframe 21\nframe 22\nframe 23\nframe 24\nframe 25\nframe 26\nframe 27\nframe 28\nframe 29\n",
-    "outAt": 0.1
-   },
-   {
-    "line": 11,
-    "ms": 1000,
-    "note": "Frame 30, the last one. The strip is full once this prints.",
-    "do": [
-     {
-      "a": "frame",
-      "n": 30
-     },
-     {
-      "a": "work",
-      "at": 0.3,
-      "len": 0.5
-     }
-    ],
-    "out": "frame 30\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 12,
-    "ms": 1300,
-    "note": "The last sleep.",
-    "do": [
-     {
-      "a": "sleep"
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 900,
-    "note": "frame becomes 31, which is more than 30, so the loop is over.",
-    "do": []
-   },
-   {
-    "line": 14,
-    "ms": 1000,
-    "note": "After about a second of sleeping, we say we are done.",
-    "do": [
-     {
-      "a": "done"
-     }
-    ],
-    "out": "Done.\n",
-    "outAt": 0.4
-   },
-   {
-    "line": 15,
-    "ms": 900,
-    "note": "The program ends. 30 frames took roughly one second.",
-    "do": []
-   }
-  ]
- },
- "redraw-r": {
-  "scene": "p4b-type",
-  "steps": [
-   {
-    "line": 4,
-    "ms": 900,
-    "note": "score is a box that will hold the number we draw.",
-    "do": []
-   },
-   {
-    "line": 6,
-    "ms": 1000,
-    "note": "score starts at 11, and 11 is 9 or more, so the loop runs.",
-    "do": [
-     {
-      "a": "var",
-      "v": 11
-     }
-    ]
-   },
-   {
-    "line": 7,
-    "ms": 1300,
-    "note": "printf hands \\r and 'score 11' to stdout. Some terminals hold it until a newline, so fflush makes sure it shows.",
-    "do": [
-     {
-      "a": "print",
-      "t": "\rscore 11"
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 1400,
-    "note": "fflush pushes the buffer out. The cursor is already at column 0, so \\r changes nothing yet and 'score 11' appears.",
-    "do": [
-     {
-      "a": "flush"
-     }
-    ],
-    "out": "\rscore 11",
-    "outAt": 0.5
-   },
-   {
-    "line": 6,
-    "ms": 900,
-    "note": "score goes down to 10. Still 9 or more, so go again.",
-    "do": [
-     {
-      "a": "var",
-      "v": 10
-     }
-    ]
-   },
-   {
-    "line": 7,
-    "ms": 1100,
-    "note": "Same again: \\r, then 'score 10', waiting in the buffer.",
-    "do": [
-     {
-      "a": "print",
-      "t": "\rscore 10"
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 1700,
-    "note": "This time \\r snaps the cursor back to column 0. There is no newline, so 'score 10' types right over 'score 11'.",
-    "do": [
-     {
-      "a": "flush"
-     }
-    ],
-    "out": "\rscore 10",
-    "outAt": 0.5
-   },
-   {
-    "line": 6,
-    "ms": 900,
-    "note": "score is 9. Still 9 or more, so one more.",
-    "do": [
-     {
-      "a": "var",
-      "v": 9
-     }
-    ]
-   },
-   {
-    "line": 7,
-    "ms": 1100,
-    "note": "\\r and 'score 9' go into the buffer.",
-    "do": [
-     {
-      "a": "print",
-      "t": "\rscore 9"
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 1900,
-    "note": "'score 9' is one character shorter, so it doesn't cover the 0 from 'score 10'. That 0 is left behind and the line reads score 90.",
-    "do": [
-     {
-      "a": "flush"
-     }
-    ],
-    "out": "\rscore 9",
-    "outAt": 0.5
-   },
-   {
-    "line": 6,
-    "ms": 1000,
-    "note": "score drops to 8. 8 is not 9 or more, so the loop ends.",
-    "do": [
-     {
-      "a": "var",
-      "v": 8
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 1300,
-    "note": "Only now do we print a newline. The cursor drops to the next line so the shell prompt doesn't land on top of the score.",
-    "do": [
-     {
-      "a": "newline"
-     }
-    ],
-    "out": "\n",
-    "outAt": 0.4
-   },
-   {
-    "line": 11,
-    "ms": 900,
-    "note": "Done. A real game would pad or clear the line so nothing is left behind.",
-    "do": []
-   }
-  ]
- },
- "frame-buffer": {
-  "scene": "p4b-buffer",
-  "steps": [
-   {
-    "line": 4,
-    "ms": 900,
-    "note": "LANE_LEN is a text replacement: wherever the code says LANE_LEN, the compiler sees 12.",
-    "do": []
-   },
-   {
-    "line": 5,
-    "ms": 800,
-    "note": "PLAYER_COL is 2: the player stands in slot 2.",
-    "do": []
-   },
-   {
-    "line": 8,
-    "ms": 1500,
-    "note": "Make the frame buffer: 13 slots, 12 for the lane and one spare for the \\0 that ends a string. They hold leftover junk (?) for now.",
-    "do": [
-     {
-      "a": "alloc"
-     }
-    ]
-   },
-   {
-    "line": 9,
-    "ms": 900,
-    "note": "obs_col is the obstacle's column: 8.",
-    "do": [
-     {
-      "a": "var"
-     }
-    ]
-   },
-   {
-    "line": 11,
-    "ms": 1500,
-    "note": "memset paints the 12 lane slots with dots. That's the blank road.",
-    "do": [
-     {
-      "a": "fill"
-     }
-    ]
-   },
-   {
-    "line": 12,
-    "ms": 1100,
-    "note": "The \\0 goes in the spare slot so printf knows where the string stops.",
-    "do": [
-     {
-      "a": "term"
-     }
-    ]
-   },
-   {
-    "line": 13,
-    "ms": 1300,
-    "note": "Stamp an obstacle: slot 8 becomes #. It happens in memory, so nothing shows yet.",
-    "do": [
-     {
-      "a": "stamp",
-      "i": 8,
-      "ch": "#"
-     }
-    ]
-   },
-   {
-    "line": 14,
-    "ms": 1300,
-    "note": "Stamp the player on top: slot 2 becomes A. Later stamps cover earlier ones, so if both wanted a slot the player would win.",
-    "do": [
-     {
-      "a": "stamp",
-      "i": 2,
-      "ch": "A"
-     }
-    ]
-   },
-   {
-    "line": 15,
-    "ms": 1800,
-    "note": "One printf rolls the finished row out to the screen all at once. No half-painted frame.",
-    "do": [
-     {
-      "a": "print"
-     }
-    ],
-    "out": "..A.....#...\n",
-    "outAt": 0.6
-   },
-   {
-    "line": 16,
-    "ms": 900,
-    "note": "Done. The row is on screen exactly as it was painted backstage.",
-    "do": []
-   }
-  ]
- },
- "game-loop": {
-  "scene": "p4b-beat",
-  "steps": [
-   {
-    "line": 4,
-    "ms": 1300,
-    "note": "A pretend keyboard stands in for _kbhit: one key per frame. A d is the third key (frame 2). The picture's strip shows them.",
-    "do": [
-     {
-      "a": "show"
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 900,
-    "note": "pos starts at 0, the left of the lane.",
-    "do": [
-     {
-      "a": "set",
-      "k": "pos",
-      "v": 0
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 900,
-    "note": "The heartbeat starts. frame is 0.",
-    "do": [
-     {
-      "a": "set",
-      "k": "frame",
-      "v": 0
-     }
-    ]
-   },
-   {
-    "line": 11,
-    "ms": 1100,
-    "note": "1. Input: read this frame's key. keys[0] is '.', so no key.",
-    "do": [
-     {
-      "a": "beat",
-      "n": 0
-     },
-     {
-      "a": "set",
-      "k": "key",
-      "v": "."
-     }
-    ]
-   },
-   {
-    "line": 12,
-    "ms": 1100,
-    "note": "2. Update: ducking is 1 only if the key is 'd'. '.' is not, so ducking is 0.",
-    "do": [
-     {
-      "a": "beat",
-      "n": 1
-     },
-     {
-      "a": "set",
-      "k": "duck",
-      "v": 0
-     }
-    ]
-   },
-   {
-    "line": 13,
-    "ms": 1000,
-    "note": "Still update: the runner moves one step. pos is 1.",
-    "do": [
-     {
-      "a": "set",
-      "k": "pos",
-      "v": 1
-     }
-    ]
-   },
-   {
-    "line": 14,
-    "ms": 1000,
-    "note": "3. Render: show the result.",
-    "do": [
-     {
-      "a": "beat",
-      "n": 2
-     }
-    ],
-    "out": "frame 0: pos 1 ducking 0\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 15,
-    "ms": 1000,
-    "note": "4. Wait: the real game sleeps here, then the loop goes round again.",
-    "do": [
-     {
-      "a": "beat",
-      "n": 3
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 900,
-    "note": "frame++ makes frame 1. 1 < 5, so round again.",
-    "do": [
-     {
-      "a": "set",
-      "k": "frame",
-      "v": 1
-     }
-    ]
-   },
-   {
-    "line": 11,
-    "ms": 1100,
-    "note": "Frame 1, input: keys[1] is '.', no key again.",
-    "do": [
-     {
-      "a": "beat",
-      "n": 0
-     },
-     {
-      "a": "set",
-      "k": "key",
-      "v": "."
-     }
-    ]
-   },
-   {
-    "line": 12,
-    "ms": 1000,
-    "note": "Update: not 'd', so ducking is 0.",
-    "do": [
-     {
-      "a": "beat",
-      "n": 1
-     },
-     {
-      "a": "set",
-      "k": "duck",
-      "v": 0
-     }
-    ]
-   },
-   {
-    "line": 13,
-    "ms": 900,
-    "note": "pos goes to 2.",
-    "do": [
-     {
-      "a": "set",
-      "k": "pos",
-      "v": 2
-     }
-    ]
-   },
-   {
-    "line": 14,
-    "ms": 900,
-    "note": "Render.",
-    "do": [
-     {
-      "a": "beat",
-      "n": 2
-     }
-    ],
-    "out": "frame 1: pos 2 ducking 0\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 15,
-    "ms": 800,
-    "note": "Wait.",
-    "do": [
-     {
-      "a": "beat",
-      "n": 3
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 900,
-    "note": "frame++ makes frame 2. 2 < 5, so round again.",
-    "do": [
-     {
-      "a": "set",
-      "k": "frame",
-      "v": 2
-     }
-    ]
-   },
-   {
-    "line": 11,
-    "ms": 1200,
-    "note": "Frame 2, input: keys[2] is 'd'. A key press!",
-    "do": [
-     {
-      "a": "beat",
-      "n": 0
-     },
-     {
-      "a": "set",
-      "k": "key",
-      "v": "d"
-     }
-    ]
-   },
-   {
-    "line": 12,
-    "ms": 1200,
-    "note": "Update: the key is 'd', so (key == 'd') is 1 and the runner ducks.",
-    "do": [
-     {
-      "a": "beat",
-      "n": 1
-     },
-     {
-      "a": "set",
-      "k": "duck",
-      "v": 1
-     }
-    ]
-   },
-   {
-    "line": 13,
-    "ms": 900,
-    "note": "pos goes to 3. The runner moves while ducked.",
-    "do": [
-     {
-      "a": "set",
-      "k": "pos",
-      "v": 3
-     }
-    ]
-   },
-   {
-    "line": 14,
-    "ms": 1000,
-    "note": "Render: ducking 1 is printed.",
-    "do": [
-     {
-      "a": "beat",
-      "n": 2
-     }
-    ],
-    "out": "frame 2: pos 3 ducking 1\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 15,
-    "ms": 800,
-    "note": "Wait.",
-    "do": [
-     {
-      "a": "beat",
-      "n": 3
-     }
-    ]
-   },
-   {
-    "line": 14,
-    "ms": 2400,
-    "note": "Frames 3 and 4 go round the same four beats fast. The d is gone, so ducking drops back to 0 and the runner stands up again.",
-    "do": [
-     {
-      "a": "ff",
-      "frame": 3,
-      "key": ".",
-      "duck": 0,
-      "pos": 4,
-      "len": 0.5
-     },
-     {
-      "a": "ff",
-      "frame": 4,
-      "key": ".",
-      "duck": 0,
-      "pos": 5,
-      "at": 0.5,
-      "len": 0.5
-     }
-    ],
-    "out": "frame 3: pos 4 ducking 0\nframe 4: pos 5 ducking 0\n",
-    "outAt": 0.5
-   },
-   {
-    "line": 17,
-    "ms": 900,
-    "note": "The loop is done after five frames. Every game is this same heartbeat.",
-    "do": []
-   }
-  ]
- },
- "sentinel": {
-  "scene": "p4b-lot",
-  "steps": [
-   {
-    "line": 6,
-    "ms": 1300,
-    "note": "obs is an array of four bays. We haven't put anything in them yet, so they hold junk (?).",
-    "do": [
-     {
-      "a": "bays"
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 800,
-    "note": "score starts at 0.",
-    "do": [
-     {
-      "a": "score",
-      "v": 0
-     }
-    ]
-   },
-   {
-    "line": 11,
-    "ms": 1700,
-    "note": "The loop visits each bay and writes -1. Every bay gets a cone: -1 means free.",
-    "do": [
-     {
-      "a": "cones"
-     }
-    ]
-   },
-   {
-    "line": 14,
-    "ms": 700,
-    "note": "Frame 0 begins.",
-    "do": [
-     {
-      "a": "frame",
-      "n": 0
-     }
-    ]
-   },
-   {
-    "line": 16,
-    "ms": 1600,
-    "note": "The inner loop walks over the bays. Every one holds -1, so the if skips them all. Nothing moves.",
-    "do": [
-     {
-      "a": "ptr",
-      "i": 0,
-      "to": 3
-     }
-    ]
-   },
-   {
-    "line": 24,
-    "ms": 800,
-    "note": "0 % 2 is 0, so this is a spawn frame.",
-    "do": []
-   },
-   {
-    "line": 26,
-    "ms": 1000,
-    "note": "Search for the first free bay. Bay 0 holds -1, so this is the one.",
-    "do": [
-     {
-      "a": "ptr",
-      "i": 0
-     }
-    ]
-   },
-   {
-    "line": 27,
-    "ms": 1200,
-    "note": "A car enters bay 0. The number 2 is its column.",
-    "do": [
-     {
-      "a": "set",
-      "i": 0,
-      "v": 2
-     }
-    ]
-   },
-   {
-    "line": 28,
-    "ms": 900,
-    "note": "break stops the search. Without it, every free bay would get a car.",
-    "do": []
-   },
-   {
-    "line": 17,
-    "ms": 1800,
-    "note": "Frame 1. Bay 0 holds a car, so it moves one column toward the player: 2 becomes 1. The empty bays are skipped. 1 is not below 0, and frame 1 is odd, so no new car.",
-    "do": [
-     {
-      "a": "frame",
-      "n": 1
-     },
-     {
-      "a": "ptr",
-      "i": 0
-     },
-     {
-      "a": "set",
-      "i": 0,
-      "v": 1,
-      "at": 0.3,
-      "len": 0.7
-     }
-    ]
-   },
-   {
-    "line": 17,
-    "ms": 1500,
-    "note": "Frame 2. The car moves again: 1 becomes 0. 0 is not below 0, so it stays on the road.",
-    "do": [
-     {
-      "a": "frame",
-      "n": 2
-     },
-     {
-      "a": "ptr",
-      "i": 0
-     },
-     {
-      "a": "set",
-      "i": 0,
-      "v": 0,
-      "at": 0.3,
-      "len": 0.7
-     }
-    ]
-   },
-   {
-    "line": 24,
-    "ms": 800,
-    "note": "Frame 2 is even, so another car spawns.",
-    "do": []
-   },
-   {
-    "line": 26,
-    "ms": 1200,
-    "note": "Search for a free bay. Bay 0 is busy, so skip it. Bay 1 has a cone: take it.",
-    "do": [
-     {
-      "a": "ptr",
-      "i": 0,
-      "to": 1
-     }
-    ]
-   },
-   {
-    "line": 27,
-    "ms": 1100,
-    "note": "A new car enters bay 1.",
-    "do": [
-     {
-      "a": "set",
-      "i": 1,
-      "v": 2
-     }
-    ]
-   },
-   {
-    "line": 28,
-    "ms": 800,
-    "note": "break again, so only one bay is used.",
-    "do": []
-   },
-   {
-    "line": 17,
-    "ms": 1600,
-    "note": "Frame 3. Bay 0's car moves: 0 minus 1 is -1. It has gone past the player.",
-    "do": [
-     {
-      "a": "frame",
-      "n": 3
-     },
-     {
-      "a": "ptr",
-      "i": 0
-     },
-     {
-      "a": "set",
-      "i": 0,
-      "v": -1,
-      "at": 0.3,
-      "len": 0.7
-     }
-    ]
-   },
-   {
-    "line": 18,
-    "ms": 900,
-    "note": "Below column 0 means dodged. -1 is less than 0, so the if is true.",
-    "do": []
-   },
-   {
-    "line": 19,
-    "ms": 1000,
-    "note": "Put the bay back to -1. Here it already is -1, but this line is what frees any bay that goes below 0.",
-    "do": []
-   },
-   {
-    "line": 20,
-    "ms": 1100,
-    "note": "One obstacle dodged: score goes to 1.",
-    "do": [
-     {
-      "a": "score",
-      "v": 1
-     }
-    ]
-   },
-   {
-    "line": 17,
-    "ms": 1400,
-    "note": "The inner loop reaches bay 1: its car moves from 2 to 1.",
-    "do": [
-     {
-      "a": "ptr",
-      "i": 0,
-      "to": 1
-     },
-     {
-      "a": "set",
-      "i": 1,
-      "v": 1,
-      "at": 0.5,
-      "len": 0.5
-     }
-    ]
-   },
-   {
-    "line": 17,
-    "ms": 1500,
-    "note": "Frame 4. Bay 1's car moves: 1 becomes 0. Frame 4 is even, so a spawn is coming.",
-    "do": [
-     {
-      "a": "frame",
-      "n": 4
-     },
-     {
-      "a": "ptr",
-      "i": 1
-     },
-     {
-      "a": "set",
-      "i": 1,
-      "v": 0,
-      "at": 0.3,
-      "len": 0.7
-     }
-    ]
-   },
-   {
-    "line": 26,
-    "ms": 1000,
-    "note": "Search for a free bay. Bay 0 holds a cone again, so a new car can take it.",
-    "do": [
-     {
-      "a": "ptr",
-      "i": 0
-     }
-    ]
-   },
-   {
-    "line": 27,
-    "ms": 1200,
-    "note": "A car enters bay 0, then break stops the search.",
-    "do": [
-     {
-      "a": "set",
-      "i": 0,
-      "v": 2
-     }
-    ]
-   },
-   {
-    "line": 33,
-    "ms": 1300,
-    "note": "After five frames the bays hold 2, 0, -1, -1 and the score is 1.",
-    "do": [
-     {
-      "a": "ptr",
-      "i": 0,
-      "to": 3
-     }
-    ],
-    "out": "2 0 -1 -1  score 1\n",
-    "outAt": 0.4
-   },
-   {
-    "line": 34,
-    "ms": 900,
-    "note": "Done. No bay was ever built or demolished, only the numbers changed.",
-    "do": []
-   }
-  ]
- },
- "state-machine": {
-  "scene": "p4b-states",
-  "steps": [
-   {
-    "line": 3,
-    "ms": 1300,
-    "note": "An enum gives the three states names. Underneath they are the numbers 0, 1 and 2. The picture shows each state as a box.",
-    "do": []
-   },
-   {
-    "line": 6,
-    "ms": 1100,
-    "note": "A pretend keyboard, one key per frame. '.' means no key. The picture shows the keys along the top.",
-    "do": [
-     {
-      "a": "keys"
-     }
-    ]
-   },
-   {
-    "line": 7,
-    "ms": 1200,
-    "note": "The game starts on the menu. This one variable is the whole machine's memory.",
-    "do": [
-     {
-      "a": "state",
-      "v": 0
-     }
-    ]
-   },
-   {
-    "line": 11,
-    "ms": 900,
-    "note": "Frame 0: the key is '.', so no key.",
-    "do": [
-     {
-      "a": "frame",
-      "n": 0
-     }
-    ]
-   },
-   {
-    "line": 12,
-    "ms": 1100,
-    "note": "switch looks at state and jumps to the case that matches. Only the MENU rules run this frame.",
-    "do": [
-     {
-      "a": "look"
-     }
-    ]
-   },
-   {
-    "line": 14,
-    "ms": 1000,
-    "note": "The menu only wants a key press, and '.' means none. So state stays MENU.",
-    "do": [
-     {
-      "a": "stay"
-     }
-    ]
-   },
-   {
-    "line": 23,
-    "ms": 800,
-    "note": "Print the state number.",
-    "do": [],
-    "out": "frame 0: state 0\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 11,
-    "ms": 900,
-    "note": "Frame 1: the key is 'x'.",
-    "do": [
-     {
-      "a": "frame",
-      "n": 1
-     }
-    ]
-   },
-   {
-    "line": 14,
-    "ms": 1300,
-    "note": "A key press! The menu hands over: state becomes STATE_PLAYING.",
-    "do": [
-     {
-      "a": "go",
-      "to": 1
-     }
-    ]
-   },
-   {
-    "line": 23,
-    "ms": 800,
-    "note": "Print the state number.",
-    "do": [],
-    "out": "frame 1: state 1\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 11,
-    "ms": 900,
-    "note": "Frame 2: no key.",
-    "do": [
-     {
-      "a": "frame",
-      "n": 2
-     }
-    ]
-   },
-   {
-    "line": 17,
-    "ms": 1000,
-    "note": "While playing, only 'h' matters. Not an h, so nothing changes.",
-    "do": [
-     {
-      "a": "stay"
-     }
-    ]
-   },
-   {
-    "line": 23,
-    "ms": 800,
-    "note": "Print the state number.",
-    "do": [],
-    "out": "frame 2: state 1\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 11,
-    "ms": 900,
-    "note": "Frame 3: the key is 'h', a hit.",
-    "do": [
-     {
-      "a": "frame",
-      "n": 3
-     }
-    ]
-   },
-   {
-    "line": 17,
-    "ms": 1300,
-    "note": "An h ends the run: state becomes STATE_GAME_OVER.",
-    "do": [
-     {
-      "a": "go",
-      "to": 2
-     }
-    ]
-   },
-   {
-    "line": 23,
-    "ms": 800,
-    "note": "Print the state number.",
-    "do": [],
-    "out": "frame 3: state 2\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 11,
-    "ms": 900,
-    "note": "Frame 4: the key is 'x'.",
-    "do": [
-     {
-      "a": "frame",
-      "n": 4
-     }
-    ]
-   },
-   {
-    "line": 20,
-    "ms": 1000,
-    "note": "Game over only listens for 'r'. An x does nothing, so state stays put.",
-    "do": [
-     {
-      "a": "stay"
-     }
-    ]
-   },
-   {
-    "line": 23,
-    "ms": 800,
-    "note": "Print the state number.",
-    "do": [],
-    "out": "frame 4: state 2\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 11,
-    "ms": 900,
-    "note": "Frame 5: the key is 'r'.",
-    "do": [
-     {
-      "a": "frame",
-      "n": 5
-     }
-    ]
-   },
-   {
-    "line": 20,
-    "ms": 1300,
-    "note": "An r restarts: state goes back to STATE_PLAYING.",
-    "do": [
-     {
-      "a": "go",
-      "to": 1
-     }
-    ]
-   },
-   {
-    "line": 23,
-    "ms": 800,
-    "note": "Print the state number.",
-    "do": [],
-    "out": "frame 5: state 1\n",
-    "outAt": 0.3
-   },
-   {
-    "line": 25,
-    "ms": 900,
-    "note": "The loop ends after six frames. The state followed the keys, one rule at a time.",
-    "do": []
-   }
-  ]
- },
- "const-ptr": {
-  "scene": "p4b-pass",
-  "steps": [
-   {
-    "line": 18,
-    "ms": 1200,
-    "note": "In main we make a Runner. It is one card holding a score and a frame. Both are junk (?) for now.",
-    "do": [
-     {
-      "a": "card"
-     }
-    ]
-   },
-   {
-    "line": 19,
-    "ms": 900,
-    "note": "score starts at 0.",
-    "do": [
-     {
-      "a": "field",
-      "name": "score",
-      "v": 0
-     }
-    ]
-   },
-   {
-    "line": 20,
-    "ms": 900,
-    "note": "frame starts at 0.",
-    "do": [
-     {
-      "a": "field",
-      "name": "frame",
-      "v": 0
-     }
-    ]
-   },
-   {
-    "line": 21,
-    "ms": 1400,
-    "note": "We call runner_update and pass &r, the address of the card. Its pointer r now points at the real Runner.",
-    "do": [
-     {
-      "a": "call",
-      "fn": "update"
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 1100,
-    "note": "This is a normal pointer: runner_update can read and change whatever it points at. It holds a key.",
-    "do": []
-   },
-   {
-    "line": 9,
-    "ms": 1200,
-    "note": "r->score++ changes the real score in main, because r points at it. score is 1.",
-    "do": [
-     {
-      "a": "write",
-      "name": "score",
-      "v": 1
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 1100,
-    "note": "The frame is changed the same way: 1.",
-    "do": [
-     {
-      "a": "write",
-      "name": "frame",
-      "v": 1
-     }
-    ]
-   },
-   {
-    "line": 22,
-    "ms": 1200,
-    "note": "A second call. The same pointer reaches the same card.",
-    "do": [
-     {
-      "a": "call",
-      "fn": "update"
-     }
-    ]
-   },
-   {
-    "line": 9,
-    "ms": 1000,
-    "note": "score becomes 2.",
-    "do": [
-     {
-      "a": "write",
-      "name": "score",
-      "v": 2
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 1000,
-    "note": "frame becomes 2.",
-    "do": [
-     {
-      "a": "write",
-      "name": "frame",
-      "v": 2
-     }
-    ]
-   },
-   {
-    "line": 23,
-    "ms": 1400,
-    "note": "Now runner_render gets &r. A normal pointer converts to a read-only one automatically, so this is allowed.",
-    "do": [
-     {
-      "a": "call",
-      "fn": "render"
-     }
-    ]
-   },
-   {
-    "line": 13,
-    "ms": 1700,
-    "note": "const Runner* means: r points at a Runner I'm not allowed to change. It is a visitor's pass: look, but don't touch. Writing through it would stop the program building.",
-    "do": [
-     {
-      "a": "pass"
-     }
-    ]
-   },
-   {
-    "line": 14,
-    "ms": 1400,
-    "note": "Reading is fine. printf only looks at score and frame.",
-    "do": [
-     {
-      "a": "read",
-      "names": [
-       "score",
-       "frame"
-      ]
-     }
-    ],
-    "out": "score 2, frame 2\n",
-    "outAt": 0.4
-   },
-   {
-    "line": 24,
-    "ms": 1000,
-    "note": "Done. render only read the card, so it still says score 2, frame 2.",
-    "do": [
-     {
-      "a": "ret"
-     }
-    ]
-   }
-  ]
- },
- "lnk2005": {
-  "scene": "p4b-link",
-  "prompt": "",
-  "steps": [
-   {
-    "line": 1,
-    "ms": 2200,
-    "note": "Not a program run: this shows what the linker does with the header. main.c and runner.c each start with #include \"runner.h\". An include is copy and paste, so both files get their own copy of every line. The console shows linker messages, not program output.",
-    "do": [
-     {
-      "a": "paste"
-     }
-    ]
-   },
-   {
-    "line": 2,
-    "ms": 1500,
-    "note": "#pragma once stops the header being pasted twice into one file. It doesn't help across two files: each .c file still gets one copy.",
-    "do": [
-     {
-      "a": "mark",
-      "row": 1,
-      "kind": "shield"
-     }
-    ]
-   },
-   {
-    "line": 4,
-    "ms": 1300,
-    "note": "A #define makes no code of its own. It is a text replacement, so two copies are harmless.",
-    "do": [
-     {
-      "a": "mark",
-      "row": 2,
-      "kind": "ok"
-     }
-    ]
-   },
-   {
-    "line": 6,
-    "ms": 1300,
-    "note": "A typedef only describes a shape. It makes nothing in memory, so it is safe in a header.",
-    "do": [
-     {
-      "a": "mark",
-      "row": 3,
-      "kind": "ok"
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 2200,
-    "note": "This is the problem. It creates a variable. Each file compiles into an .obj, and each .obj now owns its own best_score.",
-    "do": [
-     {
-      "a": "mark",
-      "row": 4,
-      "kind": "bad"
-     },
-     {
-      "a": "obj",
-      "at": 0.4,
-      "len": 0.6
-     }
-    ]
-   },
-   {
-    "line": 10,
-    "ms": 1400,
-    "note": "A prototype is a promise: this function exists somewhere. Any number of files can say it. This is what headers are for.",
-    "do": [
-     {
-      "a": "mark",
-      "row": 5,
-      "kind": "ok"
-     }
-    ]
-   },
-   {
-    "line": 8,
-    "ms": 2200,
-    "note": "The linker joins the .obj files and finds best_score defined in both. It can't pick one, so it refuses.",
-    "do": [
-     {
-      "a": "link"
-     }
-    ],
-    "out": "runner.obj : error LNK2005: _best_score already defined in main.obj\nmain.exe : fatal error LNK1169: one or more multiply defined symbols found\n",
-    "outAt": 0.5
-   },
-   {
-    "line": 8,
-    "ms": 3000,
-    "note": "The fix. In the header, write extern int best_score; which only says best_score exists somewhere. Then define it once, in runner.c: int best_score = 0;. Now there is exactly one.",
-    "do": [
-     {
-      "a": "fix"
-     }
-    ],
-    "out": "BUILD OK\n",
-    "outAt": 0.8
-   }
-  ]
- }
+  "kbhit-getch": {
+    "scene": "p4b-keys",
+    "steps": [
+      {
+        "line": 5,
+        "ms": 1300,
+        "note": "Scripted run for this picture: on loop 1 you type nothing, on loop 2 you press j, on loop 3 you press q. The box called key is empty for now.",
+        "do": []
+      },
+      {
+        "line": 6,
+        "ms": 900,
+        "note": "count starts at 0. It will count how many times the loop goes round.",
+        "do": [
+          {
+            "a": "count",
+            "to": 0
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1100,
+        "note": "for (;;) has no condition, so it loops forever. Only break gets us out. Watch the lane: it keeps moving the whole time.",
+        "do": []
+      },
+      {
+        "line": 9,
+        "ms": 800,
+        "note": "Loop 1 begins. Start by assuming no key: key = 0.",
+        "do": [
+          {
+            "a": "key",
+            "v": "0",
+            "clear": true
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 1200,
+        "note": "_kbhit() glances at the letterbox. Nothing there, so it answers 0 straight away and the while loop is skipped.",
+        "do": [
+          {
+            "a": "peek",
+            "r": false
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 800,
+        "note": "key is 0, not 'q', so we stay in the loop.",
+        "do": []
+      },
+      {
+        "line": 16,
+        "ms": 1000,
+        "note": "count goes up on every loop, whether or not you touched the keyboard. The lane moves one step.",
+        "do": [
+          {
+            "a": "count",
+            "to": 1
+          }
+        ]
+      },
+      {
+        "line": 17,
+        "ms": 800,
+        "note": "key is 0, so there is nothing to print this time.",
+        "do": []
+      },
+      {
+        "line": 9,
+        "ms": 1500,
+        "note": "Loop 2. key goes back to 0. While we weren't looking, you pressed j and it landed in the letterbox.",
+        "do": [
+          {
+            "a": "key",
+            "v": "0",
+            "clear": true,
+            "len": 0.3
+          },
+          {
+            "a": "press",
+            "k": "j",
+            "at": 0.3,
+            "len": 0.7
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 1100,
+        "note": "_kbhit() peeks and sees a key waiting, so it answers 1 and the loop body runs.",
+        "do": [
+          {
+            "a": "peek",
+            "r": true
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 1300,
+        "note": "_getch() takes the waiting key out of the letterbox and puts it in key. No Enter needed.",
+        "do": [
+          {
+            "a": "take",
+            "k": "j"
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 1100,
+        "note": "Peek again. The letterbox is empty now, so _kbhit() says 0 and the while loop ends.",
+        "do": [
+          {
+            "a": "peek",
+            "r": false
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 800,
+        "note": "key is 'j', not 'q', so no break.",
+        "do": []
+      },
+      {
+        "line": 16,
+        "ms": 1000,
+        "note": "count becomes 2. The lane moves another step.",
+        "do": [
+          {
+            "a": "count",
+            "to": 2
+          }
+        ]
+      },
+      {
+        "line": 17,
+        "ms": 800,
+        "note": "key is not 0, so this time there is something to print.",
+        "do": []
+      },
+      {
+        "line": 18,
+        "ms": 1200,
+        "note": "printf shows which key arrived and on which loop.",
+        "do": [
+          {
+            "a": "say",
+            "t": "key j at loop 2"
+          }
+        ],
+        "out": "key j at loop 2\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 9,
+        "ms": 1500,
+        "note": "Loop 3. key resets to 0, and you press q.",
+        "do": [
+          {
+            "a": "key",
+            "v": "0",
+            "clear": true,
+            "len": 0.3
+          },
+          {
+            "a": "press",
+            "k": "q",
+            "at": 0.3,
+            "len": 0.7
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 1000,
+        "note": "A key is waiting, so _kbhit() says 1.",
+        "do": [
+          {
+            "a": "peek",
+            "r": true
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 1200,
+        "note": "_getch() takes the q.",
+        "do": [
+          {
+            "a": "take",
+            "k": "q"
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 1000,
+        "note": "Letterbox empty again, so the while loop ends.",
+        "do": [
+          {
+            "a": "peek",
+            "r": false
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 900,
+        "note": "key is 'q'. This is true.",
+        "do": []
+      },
+      {
+        "line": 14,
+        "ms": 1000,
+        "note": "break jumps out of the forever loop.",
+        "do": [
+          {
+            "a": "quit"
+          }
+        ]
+      },
+      {
+        "line": 21,
+        "ms": 1000,
+        "note": "The program ends. count stopped at 2 because loop 3 left before count++.",
+        "do": []
+      }
+    ]
+  },
+  "sleep": {
+    "scene": "p4b-clock",
+    "steps": [
+      {
+        "line": 1,
+        "ms": 1300,
+        "note": "Scripted for this picture: we watch frames 1 and 2, skip ahead through 3 to 29, then see frame 30. This line asks windows.h to leave out the rarely used parts.",
+        "do": [
+          {
+            "a": "chip",
+            "t": "WIN32_LEAN_AND_MEAN: lighter windows.h"
+          }
+        ]
+      },
+      {
+        "line": 2,
+        "ms": 1000,
+        "note": "windows.h is where Sleep lives. Capital S.",
+        "do": [
+          {
+            "a": "chip",
+            "t": "windows.h gives us Sleep()"
+          }
+        ]
+      },
+      {
+        "line": 5,
+        "ms": 1500,
+        "note": "One named number for the frame length: 33 milliseconds. 1000 divided by 33 is about 30 frames a second.",
+        "do": [
+          {
+            "a": "ms"
+          },
+          {
+            "a": "fps",
+            "at": 0.5,
+            "len": 0.5
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1000,
+        "note": "frame is an int that will count the frames. The film strip on top has 30 slots, all empty.",
+        "do": [
+          {
+            "a": "chip",
+            "t": ""
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 900,
+        "note": "The loop starts at frame 1 and will run while frame is 30 or less.",
+        "do": []
+      },
+      {
+        "line": 11,
+        "ms": 1100,
+        "note": "Do the frame's work. Here that is one printf. A bright block appears in the CPU bar: it only takes a moment.",
+        "do": [
+          {
+            "a": "frame",
+            "n": 1
+          },
+          {
+            "a": "work",
+            "at": 0.3,
+            "len": 0.5
+          }
+        ],
+        "out": "frame 1\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 12,
+        "ms": 1700,
+        "note": "Sleep(33) hands the CPU back to Windows. The clock fills for about 33 ms while other programs get a turn.",
+        "do": [
+          {
+            "a": "sleep"
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 800,
+        "note": "frame goes to 2, still 30 or less, so round again.",
+        "do": []
+      },
+      {
+        "line": 11,
+        "ms": 1000,
+        "note": "Frame 2: a little work, then a print.",
+        "do": [
+          {
+            "a": "frame",
+            "n": 2
+          },
+          {
+            "a": "work",
+            "at": 0.3,
+            "len": 0.5
+          }
+        ],
+        "out": "frame 2\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 12,
+        "ms": 1500,
+        "note": "Sleep again. About 33 ms each time, never exact: Windows wakes you on its next timer tick.",
+        "do": [
+          {
+            "a": "sleep"
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 2600,
+        "note": "Frames 3 to 29 repeat the same three beats: print, sleep, next. We fast-forward through them.",
+        "do": [
+          {
+            "a": "ff",
+            "from": 2,
+            "to": 29
+          }
+        ],
+        "out": "frame 3\nframe 4\nframe 5\nframe 6\nframe 7\nframe 8\nframe 9\nframe 10\nframe 11\nframe 12\nframe 13\nframe 14\nframe 15\nframe 16\nframe 17\nframe 18\nframe 19\nframe 20\nframe 21\nframe 22\nframe 23\nframe 24\nframe 25\nframe 26\nframe 27\nframe 28\nframe 29\n",
+        "outAt": 0.1
+      },
+      {
+        "line": 11,
+        "ms": 1000,
+        "note": "Frame 30, the last one. The strip is full once this prints.",
+        "do": [
+          {
+            "a": "frame",
+            "n": 30
+          },
+          {
+            "a": "work",
+            "at": 0.3,
+            "len": 0.5
+          }
+        ],
+        "out": "frame 30\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 12,
+        "ms": 1300,
+        "note": "The last sleep.",
+        "do": [
+          {
+            "a": "sleep"
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 900,
+        "note": "frame becomes 31, which is more than 30, so the loop is over.",
+        "do": []
+      },
+      {
+        "line": 14,
+        "ms": 1000,
+        "note": "After about a second of sleeping, we say we are done.",
+        "do": [
+          {
+            "a": "done"
+          }
+        ],
+        "out": "Done.\n",
+        "outAt": 0.4
+      },
+      {
+        "line": 15,
+        "ms": 900,
+        "note": "The program ends. 30 frames took roughly one second.",
+        "do": []
+      }
+    ]
+  },
+  "redraw-r": {
+    "scene": "p4b-type",
+    "steps": [
+      {
+        "line": 4,
+        "ms": 900,
+        "note": "score is a box that will hold the number we draw.",
+        "do": []
+      },
+      {
+        "line": 6,
+        "ms": 1000,
+        "note": "score starts at 11, and 11 is 9 or more, so the loop runs.",
+        "do": [
+          {
+            "a": "var",
+            "v": 11
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1300,
+        "note": "printf hands \\r and 'score 11' to stdout. Some terminals hold it until a newline, so fflush makes sure it shows.",
+        "do": [
+          {
+            "a": "print",
+            "t": "\rscore 11"
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1400,
+        "note": "fflush pushes the buffer out. The cursor is already at column 0, so \\r changes nothing yet and 'score 11' appears.",
+        "do": [
+          {
+            "a": "flush"
+          }
+        ],
+        "out": "\rscore 11",
+        "outAt": 0.5
+      },
+      {
+        "line": 6,
+        "ms": 900,
+        "note": "score goes down to 10. Still 9 or more, so go again.",
+        "do": [
+          {
+            "a": "var",
+            "v": 10
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1100,
+        "note": "Same again: \\r, then 'score 10', waiting in the buffer.",
+        "do": [
+          {
+            "a": "print",
+            "t": "\rscore 10"
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1700,
+        "note": "This time \\r snaps the cursor back to column 0. There is no newline, so 'score 10' types right over 'score 11'.",
+        "do": [
+          {
+            "a": "flush"
+          }
+        ],
+        "out": "\rscore 10",
+        "outAt": 0.5
+      },
+      {
+        "line": 6,
+        "ms": 900,
+        "note": "score is 9. Still 9 or more, so one more.",
+        "do": [
+          {
+            "a": "var",
+            "v": 9
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1100,
+        "note": "\\r and 'score 9' go into the buffer.",
+        "do": [
+          {
+            "a": "print",
+            "t": "\rscore 9"
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1900,
+        "note": "'score 9' is one character shorter, so it doesn't cover the 0 from 'score 10'. That 0 is left behind and the line reads score 90.",
+        "do": [
+          {
+            "a": "flush"
+          }
+        ],
+        "out": "\rscore 9",
+        "outAt": 0.5
+      },
+      {
+        "line": 6,
+        "ms": 1000,
+        "note": "score drops to 8. 8 is not 9 or more, so the loop ends.",
+        "do": [
+          {
+            "a": "var",
+            "v": 8
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 1300,
+        "note": "Only now do we print a newline. The cursor drops to the next line so the shell prompt doesn't land on top of the score.",
+        "do": [
+          {
+            "a": "newline"
+          }
+        ],
+        "out": "\n",
+        "outAt": 0.4
+      },
+      {
+        "line": 11,
+        "ms": 900,
+        "note": "Done. A real game would pad or clear the line so nothing is left behind.",
+        "do": []
+      }
+    ]
+  },
+  "frame-buffer": {
+    "scene": "p4b-buffer",
+    "steps": [
+      {
+        "line": 4,
+        "ms": 900,
+        "note": "LANE_LEN is a text replacement: wherever the code says LANE_LEN, the compiler sees 12.",
+        "do": []
+      },
+      {
+        "line": 5,
+        "ms": 800,
+        "note": "PLAYER_COL is 2: the player stands in slot 2.",
+        "do": []
+      },
+      {
+        "line": 8,
+        "ms": 1500,
+        "note": "Make the frame buffer: 13 slots, 12 for the lane and one spare for the \\0 that ends a string. They hold leftover junk (?) for now.",
+        "do": [
+          {
+            "a": "alloc"
+          }
+        ]
+      },
+      {
+        "line": 9,
+        "ms": 900,
+        "note": "obs_col is the obstacle's column: 8.",
+        "do": [
+          {
+            "a": "var"
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 1500,
+        "note": "memset paints the 12 lane slots with dots. That's the blank road.",
+        "do": [
+          {
+            "a": "fill"
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 1100,
+        "note": "The \\0 goes in the spare slot so printf knows where the string stops.",
+        "do": [
+          {
+            "a": "term"
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 1300,
+        "note": "Stamp an obstacle: slot 8 becomes #. It happens in memory, so nothing shows yet.",
+        "do": [
+          {
+            "a": "stamp",
+            "i": 8,
+            "ch": "#"
+          }
+        ]
+      },
+      {
+        "line": 14,
+        "ms": 1300,
+        "note": "Stamp the player on top: slot 2 becomes A. Later stamps cover earlier ones, so if both wanted a slot the player would win.",
+        "do": [
+          {
+            "a": "stamp",
+            "i": 2,
+            "ch": "A"
+          }
+        ]
+      },
+      {
+        "line": 15,
+        "ms": 1800,
+        "note": "One printf rolls the finished row out to the screen all at once. No half-painted frame.",
+        "do": [
+          {
+            "a": "print"
+          }
+        ],
+        "out": "..A.....#...\n",
+        "outAt": 0.6
+      },
+      {
+        "line": 16,
+        "ms": 900,
+        "note": "Done. The row is on screen exactly as it was painted backstage.",
+        "do": []
+      }
+    ]
+  },
+  "game-loop": {
+    "scene": "p4b-beat",
+    "steps": [
+      {
+        "line": 4,
+        "ms": 1300,
+        "note": "A pretend keyboard stands in for _kbhit: one key per frame. A d is the third key (frame 2). The picture's strip shows them.",
+        "do": [
+          {
+            "a": "show"
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 900,
+        "note": "pos starts at 0, the left of the lane.",
+        "do": [
+          {
+            "a": "set",
+            "k": "pos",
+            "v": 0
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 900,
+        "note": "The heartbeat starts. frame is 0.",
+        "do": [
+          {
+            "a": "set",
+            "k": "frame",
+            "v": 0
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 1100,
+        "note": "1. Input: read this frame's key. keys[0] is '.', so no key.",
+        "do": [
+          {
+            "a": "beat",
+            "n": 0
+          },
+          {
+            "a": "set",
+            "k": "key",
+            "v": "."
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 1100,
+        "note": "2. Update: ducking is 1 only if the key is 'd'. '.' is not, so ducking is 0.",
+        "do": [
+          {
+            "a": "beat",
+            "n": 1
+          },
+          {
+            "a": "set",
+            "k": "duck",
+            "v": 0
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 1000,
+        "note": "Still update: the runner moves one step. pos is 1.",
+        "do": [
+          {
+            "a": "set",
+            "k": "pos",
+            "v": 1
+          }
+        ]
+      },
+      {
+        "line": 14,
+        "ms": 1000,
+        "note": "3. Render: show the result.",
+        "do": [
+          {
+            "a": "beat",
+            "n": 2
+          }
+        ],
+        "out": "frame 0: pos 1 ducking 0\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 15,
+        "ms": 1000,
+        "note": "4. Wait: the real game sleeps here, then the loop goes round again.",
+        "do": [
+          {
+            "a": "beat",
+            "n": 3
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 900,
+        "note": "frame++ makes frame 1. 1 < 5, so round again.",
+        "do": [
+          {
+            "a": "set",
+            "k": "frame",
+            "v": 1
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 1100,
+        "note": "Frame 1, input: keys[1] is '.', no key again.",
+        "do": [
+          {
+            "a": "beat",
+            "n": 0
+          },
+          {
+            "a": "set",
+            "k": "key",
+            "v": "."
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 1000,
+        "note": "Update: not 'd', so ducking is 0.",
+        "do": [
+          {
+            "a": "beat",
+            "n": 1
+          },
+          {
+            "a": "set",
+            "k": "duck",
+            "v": 0
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 900,
+        "note": "pos goes to 2.",
+        "do": [
+          {
+            "a": "set",
+            "k": "pos",
+            "v": 2
+          }
+        ]
+      },
+      {
+        "line": 14,
+        "ms": 900,
+        "note": "Render.",
+        "do": [
+          {
+            "a": "beat",
+            "n": 2
+          }
+        ],
+        "out": "frame 1: pos 2 ducking 0\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 15,
+        "ms": 800,
+        "note": "Wait.",
+        "do": [
+          {
+            "a": "beat",
+            "n": 3
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 900,
+        "note": "frame++ makes frame 2. 2 < 5, so round again.",
+        "do": [
+          {
+            "a": "set",
+            "k": "frame",
+            "v": 2
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 1200,
+        "note": "Frame 2, input: keys[2] is 'd'. A key press!",
+        "do": [
+          {
+            "a": "beat",
+            "n": 0
+          },
+          {
+            "a": "set",
+            "k": "key",
+            "v": "d"
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 1200,
+        "note": "Update: the key is 'd', so (key == 'd') is 1 and the runner ducks.",
+        "do": [
+          {
+            "a": "beat",
+            "n": 1
+          },
+          {
+            "a": "set",
+            "k": "duck",
+            "v": 1
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 900,
+        "note": "pos goes to 3. The runner moves while ducked.",
+        "do": [
+          {
+            "a": "set",
+            "k": "pos",
+            "v": 3
+          }
+        ]
+      },
+      {
+        "line": 14,
+        "ms": 1000,
+        "note": "Render: ducking 1 is printed.",
+        "do": [
+          {
+            "a": "beat",
+            "n": 2
+          }
+        ],
+        "out": "frame 2: pos 3 ducking 1\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 15,
+        "ms": 800,
+        "note": "Wait.",
+        "do": [
+          {
+            "a": "beat",
+            "n": 3
+          }
+        ]
+      },
+      {
+        "line": 14,
+        "ms": 2400,
+        "note": "Frames 3 and 4 go round the same four beats fast. The d is gone, so ducking drops back to 0 and the runner stands up again.",
+        "do": [
+          {
+            "a": "ff",
+            "frame": 3,
+            "key": ".",
+            "duck": 0,
+            "pos": 4,
+            "len": 0.5
+          },
+          {
+            "a": "ff",
+            "frame": 4,
+            "key": ".",
+            "duck": 0,
+            "pos": 5,
+            "at": 0.5,
+            "len": 0.5
+          }
+        ],
+        "out": "frame 3: pos 4 ducking 0\nframe 4: pos 5 ducking 0\n",
+        "outAt": 0.5
+      },
+      {
+        "line": 17,
+        "ms": 900,
+        "note": "The loop is done after five frames. Every game is this same heartbeat.",
+        "do": []
+      }
+    ]
+  },
+  "sentinel": {
+    "scene": "p4b-lot",
+    "steps": [
+      {
+        "line": 6,
+        "ms": 1300,
+        "note": "obs is an array of four bays. We haven't put anything in them yet, so they hold junk (?).",
+        "do": [
+          {
+            "a": "bays"
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 800,
+        "note": "score starts at 0.",
+        "do": [
+          {
+            "a": "score",
+            "v": 0
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 1700,
+        "note": "The loop visits each bay and writes -1. Every bay gets a cone: -1 means free.",
+        "do": [
+          {
+            "a": "cones"
+          }
+        ]
+      },
+      {
+        "line": 14,
+        "ms": 700,
+        "note": "Frame 0 begins.",
+        "do": [
+          {
+            "a": "frame",
+            "n": 0
+          }
+        ]
+      },
+      {
+        "line": 16,
+        "ms": 1600,
+        "note": "The inner loop walks over the bays. Every one holds -1, so the if skips them all. Nothing moves.",
+        "do": [
+          {
+            "a": "ptr",
+            "i": 0,
+            "to": 3
+          }
+        ]
+      },
+      {
+        "line": 24,
+        "ms": 800,
+        "note": "0 % 2 is 0, so this is a spawn frame.",
+        "do": []
+      },
+      {
+        "line": 26,
+        "ms": 1000,
+        "note": "Search for the first free bay. Bay 0 holds -1, so this is the one.",
+        "do": [
+          {
+            "a": "ptr",
+            "i": 0
+          }
+        ]
+      },
+      {
+        "line": 27,
+        "ms": 1200,
+        "note": "A car enters bay 0. The number 2 is its column.",
+        "do": [
+          {
+            "a": "set",
+            "i": 0,
+            "v": 2
+          }
+        ]
+      },
+      {
+        "line": 28,
+        "ms": 900,
+        "note": "break stops the search. Without it, every free bay would get a car.",
+        "do": []
+      },
+      {
+        "line": 17,
+        "ms": 1800,
+        "note": "Frame 1. Bay 0 holds a car, so it moves one column toward the player: 2 becomes 1. The empty bays are skipped. 1 is not below 0, and frame 1 is odd, so no new car.",
+        "do": [
+          {
+            "a": "frame",
+            "n": 1
+          },
+          {
+            "a": "ptr",
+            "i": 0
+          },
+          {
+            "a": "set",
+            "i": 0,
+            "v": 1,
+            "at": 0.3,
+            "len": 0.7
+          }
+        ]
+      },
+      {
+        "line": 17,
+        "ms": 1500,
+        "note": "Frame 2. The car moves again: 1 becomes 0. 0 is not below 0, so it stays on the road.",
+        "do": [
+          {
+            "a": "frame",
+            "n": 2
+          },
+          {
+            "a": "ptr",
+            "i": 0
+          },
+          {
+            "a": "set",
+            "i": 0,
+            "v": 0,
+            "at": 0.3,
+            "len": 0.7
+          }
+        ]
+      },
+      {
+        "line": 24,
+        "ms": 800,
+        "note": "Frame 2 is even, so another car spawns.",
+        "do": []
+      },
+      {
+        "line": 26,
+        "ms": 1200,
+        "note": "Search for a free bay. Bay 0 is busy, so skip it. Bay 1 has a cone: take it.",
+        "do": [
+          {
+            "a": "ptr",
+            "i": 0,
+            "to": 1
+          }
+        ]
+      },
+      {
+        "line": 27,
+        "ms": 1100,
+        "note": "A new car enters bay 1.",
+        "do": [
+          {
+            "a": "set",
+            "i": 1,
+            "v": 2
+          }
+        ]
+      },
+      {
+        "line": 28,
+        "ms": 800,
+        "note": "break again, so only one bay is used.",
+        "do": []
+      },
+      {
+        "line": 17,
+        "ms": 1600,
+        "note": "Frame 3. Bay 0's car moves: 0 minus 1 is -1. It has gone past the player.",
+        "do": [
+          {
+            "a": "frame",
+            "n": 3
+          },
+          {
+            "a": "ptr",
+            "i": 0
+          },
+          {
+            "a": "set",
+            "i": 0,
+            "v": -1,
+            "at": 0.3,
+            "len": 0.7
+          }
+        ]
+      },
+      {
+        "line": 18,
+        "ms": 900,
+        "note": "Below column 0 means dodged. -1 is less than 0, so the if is true.",
+        "do": []
+      },
+      {
+        "line": 19,
+        "ms": 1000,
+        "note": "Put the bay back to -1. Here it already is -1, but this line is what frees any bay that goes below 0.",
+        "do": []
+      },
+      {
+        "line": 20,
+        "ms": 1100,
+        "note": "One obstacle dodged: score goes to 1.",
+        "do": [
+          {
+            "a": "score",
+            "v": 1
+          }
+        ]
+      },
+      {
+        "line": 17,
+        "ms": 1400,
+        "note": "The inner loop reaches bay 1: its car moves from 2 to 1.",
+        "do": [
+          {
+            "a": "ptr",
+            "i": 0,
+            "to": 1
+          },
+          {
+            "a": "set",
+            "i": 1,
+            "v": 1,
+            "at": 0.5,
+            "len": 0.5
+          }
+        ]
+      },
+      {
+        "line": 17,
+        "ms": 1500,
+        "note": "Frame 4. Bay 1's car moves: 1 becomes 0. Frame 4 is even, so a spawn is coming.",
+        "do": [
+          {
+            "a": "frame",
+            "n": 4
+          },
+          {
+            "a": "ptr",
+            "i": 1
+          },
+          {
+            "a": "set",
+            "i": 1,
+            "v": 0,
+            "at": 0.3,
+            "len": 0.7
+          }
+        ]
+      },
+      {
+        "line": 26,
+        "ms": 1000,
+        "note": "Search for a free bay. Bay 0 holds a cone again, so a new car can take it.",
+        "do": [
+          {
+            "a": "ptr",
+            "i": 0
+          }
+        ]
+      },
+      {
+        "line": 27,
+        "ms": 1200,
+        "note": "A car enters bay 0, then break stops the search.",
+        "do": [
+          {
+            "a": "set",
+            "i": 0,
+            "v": 2
+          }
+        ]
+      },
+      {
+        "line": 33,
+        "ms": 1300,
+        "note": "After five frames the bays hold 2, 0, -1, -1 and the score is 1.",
+        "do": [
+          {
+            "a": "ptr",
+            "i": 0,
+            "to": 3
+          }
+        ],
+        "out": "2 0 -1 -1  score 1\n",
+        "outAt": 0.4
+      },
+      {
+        "line": 34,
+        "ms": 900,
+        "note": "Done. No bay was ever built or demolished, only the numbers changed.",
+        "do": []
+      }
+    ]
+  },
+  "state-machine": {
+    "scene": "p4b-states",
+    "steps": [
+      {
+        "line": 3,
+        "ms": 1300,
+        "note": "An enum gives the three states names. Underneath they are the numbers 0, 1 and 2. The picture shows each state as a box.",
+        "do": []
+      },
+      {
+        "line": 6,
+        "ms": 1100,
+        "note": "A pretend keyboard, one key per frame. '.' means no key. The picture shows the keys along the top.",
+        "do": [
+          {
+            "a": "keys"
+          }
+        ]
+      },
+      {
+        "line": 7,
+        "ms": 1200,
+        "note": "The game starts on the menu. This one variable is the whole machine's memory.",
+        "do": [
+          {
+            "a": "state",
+            "v": 0
+          }
+        ]
+      },
+      {
+        "line": 11,
+        "ms": 900,
+        "note": "Frame 0: the key is '.', so no key.",
+        "do": [
+          {
+            "a": "frame",
+            "n": 0
+          }
+        ]
+      },
+      {
+        "line": 12,
+        "ms": 1100,
+        "note": "switch looks at state and jumps to the case that matches. Only the MENU rules run this frame.",
+        "do": [
+          {
+            "a": "look"
+          }
+        ]
+      },
+      {
+        "line": 14,
+        "ms": 1000,
+        "note": "The menu only wants a key press, and '.' means none. So state stays MENU.",
+        "do": [
+          {
+            "a": "stay"
+          }
+        ]
+      },
+      {
+        "line": 23,
+        "ms": 800,
+        "note": "Print the state number.",
+        "do": [],
+        "out": "frame 0: state 0\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 11,
+        "ms": 900,
+        "note": "Frame 1: the key is 'x'.",
+        "do": [
+          {
+            "a": "frame",
+            "n": 1
+          }
+        ]
+      },
+      {
+        "line": 14,
+        "ms": 1300,
+        "note": "A key press! The menu hands over: state becomes STATE_PLAYING.",
+        "do": [
+          {
+            "a": "go",
+            "to": 1
+          }
+        ]
+      },
+      {
+        "line": 23,
+        "ms": 800,
+        "note": "Print the state number.",
+        "do": [],
+        "out": "frame 1: state 1\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 11,
+        "ms": 900,
+        "note": "Frame 2: no key.",
+        "do": [
+          {
+            "a": "frame",
+            "n": 2
+          }
+        ]
+      },
+      {
+        "line": 17,
+        "ms": 1000,
+        "note": "While playing, only 'h' matters. Not an h, so nothing changes.",
+        "do": [
+          {
+            "a": "stay"
+          }
+        ]
+      },
+      {
+        "line": 23,
+        "ms": 800,
+        "note": "Print the state number.",
+        "do": [],
+        "out": "frame 2: state 1\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 11,
+        "ms": 900,
+        "note": "Frame 3: the key is 'h', a hit.",
+        "do": [
+          {
+            "a": "frame",
+            "n": 3
+          }
+        ]
+      },
+      {
+        "line": 17,
+        "ms": 1300,
+        "note": "An h ends the run: state becomes STATE_GAME_OVER.",
+        "do": [
+          {
+            "a": "go",
+            "to": 2
+          }
+        ]
+      },
+      {
+        "line": 23,
+        "ms": 800,
+        "note": "Print the state number.",
+        "do": [],
+        "out": "frame 3: state 2\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 11,
+        "ms": 900,
+        "note": "Frame 4: the key is 'x'.",
+        "do": [
+          {
+            "a": "frame",
+            "n": 4
+          }
+        ]
+      },
+      {
+        "line": 20,
+        "ms": 1000,
+        "note": "Game over only listens for 'r'. An x does nothing, so state stays put.",
+        "do": [
+          {
+            "a": "stay"
+          }
+        ]
+      },
+      {
+        "line": 23,
+        "ms": 800,
+        "note": "Print the state number.",
+        "do": [],
+        "out": "frame 4: state 2\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 11,
+        "ms": 900,
+        "note": "Frame 5: the key is 'r'.",
+        "do": [
+          {
+            "a": "frame",
+            "n": 5
+          }
+        ]
+      },
+      {
+        "line": 20,
+        "ms": 1300,
+        "note": "An r restarts: state goes back to STATE_PLAYING.",
+        "do": [
+          {
+            "a": "go",
+            "to": 1
+          }
+        ]
+      },
+      {
+        "line": 23,
+        "ms": 800,
+        "note": "Print the state number.",
+        "do": [],
+        "out": "frame 5: state 1\n",
+        "outAt": 0.3
+      },
+      {
+        "line": 25,
+        "ms": 900,
+        "note": "The loop ends after six frames. The state followed the keys, one rule at a time.",
+        "do": []
+      }
+    ]
+  },
+  "const-ptr": {
+    "scene": "p4b-pass",
+    "steps": [
+      {
+        "line": 18,
+        "ms": 1200,
+        "note": "In main we make a Runner. It is one card holding a score and a frame. Both are junk (?) for now.",
+        "do": [
+          {
+            "a": "card"
+          }
+        ]
+      },
+      {
+        "line": 19,
+        "ms": 900,
+        "note": "score starts at 0.",
+        "do": [
+          {
+            "a": "field",
+            "name": "score",
+            "v": 0
+          }
+        ]
+      },
+      {
+        "line": 20,
+        "ms": 900,
+        "note": "frame starts at 0.",
+        "do": [
+          {
+            "a": "field",
+            "name": "frame",
+            "v": 0
+          }
+        ]
+      },
+      {
+        "line": 21,
+        "ms": 1400,
+        "note": "We call runner_update and pass &r, the address of the card. Its pointer r now points at the real Runner.",
+        "do": [
+          {
+            "a": "call",
+            "fn": "update"
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 1100,
+        "note": "This is a normal pointer: runner_update can read and change whatever it points at. It holds a key.",
+        "do": []
+      },
+      {
+        "line": 9,
+        "ms": 1200,
+        "note": "r->score++ changes the real score in main, because r points at it. score is 1.",
+        "do": [
+          {
+            "a": "write",
+            "name": "score",
+            "v": 1
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 1100,
+        "note": "The frame is changed the same way: 1.",
+        "do": [
+          {
+            "a": "write",
+            "name": "frame",
+            "v": 1
+          }
+        ]
+      },
+      {
+        "line": 22,
+        "ms": 1200,
+        "note": "A second call. The same pointer reaches the same card.",
+        "do": [
+          {
+            "a": "call",
+            "fn": "update"
+          }
+        ]
+      },
+      {
+        "line": 9,
+        "ms": 1000,
+        "note": "score becomes 2.",
+        "do": [
+          {
+            "a": "write",
+            "name": "score",
+            "v": 2
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 1000,
+        "note": "frame becomes 2.",
+        "do": [
+          {
+            "a": "write",
+            "name": "frame",
+            "v": 2
+          }
+        ]
+      },
+      {
+        "line": 23,
+        "ms": 1400,
+        "note": "Now runner_render gets &r. A normal pointer converts to a read-only one automatically, so this is allowed.",
+        "do": [
+          {
+            "a": "call",
+            "fn": "render"
+          }
+        ]
+      },
+      {
+        "line": 13,
+        "ms": 1700,
+        "note": "const Runner* means: r points at a Runner I'm not allowed to change. It is a visitor's pass: look, but don't touch. Writing through it would stop the program building.",
+        "do": [
+          {
+            "a": "pass"
+          }
+        ]
+      },
+      {
+        "line": 14,
+        "ms": 1400,
+        "note": "Reading is fine. printf only looks at score and frame.",
+        "do": [
+          {
+            "a": "read",
+            "names": [
+              "score",
+              "frame"
+            ]
+          }
+        ],
+        "out": "score 2, frame 2\n",
+        "outAt": 0.4
+      },
+      {
+        "line": 24,
+        "ms": 1000,
+        "note": "Done. render only read the card, so it still says score 2, frame 2.",
+        "do": [
+          {
+            "a": "ret"
+          }
+        ]
+      }
+    ]
+  },
+  "lnk2005": {
+    "scene": "p4b-link",
+    "prompt": "",
+    "steps": [
+      {
+        "line": 1,
+        "ms": 2200,
+        "note": "Not a program run: this shows what the linker does with the header. main.c and runner.c each start with #include \"runner.h\". An include is copy and paste, so both files get their own copy of every line. The console shows linker messages, not program output.",
+        "do": [
+          {
+            "a": "paste"
+          }
+        ]
+      },
+      {
+        "line": 2,
+        "ms": 1500,
+        "note": "#pragma once stops the header being pasted twice into one file. It doesn't help across two files: each .c file still gets one copy.",
+        "do": [
+          {
+            "a": "mark",
+            "row": 1,
+            "kind": "shield"
+          }
+        ]
+      },
+      {
+        "line": 4,
+        "ms": 1300,
+        "note": "A #define makes no code of its own. It is a text replacement, so two copies are harmless.",
+        "do": [
+          {
+            "a": "mark",
+            "row": 2,
+            "kind": "ok"
+          }
+        ]
+      },
+      {
+        "line": 6,
+        "ms": 1300,
+        "note": "A typedef only describes a shape. It makes nothing in memory, so it is safe in a header.",
+        "do": [
+          {
+            "a": "mark",
+            "row": 3,
+            "kind": "ok"
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 2200,
+        "note": "This is the problem. It creates a variable. Each file compiles into an .obj, and each .obj now owns its own best_score.",
+        "do": [
+          {
+            "a": "mark",
+            "row": 4,
+            "kind": "bad"
+          },
+          {
+            "a": "obj",
+            "at": 0.4,
+            "len": 0.6
+          }
+        ]
+      },
+      {
+        "line": 10,
+        "ms": 1400,
+        "note": "A prototype is a promise: this function exists somewhere. Any number of files can say it. This is what headers are for.",
+        "do": [
+          {
+            "a": "mark",
+            "row": 5,
+            "kind": "ok"
+          }
+        ]
+      },
+      {
+        "line": 8,
+        "ms": 2200,
+        "note": "The linker joins the .obj files and finds best_score defined in both. It can't pick one, so it refuses.",
+        "do": [
+          {
+            "a": "link"
+          }
+        ],
+        "out": "runner.obj : error LNK2005: best_score already defined in main.obj\nrunner.exe : fatal error LNK1169: one or more multiply defined symbols found\n",
+        "outAt": 0.5
+      },
+      {
+        "line": 8,
+        "ms": 3000,
+        "note": "The fix. In the header, write extern int best_score; which only says best_score exists somewhere. Then define it once, in runner.c: int best_score = 0;. Now there is exactly one.",
+        "do": [
+          {
+            "a": "fix"
+          }
+        ],
+        "out": "BUILD OK\n",
+        "outAt": 0.8
+      }
+    ]
+  }
 }

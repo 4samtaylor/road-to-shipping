@@ -98,7 +98,7 @@
     "hint": "Count the slots, then check where the first shift writes.",
     "why": "Valid indexes are 0 to 4. With j starting at 5, the first shift writes table[5], past the end of the array. The compiler can’t see it. Trace it with a small table and you’ll spot it.",
     "miss": {
-     "1": "Looks right, and it is: i &lt; 5 visits indexes 0 to 4. The bug is elsewhere.",
+     "1": "Looks right, and it is: i < 5 visits indexes 0 to 4. The bug is elsewhere.",
      "2": "Once the gap is open, putting the score at index i is right.",
      "3": "return stops after one insert so the score isn’t added twice. That’s needed."
     }

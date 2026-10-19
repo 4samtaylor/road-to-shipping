@@ -369,7 +369,7 @@
        link     { }                    linker checks every dish
        reset    { }                    clear verdicts
        badge    { w:'compile'|'link', v:'ok'|'fail'|null, t }
-       decode   { on:true|false }      __imp__CreateSolidBrush@4 -> CreateSolidBrush
+       decode   { on:true|false }      __imp_CreateSolidBrush -> CreateSolidBrush
        ring     { ds:[3,4] }           pulse some dishes
        decodeB  (second decode for CreateWindowExA is not needed)
      ===================================================================== */
@@ -450,7 +450,7 @@
       /* decode strip */
       if (V.dec) { var da = V.decP != null ? EZ.out(V.decP) : 1; c.save(); c.globalAlpha *= da;
         panel(c, 10, 214, 380, 30, rgba(C.text, .04), C.border2, 1);
-        c.font = '500 11px ' + U.FONT; var a1 = '__imp__', a2 = 'CreateSolidBrush', a3 = '@4';
+        c.font = '500 11px ' + U.FONT; var a1 = '__imp_', a2 = 'CreateSolidBrush', a3 = '';
         var w1 = c.measureText(a1).width, w2 = c.measureText(a2).width, w3 = c.measureText(a3).width, x0 = 200 - (w1 + w2 + w3) / 2;
         txt(c, a1, x0, 229, { size: 11, col: C.muted, align: 'left' }); txt(c, a2, x0 + w1, 229, { size: 11, w: 700, col: C.accent, align: 'left' }); txt(c, a3, x0 + w1 + w2, 229, { size: 11, col: C.muted, align: 'left' });
         c.strokeStyle = C.orange; c.lineWidth = 1.5; c.beginPath(); c.moveTo(x0, 229); c.lineTo(x0 + w1, 229); c.moveTo(x0 + w1 + w2, 229); c.lineTo(x0 + w1 + w2 + w3, 229); c.stroke();

@@ -14,6 +14,27 @@
     <div class="phase-body">
       <div class="phase-inner">
 
+        <!-- PAIR WITH KING -->
+<div class="section-block acc-section" data-page="overview">
+          <div class="section-block-header">
+            <span class="badge badge-purple">Pair with King</span>&nbsp;&nbsp;C Programming: A Modern Approach, the C under the Windows code
+            <span class="acc-toggle-icon">▼</span>
+          </div>
+          <div class="acc-body section-block-body">
+            <dl class="king">
+              <dt>WinMain and the window handle</dt><dd>§7.5 for typedef, which is how <span class="cmd">DWORD</span>, <span class="cmd">UINT</span> and <span class="cmd">LPSTR</span> are made. §19.3 on incomplete types, the idea behind a handle you can't see inside. §20.3, where King defines <span class="cmd">BYTE</span> and <span class="cmd">WORD</span> just as windows.h does. §14.3–14.4 for the macros behind <span class="cmd">CALLBACK</span> and the <span class="cmd">#ifdef UNICODE</span> switch that picks CreateWindowExA.</dd>
+              <dt>Linking libraries</dt><dd>§15.4, errors during linking. King's maths library is the same story as user32.lib.</dd>
+              <dt>Combining flags with | and &amp;</dt><dd>§20.1, the bitwise operators, shifts and masks. Read the part on precedence twice.</dd>
+              <dt>The window procedure</dt><dd>§17.7 on pointers to functions: qsort's compare function is a callback, just like WindowProc. §5.3 for <span class="cmd">switch</span>.</dd>
+              <dt>The message loop</dt><dd>§22.8 for <span class="cmd">sprintf</span> and <span class="cmd">snprintf</span>.</dd>
+              <dt>Drawing with GDI</dt><dd>§14.3 on macros with parameters and why they need so many brackets. <span class="cmd">RGB</span> is one.</dd>
+              <dt>Frame time</dt><dd>§16.4 on unions and §20.3 on using a union for two views of the same bytes, which is what <span class="cmd">LARGE_INTEGER</span> does. §7.2 for floating types. King's warning that reading the other member gives a meaningless value is out of date; see the Frame time concept.</dd>
+              <dt>Double buffering</dt><dd>§18.2, storage classes: the <span class="cmd">static</span> local that keeps the back buffer between paints.</dd>
+              <dt>Note</dt><dd>Most of this phase is Windows, not C, and King never mentions Win32. Microsoft Learn (learn.microsoft.com) is your main reference: every function's page lists its parameters, what it returns, and a Requirements table naming the header and the .lib to link.</dd>
+            </dl>
+          </div>
+        </div>
+
         <div class="section-block" data-page="concept:winmain-hwnd">
           <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
           <div class="section-block-body">
@@ -28,6 +49,21 @@
             </div>
           </div>
         </div>
+<div class="section-block" data-page="concept:bit-flags">
+          <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
+          <div class="section-block-body">
+            <div class="tasks">
+              <div class="task" data-id="p5-bit-flags">
+                <div class="task-cb">✓</div>
+                <div class="task-content">
+                  <div class="task-text">Bit flags: write flags.c with four player status flags, and functions that set, clear and test one flag in an unsigned int</div>
+                  <div class="task-note">Then change your window to one the player can't resize: <span class="cmd">WS_OVERLAPPEDWINDOW &amp; ~(WS_THICKFRAME | WS_MAXIMIZEBOX)</span> <span class="task-time">~30 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         <div class="section-block" data-page="concept:message-loop">
           <div class="section-block-header"><span class="badge badge-green">Practice this</span></div>
@@ -89,12 +125,12 @@
           <div class="acc-body">
             <div class="code-wrap">
               <div class="code-label">
-                <span>win32_window.c, compile with: <span class="cmd">cl win32_window.c user32.lib gdi32.lib</span></span>
+                <span>win32_window.c, build.bat: <span class="cmd">set SOURCES=win32_window.c</span>, and <span class="cmd">user32.lib gdi32.lib</span> on the cl line</span>
                 <button class="copy-btn">Copy</button>
               </div>
 <pre><span class="c-pp">#include</span> <span class="c-str">&lt;windows.h&gt;</span>
 
-<span class="c-cm">// Global state — keeps track of our rect position</span>
+<span class="c-cm">// Global state: where the rectangle is</span>
 <span class="c-kw">static</span> <span class="c-type">int</span> <span class="c-var">g_rect_x</span> = <span class="c-num">100</span>;
 <span class="c-kw">static</span> <span class="c-type">int</span> <span class="c-var">g_rect_y</span> = <span class="c-num">100</span>;
 <span class="c-kw">static</span> <span class="c-type">HWND</span> <span class="c-var">g_hwnd</span> = <span class="c-kw">NULL</span>;
@@ -130,7 +166,7 @@
 }
 
 <span class="c-type">int WINAPI</span> <span class="c-fn">WinMain</span>(<span class="c-type">HINSTANCE</span> <span class="c-var">hInst</span>, <span class="c-type">HINSTANCE</span> <span class="c-var">hPrev</span>, <span class="c-type">LPSTR</span> <span class="c-var">lpCmd</span>, <span class="c-type">int</span> <span class="c-var">nShow</span>) {
-    (<span class="c-type">void</span>)<span class="c-var">hPrev</span>; (<span class="c-type">void</span>)<span class="c-var">lpCmd</span>;   <span class="c-cm">// unused: this line stops warning C4100 under /W4 /WX</span>
+    (<span class="c-type">void</span>)<span class="c-var">hPrev</span>; (<span class="c-type">void</span>)<span class="c-var">lpCmd</span>;   <span class="c-cm">// unused: this stops the unused-parameter warning under /W4 /WX</span>
 
     <span class="c-cm">// Register the window class</span>
     <span class="c-type">WNDCLASS</span> <span class="c-var">wc</span> = {<span class="c-num">0</span>};
@@ -146,13 +182,19 @@
                    <span class="c-num">800</span>, <span class="c-num">600</span>, <span class="c-kw">NULL</span>, <span class="c-kw">NULL</span>, <span class="c-var">hInst</span>, <span class="c-kw">NULL</span>);
     <span class="c-fn">ShowWindow</span>(<span class="c-var">g_hwnd</span>, <span class="c-var">nShow</span>);
 
-    <span class="c-cm">// The message loop — this IS the game loop at the OS level</span>
-    <span class="c-cm">// GetMessage waits for input. The message-loop concept swaps it for</span>
-    <span class="c-cm">// PeekMessage before you add the 60 fps frame timer.</span>
-    <span class="c-type">MSG</span> <span class="c-var">msg</span>;
-    <span class="c-kw">while</span> (<span class="c-fn">GetMessage</span>(&amp;<span class="c-var">msg</span>, <span class="c-kw">NULL</span>, <span class="c-num">0</span>, <span class="c-num">0</span>)) {
-        <span class="c-fn">TranslateMessage</span>(&amp;<span class="c-var">msg</span>);
-        <span class="c-fn">DispatchMessage</span>(&amp;<span class="c-var">msg</span>);
+    <span class="c-cm">// The message loop: this IS the game loop at the OS level.</span>
+    <span class="c-cm">// PeekMessage never waits, so a frame runs whether or not a message came in.</span>
+    <span class="c-type">MSG</span> <span class="c-var">msg</span> = {<span class="c-num">0</span>};
+    <span class="c-type">int</span> <span class="c-var">running</span> = <span class="c-num">1</span>;
+    <span class="c-kw">while</span> (<span class="c-var">running</span>) {
+        <span class="c-kw">while</span> (<span class="c-fn">PeekMessage</span>(&amp;<span class="c-var">msg</span>, <span class="c-kw">NULL</span>, <span class="c-num">0</span>, <span class="c-num">0</span>, PM_REMOVE)) {
+            <span class="c-kw">if</span> (<span class="c-var">msg</span>.message == WM_QUIT) <span class="c-var">running</span> = <span class="c-num">0</span>;
+            <span class="c-fn">TranslateMessage</span>(&amp;<span class="c-var">msg</span>);
+            <span class="c-fn">DispatchMessage</span>(&amp;<span class="c-var">msg</span>);
+        }
+        <span class="c-cm">// TODO: the frame timer goes here. Measure the frame, then sleep</span>
+        <span class="c-cm">// only for what's left of 16.67 ms instead of this fixed guess.</span>
+        <span class="c-fn">Sleep</span>(<span class="c-num">16</span>);
     }
     <span class="c-kw">return</span> (<span class="c-type">int</span>)<span class="c-var">msg</span>.wParam;
 }
@@ -208,11 +250,11 @@
             <div class="stuck-items">
               <div class="stuck-item">
                 <div class="stuck-q">Linker errors about unresolved user32 or gdi32 symbols</div>
-                <div class="stuck-a">Link the Windows libraries: <span class="cmd">cl win32_window.c user32.lib gdi32.lib</span>. They hold the real code behind CreateWindowEx, GetMessage and friends.</div>
+                <div class="stuck-a">Add the Windows libraries to build.bat's cl line: <span class="cmd">cl %FLAGS% %SOURCES% user32.lib gdi32.lib /Fe:game.exe</span>. They hold the real code behind CreateWindowEx, GetMessage and friends.</div>
               </div>
               <div class="stuck-item">
                 <div class="stuck-q">The rectangle flickers when it moves</div>
-                <div class="stuck-a">Expected with plain GDI. Double buffering (the last concept) is the fix, and SDL2 or OpenGL later removes it altogether.</div>
+                <div class="stuck-a">Expected with plain GDI. Double buffering is the fix, and SDL2 or OpenGL later removes it altogether.</div>
               </div>
             </div>
           </div>

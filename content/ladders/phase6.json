@@ -8,6 +8,9 @@
   "cp-p6-2": [
    "delta-time",
    "aabb"
+  ],
+  "cp-p6-3": [
+   "game-files"
   ]
  },
  "rungs": [
@@ -16,12 +19,32 @@
    "title": "Update vs render",
    "kick": "update changes · render draws · pause",
    "mins": 10,
-   "lang": "c",
    "skills": [
     "update-render"
    ],
-   "builds": "Phase 5: the message loop and drawing a frame. Phase 3.5: structs and pointers.",
+   "builds": "The game loop and const pointers (Phase 4.5), the message loop and drawing a frame (Phase 5), and structs and passing by pointer and -&gt; (Phase 3.5).",
    "why": "Every frame your game does two different jobs: decide what happened, then draw it. Keep them in separate functions and you can pause, slow down or debug one without touching the other. Mix them and every change breaks something.",
+   "learn": {
+    "parts": [
+     [
+      "One job each",
+      "<p>Every frame does two different jobs. <b>update</b> decides what happened: the player moved, an enemy stepped forward, a hit took a life. <b>render</b> draws the result. Keeping each function to one kind of work is called <b>cohesion</b>. When the picture looks wrong you open render, and when the score is wrong you open update. You never have to read both.</p>"
+     ],
+     [
+      "update is the only writer",
+      "<p>Make one rule and keep it: only update changes the game. Input handling notes which keys are down, update acts on them, and render only reads. Give render a <code>const Game*</code> (the const pointers idea from Phase 4.5) and the compiler enforces the rule: a line like <code>g-&gt;score = 0;</code> inside render won't build.</p>"
+     ],
+     [
+      "State in a struct, not globals",
+      "<p>Put everything that describes the game in one <code>Game</code> struct and pass its address. With twenty globals, any function might change any of them, so the rule above can't be checked. With a struct, the parameter list tells you: <code>Game*</code> can write, <code>const Game*</code> can't. Restarting gets easy too, because <code>game_init(&amp;g)</code> refills the same struct.</p>"
+     ],
+     [
+      "Mistakes to avoid",
+      "<ul><li>Moving an animation timer forward inside render. Pause no longer freezes it, and drawing twice makes it run double speed.</li><li>Drawing from inside update. Now you can't draw a frame without changing the game.</li><li>Skipping render while paused. The window stops repainting and looks frozen or blank.</li></ul>"
+     ]
+    ],
+    "king": "§19.1–19.2"
+   },
    "code": "#include <stdio.h>\n\ntypedef struct { int x; int paused; } Game;\n\nvoid update(Game *g) {\n    g->x += 10;\n}\n\nvoid render(const Game *g) {\n    printf(\"x = %d\\n\", g->x);\n}\n\nint main(void) {\n    Game g = {0, 0};\n    for (int frame = 1; frame <= 5; frame++) {\n        g.paused = (frame == 3 || frame == 4);\n        if (!g.paused) update(&g);\n        render(&g);\n    }\n    return 0;\n}",
    "walk": [
     [
@@ -90,20 +113,45 @@
      "Input, then update, then render. <code>handle_input()</code> notes what the player pressed, <code>update()</code> moves things and checks hits, <code>render()</code> draws the result. Then the loop starts the next frame, about 60 times a second."
     ]
    ],
-   "bridge": "You can keep logic and drawing apart. Next: <b>Delta time</b>, so update moves things the same distance on a slow PC and a fast one."
+   "bridge": "You can keep logic and drawing apart. Next: <b>Delta time</b>, so update moves things the same distance on a slow PC and a fast one.",
+   "lang": "c"
   },
   {
    "id": "delta-time",
    "title": "Delta time: speed times dt",
    "kick": "dt · pixels per second · same speed at any fps",
    "mins": 12,
-   "lang": "c",
    "skills": [
     "delta-time"
    ],
-   "builds": "Phase 5: frame time (how long the last frame took). Phase 2: float.",
+   "builds": "Frame time with QueryPerformanceCounter (Phase 5), float and Division, remainder and casts (Phase 2).",
    "why": "If you write <code>x += 5;</code>, a PC running 144 frames a second moves the player more than twice as far as one running 60. Multiply by the frame time instead and the speed is the same on every machine.",
-   "code": "#include <stdio.h>\n\nfloat run(int fps, float speed) {\n    float x = 0.0f;\n    float dt = 1.0f / fps;\n    for (int frame = 0; frame < fps; frame++) {\n        x += speed * dt;\n    }\n    return x;\n}\n\nint main(void) {\n    printf(\"30 fps: %.1f\\n\", run(30, 120.0f));\n    printf(\"60 fps: %.1f\\n\", run(60, 120.0f));\n    return 0;\n}",
+   "learn": {
+    "parts": [
+     [
+      "Per second, not per frame",
+      "<p>Speeds in a game are written in <b>pixels per second</b>. Each frame you move by speed times <b>dt</b>, the seconds the last frame took. A fast PC runs more frames, each with a smaller dt, so after one second both machines have moved the same distance.</p>"
+     ],
+     [
+      "Getting dt right",
+      "<p>In the real loop dt comes from frame time with QueryPerformanceCounter: the tick difference divided by the frequency. In the example it's <code>1.0f / (float)fps</code>. The <code>f</code> matters: <code>1 / fps</code> divides two ints, the whole-number division from Division, remainder and casts, and 1/60 is 0. Then every move is speed times 0.</p>"
+     ],
+     [
+      "float for speeds, double for the clock",
+      "<p>A float keeps about 7 significant digits. That's plenty for a position on an 800-pixel screen. A running total isn't so lucky: after an hour, <code>total += dt</code> on a float is already rounding each frame noticeably, and after a day small frames barely change it at all. Keep the game clock in a <code>double</code> (about 15 digits) and keep dt and speeds as float.</p>"
+     ],
+     [
+      "Printing a float",
+      "<p><code>printf(\"%f\", x)</code> works for a float because printf can't receive a float: C promotes it to double on the way in, and <code>%f</code> means double. There is no separate float code for printf. scanf is the odd one out, as you saw in scanf: there <code>%f</code> fills a float and <code>%lf</code> a double.</p>"
+     ],
+     [
+      "The f suffix under /WX",
+      "<p class=\"warn\"><code>0.1</code> is a double. <code>float dt = 0.1;</code> makes MSVC warn (C4305, truncation), and /WX turns that into an error. It only fires when the value can't be stored exactly in a float: <code>120.0</code> and <code>0.5</code> fit, so they stay quiet, but <code>0.1</code> doesn't. Assigning a double <i>expression</i> to a float, such as <code>x = x * 0.9;</code>, warns as well (C4244). Put <code>f</code> on every float literal and you never have to think about which ones fit.</p>"
+     ]
+    ],
+    "king": "§7.2, §7.4"
+   },
+   "code": "#include <stdio.h>\n\nfloat run(int fps, float speed) {\n    float x = 0.0f;\n    float dt = 1.0f / (float)fps;\n    for (int frame = 0; frame < fps; frame++) {\n        x += speed * dt;\n    }\n    return x;\n}\n\nint main(void) {\n    printf(\"30 fps: %.1f\\n\", run(30, 120.0f));\n    printf(\"60 fps: %.1f\\n\", run(60, 120.0f));\n    return 0;\n}",
    "walk": [
     [
      3,
@@ -111,7 +159,7 @@
     ],
     [
      5,
-     "<b>dt</b> is the time one frame takes, in seconds. At 30 fps it’s 1/30. At 60 fps it’s 1/60. In the real game you measure it, as in Phase 5."
+     "<b>dt</b> is the time one frame takes, in seconds: 1/30 at 30 fps, 1/60 at 60. Write <code>1.0f</code>, not <code>1</code>: <code>1 / fps</code> is whole-number division and gives 0, so nothing would move. The <code>(float)</code> cast says you meant to turn fps into a float. In the real game you measure dt, as in frame time with QueryPerformanceCounter."
     ],
     [
      6,
@@ -164,31 +212,56 @@
     ],
     [
      "Why f after 120.0?",
-     "<code>120.0</code> is a double. <code>120.0f</code> is a float. With /W4 /WX, mixing them can warn about losing precision."
+     "<code>120.0</code> is a double and <code>120.0f</code> is a float. 120.0 happens to fit a float exactly, so MSVC is quiet there, but <code>0.1</code> doesn't, and MSVC warns (C4305), which /WX makes an error. Writing f every time saves you checking."
+    ],
+    [
+     "Why keep total time in a double when dt is a float?",
+     "dt is always small, so a float holds it well. A total keeps growing, and a float only keeps about 7 digits, so after an hour or so each tiny dt gets rounded as it's added. A double keeps about 15 digits, enough for days."
     ]
    ],
-   "bridge": "You can move things at a steady speed. Next: <b>A state machine with next_state</b>: menu, playing and game over, changed in one place."
+   "bridge": "You can move things at a steady speed. Next: <b>A state machine with next_state</b>: menu, playing and game over, changed in one place.",
+   "lang": "c"
   },
   {
    "id": "next-state",
    "title": "A state machine with next_state",
-   "kick": "enum state · switch · change at the end of the frame",
+   "kick": "next_state · change at the end of the frame · a name table",
    "mins": 14,
-   "lang": "c",
    "skills": [
     "next-state"
    ],
-   "builds": "Phase 3.75: enum. Phase 2.5: switch. Phase 4.5: your first state-machine menu.",
+   "builds": "State machines with enum and switch (Phase 4.5), enum (Phase 3.75), and designated initialisers from Phase 3.5.",
    "why": "Menu, playing and game over each behave differently, and you switch between them all the time. If you change state in the middle of a frame, later code in the same frame runs under the new state and things happen twice. Write the change into <code>next_state</code> and apply it at the very end.",
-   "code": "#include <stdio.h>\n\ntypedef enum { MENU, PLAYING, GAME_OVER } State;\nconst char *names[] = { [MENU] = \"MENU\", [PLAYING] = \"PLAYING\", [GAME_OVER] = \"GAME_OVER\" };\n\nint main(void) {\n    State state = MENU;\n    for (int frame = 1; frame <= 5; frame++) {\n        State next_state = state;\n        switch (state) {\n        case MENU:\n            if (frame == 2) next_state = PLAYING;\n            break;\n        case PLAYING:\n            if (frame == 4) next_state = GAME_OVER;\n            break;\n        case GAME_OVER:\n            break;\n        }\n        printf(\"frame %d: %s\\n\", frame, names[state]);\n        state = next_state;\n    }\n    return 0;\n}",
+   "learn": {
+    "parts": [
+     [
+      "Change state at the end of the frame",
+      "<p>In State machines with enum and switch (Phase 4.5) you assigned <code>state</code> the moment something happened. With a real frame (input, update, collisions, render) that bites. The player dies halfway through update, state becomes GAME_OVER, and the rest of the frame runs as GAME_OVER: the reset code clears the score before render draws the final one. The fix is one extra variable. Copy <code>next_state = state</code> at the top of the frame, write requests into next_state, and apply them in one line at the very end.</p>"
+     ],
+     [
+      "A name for every state",
+      "<p>Printing state with <code>%d</code> shows 2, which tells you nothing. A table of names indexed by the enum fixes that. Writing <code>[GAME_OVER] = \"GAME_OVER\"</code> uses designated initialisers, the same idea as the named struct fields you met in Phase 3.5, but for array positions. Each name lands at its state's number however the enum is ordered, so adding PAUSED between PLAYING and GAME_OVER can't shift the others.</p>"
+     ],
+     [
+      "Why static const char *const",
+      "<p>Read it right to left: an array of <code>const</code> pointers to <code>const char</code>. The first const means nobody can change the letters. The second means nobody can point an entry at a different string. <code>static</code> keeps the table private to this file. It never changes while the game runs, so let the compiler hold you to that.</p>"
+     ],
+     [
+      "Mistakes to avoid",
+      "<ul><li>Setting <code>state</code> directly in one case and <code>next_state</code> in another. Pick next_state everywhere.</li><li>Adding a state at the end of the enum and forgetting its name. The table is too short and <code>names[state]</code> reads past its end. Ending the enum with a <code>STATE_COUNT</code> member and writing <code>names[STATE_COUNT]</code> keeps the size honest.</li><li>Resetting next_state halfway through the frame, which throws away a request.</li></ul>"
+     ]
+    ],
+    "king": "§16.5"
+   },
+   "code": "#include <stdio.h>\n\ntypedef enum { MENU, PLAYING, GAME_OVER } GameState;\nstatic const char *const names[] = { [MENU] = \"MENU\", [PLAYING] = \"PLAYING\", [GAME_OVER] = \"GAME_OVER\" };\n\nint main(void) {\n    GameState state = MENU;\n    for (int frame = 1; frame <= 5; frame++) {\n        GameState next_state = state;\n        switch (state) {\n        case MENU:\n            if (frame == 2) next_state = PLAYING;\n            break;\n        case PLAYING:\n            if (frame == 4) next_state = GAME_OVER;\n            break;\n        case GAME_OVER:\n            break;\n        }\n        printf(\"frame %d: %s\\n\", frame, names[state]);\n        state = next_state;\n    }\n    return 0;\n}",
    "walk": [
     [
      3,
-     "The three states the game can be in. An enum gives them names, but underneath they’re the numbers 0, 1 and 2."
+     "The same kind of enum as your Phase 4.5 state machine: MENU, PLAYING and GAME_OVER are the numbers 0, 1 and 2 underneath. The starter code adds an optional PAUSED."
     ],
     [
      4,
-     "A list of text, one per state, so we can print the name. <code>[PLAYING] =</code> ties each name to its state, so reordering the enum can’t mix them up. <code>names[PLAYING]</code> works because PLAYING is a number underneath."
+     "A table of names, one per state. <code>[PLAYING] = \"PLAYING\"</code> puts each name at its state's index, so reordering the enum can't mix them up. <code>static const char *const</code>: private to this file, the letters can't change, and no entry can be pointed somewhere else."
     ],
     [
      9,
@@ -244,24 +317,53 @@
      "Yes, and the last one wins. That is usually fine. Decide which event should win if two can fire at once."
     ],
     [
-     "Why enum and not 0, 1, 2?",
-     "GAME_OVER says what it means. A bare 2 doesn’t, and the debugger’s Watch window shows the name too."
+     "Why GameState and not State?",
+     "It matches the starter code and the Game struct, and it says whose state it is. Once there's an enemy state machine too, plain State would be ambiguous."
+    ],
+    [
+     "What does the table hold for a state I left out?",
+     "NULL. Printing NULL with <code>%s</code> is undefined behaviour, so give every state a name. MSVC happens to print (null), but don't rely on it."
     ]
    ],
-   "bridge": "You can change screens safely. Next: <b>AABB collision</b>, the four comparisons that tell you whether two boxes touch."
+   "bridge": "You can change screens safely. Next: <b>AABB collision</b>, the four comparisons that tell you whether two boxes touch.",
+   "lang": "c"
   },
   {
    "id": "aabb",
    "title": "AABB collision",
    "kick": "two boxes · four comparisons · overlap on x and y",
    "mins": 12,
-   "lang": "c",
    "skills": [
     "aabb"
    ],
-   "builds": "Phase 3.5: structs. Phase 2.5: if, &&, comparisons.",
+   "builds": "Structs (Phase 3.5), and conditions with &amp;&amp; and if (Phase 2.5).",
    "why": "“Did the bullet hit the enemy?” is really “do these two rectangles overlap?”. Four comparisons answer it. It’s the collision test behind pickups, enemies and platforms in your runner.",
-   "code": "#include <stdio.h>\n\ntypedef struct { int x, y, w, h; } Box;\n\nint overlap(Box a, Box b) {\n    return a.x < b.x + b.w && a.x + a.w > b.x &&\n           a.y < b.y + b.h && a.y + a.h > b.y;\n}\n\nint main(void) {\n    Box player = {10, 10, 20, 20};\n    Box corner = {25, 25, 20, 20};\n    Box touching = {30, 10, 20, 20};\n    Box far_away = {50, 50, 10, 10};\n    Box inside = {15, 15, 5, 5};\n    printf(\"%d\\n\", overlap(player, corner));\n    printf(\"%d\\n\", overlap(player, touching));\n    printf(\"%d\\n\", overlap(player, far_away));\n    printf(\"%d\\n\", overlap(player, inside));\n    return 0;\n}",
+   "learn": {
+    "parts": [
+     [
+      "Overlap on both axes",
+      "<p>Two boxes hit when their ranges overlap on x <i>and</i> on y. On one axis that's two comparisons: A's left edge is left of B's right edge, and A's right edge is right of B's left edge. Do the same for top and bottom, join all four with <code>&amp;&amp;</code>, and you have the test.</p>"
+     ],
+     [
+      "&& stops early",
+      "<p>C works through <code>&amp;&amp;</code> left to right and stops at the first false (conditions, Phase 2.5). An enemy far to the right fails the second test and the y tests never run, so checking dozens of boxes a frame is cheap.</p>"
+     ],
+     [
+      "static inline for tiny helpers",
+      "<p><code>inline</code> asks the compiler to paste the body in where it's called instead of making a call; it's a hint, and a debug build (<code>/Od</code>) ignores it. <code>static</code> keeps the name private to the file. Together they also let a helper live in a header, which Splitting the game into files explains. The starter's <code>aabb_overlap</code> is these four comparisons on a Box with float fields, since positions move by speed * dt.</p>"
+     ],
+     [
+      "Tunnelling, and undoing the move",
+      "<p>The test only sees where boxes are <i>now</i>. A bullet moving 40 pixels a frame can be left of a 20-pixel wall one frame and right of it the next: it tunnels through. Keep each move smaller than the thinnest thing it can hit, or split big moves into steps. To stop the player at a wall, save the old position, move, test, and put them back on a hit. Undo x and y separately and the player can slide along the wall.</p>"
+     ],
+     [
+      "Mistakes to avoid",
+      "<ul><li>Storing right and bottom edges, then using them as width and height.</li><li>Switching to <code>&lt;=</code> by accident: boxes that only touch now count as a hit.</li></ul>"
+     ]
+    ],
+    "king": "§5.1, §18.6"
+   },
+   "code": "#include <stdio.h>\n\ntypedef struct { int x, y, w, h; } Box;\n\nstatic inline int aabb_overlap(Box a, Box b) {\n    return a.x < b.x + b.w && a.x + a.w > b.x &&\n           a.y < b.y + b.h && a.y + a.h > b.y;\n}\n\nint main(void) {\n    Box player = {10, 10, 20, 20};\n    Box corner = {25, 25, 20, 20};\n    Box touching = {30, 10, 20, 20};\n    Box far_away = {50, 50, 10, 10};\n    Box inside = {15, 15, 5, 5};\n    printf(\"%d\\n\", aabb_overlap(player, corner));\n    printf(\"%d\\n\", aabb_overlap(player, touching));\n    printf(\"%d\\n\", aabb_overlap(player, far_away));\n    printf(\"%d\\n\", aabb_overlap(player, inside));\n    return 0;\n}",
    "walk": [
     [
      3,
@@ -269,7 +371,7 @@
     ],
     [
      5,
-     "Returns 1 if the boxes overlap and 0 if they don’t. All four conditions have to be true, which is why they’re joined with <code>&amp;&amp;</code>."
+     "Returns 1 if the boxes overlap and 0 if they don't. All four conditions have to be true, so they're joined with <code>&amp;&amp;</code>. <code>static inline</code> marks it as a tiny private helper the compiler may paste in where it's called."
     ],
     [
      6,
@@ -299,9 +401,9 @@
     ],
     "a": 0,
     "hint": "Check each box against x 10 to 30 and y 10 to 30. Then look at whether edges that only meet count.",
-    "why": "The corner box overlaps in both axes: 1. The touching box only meets at x = 30, and the test uses &lt; and &gt;, so 0. The far one misses: 0. The small one is entirely inside the player: 1. A box inside another still overlaps.",
+    "why": "The corner box overlaps in both axes: 1. The touching box only meets at x = 30, and the test uses < and >, so 0. The far one misses: 0. The small one is entirely inside the player: 1. A box inside another still overlaps.",
     "miss": {
-     "1": "Edges that only meet don’t count. <code>a.x + a.w &gt; b.x</code> is 30 &gt; 30, which is false, so the x test fails.",
+     "1": "Edges that only meet don’t count. a.x + a.w > b.x is 30 > 30, which is false, so the x test fails.",
      "2": "A box completely inside another does overlap. Both axis tests pass.",
      "3": "The corner box overlaps on both axes: x 25 to 45 meets 10 to 30, and y does too."
     }
@@ -317,33 +419,62 @@
      "Change the four &lt; and &gt; to &lt;= and &gt;=. Most games leave them strict."
     ],
     [
-     "What about circles and rotated shapes?",
-     "AABB can’t do them, but for most 2D games the boxes are close enough. The player rarely notices the corners."
-    ],
-    [
      "Why pass Box by value here?",
      "It’s four ints, so copying is cheap and overlap can’t change the originals. Larger structs usually go by pointer."
     ],
     [
      "Why test boxes instead of the real shapes?",
      "Speed and simplicity: four comparisons instead of hundreds. Most games, Godot included, test boxes first and only check exact shapes when the boxes say maybe. Players almost never notice the corners."
+    ],
+    [
+     "Why static inline and not a plain function?",
+     "For one file, a plain function works just as well. static inline marks it as a tiny private helper, and it's the form that can sit in a header and be used from every .c file. The starter code's aabb_overlap does exactly that."
     ]
    ],
-   "bridge": "You can detect hits. Next: <b>Text on screen</b>, drawing the score in your Win32 window instead of the console."
+   "bridge": "You can detect hits. Next: <b>Text on screen</b>, drawing the score in your Win32 window instead of the console.",
+   "lang": "c"
   },
   {
    "id": "textout",
    "title": "Text on screen: TextOut",
    "kick": "TextOut · snprintf · draw inside WM_PAINT",
    "mins": 14,
-   "lang": "c-win",
    "skills": [
     "textout"
    ],
-   "builds": "Phase 5: WinMain, WndProc, WM_PAINT and the device context. Phase 3: strings and strlen.",
+   "builds": "WinMain, the window procedure, the message loop with PeekMessage and snprintf, and Combining flags with | and &amp; (Phase 5); strings, strlen and Passing arrays to functions (Phase 3).",
    "why": "In the console you used printf. A Windows window has no console, so the score has to be drawn like everything else. TextOut draws a string at a position in the window, using the same device context you drew the rectangle with.",
-   "code": "#include <windows.h>\n#include <stdio.h>\n#include <string.h>\n\nint score = 12;\n\nLRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {\n    if (msg == WM_PAINT) {\n        PAINTSTRUCT ps;\n        HDC hdc = BeginPaint(hwnd, &ps);\n        char buf[32];\n        snprintf(buf, sizeof buf, \"Score: %d\", score);\n        TextOut(hdc, 10, 10, buf, (int)strlen(buf));\n        EndPaint(hwnd, &ps);\n        return 0;\n    }\n    if (msg == WM_DESTROY) { PostQuitMessage(0); return 0; }\n    return DefWindowProc(hwnd, msg, wp, lp);\n}\n\nint WINAPI WinMain(HINSTANCE hi, HINSTANCE hp, LPSTR cmd, int show) {\n    WNDCLASS wc = {0};\n    MSG m;\n    (void)hp; (void)cmd; (void)show;\n    wc.lpfnWndProc = WndProc;\n    wc.hInstance = hi;\n    wc.lpszClassName = \"ScoreWin\";\n    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);\n    RegisterClass(&wc);\n    CreateWindow(\"ScoreWin\", \"Score\", WS_OVERLAPPEDWINDOW | WS_VISIBLE, 100, 100, 320, 200, NULL, NULL, hi, NULL);\n    while (GetMessage(&m, NULL, 0, 0)) DispatchMessage(&m);\n    return 0;\n}",
+   "learn": {
+    "parts": [
+     [
+      "Text is drawn like everything else",
+      "<p>A window has no console, so the score is drawn like your rectangle: inside WM_PAINT, through the device context. Two steps: <b>snprintf</b> turns the number into text in a buffer (Copying and joining strings), then <b>TextOut</b> draws that many characters at a position. TextOut doesn't erase what was there, which is why a repaint clears the background first.</p>"
+     ],
+     [
+      "sizeof buf only works on an array",
+      "<p>Inside WM_PAINT, <code>buf</code> is a real array, so <code>sizeof buf</code> is 32. Move the drawing into a helper like <code>draw_label(HDC hdc, char *buf)</code> and <code>sizeof buf</code> becomes 8, the size of a pointer, as Passing arrays to functions warned. snprintf would then cut every label to 7 letters. Pass the size as its own parameter.</p>"
+     ],
+     [
+      "TextOut is really TextOutA",
+      "<p>windows.h has two of most text functions: <code>TextOutA</code> takes char strings and <code>TextOutW</code> takes wide ones. <code>TextOut</code> is a macro that picks one: if <code>UNICODE</code> is defined you get W, otherwise A. That's conditional compilation, the same trick as Preprocessor switches in Phase 4.5. build.bat never defines UNICODE, so plain <code>\"Score\"</code> strings work and the debugger shows TextOutA. A Visual Studio project defines UNICODE, which is why code copied from one uses <code>L\"Score\"</code>.</p>"
+     ],
+     [
+      "A static score, and style bits",
+      "<p>The score sits outside every function so WndProc can read it. Make it <code>static</code>, so no other .c file can reach in and change it (Static locals and globals). The window style <code>WS_OVERLAPPEDWINDOW | WS_VISIBLE</code> is two bit flags joined with <code>|</code>, straight from Combining flags with | and &amp;.</p>"
+     ],
+     [
+      "MSVC notes",
+      "<p class=\"warn\">Drop the <code>(int)</code> in front of strlen and MSVC warns that converting size_t to int may lose data, which /WX turns into an error. The cast says the label is short and you know it.</p>"
+     ]
+    ],
+    "king": "§22.8, §7.6, §14.4"
+   },
+   "code": "#include <windows.h>\n#include <stdio.h>\n#include <string.h>\n\nstatic int score = 12;\n\nLRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {\n    if (msg == WM_PAINT) {\n        PAINTSTRUCT ps;\n        HDC hdc = BeginPaint(hwnd, &ps);\n        char buf[32];\n        snprintf(buf, sizeof buf, \"Score: %d\", score);\n        TextOut(hdc, 10, 10, buf, (int)strlen(buf));\n        EndPaint(hwnd, &ps);\n        return 0;\n    }\n    if (msg == WM_DESTROY) { PostQuitMessage(0); return 0; }\n    return DefWindowProc(hwnd, msg, wp, lp);\n}\n\nint WINAPI WinMain(HINSTANCE hi, HINSTANCE hp, LPSTR cmd, int show) {\n    WNDCLASS wc = {0};\n    MSG m = {0};\n    int running = 1;\n    (void)hp; (void)cmd; (void)show;\n    wc.lpfnWndProc = WndProc;\n    wc.hInstance = hi;\n    wc.lpszClassName = \"ScoreWin\";\n    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);\n    RegisterClass(&wc);\n    CreateWindow(\"ScoreWin\", \"Score\", WS_OVERLAPPEDWINDOW | WS_VISIBLE, 100, 100, 320, 200, NULL, NULL, hi, NULL);\n    while (running) {\n        while (PeekMessage(&m, NULL, 0, 0, PM_REMOVE)) {\n            if (m.message == WM_QUIT) running = 0;\n            TranslateMessage(&m);\n            DispatchMessage(&m);\n        }\n        Sleep(16);\n    }\n    return 0;\n}",
    "walk": [
+    [
+     5,
+     "<code>static</code>: score lives outside every function so WndProc can see it, and static keeps it private to this file. In the prototype it moves into your Game struct."
+    ],
     [
      8,
      "Drawing belongs in <b>WM_PAINT</b>, the same place as your rectangle in Phase 5."
@@ -354,19 +485,23 @@
     ],
     [
      12,
-     "TextOut wants plain text, not a number. <b>snprintf</b> is printf that writes into a buffer. It builds “Score: 12” in <code>buf</code> and never writes past its 32 characters."
+     "<b>snprintf</b> builds \"Score: 12\" in <code>buf</code> and never writes past its 32 characters. <code>sizeof buf</code> is 32 here because buf is an array."
     ],
     [
      13,
-     "<b>TextOut(hdc, x, y, text, length)</b>. Draws at 10 pixels across and 10 down. The last argument is how many characters to draw, and <code>strlen</code> counts them. The <code>(int)</code> cast keeps /W4 quiet, since strlen returns size_t."
+     "<b>TextOut(hdc, x, y, text, length)</b> draws at 10 across and 10 down. strlen counts the characters; the <code>(int)</code> cast is there because strlen returns size_t. Without UNICODE defined, TextOut is really <b>TextOutA</b>, the char version."
     ],
     [
      14,
      "Always match BeginPaint with EndPaint."
     ],
     [
-     21,
-     "A cut-down version of the Phase 5 window set-up. Only the snprintf and TextOut lines (12, 13) are new inside WM_PAINT. New in the set-up: <code>WS_OVERLAPPEDWINDOW | WS_VISIBLE</code> uses <code>|</code> to combine two window style flags into one value."
+     31,
+     "The window set-up from Phase 5, cut down. <code>WS_OVERLAPPEDWINDOW | WS_VISIBLE</code> combines two style flags with <code>|</code>, as in Combining flags with | and &amp;."
+    ],
+    [
+     33,
+     "The PeekMessage loop from Phase 5. In the prototype, game_update and game_render go next to <code>Sleep(16)</code>; here there is nothing to update, so the window only repaints when Windows asks."
     ]
    ],
    "model": "<b>Mental model:</b> a label printer for your window. You give it the words, where to stick them, and how many letters to print.",
@@ -404,9 +539,133 @@
     [
      "Why is my score not updating?",
      "WM_PAINT only runs when Windows asks. After changing the score, call InvalidateRect(hwnd, NULL, TRUE) so the window repaints."
+    ],
+    [
+     "Why does the debugger say TextOutA when I wrote TextOut?",
+     "TextOut is a macro. Without UNICODE defined it turns into TextOutA, the version that takes char strings. Call stacks and linker messages show the real name."
     ]
    ],
-   "bridge": "That’s every concept in Phase 6. Next: <b>The prototype build</b>: wire states, movement, collision and the score into one window, with your partner."
+   "bridge": "You can put the score on screen. Next: <b>Splitting the game into files</b>, so game.c and player.c each do one job.",
+   "lang": "c-win"
+  },
+  {
+   "id": "game-files",
+   "title": "Splitting the game into files",
+   "kick": "one module per job · player_ prefix · static inline · SOURCES",
+   "mins": 15,
+   "skills": [
+    "module",
+    "static-inline"
+   ],
+   "builds": "Header files and #pragma once, Linker errors (LNK2019) and static on functions (Phase 3.75), and Multiple files and LNK2005 (Phase 4.5).",
+   "why": "The prototype has a loop, states, a player, collisions and a score. In one file, you and your partner edit the same lines all week and fight over merges. One file per job means you can work on player.c while your partner works on game.c, and every bug has an obvious home.",
+   "learn": {
+    "parts": [
+     [
+      "One module, two files",
+      "<p>A <b>module</b> is one job of the game in a .c file with its own .h. The header is the public face: types, prototypes and anything other files may use. The .c holds the bodies and the private details. For the prototype that means main.c (WinMain and the loop), game.c and game.h (the Game struct, the states, game_update, game_render) and player.c and player.h (movement and the Player struct). You split the runner once in Phase 4.5 to fix a problem. Now it's how every new piece starts.</p>"
+     ],
+     [
+      "Name prefixes",
+      "<p>C has one shared pool of names for every public function and global, across all files. If game.c and player.c both define <code>update</code>, the linker finds two and stops with LNK2005. So prefix every public name with its module: <code>player_update</code>, <code>game_update</code>, <code>enemy_spawn</code>. You also always know which file to open. Enum constants share that pool too, which is why bigger projects write <code>STATE_MENU</code>, as in Phase 4.5.</p>"
+     ],
+     [
+      "The rules for each module",
+      "<ul><li>Each .c includes its own header, so the compiler checks bodies against prototypes.</li><li>Helpers nobody else needs are <code>static</code> and stay out of the header.</li><li>A header includes what it uses: game.h includes player.h because Game holds a Player. Keep includes one way; player.h shouldn't include game.h.</li><li>Globals live in one .c, with an <code>extern</code> line in the header only if another file truly needs them. Usually it doesn't.</li></ul>"
+     ],
+     [
+      "Tiny helpers: static inline",
+      "<p>Sometimes a one-line helper like <code>player_alive</code> or <code>aabb_overlap</code> is wanted in every file. Three ways to put it in a header:</p><ul><li>A normal function: every .c that includes it gets a full copy, and the linker reports LNK2005.</li><li>Plain <code>inline</code>: with no ordinary copy of the function anywhere else, gcc refuses to link it in a debug build, and the C standard allows that. MSVC may accept it. Don't rely on either; <code>static inline</code> is the form that works everywhere.</li><li><code>static inline</code>: each .c gets its own private copy. Nothing clashes, nothing is missing.</li></ul><p>A plain <code>static</code> function would also link, but every file that doesn't call it gets an unused copy, and gcc warns about each unused one (MSVC at /W4 stays quiet). static inline is the usual form.</p>"
+     ],
+     [
+      "Building it",
+      "<p>build.bat lists every .c on the SOURCES line: <code>set SOURCES=main.c game.c player.c</code>, then <code>cl %FLAGS% %SOURCES% /Fe:game.exe</code>. Headers never go there. A new module is three steps: write the .h, write the .c, add the .c to SOURCES.</p>"
+     ],
+     [
+      "Mistakes to avoid",
+      "<ul><li>Forgetting to add a new .c to SOURCES: LNK2019 for every function in it.</li><li>Defining a variable in a header: LNK2005.</li><li>Calling another module's static helper. The compiler can't see it, MSVC warns (C4013) and the link fails.</li><li>Two headers that include each other. Move the shared type into its own header.</li></ul>"
+     ]
+    ],
+    "king": "§15.3, §18.2, §18.6, §19.5"
+   },
+   "code": "// ---- player.h ----\n#pragma once\n\ntypedef struct { int health; } Player;\n\nvoid player_heal(Player* p, int amount);\n\nstatic inline int player_alive(const Player* p) {\n    return p->health > 0;\n}\n\n// ---- player.c ----\n#include \"player.h\"\n\nstatic int clamp_health(int h) {\n    return h > 100 ? 100 : h;\n}\n\nvoid player_heal(Player* p, int amount) {\n    p->health = clamp_health(p->health + amount);\n}\n\n// ---- main.c ----\n#include <stdio.h>\n#include \"player.h\"\n\nint main(void) {\n    Player hero = {90};\n    player_heal(&hero, 25);\n    printf(\"health %d, alive %d\\n\", hero.health, player_alive(&hero));\n    return 0;\n}",
+   "walk": [
+    [
+     4,
+     "player.h is the module's public face: the Player type and what other files may call. Every public name starts with <code>player_</code>."
+    ],
+    [
+     8,
+     "<b>static inline</b>: a one-line helper that lives in the header. Each .c that includes it gets its own private copy, so there is nothing for the linker to miss or find twice."
+    ],
+    [
+     13,
+     "player.c includes its own header first, so the compiler checks every body against its prototype."
+    ],
+    [
+     15,
+     "A private helper: <code>static</code>, and not in the header. No other file can call clamp_health, so another module can have its own."
+    ],
+    [
+     19,
+     "The one real definition of player_heal. Only player.obj contains it."
+    ],
+    [
+     25,
+     "main.c includes the header and nothing else from the player module. It never sees player.c."
+    ],
+    [
+     30,
+     "player_alive needs no linking at all: main.c got its own copy through the include. Prints <code>health 100, alive 1</code>."
+    ],
+    [
+     32,
+     "After the last line: build every .c together. In build.bat: <code>set SOURCES=main.c player.c</code>, then <code>cl %FLAGS% %SOURCES% /Fe:game.exe</code>. Headers never go in SOURCES."
+    ]
+   ],
+   "model": "<b>Mental model:</b> departments in a studio. Each has a front desk (the .h) and a back office (the .c). Other departments only talk to the front desk, and everyone at the player desk wears a <code>player_</code> badge.",
+   "check": {
+    "q": "You forget player.c and build with set SOURCES=main.c. Which name does the linker complain about?",
+    "opts": [
+     "player_heal only",
+     "player_alive only",
+     "Both player_heal and player_alive",
+     "clamp_health"
+    ],
+    "a": 0,
+    "hint": "Which of these does main.c call, and which ones did it get a copy of through the include?",
+    "why": "main.c calls player_heal, whose only body is in player.c, so the linker reports LNK2019 for player_heal. player_alive is static inline in the header, so main.c compiled its own copy. clamp_health is never called from main.c at all.",
+    "miss": {
+     "1": "player_alive came in with the header. main.c has its own copy, so nothing is missing.",
+     "2": "Only player_heal lives in player.c. The static inline helper was pasted into main.c by the include.",
+     "3": "main.c never calls clamp_health. It's static and private to player.c, and nothing outside asks for it."
+    }
+   },
+   "tryit": {
+    "task": "Put this one-line helper in enemy.h so every .c file can use it without a linker error.",
+    "code": "____ ____ int enemy_dead(const Enemy* e) {\n    return e->health <= 0;\n}",
+    "answer": "static inline"
+   },
+   "qa": [
+    [
+     "How do I decide what becomes a module?",
+     "One per thing you'd name in a sentence about the game: the player, the enemies, the game itself. main.c keeps only WinMain and the loop, calling game_init, game_update and game_render."
+    ],
+    [
+     "What happens with a plain inline in a header?",
+     "Standard C treats it as a hint with no real copy for the linker, so a debug build can fail to link with an unresolved symbol. gcc does; MSVC may let it through. Add static and each file has its own copy, on every compiler."
+    ],
+    [
+     "Why not make every function static inline in a header?",
+     "Every file then compiles its own copy, any change rebuilds every file, and the header fills with code. Keep it for helpers of one to three lines."
+    ],
+    [
+     "Can two modules have functions with the same name?",
+     "Only if both are static. Two public update functions give LNK2005. That's what the prefixes prevent: player_update and enemy_update never clash."
+    ]
+   ],
+   "bridge": "That's every concept in Phase 6. Next: <b>The prototype build</b>: wire states, movement, collision and the score into one window, split into game.c and player.c, with your partner.",
+   "lang": "text"
   }
  ]
 }
